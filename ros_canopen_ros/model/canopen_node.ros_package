@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ros:Package xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ros="http://ros/1.0" name="ros_canopen_ros" author="Florian Weishsardt" author_email="fmw@ipa.fhg.de" description="The ros_canopen_ros package" license="LGPL" url="http://wiki.ros.org/ros_canopen_ros">
+  <node name="canopen_node">
+    <publisher name="joint_states" msg="sensor_msgs::JointState"/>
+    <publisher name="state" msg="control_msgs::JointTrajectoryControllerState"/>
+    <publisher name="diagnostics" msg="diagnostic_msgs::DiagnosticArray"/>
+    <publisher name="robot_status" msg="industrial_msgs::RobotStatus"/>
+    <subscriber name="command_vel" msg="brics_actuator::JointVelocities" eventPort="true"/>
+    <subscriber name="command_pos" msg="brics_actuator::JointPositions" eventPort="true"/>
+    <serviceServer name="init" msg="cob_srvs::Trigger"/>
+    <serviceServer name="recover" msg="cob_srvs::Trigger"/>
+    <serviceServer name="shutdown" msg="cob_srvs::Trigger"/>
+    <serviceServer name="halt" msg="cob_srvs::Trigger"/>
+    <parameter name="diagnostics_frequency" type="double"/>
+    <parameter name="chain_name" type="string"/>
+    <parameter name="timeout" type="double"/>
+    <parameter name="bus" type="XmlRpcValue"/>
+    <parameter name="moduls" type="XmlRpcValue"/>
+    <parameter name="robot_description" type="XmlRpcValue"/>
+  </node>
+  <depend>control_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cob_srvs</depend>
+  <depend>brics_actuator</depend>
+  <depend>industrial_msgs</depend>
+  <depend>diagnostic_msgs</depend>
+</ros:Package>
