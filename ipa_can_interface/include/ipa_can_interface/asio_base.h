@@ -3,6 +3,7 @@
 
 #include <ipa_can_interface/interface.h>
 #include <boost/asio.hpp>
+#include <boost/thread/mutex.hpp>
 
 namespace ipa_can{
     

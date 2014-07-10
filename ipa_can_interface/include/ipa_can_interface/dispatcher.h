@@ -2,7 +2,8 @@
 #define H_IPA_CAN_DISPATCHER
 
 #include "interface.h"
-#include <boost/thread.hpp>
+#include <list>
+#include <boost/thread/mutex.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <boost/foreach.hpp>

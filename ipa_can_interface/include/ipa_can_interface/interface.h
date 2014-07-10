@@ -4,7 +4,6 @@
 #include <boost/array.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
 
 #include "FastDelegate.h"
 
