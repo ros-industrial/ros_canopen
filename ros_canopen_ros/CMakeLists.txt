@@ -13,12 +13,13 @@ find_package(catkin REQUIRED COMPONENTS
 	brics_actuator
 	industrial_msgs
 	diagnostic_msgs
+	trajectory_msgs
 )
 
 # protected region additional user defined REQUIREMENTS on begin #
 # protected region additional user defined REQUIREMENTS end #
 
-generate_dynamic_reconfigure_options(cfg/canopen_node.cfg)
+generate_dynamic_reconfigure_options(cfg/canopen_402_node.cfg)
 
 ###################################
 ## catkin specific configuration ##
@@ -40,6 +41,7 @@ catkin_package(
 	brics_actuator
 	industrial_msgs
 	diagnostic_msgs
+	trajectory_msgs
    
 )
 
@@ -55,15 +57,15 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 
 ## Declare a cpp executable
-add_executable(canopen_node ros/src/canopen_node_ros.cpp)
+add_executable(canopen_402_node ros/src/canopen_402_node_ros.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(canopen_node canopen_node_gencfg)
-add_dependencies(canopen_node ${ros_canopen_ros_EXPORTED_TARGETS})
+add_dependencies(canopen_402_node canopen_402_node_gencfg)
+add_dependencies(canopen_402_node ${ros_canopen_ros_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(canopen_node
+target_link_libraries(canopen_402_node
   ${catkin_LIBRARIES}
 )
 
@@ -76,7 +78,7 @@ target_link_libraries(canopen_node
 #############
 
 ## Mark executables and/or libraries for installation
-install(TARGETS canopen_node
+install(TARGETS canopen_402_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
