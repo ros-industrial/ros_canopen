@@ -68,9 +68,9 @@ class canopen_node_ros
         command_vel_ = n_.subscribe("command_vel", 1, &canopen_node_ros::topicCallback_command_vel, this);
         command_pos_ = n_.subscribe("command_pos", 1, &canopen_node_ros::topicCallback_command_pos, this);
 
-        np_.param("diagnostics_frequency", component_config_.diagnostics_frequency, (double));
+        np_.param("diagnostics_frequency", component_config_.diagnostics_frequency, (double)1);
         np_.param("chain_name", component_config_.chain_name, (std::string)"");
-        np_.param("timeout", component_config_.timeout, (double));
+        np_.param("timeout", component_config_.timeout, (double)0.1);
         if(np_.hasParam("bus"))
             np_.getParam("bus", component_config_.bus);
         else

@@ -11,9 +11,9 @@
     <serviceServer name="recover" msg="cob_srvs::Trigger"/>
     <serviceServer name="shutdown" msg="cob_srvs::Trigger"/>
     <serviceServer name="halt" msg="cob_srvs::Trigger"/>
-    <parameter name="diagnostics_frequency" type="double"/>
+    <parameter name="diagnostics_frequency" value="1" type="double"/>
     <parameter name="chain_name" type="string"/>
-    <parameter name="timeout" type="double"/>
+    <parameter name="timeout" value="0.1" type="double"/>
     <parameter name="bus" type="XmlRpcValue"/>
     <parameter name="moduls" type="XmlRpcValue"/>
     <parameter name="robot_description" type="XmlRpcValue"/>
