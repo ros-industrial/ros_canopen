@@ -8,7 +8,6 @@ find_package(catkin REQUIRED ipa_can_interface)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(Boost REQUIRED COMPONENTS system thread)
 
 
 ###################################
@@ -39,7 +38,10 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 # )
 
 ## Declare a cpp executable
-# add_executable(ipa_socketcan_driver_node src/ipa_socketcan_driver_node.cpp)
+add_executable(ipa_socketcan_driver_candump src/candump.cpp)
+target_link_libraries(ipa_socketcan_driver_candump
+   ${catkin_LIBRARIES}
+)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

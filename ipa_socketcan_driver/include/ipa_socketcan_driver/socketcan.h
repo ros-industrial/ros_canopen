@@ -2,6 +2,7 @@
 #define H_IPA_SOCKETCAN_DRIVER
 
 #include <ipa_can_interface/asio_base.h>
+#include <boost/bind.hpp>
 
 #include <sys/types.h>
 #include <sys/socket.h>
