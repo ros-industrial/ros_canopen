@@ -1,0 +1,40 @@
+<package>
+  <name>ros_canopen_ros</name>
+  <description>The ros_canopen_ros package</description>
+  <version>0.1.0</version>
+  <maintainer email="fmw@ipa.fhg.de">Florian Weisshardt, Mathias Lüdtke</maintainer>
+  <author email="fmw@ipa.fhg.de">Florian Weisshardt, Mathias Lüdtke</author>
+  <license>LGPL</license>
+  <url>http://wiki.ros.org/ros_canopen_ros</url>
+
+  <buildtool_depend>catkin</buildtool_depend>  
+
+  <!-- bride default dependencies -->
+  <build_depend>roscpp</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>actionlib</run_depend>
+
+  <!-- user dependencies -->
+  <build_depend>control_msgs</build_depend>
+  <run_depend>control_msgs</run_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <build_depend>cob_srvs</build_depend>
+  <run_depend>cob_srvs</run_depend>
+  <build_depend>brics_actuator</build_depend>
+  <run_depend>brics_actuator</run_depend>
+  <build_depend>industrial_msgs</build_depend>
+  <run_depend>industrial_msgs</run_depend>
+  <build_depend>diagnostic_msgs</build_depend>
+  <run_depend>diagnostic_msgs</run_depend>
+  <build_depend>trajectory_msgs</build_depend>
+  <run_depend>trajectory_msgs</run_depend>
+
+  <!-- protected region additional manifest statements on begin -->
+  <!-- protected region additional manifest statements end -->
+  
+</package>
+
+
