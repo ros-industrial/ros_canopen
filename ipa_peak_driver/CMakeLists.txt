@@ -4,7 +4,7 @@ project(ipa_peak_driver)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED ipa_can_interface)
+find_package(catkin REQUIRED COMPONENTS ipa_can_interface libpcan)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -22,7 +22,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES ipa_peak_driver
+  LIBRARIES pcan
   CATKIN_DEPENDS ipa_can_interface
 #  DEPENDS boost
 )

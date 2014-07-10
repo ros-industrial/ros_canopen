@@ -34,7 +34,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include ${Boost_INCLUDE_DIRS}
+  INCLUDE_DIRS include
   LIBRARIES ${PTHREAD_LIB}
 #  CATKIN_DEPENDS other_catkin_pkg
   DEPENDS Boost
