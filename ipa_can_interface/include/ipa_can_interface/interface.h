@@ -74,7 +74,7 @@ public:
     typedef boost::shared_ptr<const Listener> Ptr;
     
     Listener(const T &callable):callable_(callable){ }
-    void operator()(const U & u) const { callable_(u); }
+    void operator()(const U & u) const { if(callable_) callable_(u); }
     virtual ~Listener() {} 
 };
 
