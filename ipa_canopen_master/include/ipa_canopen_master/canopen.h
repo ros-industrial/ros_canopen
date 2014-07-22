@@ -91,7 +91,7 @@ public:
 class Node{
 public:
     enum State{
-        BootUp = 0, Stopped = 4, Operational = 5 , PreOperational = 127
+        Unknown = 255, BootUp = 0, Stopped = 4, Operational = 5 , PreOperational = 127
     };
     const uint8_t node_id_;
     Node(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id);

@@ -27,13 +27,12 @@ struct NMTcommand{
 #pragma pack(pop) /* pop previous alignment from stack */
 
 Node::Node(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id)
-: node_id_(node_id), sdo_(interface, dict, node_id), interface_(interface), state_(BootUp), pdo_(interface){
-    sdo_.init();
-    pdo_.init(getStorage());
+: node_id_(node_id), sdo_(interface, dict, node_id), interface_(interface), state_(Unknown), pdo_(interface){
     nmt_listener_ = interface_->createMsgListener( ipa_can::Header(0x700 + node_id_), ipa_can::Interface::FrameDelegate(this, &Node::handleNMT));
     
-    getStorage()->entry(heartbeat_, 0x1017),
-    
+    sdo_.init();
+    getStorage()->entry(heartbeat_, 0x1017);
+
     reset_com();
 }
     
@@ -44,20 +43,19 @@ const Node::State& Node::getState(){
 
 void Node::reset_com(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
-    state_ = BootUp;
     getStorage()->clear();
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset_Com));
     wait_for(BootUp, boost::posix_time::seconds(1));
+    state_ = PreOperational;
     heartbeat_.set(heartbeat_.desc().value().get<uint16_t>());
 
 }
 void Node::reset(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
-    state_ = BootUp;
     getStorage()->clear();
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset));
     wait_for(BootUp, boost::posix_time::seconds(1));
-    
+    state_ = PreOperational;
     heartbeat_.set(heartbeat_.desc().value().get<uint16_t>());
 }
 
@@ -74,7 +72,10 @@ void Node::start(){
     if(state_ == BootUp){
         // ERROR
     }
-    getStorage()->init_all();
+    else if(state_ == PreOperational){
+        pdo_.init(getStorage());
+        getStorage()->init_all();
+    }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Start));
     wait_for(Operational, boost::posix_time::milliseconds(heartbeat_.get(true) * 3));
 }
