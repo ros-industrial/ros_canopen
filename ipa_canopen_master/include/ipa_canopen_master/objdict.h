@@ -225,14 +225,13 @@ public:
         bool valid;
         boost::mutex mutex;
     public:
+        const boost::shared_ptr<const ObjectDict::Entry> entry;
         void read(uint8_t* b, const size_t len);
         void write(const uint8_t* b, const size_t len);
         size_t size() { return buffer.size(); }
-        void lock(){ mutex.lock(); }
-        void unlock(){ mutex.unlock(); }
-        Buffer() : valid(false) {}
+        Buffer(const boost::shared_ptr<const ObjectDict::Entry> e) : valid(false), entry(e) {}
         static boost::shared_ptr<Buffer> dummy(size_t size){
-            Buffer *b = new Buffer();
+            Buffer *b = new Buffer(boost::shared_ptr<const ObjectDict::Entry>());
             b->buffer.resize(size);
             return boost::shared_ptr<Buffer>(b);
         }
@@ -262,17 +261,16 @@ protected:
         }
     public:
         const TypeGuard type_guard;
-        const boost::shared_ptr<const ObjectDict::Entry> entry;
         
         template<typename T> Data(const boost::shared_ptr<const ObjectDict::Entry> &e, const T &val, const ReadDelegate &r, const WriteDelegate &w)
-        : entry(e), type_guard(TypeGuard::create<T>()), read_delegate(r), write_delegate(w) {
+        : Buffer(e), type_guard(TypeGuard::create<T>()), read_delegate(r), write_delegate(w) {
             assert(!r.empty());
             assert(!w.empty());
             assert(e);
             allocate<T>() = val;
         }
         Data(const boost::shared_ptr<const ObjectDict::Entry> &e, const TypeGuard &t, const ReadDelegate &r, const WriteDelegate &w)
-        : entry(e), type_guard(t), read_delegate(r), write_delegate(w){
+        : Buffer(e), type_guard(t), read_delegate(r), write_delegate(w){
             assert(!r.empty());
             assert(!w.empty());
             assert(e);
