@@ -41,36 +41,6 @@ const uint16_t RPDO_MAP_BASE =0x1600;
 const uint16_t TPDO_COM_BASE =0x1800;
 const uint16_t TPDO_MAP_BASE =0x1A00;
 
-void RPDOHandler::handleFrame(const ipa_can::Frame & msg){
-    size_t offset = 0;
-    const uint8_t * src = msg.data.data();
-    for(std::vector<boost::shared_ptr<ObjectStorage::Buffer> >::iterator it = buffers_.begin(); it != buffers_.end(); ++it){
-        ObjectStorage::Buffer &b = **it;
-        size_t s = b.size();
-        if( offset + s <= msg.dlc ){
-            b.write(src+offset, s);
-            offset += s;
-        }else{
-            // ERROR
-        }
-    }
-    if( offset != msg.dlc ){
-        // ERROR
-    }
-}
-
-RPDOHandler::RPDOHandler(const boost::shared_ptr<ipa_can::Interface> interface, const ipa_can::Header &h, const std::vector<boost::shared_ptr<ObjectStorage::Buffer> > &buffers)
-: listener_(interface->createMsgListener(h,ipa_can::Interface::FrameDelegate(this, &RPDOHandler::handleFrame))), buffers_(buffers)
-{
-    // test consistency of buffers
-    size_t offset = 0;
-    for(std::vector<boost::shared_ptr<ObjectStorage::Buffer> >::iterator it = buffers_.begin(); it != buffers_.end(); ++it){
-        offset += (*it)->size();
-    }
-    assert( offset <= 8 );
-    
-}
-
 bool check_com_changed(const ObjectDict &dict, const uint16_t com_id){
     bool com_changed = false;
     
@@ -106,9 +76,8 @@ bool check_map_changed(const uint8_t &num, const ObjectDict &dict, const uint16_
     }
     return map_changed;
 }
-void parse_and_set_mapping(std::vector<boost::shared_ptr<ObjectStorage::Buffer> > &buffers,
-                           const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index,
-                           const ObjectStorage::ReadDelegate &rd, const ObjectStorage::WriteDelegate &wd){
+void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index,
+                                           const ObjectStorage::ReadDelegate &rd, const ObjectStorage::WriteDelegate &wd){
                             
     const ipa_canopen::ObjectDict & dict = *storage->dict_;
     
@@ -135,6 +104,7 @@ void parse_and_set_mapping(std::vector<boost::shared_ptr<ObjectStorage::Buffer> 
             num_entry.set(0);
         }
         
+        size_t offset = 0;
         for(uint8_t sub = 1; sub <=map_num; ++sub){
             ObjectStorage::Entry<uint32_t> mapentry;
             storage->entry(mapentry, map_index, sub);
@@ -150,6 +120,8 @@ void parse_and_set_mapping(std::vector<boost::shared_ptr<ObjectStorage::Buffer> 
                 assert(b->size() == param.length/8);
             }
             
+            offset += b->size();
+            assert( offset <= 8 );
             buffers.push_back(b);
         }
     }
@@ -163,92 +135,179 @@ PDOMapper::PDOMapper(const boost::shared_ptr<ipa_can::Interface> interface)
 }
 void PDOMapper::init(const boost::shared_ptr<ObjectStorage> storage){
     rpdos_.clear();
-    setup_rpdos(storage);
+    
+    const ipa_canopen::ObjectDict & dict = *storage->dict_;
+    for(uint8_t i=0; i < dict.device_info.nr_of_tx_pdo;++i){ // TPDOs of device
+        boost::shared_ptr<RPDO> rpdo = boost::make_shared<RPDO>(interface_);
+        if(rpdo->init(storage, TPDO_COM_BASE + i, TPDO_MAP_BASE + i)){
+            rpdos_.insert(rpdo);
+        }
+    }
     std::cout << "RPDOs: " << rpdos_.size() << std::endl;
+    
     tpdos_.clear();
-//     setup_tpdos(storage);
-//     std::cout << "TPDOs: " << tpdos_.size() << std::endl;
-    
+    for(uint8_t i=0; i < dict.device_info.nr_of_rx_pdo;++i){ // RPDOs of device
+        boost::shared_ptr<TPDO> tpdo = boost::make_shared<TPDO>(interface_);
+        if(tpdo->init(storage, RPDO_COM_BASE + i, RPDO_MAP_BASE + i)){
+            tpdos_.insert(tpdo);
+        }
+    }
+    std::cout << "TPDOs: " << tpdos_.size() << std::endl;
 }
-void PDOMapper::setup_rpdos(const boost::shared_ptr<ObjectStorage> storage){
 
-    const ObjectStorage::ReadDelegate rd(this, &PDOMapper::read);
-    const ObjectStorage::WriteDelegate wd(this, &PDOMapper::write);
-    
+
+bool PDOMapper::RPDO::init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
     const ipa_canopen::ObjectDict & dict = *storage->dict_;
-    for(uint8_t i=0; i < dict.device_info.nr_of_tx_pdo;++i){ // TPDOs of device
-        std::cout << "RPDO" << (int)i << std::endl;
-
-        std::vector<boost::shared_ptr<ObjectStorage::Buffer> > buffers;
-        
-        parse_and_set_mapping(buffers, storage, TPDO_COM_BASE + i, TPDO_MAP_BASE + i, rd, wd);
-
-        PDOid pdoid( NodeIdOffset<uint32_t>::apply(dict(TPDO_COM_BASE + i, SUB_COM_COB_ID).value(), storage->node_id_) );
-        
-        if(!buffers.empty()){
-            RPDO rpdo;
-            rpdo.transmission_type = dict(TPDO_COM_BASE + i, SUB_COM_TRANSMISSION_TYPE).value().get<uint8_t>();
-            rpdo.rtr = pdoid.no_rtr ? 0 : 1;
-            rpdo.handler = boost::make_shared<RPDOHandler>(interface_, pdoid.header(), buffers);
-            rpdos_.insert(std::make_pair(pdoid.header(),rpdo));
-        }
-    }
-}
-void PDOMapper::setup_tpdos(const boost::shared_ptr<ObjectStorage> storage){
-
-    const ObjectStorage::ReadDelegate rd(this, &PDOMapper::read);
-    const ObjectStorage::WriteDelegate wd(this, &PDOMapper::write);
+    parse_and_set_mapping(storage, com_index, map_index, ObjectStorage::ReadDelegate(this,&RPDO::read), ObjectStorage::WriteDelegate());
     
+    PDOid pdoid( NodeIdOffset<uint32_t>::apply(dict(com_index, SUB_COM_COB_ID).value(), storage->node_id_) );
+
+    if(buffers.empty() || pdoid.invalid){
+       return false;     
+    }
+        
+    frame = pdoid.header();
+    frame.is_rtr = pdoid.no_rtr?0:1;
+    
+    transmission_type = dict(com_index, SUB_COM_TRANSMISSION_TYPE).value().get<uint8_t>();
+    
+    listener_ = interface_->createMsgListener(pdoid.header() ,ipa_can::Interface::FrameDelegate(this, &RPDO::handleFrame));
+
+    return true;
+}
+
+bool PDOMapper::TPDO::init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
     const ipa_canopen::ObjectDict & dict = *storage->dict_;
-    for(uint8_t i=0; i < dict.device_info.nr_of_tx_pdo;++i){ // TPDOs of device
 
-        TPDO tpdo;
-        
-        parse_and_set_mapping(tpdo.buffers, storage, RPDO_COM_BASE + i, RPDO_MAP_BASE + i, rd, wd);
-        
-        if(!tpdo.buffers.empty()){
-            PDOid pdoid( NodeIdOffset<uint32_t>::apply(dict(RPDO_COM_BASE + i, SUB_COM_COB_ID).value(), storage->node_id_) );
-            tpdo.frame = pdoid.header();
-            tpdos_.insert(std::make_pair(tpdo.frame, tpdo));
-        }
+    parse_and_set_mapping(storage, com_index, map_index, ObjectStorage::ReadDelegate(), ObjectStorage::WriteDelegate(this, &TPDO::write));
+    
+    PDOid pdoid( NodeIdOffset<uint32_t>::apply(dict(com_index, SUB_COM_COB_ID).value(), storage->node_id_) );
+    frame = pdoid.header();
+    
+    if(buffers.empty() || pdoid.invalid){
+       return false;     
     }
+    
+    ObjectStorage::Entry<uint8_t> tt;
+    storage->entry(tt, com_index, SUB_COM_TRANSMISSION_TYPE);
+    transmission_type = tt.desc().value().get<uint8_t>();
+    
+    if(transmission_type > 1 && transmission_type <=240){
+        tt.set(1);
+    }
+    return true;
 }
 
-void PDOMapper::read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data){
-    // TODO: RTR request?
-}
-void PDOMapper::write(const ipa_canopen::ObjectDict::Entry &entry, const std::string &data){
-    // TODO: event based transmission?
-}
-void PDOMapper::sync(){
-    for(boost::unordered_map<ipa_can::Header, RPDO >::iterator r_it = rpdos_.begin(); r_it != rpdos_.end(); ++r_it){
-        if(r_it->second.transmission_type == 0xfc || r_it->second.transmission_type == 0xfd){
-            ipa_can::Frame f(r_it->first, 0);
-            f.is_rtr = 1;
-            interface_->send(f);
-        }
-    }
-    for(boost::unordered_map<ipa_can::Header, TPDO >::iterator t_it = tpdos_.begin(); t_it != tpdos_.end(); ++t_it){
-        TPDO & t = t_it->second;
-        
-        size_t len = t.frame.dlc;
-        uint8_t * dest = t.frame.data.c_array();
-        for(std::vector< boost::shared_ptr<ObjectStorage::Buffer> >:: iterator b_it = t.buffers.begin(); b_it != t.buffers.end(); ++b_it){
-            ObjectStorage::Buffer &b = **b_it;
-            size_t s = b.size();
-            if(len >= s){
-                b.read(dest, len);
-                len -= s;
-                dest += s;
-            }else{
-                // ERROR
-            }
-        }
-        
-        if( len != 0){
+void PDOMapper::TPDO::sync(const uint8_t &counter){
+    boost::mutex::scoped_lock lock(mutex);
+    
+    if(counter > 0 && (transmission_type >= 1 || transmission_type <= 240)){
+            if((counter % transmission_type) != 0) return;
+    }else if(!ready) return;
+    
+    size_t len = frame.dlc;
+    uint8_t * dest = frame.data.c_array();
+    for(std::vector< boost::shared_ptr<ObjectStorage::Buffer> >::iterator b_it = buffers.begin(); b_it != buffers.end(); ++b_it){
+        ObjectStorage::Buffer &b = **b_it;
+        size_t s = b.size();
+        if(len >= s){
+            b.read(dest, len);
+            len -= s;
+            dest += s;
+        }else{
             // ERROR
         }
-        interface_->send( t.frame );
+    }
+    
+    if( len != 0){
+        // ERROR
+    }
+    interface_->send( frame );
+    
+    ready = false;
+}
+
+void PDOMapper::RPDO::sync(const uint8_t &counter){
+    boost::mutex::scoped_lock lock(mutex);
+    
+    if(transmission_type >= 1 && transmission_type <=240){ 
+        if(timeout > 0){
+            --timeout;
+        }else if(timeout == 0){
+            throw TimeoutException();
+        }
         
+    }else if(transmission_type == 0xfc || transmission_type == 0xfd){
+        timeout = 0;
+    }
+}
+
+void PDOMapper::RPDO::read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data){
+    boost::mutex::scoped_lock lock(mutex);
+    
+    std::cout << "TIMEOUT " << timeout << "tt " << (int) transmission_type << std::endl;
+    if(timeout == 0){
+        if(transmission_type >= 1 && transmission_type <=240){ 
+            throw TimeoutException();
+        }else if(transmission_type != 0xfc && transmission_type != 0xfd){
+            return;
+        }
+    }else if (timeout > 0) return;
+    
+    if(frame.is_rtr){
+        int test_timeout = timeout;
+        interface_->send(frame);
+        boost::system_time abs_time = boost::get_system_time() + boost::posix_time::seconds(1);
+        while(timeout == test_timeout)
+        {
+            if(!cond.timed_wait(lock,abs_time))
+            {
+                throw TimeoutException();
+            }
+        }
+    }else if(timeout == 0) {
+        throw TimeoutException();
+    }
+}
+
+void PDOMapper::RPDO::handleFrame(const ipa_can::Frame & msg){
+    std::cout << "handleFrame" << std::endl;
+    boost::mutex::scoped_lock lock(mutex);
+
+    size_t offset = 0;
+    const uint8_t * src = msg.data.data();
+    for(std::vector<boost::shared_ptr<ObjectStorage::Buffer> >::iterator it = buffers.begin(); it != buffers.end(); ++it){
+        ObjectStorage::Buffer &b = **it;
+        std::cout << "RPDO " << std::hex << b.entry->index << std::dec << " " << b.entry->sub_index << std::endl;
+        
+        size_t s = b.size();
+        if( offset + s <= msg.dlc ){
+            b.write(src+offset, s);
+            offset += s;
+        }else{
+            // ERROR
+        }
+    }
+    if( offset != msg.dlc ){
+        // ERROR
+    }
+    
+    if(transmission_type >= 1 && transmission_type <=240){ 
+        timeout = transmission_type*2;
+    }else{
+        timeout = 1;
+    }
+    cond.notify_one();
+}
+
+
+
+
+void PDOMapper::sync(const uint8_t &counter){
+    for(boost::unordered_set<boost::shared_ptr<RPDO> >::iterator it = rpdos_.begin(); it != rpdos_.end(); ++it){
+        (*it)->sync(counter);
+    }
+    for(boost::unordered_set<boost::shared_ptr<TPDO> >::iterator it = tpdos_.begin(); it != tpdos_.end(); ++it){
+        (*it)->sync(counter);
     }
 }
