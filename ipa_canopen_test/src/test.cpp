@@ -68,15 +68,20 @@ int main(int argc, char *argv[]){
     
     Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
     
-    Node node(driver, dict, 1);
+    boost::shared_ptr<SyncProvider> sync= boost::make_shared<SyncProvider>(driver, Header(0x80), boost::posix_time::milliseconds(10.0),1);
+    
+    Node node(driver, dict, 1, sync);
     ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  sw;
     node.getStorage()->entry(sw, 0x6041);
-    // node.start();
+    node.start();
     
     sleep(1.0);
     
-    std::cout << "SW2: " << sw.get(false) << std::endl;
 
+    while(true){
+        sleep(2.0);
+        std::cout << "Status: " << sw.get(false) << std::endl;
+    }
     driver->run();
     
     
