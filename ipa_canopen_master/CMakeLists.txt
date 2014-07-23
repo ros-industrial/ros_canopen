@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
   LIBRARIES ipa_canopen_master
   CATKIN_DEPENDS ipa_can_interface
 #  DEPENDS system_lib
