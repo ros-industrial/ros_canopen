@@ -2,10 +2,10 @@
 CreatedBy=Dirk Osswald, SCHUNK GmbH & Co. KG
 ModifiedBy=Dirk Osswald, SCHUNK GmbH & Co. KG
 Description=EDS File for SCHUNK PRL 120 swiveling unit
-CreationTime=09:18AM
-CreationDate=09-09-2011
-ModificationTime=09:18AM
-ModificationDate=09-09-2011
+CreationTime=10:44PM
+CreationDate=07-22-2014
+ModificationTime=10:44PM
+ModificationDate=07-22-2014
 FileName=PRL120.eds
 FileVersion=0x01
 FileRevision=0x01
@@ -657,7 +657,7 @@ ParameterName=COB-ID used by PDO
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
-DefaultValue=$NODEID+0x280
+DefaultValue=$NODEID+0x80000280
 PDOMapping=0
 ObjFlags=0
 
