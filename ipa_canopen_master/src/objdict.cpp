@@ -110,7 +110,6 @@ template<typename T> HoldAny parse_int(boost::property_tree::ptree &pt, const st
                                           
     std::string str = pt.get<std::string>(key);
     if(boost::istarts_with(str,"$NODEID")){
-        std::cout << "NODEID " << str << std::endl;
         return HoldAny(NodeIdOffset<T>(int_from_string<T>(boost::trim_copy(str.substr(str.find("+",7)+1)))));
     }else return HoldAny(int_from_string<T>(boost::trim_copy(str)));
 }

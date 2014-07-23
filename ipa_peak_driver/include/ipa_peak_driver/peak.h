@@ -22,7 +22,6 @@ public:
             
             handle_ = LINUX_CAN_Open(device.c_str(), O_RDWR);
             if(!handle_){
-                std::cout << "NO HANDLE" << std::endl;
                 BaseClass::setErrorCode(boost::system::error_code(nGetLastError(),boost::system::system_category()));
                 return false;
             }
@@ -35,7 +34,6 @@ public:
             ret = CAN_Init(handle_, btr0btr1, CAN_INIT_TYPE_ST);
 
             if(ret != CAN_ERR_OK){
-                std::cout << "NO INIT" << std::endl;
                 BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
                 CAN_Close(handle_);
                 handle_ = 0;
@@ -47,7 +45,6 @@ public:
             if(ret != CAN_ERR_OK)
             {
                 BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
-                std::cout << "NO RESET" << std::endl;
                 CAN_Close(handle_);
                 handle_ = 0;
                 return false;
@@ -59,7 +56,6 @@ public:
             BaseClass::setErrorCode(ec);
             
             if(ec){
-                std::cout << "NO ASSIGN" << std::endl;
                 CAN_Close(handle_);
                 handle_ = 0;
                 return false;
@@ -68,7 +64,7 @@ public:
             timer_.async_wait(boost::bind(&PeakDriver::checkStatus, this, boost::asio::placeholders::error));        
             BaseClass::setDriverState(State::open);
             return true;
-        }else  std::cout << "NO CLOSED" << std::endl;
+        }
         // already initialized
         return false;
     }
@@ -98,7 +94,6 @@ protected:
     unsigned int bitrate_;
     
     void triggerReadSome(){
-        std::cout << "TRIGGER " << std::endl;
         if(handle_){
             BaseClass::socket_.async_read_some(boost::asio::null_buffers(), boost::bind( &PeakDriver::readFrame,this, boost::asio::placeholders::error));
         }
@@ -128,7 +123,6 @@ protected:
         if(handle_){
             boost::mutex::scoped_lock lock(handle_mutex_);
             DWORD err = CAN_Status(handle_);
-            std::cout << "status: " << err << std::endl;
             
             if(err && err != CAN_ERR_QRCVEMPTY){
                 BaseClass::setDriverState(State::open);
@@ -148,9 +142,7 @@ protected:
             boost::mutex::scoped_lock lock(handle_mutex_);
 
             TPCANRdMsg msg;
-            std::cout << "READ" << std::endl;
             DWORD ret = LINUX_CAN_Read(handle_,&msg);
-            std::cout << "RET: " << ret << std::endl;
             if(ret){
                 BaseClass::setDriverState(State::open);
                 BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));

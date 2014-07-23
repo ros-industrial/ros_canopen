@@ -168,7 +168,6 @@ struct UploadInitiateResponse: public FrameOverlay<InitiateLong>{
         UploadInitiateRequest req(msg);
         if(req.data.command ==  UploadInitiateRequest::command && data.index == req.data.index && data.sub_index == req.data.sub_index){
                 size_t ds = data.data_size();
-                std::cout << "TEST " << ds << " == " << size << std::endl;
                 if(ds == 0  || size == 0 || ds == size) {
                     if(!data.expedited || (ds <= 4 && size <= 4)) return true;
                 }else{
@@ -186,7 +185,6 @@ struct UploadInitiateResponse: public FrameOverlay<InitiateLong>{
             return true;
         }else if(data.size_indicated && total == 0){
             total = data.data_size();
-            std::cout << "RESIZE " << total << std::endl;
             buffer.resize(total);
         }
         return false;
@@ -283,7 +281,6 @@ struct AbortTranserRequest: public FrameOverlay<AbortData>{
         data.index = index;
         data.sub_index = sub_index;
         data.reason = reason;
-        std::cout << "ABORT " << std::hex << index << std::dec << " " << data.text() << std::endl;
    }
 };
 
@@ -336,7 +333,6 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
                     interface_->send(last_msg = UploadSegmentRequest(client_id, false));
                 }
             }
-            std::cout << "UploadInitiateResponse: " << reason << std::endl;
             break;
         }
         case UploadSegmentResponse::command:
@@ -345,10 +341,8 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
             if( resp.test(last_msg, reason) ){
                 if(resp.read_data(buffer, offset, total)){
                     if(resp.data.done || offset == total){
-                        std::cout << "DONE "<< offset << " == "  << total  << std::endl;
                         cond.notify_one();
                     }else{
-                        std::cout << "MORE "<< offset << " == "  << total  << std::endl;
                         interface_->send(last_msg = UploadSegmentRequest(client_id, !resp.data.toggle));
                     }
                 }else{
@@ -357,7 +351,6 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
                     reason = 0x06070010; // Data type does not match, length of service parameter does not match
                 }
             }
-            std::cout << "UploadSegmentResponse: " << reason << std::endl;
             break;
         }
         case AbortTranserRequest::command:

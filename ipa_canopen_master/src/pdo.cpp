@@ -245,7 +245,6 @@ void PDOMapper::RPDO::sync(const uint8_t &counter){
 void PDOMapper::RPDO::read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data){
     boost::mutex::scoped_lock lock(mutex);
     
-    std::cout << "TIMEOUT " << timeout << "tt " << (int) transmission_type << std::endl;
     if(timeout == 0){
         if(transmission_type >= 1 && transmission_type <=240){ 
             throw TimeoutException();
@@ -271,14 +270,13 @@ void PDOMapper::RPDO::read(const ipa_canopen::ObjectDict::Entry &entry, std::str
 }
 
 void PDOMapper::RPDO::handleFrame(const ipa_can::Frame & msg){
-    std::cout << "handleFrame" << std::endl;
     boost::mutex::scoped_lock lock(mutex);
 
     size_t offset = 0;
     const uint8_t * src = msg.data.data();
     for(std::vector<boost::shared_ptr<ObjectStorage::Buffer> >::iterator it = buffers.begin(); it != buffers.end(); ++it){
         ObjectStorage::Buffer &b = **it;
-        std::cout << "RPDO " << std::hex << b.entry->index << std::dec << " " << b.entry->sub_index << std::endl;
+        // std::cout << "RPDO " << std::hex << b.entry->index << std::dec << " " << b.entry->sub_index << std::endl;
         
         size_t s = b.size();
         if( offset + s <= msg.dlc ){

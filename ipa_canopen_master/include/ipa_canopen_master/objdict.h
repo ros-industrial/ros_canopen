@@ -26,14 +26,10 @@ class TypeGuard{
 public:
 
     template<typename T> bool is_type() const {
-        std::cout << get_type().name() << " is "  << typeid(T).name() << std::endl;
         return valid() && get_type() == typeid(T);
     }
     
     bool operator==(const TypeGuard &other) const {
-        if(valid() && other.valid()) std::cout << get_type().name() << " == " << get_type().name() <<  std::endl;
-        else std::cout << "<!>" << std::endl;
-        std::cout << "WAAAAH " << (get_type() == other.get_type()) << std::endl;
         return valid() && other.valid() && (get_type() == other.get_type());
     }
     
@@ -254,7 +250,6 @@ protected:
         template <typename T> T & allocate(){
             if(!valid){
                 buffer.resize(sizeof(T));
-                std::cout << "allocate " << buffer.size() << std::endl;
                 valid = true;
             }
             return get<T>();

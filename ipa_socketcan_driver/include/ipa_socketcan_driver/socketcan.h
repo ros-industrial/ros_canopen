@@ -28,7 +28,6 @@ public:
             if(bitrate != 0) return false; // not supported, TODO: use libsocketcan
 
             int sc = socket( PF_CAN, SOCK_RAW, CAN_RAW );
-            std::cout << "sc " << sc << std::endl;
             if(sc < 0){
                 BaseClass::setErrorCode(boost::system::error_code(sc,boost::system::system_category()));
                 return false;
@@ -38,7 +37,6 @@ public:
             strcpy(ifr.ifr_name, device_.c_str());
             int ret = ioctl(sc, SIOCGIFINDEX, &ifr);
 
-            std::cout << "ret1 " << ret << std::endl;
             if(ret != 0){
                 BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
                 close(sc);
@@ -61,7 +59,6 @@ public:
             addr.can_ifindex = ifr.ifr_ifindex;
             ret = bind( sc, (struct sockaddr*)&addr, sizeof(addr) );            
 
-            std::cout << "ret2 " << ret << std::endl;
             if(ret != 0){
                 BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
                 close(sc);
@@ -74,13 +71,12 @@ public:
             BaseClass::setErrorCode(ec);
             
             if(ec){
-                std::cout << "!ASSIGN"<< std::endl;
                 close(sc);
                 return false;
             }
             BaseClass::setDriverState(State::open);
             return true;
-        }else  std::cout << "NO CLOSED" << std::endl;
+        }
         return false;
     }
     bool recover(){

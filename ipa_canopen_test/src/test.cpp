@@ -20,7 +20,6 @@ template<typename WrappedInterface> class ThreadedInterface : public WrappedInte
 public:
     virtual bool init(const std::string &device, unsigned int bitrate) {
         if(WrappedInterface::init(device, bitrate)){
-            std::cout << "new thread" << std::endl;
             thread_ = boost::make_shared<boost::thread>(&ThreadedInterface::run_thread, this);
             return true;
         }
@@ -36,8 +35,6 @@ public:
     virtual void run(){
         if(thread_){
             thread_->join();
-        }else{
-            std::cout << "no thread" << std::endl;
         }
     }
     virtual ~ThreadedInterface() {}
@@ -57,7 +54,7 @@ int main(int argc, char *argv[]){
     }
     
     if(!driver->init(argv[1],0)){
-        std::cout << "noinit" << std::endl;
+        std::cout << "init failed" << std::endl;
         return -1;
     }
     
