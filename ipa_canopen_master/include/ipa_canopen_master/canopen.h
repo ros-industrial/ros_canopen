@@ -2,7 +2,9 @@
 #define H_IPA_CANOPEN
 
 #include <ipa_can_interface/interface.h>
+#include <ipa_can_interface/dispatcher.h>
 #include "objdict.h"
+#include "timer.h"
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
 
@@ -105,13 +107,47 @@ public:
     void init(const boost::shared_ptr<ObjectStorage> storage);
 };
 
+
+
+class SyncProvider{
+public:
+    typedef fastdelegate::FastDelegate1<const uint8_t&> SyncDelegate;
+    typedef ipa_can::Listener<const SyncDelegate, const uint8_t&> SyncListener;
+    
+    SyncListener::Ptr add(const SyncDelegate & s){
+        return syncables_.createListener(s);
+    }
+    SyncProvider(boost::shared_ptr<ipa_can::Interface> interface,const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t &overflow): interface_(interface), overflow_(overflow), msg_(h,overflow?1:0) {
+       msg_.data[0] = 0;
+       timer_.start(Timer::TimerDelegate(this, overflow ? &SyncProvider::sync_counter : &SyncProvider::sync_nocounter), t);
+    }
+private:
+    boost::shared_ptr<ipa_can::Interface> interface_;
+    uint8_t overflow_;
+    ipa_can::Frame msg_;
+    ipa_can::SimpleDispatcher<SyncListener> syncables_;
+    Timer timer_;
+    
+    bool sync_counter(){
+        ++msg_.data[0];
+        if(msg_.data[0] >= overflow_) msg_.data[0] = 1;
+        syncables_.dispatch(msg_.data[0]);
+        if(syncables_.numListeners()) interface_->send(msg_);
+    }
+    bool sync_nocounter(){
+        syncables_.dispatch(0);
+        if(syncables_.numListeners()) interface_->send(msg_);
+        
+    }
+};
+
 class Node{
 public:
     enum State{
         Unknown = 255, BootUp = 0, Stopped = 4, Operational = 5 , PreOperational = 127
     };
     const uint8_t node_id_;
-    Node(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id);
+    Node(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>());
     
     const State& getState();
     void enterState(const State &s);
@@ -132,8 +168,9 @@ private:
     boost::condition_variable cond;
     
     const boost::shared_ptr<ipa_can::Interface> interface_;
+    const boost::shared_ptr<SyncProvider> sync_;
+    SyncProvider::SyncListener::Ptr sync_listener_;
     ipa_can::Interface::FrameListener::Ptr nmt_listener_;
-    ipa_can::Header nmt_id;
     
     ObjectStorage::Entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16>::type> heartbeat_;
 

@@ -26,8 +26,8 @@ struct NMTcommand{
 
 #pragma pack(pop) /* pop previous alignment from stack */
 
-Node::Node(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id)
-: node_id_(node_id), sdo_(interface, dict, node_id), interface_(interface), state_(Unknown), pdo_(interface){
+Node::Node(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync)
+: node_id_(node_id), sdo_(interface, dict, node_id), interface_(interface), sync_(sync) , state_(Unknown), pdo_(interface){
     nmt_listener_ = interface_->createMsgListener( ipa_can::Header(0x700 + node_id_), ipa_can::Interface::FrameDelegate(this, &Node::handleNMT));
     
     sdo_.init();
@@ -95,14 +95,19 @@ void Node::handleNMT(const ipa_can::Frame & msg){
         case BootUp:
         case PreOperational:
         case Operational:
+            if(!sync_listener_ && sync_)
+                sync_listener_ = sync_->add(SyncProvider::SyncDelegate(&pdo_, &PDOMapper::sync));
+            break;
         case Stopped:
-                state_ = (State) msg.data[0];
-                cond.notify_one();
+            sync_listener_.reset();
             break;
         default:
             //error
             ;
     }
+    state_ = (State) msg.data[0];
+    cond.notify_one();
+    
 }
 
 template<typename T> void Node::wait_for(const State &s, const T &timeout){
