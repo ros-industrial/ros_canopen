@@ -41,6 +41,11 @@ protected:
             boost::mutex::scoped_lock lock(mutex_);
             listeners_.remove(d);
         }
+        size_t numListeners(){
+            boost::mutex::scoped_lock lock(mutex_);
+            return listeners_.size();
+        }
+
         static typename Listener::Ptr createListener(boost::shared_ptr<DispatcherBase> dispatcher, const  Callable &callable){
             boost::shared_ptr<Listener > l(new GuardedListener(dispatcher,callable));
             dispatcher->listeners_.push_back(l.get());
@@ -58,6 +63,9 @@ public:
     void dispatch(const Type &obj){
         boost::mutex::scoped_lock lock(mutex_);
         dispatcher_->dispatch_nolock(obj);
+    }
+    size_t numListeners(){
+        dispatcher_->numListeners();
     }
     operator Callable() { return Callable(this,&SimpleDispatcher::dispatch); }
 };
