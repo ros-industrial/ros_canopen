@@ -43,6 +43,7 @@ void ObjectStorage::Data::init(const HoldAny & any){
 }
 
 
+
 bool ObjectDict::iterate(boost::unordered_map<Key, boost::shared_ptr<const Entry> >::const_iterator &it) const{
     if(it != boost::unordered_map<Key, boost::shared_ptr<const Entry> >::const_iterator()){
         ++it;
@@ -52,7 +53,7 @@ bool ObjectDict::iterate(boost::unordered_map<Key, boost::shared_ptr<const Entry
 template<typename T> void read_optional(T& var, boost::property_tree::ptree &pt, const std::string &key){
     var = pt.get(key, T());
 }
-void set_access( ObjectDict::Entry &entry, const std::string access){
+void set_access( ObjectDict::Entry &entry, const std::string &access){
     if(access == "ro"){
         entry.readable = true;
         entry.writable = false;
@@ -71,6 +72,8 @@ void set_access( ObjectDict::Entry &entry, const std::string access){
     }else if (access == "const"){
         entry.readable = false;
         entry.writable = false;
+    }else{
+        throw ParseException();
     }
 }
 

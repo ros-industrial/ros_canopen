@@ -364,11 +364,6 @@ protected:
     
             if(!e->def_val.is_empty()){
                 T val = NodeIdOffset<T>::apply(e->def_val, node_id_);
-                /*if(type ==  e->def_val.type() ){
-                    val = e->def_val.get<T>();
-                }else{
-                    val = e->def_val.get< NodeIdOffset<T> >().apply(node_id_);
-                }*/
                 data = boost::make_shared<Data>(e,val, read_delegate_, write_delegate_);
             }else{
                 if(!e->def_val.type().valid() ||  e->def_val.type() == type) {
@@ -434,5 +429,7 @@ template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_VISIBLE_STRING> { 
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING> { typedef std::string type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNICODE_STRING> { typedef std::string type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN> { typedef std::string type;};
+
 }; // ipa_canopen
+
 #endif // !H_IPA_OBJDICT
