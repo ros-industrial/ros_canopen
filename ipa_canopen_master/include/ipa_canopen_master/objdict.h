@@ -114,10 +114,6 @@ public:
         Key(const uint16_t i, const uint8_t s): hash((i<<16)| s) {}
         bool operator==(const Key &other) const { return hash == other.hash; }
     };
-    class Hash{
-    public:
-        std::size_t operator()(const Key& k) const { return k.hash; }
-    };
     enum Code{
         NULL_DATA = 0x00,
         DOMAIN_DATA = 0x02,
@@ -186,8 +182,11 @@ public:
     
     ObjectDict(const DeviceInfo &info): device_info(info) {}
 protected:
-    boost::unordered_map<Key, boost::shared_ptr<const Entry>, Hash> dict_;
+    boost::unordered_map<Key, boost::shared_ptr<const Entry> > dict_;
 };
+
+std::size_t hash_value(ObjectDict::Key const& k);
+
 template<typename T> class NodeIdOffset{
     T offset;
     T (*adder)(const uint8_t &, const T &);
@@ -351,13 +350,13 @@ public:
     void clear();
     
 protected:
-    boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data>, ObjectDict::Hash> storage_;
+    boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> > storage_;
     boost::mutex mutex_;
     
     template<typename T> Entry<T> entry(const ObjectDict::Key &key){
         boost::mutex::scoped_lock lock(mutex_);
         
-        boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data>, ObjectDict::Hash>::iterator it = storage_.find(key);
+        boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(key);
         
         if(it == storage_.end()){
             const boost::shared_ptr<const ObjectDict::Entry> e = dict_->get(key);
@@ -381,7 +380,7 @@ protected:
                 }
             }
             
-            std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data>, ObjectDict::Hash>::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
+            std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
             it = ok.first;
         }
         

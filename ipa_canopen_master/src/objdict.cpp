@@ -5,6 +5,10 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
+namespace ipa_canopen{
+    size_t hash_value(ObjectDict::Key const& k)  { return k.hash;  }
+};
+
 using namespace ipa_canopen;
 
 template<> const std::string & HoldAny::get() const{
@@ -303,7 +307,7 @@ void ObjectStorage::Buffer::write(const uint8_t* b, const size_t len){
 }
 
 boost::shared_ptr<ObjectStorage::Buffer> ObjectStorage::map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
-    boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data>, ObjectDict::Hash>::iterator it = storage_.find(key);
+    boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(key);
     
     if(it == storage_.end()){
         
@@ -316,7 +320,7 @@ boost::shared_ptr<ObjectStorage::Buffer> ObjectStorage::map(const boost::shared_
         
         data = boost::make_shared<Data>(e,e->def_val.type(),read_delegate_, write_delegate_);
         
-        std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data>, ObjectDict::Hash>::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
+        std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
         it = ok.first;
     }
     
@@ -351,19 +355,19 @@ ObjectStorage::ObjectStorage(boost::shared_ptr<const ObjectDict> dict, uint8_t n
 void ObjectStorage::init_all(){
     boost::mutex::scoped_lock lock(mutex_);
 
-    boost::unordered_map<ObjectDict::Key, boost::shared_ptr<const ObjectDict::Entry>, ObjectDict::Hash>::const_iterator entry_it;
+    boost::unordered_map<ObjectDict::Key, boost::shared_ptr<const ObjectDict::Entry> >::const_iterator entry_it;
     while(dict_->iterate(entry_it)){
-        if(!entry_it->second->init_val.is_empty()){
-            boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data>, ObjectDict::Hash>::iterator it = storage_.find(entry_it->first);
+        if(!entry_it->second->init_val.is_empty() && entry_it->second->init_val.data() != entry_it->second->def_val.data()){
+            boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(entry_it->first);
             
             if(it == storage_.end()){
                 boost::shared_ptr<Data> data = boost::make_shared<Data>(entry_it->second, entry_it->second->init_val.type(), read_delegate_, write_delegate_);
-                std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data>, ObjectDict::Hash>::iterator, bool>  ok = storage_.insert(std::make_pair(entry_it->first, data));
+                std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(entry_it->first, data));
                 it = ok.first;
                 if(!ok.second){
                     throw std::bad_alloc();
                 }
-                            }
+            }
             it->second->init(entry_it->second->init_val);
         }
     }
