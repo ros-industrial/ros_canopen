@@ -197,6 +197,7 @@ private:
 
     
     void handleNMT(const ipa_can::Frame & msg);
+    void switchState(const uint8_t &s);
 
     State state_;
     SDOClient sdo_;

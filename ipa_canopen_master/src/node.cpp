@@ -88,16 +88,14 @@ void Node::stop(){
     wait_for(Stopped, boost::posix_time::milliseconds(heartbeat_.get_cached() * 3));
 }
 
-void Node::handleNMT(const ipa_can::Frame & msg){
-    boost::mutex::scoped_lock cond_lock(cond_mutex);
-    assert(msg.dlc == 1);
-    switch(msg.data[0]){
-        case BootUp:
-        case PreOperational:
+void Node::switchState(const uint8_t &s){
+    switch(s){
         case Operational:
             if(!sync_listener_ && sync_)
                 sync_listener_ = sync_->add(SyncProvider::SyncDelegate(&pdo_, &PDOMapper::sync));
             break;
+        case BootUp:
+        case PreOperational:
         case Stopped:
             sync_listener_.reset();
             break;
@@ -105,7 +103,13 @@ void Node::handleNMT(const ipa_can::Frame & msg){
             //error
             ;
     }
-    state_ = (State) msg.data[0];
+    state_ = (State) s;
+}
+void Node::handleNMT(const ipa_can::Frame & msg){
+    boost::mutex::scoped_lock cond_lock(cond_mutex);
+    assert(msg.dlc == 1);
+    switchState(msg.data[0]);
+    cond_lock.unlock();
     cond.notify_one();
     
 }
@@ -114,7 +118,13 @@ template<typename T> void Node::wait_for(const State &s, const T &timeout){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     boost::system_time abs_time = boost::get_system_time() + timeout;
     
-    while(timeout > boost::posix_time::milliseconds(0) && s != state_)
+    if(timeout == boost::posix_time::milliseconds(0)){
+        boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+        switchState(s);
+        boost::this_thread::yield();
+    }
+    
+    while(s != state_)
     {
         if(!cond.timed_wait(cond_lock,abs_time))
         {
