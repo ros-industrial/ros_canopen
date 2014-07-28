@@ -135,31 +135,27 @@ public:
     typedef fastdelegate::FastDelegate1<const uint8_t&> SyncDelegate;
     typedef ipa_can::Listener<const SyncDelegate, const uint8_t&> SyncListener;
     
-    SyncListener::Ptr add(const SyncDelegate & s){
-        return syncables_.createListener(s);
-    }
-    SyncProvider(boost::shared_ptr<ipa_can::Interface> interface,const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t &overflow): interface_(interface), overflow_(overflow), msg_(h,overflow?1:0) {
-       msg_.data[0] = 0;
-       timer_.start(Timer::TimerDelegate(this, overflow ? &SyncProvider::sync_counter : &SyncProvider::sync_nocounter), t);
-    }
+    SyncListener::Ptr add(const SyncDelegate & s);
+    SyncProvider(boost::shared_ptr<ipa_can::Interface> interface,const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t &overflow, bool loopback = true);
+    const boost::posix_time::time_duration period;
+    const uint8_t overflow_;
 private:
     boost::shared_ptr<ipa_can::Interface> interface_;
-    uint8_t overflow_;
     ipa_can::Frame msg_;
     ipa_can::SimpleDispatcher<SyncListener> syncables_;
     Timer timer_;
+    boost::posix_time::time_duration timeout;
+    boost::posix_time::time_duration max_timeout;
+    boost::posix_time::time_duration track_timeout;
+    ipa_can::Interface::FrameListener::Ptr loop_listener_;
+    boost::mutex mutex_;
     
-    bool sync_counter(){
-        ++msg_.data[0];
-        if(msg_.data[0] >= overflow_) msg_.data[0] = 1;
-        syncables_.dispatch(msg_.data[0]);
-        if(syncables_.numListeners()) interface_->send(msg_);
-    }
-    bool sync_nocounter(){
-        syncables_.dispatch(0);
-        if(syncables_.numListeners()) interface_->send(msg_);
-        
-    }
+    void handleFrame(const ipa_can::Frame & msg);
+
+    bool checkSync();
+    
+    bool sync_counter();
+    bool sync_nocounter();
 };
 
 class Node{

@@ -135,3 +135,65 @@ template<typename T> void Node::wait_for(const State &s, const T &timeout){
    }
 }
 
+
+SyncProvider::SyncListener::Ptr SyncProvider::add(const SyncDelegate & s){
+    boost::mutex::scoped_lock lock(mutex_);
+    return syncables_.createListener(s);
+}
+SyncProvider::SyncProvider(boost::shared_ptr<ipa_can::Interface> interface,const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t &overflow, bool loopback)
+: interface_(interface), overflow_(overflow), msg_(h,overflow?1:0), period(t) {
+    msg_.data[0] = 0;
+    timeout = boost::posix_time::seconds(0);
+    track_timeout = boost::posix_time::seconds(0);
+    max_timeout =  period + period;
+    if(max_timeout < boost::posix_time::milliseconds(1000)){
+        max_timeout = boost::posix_time::milliseconds(1000);
+    }
+    if(loopback){
+        loop_listener_ = interface_->createMsgListener(h, ipa_can::Interface::FrameDelegate(this,&SyncProvider::handleFrame));
+    }
+    timer_.start(Timer::TimerDelegate(this, overflow ? &SyncProvider::sync_counter : &SyncProvider::sync_nocounter), period);
+}
+void SyncProvider::handleFrame(const ipa_can::Frame & msg){
+    boost::mutex::scoped_lock lock(mutex_);
+    if(track_timeout < timeout){
+        track_timeout = timeout;
+        LOG("MAX TIMEOUT: " << track_timeout.total_milliseconds());
+    }
+    timeout = boost::posix_time::seconds(0);
+}
+
+bool SyncProvider::checkSync(){
+    if(!loop_listener_) return true;
+    if(syncables_.numListeners() == 0) return false;
+
+    bool okay = timeout == boost::posix_time::seconds(0);
+
+    if(timeout > max_timeout){
+        throw TimeoutException();
+    }
+    
+    timeout += period;
+    return okay;
+}
+    
+bool SyncProvider::sync_counter(){
+    boost::mutex::scoped_lock lock(mutex_);
+    if(!checkSync()) return true;
+    
+    ++msg_.data[0];
+    if(msg_.data[0] >= overflow_) msg_.data[0] = 1;
+    syncables_.dispatch(msg_.data[0]);
+    interface_->send(msg_);
+    return true;
+}
+bool SyncProvider::sync_nocounter(){
+    boost::mutex::scoped_lock lock(mutex_);
+    if(!checkSync()) return true;
+    
+    syncables_.dispatch(0);
+    interface_->send(msg_);
+    return true;
+}
+
+
