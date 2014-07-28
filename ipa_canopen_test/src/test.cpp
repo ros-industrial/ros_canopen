@@ -38,9 +38,10 @@ public:
         }
     }
     virtual ~ThreadedInterface() {}
+    ThreadedInterface(bool loopback = false) : WrappedInterface(loopback) {}
 };
 
-boost::shared_ptr<ipa_can::Interface> driver = boost::make_shared<ThreadedInterface< DispatchedInterface<SocketCANDriver> > > ();
+boost::shared_ptr<ipa_can::Interface> driver = boost::make_shared<ThreadedInterface< DispatchedInterface<SocketCANDriver> > > (true);
 
 void print_frame(const Frame &f){
     LOG( "in: " << std:: hex << f.id << std::dec);
@@ -56,9 +57,16 @@ void print_state(const State &f){
 int main(int argc, char *argv[]){
     
     if(argc < 3){
-        std::cout << "Usage: " << argv[0] << " DEVICE EDS/DCF" << std::endl;
+        std::cout << "Usage: " << argv[0] << " DEVICE EDS/DCF [sync_ms]" << std::endl;
         return -1;
     }
+    
+    // Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
+    // Interface::FrameListener::Ptr tprinter = driver->createMsgListener(Header(0x181), print_tpdo); // printer for all incoming messages
+    Interface::StateListener::Ptr sprinter = driver->createStateListener(print_state); // printer for all incoming messages
+
+    int sync_ms = 10;
+    if(argc > 3) sync_ms = atol(argv[3]);
     
     if(!driver->init(argv[1],0)){
         std::cout << "init failed" << std::endl;
@@ -70,9 +78,8 @@ int main(int argc, char *argv[]){
     boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
 
     
-    Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
     
-    boost::shared_ptr<SyncProvider> sync= boost::make_shared<SyncProvider>(driver, Header(0x80), boost::posix_time::milliseconds(10.0),1);
+    boost::shared_ptr<SyncProvider> sync= boost::make_shared<SyncProvider>(driver, Header(0x80), boost::posix_time::milliseconds(sync_ms), 240);
     
     Node node(driver, dict, 1, sync);
     ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  sw;
