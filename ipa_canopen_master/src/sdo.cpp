@@ -347,14 +347,14 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
                     }
                 }else{
                     // abort, size mismatch
-                    std::cout << "abort, size mismatch" << buffer.size() << " " << resp.data.data_size() << std::endl;
+                    LOG("abort, size mismatch" << buffer.size() << " " << resp.data.data_size());
                     reason = 0x06070010; // Data type does not match, length of service parameter does not match
                 }
             }
             break;
         }
         case AbortTranserRequest::command:
-            std::cout << "abort, reason: " << AbortTranserRequest(msg).data.text() << std::endl;
+            LOG("abort, reason: " << AbortTranserRequest(msg).data.text());
             offset = 0;
             cond.notify_one();
             break;

@@ -43,7 +43,14 @@ public:
 boost::shared_ptr<ipa_can::Interface> driver = boost::make_shared<ThreadedInterface< DispatchedInterface<SocketCANDriver> > > ();
 
 void print_frame(const Frame &f){
-    std::cout << "in: " << std:: hex << f.id << std::dec << std::endl;
+    LOG( "in: " << std:: hex << f.id << std::dec);
+}
+void print_tpdo(const Frame &f){
+    LOG( "TPDO: " << std:: hex << f.id << std::dec);
+}
+
+void print_state(const State &f){
+    LOG("STATE");
 }
 
 int main(int argc, char *argv[]){

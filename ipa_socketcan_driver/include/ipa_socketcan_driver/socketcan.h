@@ -125,6 +125,7 @@ protected:
         boost::system::error_code ec;
         boost::asio::write(BaseClass::socket_, boost::asio::buffer(&frame, sizeof(frame)),boost::asio::transfer_all(), ec);
         if(ec){
+            LOG("FAILED " << ec);
             BaseClass::setErrorCode(ec);
             BaseClass::setDriverState(State::open);
             return false;
@@ -137,7 +138,7 @@ protected:
         if(!error){
             if(frame_.can_id & CAN_ERR_FLAG){ // error message
                 // TODO
-                std::cout << "error" << std::endl;
+                LOG("error");
             }
 
             BaseClass::input_.is_extended = frame_.can_id & CAN_EFF_FLAG;
