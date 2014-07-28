@@ -197,3 +197,18 @@ bool SyncProvider::sync_nocounter(){
 }
 
 
+Master::Master(boost::shared_ptr<ipa_can::Interface> interface) : interface_(interface) {
+    interface_->send(NMTcommand::Frame(0, NMTcommand::Reset_Com));
+};
+
+boost::shared_ptr<SyncProvider> LocalMaster::getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow, const bool loopback){
+    boost::mutex::scoped_lock lock(mutex_);
+    boost::unordered_map<ipa_can::Header, boost::shared_ptr<SyncProvider> >::iterator it = providers_.find(h);
+    if(it == providers_.end()){
+        std::pair<boost::unordered_map<ipa_can::Header, boost::shared_ptr<SyncProvider> >::iterator, bool> res = providers_.insert(std::make_pair(h, boost::make_shared<SyncProvider>(interface_, h, t, overflow, loopback)));
+        it = res.first;
+    }
+    return it->second;
+}
+
+

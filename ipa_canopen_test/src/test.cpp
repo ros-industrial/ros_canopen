@@ -76,10 +76,9 @@ int main(int argc, char *argv[]){
     sleep(1.0);
 
     boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
-
     
-    
-    boost::shared_ptr<SyncProvider> sync= boost::make_shared<SyncProvider>(driver, Header(0x80), boost::posix_time::milliseconds(sync_ms), 240);
+    LocalMaster master(driver);
+    boost::shared_ptr<SyncProvider> sync = master.getSync(Header(0x80), boost::posix_time::milliseconds(sync_ms), 240);
     
     Node node(driver, dict, 1, sync);
     ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  sw;

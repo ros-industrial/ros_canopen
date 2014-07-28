@@ -201,5 +201,19 @@ private:
     PDOMapper pdo_;
 };
 
+class Master: boost::noncopyable{
+public:
+    const boost::shared_ptr<ipa_can::Interface> interface_;
+    virtual boost::shared_ptr<SyncProvider> getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow = 0, const bool loopback = true) = 0;
+    Master(boost::shared_ptr<ipa_can::Interface> interface);
+};
+class LocalMaster: Master{
+    boost::mutex mutex_;
+    boost::unordered_map<ipa_can::Header, boost::shared_ptr<SyncProvider> > providers_;
+public:
+    boost::shared_ptr<SyncProvider> getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow = 0, const bool loopback = true);
+    LocalMaster(boost::shared_ptr<ipa_can::Interface> interface) : Master(interface) {}
+};
+
 } // ipa_canopen
 #endif // !H_IPA_CANOPEN
