@@ -108,6 +108,7 @@ protected:
     can_frame frame_;
     
     void triggerReadSome(){
+        boost::mutex::scoped_lock lock(send_mutex_);
         BaseClass::socket_.async_read_some(boost::asio::buffer(&frame_, sizeof(frame_)), boost::bind( &SocketCANDriver::readFrame,this, boost::asio::placeholders::error));
     }
     
