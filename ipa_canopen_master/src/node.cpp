@@ -199,6 +199,7 @@ bool SyncProvider::sync_nocounter(){
 
 Master::Master(boost::shared_ptr<ipa_can::Interface> interface) : interface_(interface) {
     interface_->send(NMTcommand::Frame(0, NMTcommand::Reset_Com));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 };
 
 boost::shared_ptr<SyncProvider> LocalMaster::getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow, const bool loopback){
