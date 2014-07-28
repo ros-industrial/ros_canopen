@@ -183,5 +183,5 @@ private:
     PDOMapper pdo_;
 };
 
-}; // ipa_canopen
+} // ipa_canopen
 #endif // !H_IPA_CANOPEN

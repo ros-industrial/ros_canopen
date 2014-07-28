@@ -7,7 +7,7 @@
 
 namespace ipa_canopen{
     size_t hash_value(ObjectDict::Key const& k)  { return k.hash;  }
-};
+}
 
 using namespace ipa_canopen;
 

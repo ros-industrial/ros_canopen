@@ -154,5 +154,5 @@ private:
     boost::mutex send_mutex_;
 };
     
-}; // namespace ipa_can
+} // namespace ipa_can
 #endif

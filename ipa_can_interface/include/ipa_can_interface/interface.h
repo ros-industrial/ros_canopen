@@ -153,5 +153,6 @@ public:
     virtual ~Interface() {}
 };
 
-}; // namespace ipa_can
+} // namespace ipa_can
+
 #endif

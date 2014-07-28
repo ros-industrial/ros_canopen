@@ -139,5 +139,5 @@ public:
     virtual ~DispatchedInterface() {}
 };
 
-}; // namespace ipa_can
+} // namespace ipa_can
 #endif

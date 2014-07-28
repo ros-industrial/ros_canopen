@@ -425,6 +425,6 @@ template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING> { ty
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNICODE_STRING> { typedef std::string type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN> { typedef std::string type;};
 
-}; // ipa_canopen
+} // ipa_canopen
 
 #endif // !H_IPA_OBJDICT
