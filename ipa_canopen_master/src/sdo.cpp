@@ -296,6 +296,7 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     assert(msg.dlc == 8);
     
+    bool notify = false;
     uint32_t reason = 0;
     switch(msg.data[0] >> 5){
         case DownloadInitiateResponse::command:
@@ -305,7 +306,7 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
                 if(offset < total){
                     interface_->send(last_msg = DownloadSegmentRequest(client_id, false, buffer, offset));
                 }else{
-                    cond.notify_one();
+                    notify = true;
                 }
             }
             break;
@@ -317,7 +318,7 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
                 if(offset < total){
                     interface_->send(last_msg = DownloadSegmentRequest(client_id, !resp.data.toggle, buffer, offset));
                 }else{
-                    cond.notify_one();
+                    notify = true;
                 }
             }
             break;
@@ -328,7 +329,7 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
             UploadInitiateResponse resp(msg);
             if( resp.test(last_msg, total, reason) ){
                 if(resp.read_data(buffer, offset, total)){
-                        cond.notify_one();
+                    notify = true;
                 }else{
                     interface_->send(last_msg = UploadSegmentRequest(client_id, false));
                 }
@@ -341,7 +342,7 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
             if( resp.test(last_msg, reason) ){
                 if(resp.read_data(buffer, offset, total)){
                     if(resp.data.done || offset == total){
-                        cond.notify_one();
+                    notify = true;
                     }else{
                         interface_->send(last_msg = UploadSegmentRequest(client_id, !resp.data.toggle));
                     }
@@ -356,12 +357,16 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
         case AbortTranserRequest::command:
             LOG("abort, reason: " << AbortTranserRequest(msg).data.text());
             offset = 0;
-            cond.notify_one();
+            notify = true;
             break;
     }
     if(reason){
         abort(reason);
         offset = 0;
+        notify = true;
+    }
+    if(notify){
+        cond_lock.unlock();
         cond.notify_one();
     }
         
