@@ -61,7 +61,7 @@ public:
     unsigned int internal_error; ///< driver specific error 
     
     State() : driver_state(closed), internal_error(0) {}
-    virtual bool isReady() const { driver_state == ready; }
+    virtual bool isReady() const { return driver_state == ready; }
     virtual ~State() {}
 };
 

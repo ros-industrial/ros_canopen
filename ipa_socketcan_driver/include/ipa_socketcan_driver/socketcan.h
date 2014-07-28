@@ -98,6 +98,7 @@ public:
             BaseClass::shutdown();
             return init(device_, 0);
         }
+        return false;
     }
     bool translateError(unsigned int internal_error, std::string & str){
         return false; // TODO

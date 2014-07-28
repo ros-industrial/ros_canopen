@@ -65,7 +65,7 @@ public:
         dispatcher_->dispatch_nolock(obj);
     }
     size_t numListeners(){
-        dispatcher_->numListeners();
+        return dispatcher_->numListeners();
     }
     operator Callable() { return Callable(this,&SimpleDispatcher::dispatch); }
 };
@@ -133,7 +133,7 @@ public:
     }
     
     virtual bool translateError(unsigned int internal_error, std::string & str){
-        driver_.translateError(internal_error, str);
+        return driver_.translateError(internal_error, str);
     }
     
     virtual ~DispatchedInterface() {}
