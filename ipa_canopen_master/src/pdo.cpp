@@ -298,9 +298,6 @@ void PDOMapper::RPDO::handleFrame(const ipa_can::Frame & msg){
     cond.notify_one();
 }
 
-
-
-
 void PDOMapper::sync(const uint8_t &counter){
     for(boost::unordered_set<boost::shared_ptr<RPDO> >::iterator it = rpdos_.begin(); it != rpdos_.end(); ++it){
         (*it)->sync(counter);
