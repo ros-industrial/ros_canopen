@@ -11,7 +11,7 @@ struct NMTcommand{
         Stop = 2,
         Prepare = 128,
         Reset = 129,
-        Reset_Com = 130,
+        Reset_Com = 130
     };
     uint8_t command;
     uint8_t node_id;
@@ -27,7 +27,7 @@ struct NMTcommand{
 #pragma pack(pop) /* pop previous alignment from stack */
 
 Node::Node(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync)
-: node_id_(node_id), sdo_(interface, dict, node_id), interface_(interface), sync_(sync) , state_(Unknown), pdo_(interface){
+: node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
     nmt_listener_ = interface_->createMsgListener( ipa_can::Header(0x700 + node_id_), ipa_can::Interface::FrameDelegate(this, &Node::handleNMT));
     
     sdo_.init();
