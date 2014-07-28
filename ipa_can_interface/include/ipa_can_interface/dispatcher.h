@@ -96,7 +96,7 @@ protected:
     FilteredDispatcher<const unsigned int, FrameListener> frame_dispatcher_;
     SimpleDispatcher<StateListener> state_dispatcher_;
 public:
-    DispatchedInterface(): driver_(frame_dispatcher_, state_dispatcher_) {}
+    DispatchedInterface(bool loopback = false): driver_(frame_dispatcher_, state_dispatcher_, loopback) {}
     
     virtual bool init(const std::string &device, unsigned int bitrate) {
         if(driver_.init(device, bitrate)){

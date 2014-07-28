@@ -9,9 +9,10 @@ namespace ipa_can {
 template<typename FrameDelegate, typename StateDelegate> class PeakDriver : public AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> {
     typedef AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> BaseClass;
 public:    
-    PeakDriver(FrameDelegate frame_delegate, StateDelegate state_delegate)
-    : BaseClass(frame_delegate, state_delegate),timer_(BaseClass::io_service_),handle_(0)
+    PeakDriver(FrameDelegate frame_delegate, StateDelegate state_delegate, bool loopback = false)
+    : BaseClass(frame_delegate, state_delegate),loopback_(loopback), timer_(BaseClass::io_service_),handle_(0)
     {}
+    const bool loopback_;
     bool init(const std::string &device, unsigned int bitrate){
         State s = BaseClass::getState();
         if(s.driver_state == State::closed){
@@ -114,6 +115,8 @@ protected:
                 BaseClass::setDriverState(State::open);
                 BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
                 return false;
+        }else if (loopback_) {
+            dispatchFrame(msg);
         }
         return true;
     }

@@ -18,9 +18,11 @@ namespace ipa_can {
 template<typename FrameDelegate, typename StateDelegate> class SocketCANDriver : public AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> {
     typedef AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> BaseClass;
 public:    
-    SocketCANDriver(FrameDelegate frame_delegate, StateDelegate state_delegate)
-    : BaseClass(frame_delegate, state_delegate)
+    SocketCANDriver(FrameDelegate frame_delegate, StateDelegate state_delegate, bool loopback = false)
+    : BaseClass(frame_delegate, state_delegate), loopback_(loopback)
     {}
+    const bool loopback_;
+    
     bool init(const std::string &device, unsigned int bitrate){
         State s = BaseClass::getState();
         if(s.driver_state == State::closed){
@@ -52,6 +54,17 @@ public:
                 BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
                 close(sc);
                 return false;
+            }
+            
+            if(loopback_){
+                int recv_own_msgs = 1; /* 0 = disabled (default), 1 = enabled */
+                ret = setsockopt(sc, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs, sizeof(recv_own_msgs));
+                
+                if(ret != 0){
+                    BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
+                    close(sc);
+                    return false;
+                }
             }
             
             struct sockaddr_can addr;
