@@ -15,7 +15,7 @@ template<> const std::string & HoldAny::get() const{
     return buffer;
 }
 
-template<> std::string & ObjectStorage::Data::get(){
+template<> std::string & ObjectStorage::Data::access(){
     if(!valid){
         throw std::length_error("buffer not valid");
     }
@@ -293,22 +293,7 @@ boost::shared_ptr<ObjectDict> ObjectDict::fromFile(const std::string &path){
     return dict;
 }
 
-void ObjectStorage::Buffer::read(uint8_t* b, const size_t len){
-    boost::mutex::scoped_lock lock(mutex);
-    if(buffer.size() > len){
-        throw std::bad_cast();
-    }
-    memcpy(b,buffer.c_str(), buffer.size());
-}
-void ObjectStorage::Buffer::write(const uint8_t* b, const size_t len){
-    boost::mutex::scoped_lock lock(mutex);
-    if(buffer.size() > len){
-        throw std::bad_cast();
-    }
-    buffer.assign((const char *)b, buffer.size());
-}
-
-boost::shared_ptr<ObjectStorage::Buffer> ObjectStorage::map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
+size_t ObjectStorage::map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
     boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(key);
     
     if(it == storage_.end()){
@@ -327,10 +312,10 @@ boost::shared_ptr<ObjectStorage::Buffer> ObjectStorage::map(const boost::shared_
     }
     
     it->second->set_delegates(read_delegate ?read_delegate: read_delegate_, write_delegate ? write_delegate : write_delegate_);
-    return it->second;
+    return it->second->size();
 }
 
-boost::shared_ptr<ObjectStorage::Buffer> ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
+size_t ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
     boost::mutex::scoped_lock lock(mutex_);
     
     try{

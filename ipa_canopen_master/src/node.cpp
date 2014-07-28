@@ -65,7 +65,7 @@ void Node::prepare(){
         // ERROR
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Prepare));
-    wait_for(PreOperational, boost::posix_time::milliseconds(heartbeat_.get(true) * 3));
+    wait_for(PreOperational, boost::posix_time::milliseconds(heartbeat_.get_cached() * 3));
 }
 void Node::start(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
@@ -77,7 +77,7 @@ void Node::start(){
         getStorage()->init_all();
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Start));
-    wait_for(Operational, boost::posix_time::milliseconds(heartbeat_.get(true) * 3));
+    wait_for(Operational, boost::posix_time::milliseconds(heartbeat_.get_cached() * 3));
 }
 void Node::stop(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
@@ -85,7 +85,7 @@ void Node::stop(){
         // ERROR
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Stop));
-    wait_for(Stopped, boost::posix_time::milliseconds(heartbeat_.get(true) * 3));
+    wait_for(Stopped, boost::posix_time::milliseconds(heartbeat_.get_cached() * 3));
 }
 
 void Node::handleNMT(const ipa_can::Frame & msg){

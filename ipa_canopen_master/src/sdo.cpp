@@ -371,12 +371,12 @@ void SDOClient::init(){
     assert(storage_);
     assert(interface_);
 
-    client_id = SDOid(storage_->entry<uint32_t>(0x1200, 1).get(true)).header();
+    client_id = SDOid(storage_->entry<uint32_t>(0x1200, 1).get_cached()).header();
     
     last_msg = AbortTranserRequest(client_id, 0,0,0);
     current_entry = 0;
     
-    listener_ = interface_->createMsgListener( SDOid(storage_->entry<uint32_t>(0x1200, 2).get(true)).header(), ipa_can::Interface::FrameDelegate(this, &SDOClient::handleFrame));
+    listener_ = interface_->createMsgListener( SDOid(storage_->entry<uint32_t>(0x1200, 2).get_cached()).header(), ipa_can::Interface::FrameDelegate(this, &SDOClient::handleFrame));
 }
 void SDOClient::wait_for_response(){
     boost::mutex::scoped_lock cond_lock(cond_mutex);

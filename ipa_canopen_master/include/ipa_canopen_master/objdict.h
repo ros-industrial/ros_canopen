@@ -215,33 +215,19 @@ template<typename T> std::ostream& operator<<(std::ostream& stream, const NodeId
 
 class ObjectStorage{
 public:
-    class Buffer: boost::noncopyable{
-    protected:
-        std::string buffer;
-        bool valid;
-        boost::mutex mutex;
-    public:
-        const boost::shared_ptr<const ObjectDict::Entry> entry;
-        void read(uint8_t* b, const size_t len);
-        void write(const uint8_t* b, const size_t len);
-        size_t size() { return buffer.size(); }
-        Buffer(const boost::shared_ptr<const ObjectDict::Entry> e) : valid(false), entry(e) {}
-        static boost::shared_ptr<Buffer> dummy(size_t size){
-            Buffer *b = new Buffer(boost::shared_ptr<const ObjectDict::Entry>());
-            b->buffer.resize(size);
-            return boost::shared_ptr<Buffer>(b);
-        }
-    };
     typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, std::string &> ReadDelegate;
     typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, const std::string &> WriteDelegate;
     
 protected:
-    class Data: public Buffer{
+    class Data: boost::noncopyable{
+        boost::mutex mutex;
+        std::string buffer;
+        bool valid;
 
         ReadDelegate read_delegate;
         WriteDelegate write_delegate;
         
-        template <typename T> T & get(){
+        template <typename T> T & access(){
             if(!valid){
                 throw std::length_error("buffer not valid");
             }
@@ -252,20 +238,22 @@ protected:
                 buffer.resize(sizeof(T));
                 valid = true;
             }
-            return get<T>();
+            return access<T>();
         }
     public:
         const TypeGuard type_guard;
+        const boost::shared_ptr<const ObjectDict::Entry> entry;
+        size_t size() { boost::mutex::scoped_lock lock(mutex); return buffer.size(); }
         
         template<typename T> Data(const boost::shared_ptr<const ObjectDict::Entry> &e, const T &val, const ReadDelegate &r, const WriteDelegate &w)
-        : Buffer(e), type_guard(TypeGuard::create<T>()), read_delegate(r), write_delegate(w) {
+        : valid(false), read_delegate(r), write_delegate(w), type_guard(TypeGuard::create<T>()), entry(e){
             assert(!r.empty());
             assert(!w.empty());
             assert(e);
             allocate<T>() = val;
         }
         Data(const boost::shared_ptr<const ObjectDict::Entry> &e, const TypeGuard &t, const ReadDelegate &r, const WriteDelegate &w)
-        : Buffer(e), type_guard(t), read_delegate(r), write_delegate(w){
+        : valid(false), read_delegate(r), write_delegate(w), type_guard(t), entry(e){
             assert(!r.empty());
             assert(!w.empty());
             assert(e);
@@ -277,29 +265,40 @@ protected:
             if(r) read_delegate = r;
             if(w) write_delegate = w;
         }
-        template<typename T> const T& get(bool cached) {
+        template<typename T> const T get_cached() {
             boost::mutex::scoped_lock lock(mutex);
             
             if(!entry->readable){
                 if(entry->writable){
                     throw AccessException();
                 }
-                cached = true;   
             }
-            if( cached && valid){
-                return get<T>();
+            if(valid){
+                return access<T>();
+            }else{
+                throw AccessException();
+            }
+        }
+
+        template<typename T> const T get() {
+            boost::mutex::scoped_lock lock(mutex);
+            
+            if(!entry->readable){
+                if(entry->writable){
+                    throw AccessException();
+                }
+                return get_cached<T>();
             }
             
             allocate<T>();
             read_delegate(*entry, buffer);
-            return get<T>();
+            return access<T>();
         }
-
         template<typename T>  void set(const T &val) {
             boost::mutex::scoped_lock lock(mutex);
             
             if(!entry->writable){
-                if(get<T>() != val){
+                if(access<T>() != val){
                     throw AccessException();
                 }
             }else{
@@ -320,10 +319,15 @@ public:
         boost::shared_ptr<Data> data;
     public:
         typedef T type;
-        const T& get(bool cached) {
+        const T get() {
             if(!data) throw AccessException();
 
-            return data->get<T>(cached);
+            return data->get<T>();
+        }        
+        const T get_cached() {
+            if(!data) throw AccessException();
+
+            return data->get_cached<T>();
         }        
         void set(const T &val) {
             if(!data) throw AccessException();
@@ -380,10 +384,10 @@ protected:
 
     ReadDelegate read_delegate_;
     WriteDelegate write_delegate_;
-    boost::shared_ptr<Buffer> map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
+    size_t map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
 public:
     
-    boost::shared_ptr<Buffer> map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
+    size_t map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
     
     template<typename T> Entry<T> entry(uint16_t index){
         return entry<T>(ObjectDict::Key(index));
@@ -407,7 +411,7 @@ public:
     void init_all();
 };
 
-template<> std::string & ObjectStorage::Data::get();
+template<> std::string & ObjectStorage::Data::access();
 template<> std::string & ObjectStorage::Data::allocate();
 
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER8> { typedef int8_t type;};
