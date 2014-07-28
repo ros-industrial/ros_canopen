@@ -306,3 +306,53 @@ void PDOMapper::sync(const uint8_t &counter){
         (*it)->sync(counter);
     }
 }
+
+bool PDOMapper::Buffer::read(uint8_t* b, const size_t len){
+    boost::mutex::scoped_lock lock(mutex);
+    if(size > len){
+        throw std::bad_cast();
+    }
+    if(empty) return false;
+    
+    memcpy(b,&buffer[0], size);
+    bool was_dirty = dirty;
+    dirty = false;
+    return !was_dirty;
+}
+void PDOMapper::Buffer::write(const uint8_t* b, const size_t len){
+    boost::mutex::scoped_lock lock(mutex);
+    if(size > len){
+        throw std::bad_cast();
+    }
+    empty = false;
+    dirty = true;
+    memcpy(&buffer[0], b, size);
+    lock.unlock();
+    cond.notify_all();
+}
+void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data){
+    boost::mutex::scoped_lock lock(mutex);
+    boost::system_time abs_time = boost::get_system_time() + boost::posix_time::seconds(1);
+    if(size != data.size()){
+        throw std::bad_cast();
+    }
+    while(empty){
+        if(!cond.timed_wait(lock,abs_time))
+        {
+            throw TimeoutException();
+        }
+    }
+    if(dirty){
+        data.assign(buffer.begin(), buffer.end());
+        dirty = false;
+    }
+}
+void PDOMapper::Buffer::write(const ipa_canopen::ObjectDict::Entry &, const std::string &data){
+    boost::mutex::scoped_lock lock(mutex);
+    if(size != data.size()){
+        throw std::bad_cast();
+    }
+    empty = false;
+    dirty = true;
+    buffer.assign(data.begin(),data.end());
+}

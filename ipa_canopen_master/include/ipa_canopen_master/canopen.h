@@ -57,6 +57,23 @@ public:
 
 class PDOMapper{
     
+    class Buffer{
+    public:
+        bool read(uint8_t* b, const size_t len);
+        void write(const uint8_t* b, const size_t len);
+        void read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data);
+        void write(const ipa_canopen::ObjectDict::Entry &, const std::string &data);
+        const size_t size;
+        Buffer(const size_t sz) : size(sz), dirty(false), empty(true), buffer(sz) {}
+        
+    private:
+        boost::mutex mutex;
+        boost::condition_variable cond;
+        bool dirty;
+        bool empty;
+        std::vector<char> buffer;
+    };
+    
     class PDO {
     protected:
         void parse_and_set_mapping(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index,
