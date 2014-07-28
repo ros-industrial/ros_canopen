@@ -15,30 +15,38 @@ public:
     }
     
     void stop(){
+        boost::mutex::scoped_lock lock(mutex);
         timer.cancel();
     }
     void start(const TimerDelegate &del, const boost::posix_time::time_duration &dur){
-        stop();
+        boost::mutex::scoped_lock lock(mutex);
         delegate = del;
         period = dur;
-        restart();
-    }
-    void restart(){
-        stop();
         timer.expires_from_now(period);
         timer.async_wait(fastdelegate::FastDelegate1<const boost::system::error_code&>(this, &Timer::handler));
+    }
+    void restart(){
+        boost::mutex::scoped_lock lock(mutex);
+        timer.expires_from_now(period);
+        timer.async_wait(fastdelegate::FastDelegate1<const boost::system::error_code&>(this, &Timer::handler));
+    }
+    const boost::posix_time::time_duration & getPeriod(){
+        boost::mutex::scoped_lock lock(mutex);
+        return period;
     }
     
 private:
     boost::asio::io_service io;
     boost::asio::io_service::work work;
     boost::asio::deadline_timer timer;
-    boost::thread thread;
     boost::posix_time::time_duration period;
+    boost::mutex mutex;
+    boost::thread thread;
     
     TimerDelegate delegate;
     void handler(const boost::system::error_code& ec){
         if(!ec){
+            boost::mutex::scoped_lock lock(mutex);
             if(delegate && delegate()){
                 timer.expires_at(timer.expires_at() + period);
                 timer.async_wait(fastdelegate::FastDelegate1<const boost::system::error_code&>(this, &Timer::handler));
