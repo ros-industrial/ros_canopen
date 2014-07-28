@@ -56,6 +56,7 @@ public:
 };
 
 class PDOMapper{
+    boost::mutex mutex_;
     
     class Buffer{
     public:
@@ -76,41 +77,44 @@ class PDOMapper{
     
     class PDO {
     protected:
-        void parse_and_set_mapping(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index,
-                                   const ObjectStorage::ReadDelegate &rd, const ObjectStorage::WriteDelegate &wd);
+        void parse_and_set_mapping(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index, const bool &read, const bool &write);
         ipa_can::Frame frame;
         uint8_t transmission_type;
-        std::vector< boost::shared_ptr<ObjectStorage::Buffer> >buffers;
+        std::vector< boost::shared_ptr<Buffer> >buffers;
     };
     
     struct TPDO: public PDO{
-        void write(const ipa_canopen::ObjectDict::Entry &, const std::string &){
-            boost::mutex::scoped_lock lock(mutex);
-            ready = true;
+        void sync();
+        static boost::shared_ptr<TPDO> create(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
+            boost::shared_ptr<TPDO> tpdo(new TPDO(interface));
+            if(!tpdo->init(storage, com_index, map_index))
+                tpdo.reset();
+            return tpdo;
         }
-        bool init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index);
-        void sync(const uint8_t &counter);
-        TPDO(const boost::shared_ptr<ipa_can::Interface> interface) : interface_(interface), ready(false) {}
     private:
+        TPDO(const boost::shared_ptr<ipa_can::Interface> interface) : interface_(interface){}
+        bool init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index);
         const boost::shared_ptr<ipa_can::Interface> interface_;
-        bool ready;
         boost::mutex mutex;
     };
     
     struct RPDO : public PDO{
-        bool init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index);
-        void read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data);
-        void sync(const uint8_t &counter);
-        RPDO(const boost::shared_ptr<ipa_can::Interface> interface) : interface_(interface), timeout(-1) {}
+        void sync();
+        static boost::shared_ptr<RPDO> create(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
+            boost::shared_ptr<RPDO> rpdo(new RPDO(interface));
+            if(!rpdo->init(storage, com_index, map_index))
+                rpdo.reset();
+            return rpdo;
+        }
     private:
+        bool init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index);
+        RPDO(const boost::shared_ptr<ipa_can::Interface> interface) : interface_(interface), timeout(-1) {}
+        boost::mutex mutex;
         const boost::shared_ptr<ipa_can::Interface> interface_;
         
         ipa_can::Interface::FrameListener::Ptr listener_;
         void handleFrame(const ipa_can::Frame & msg);
-        
         int timeout;
-        boost::condition_variable cond;
-        boost::mutex mutex;
     };
     
     boost::unordered_set< boost::shared_ptr<RPDO> > rpdos_;
