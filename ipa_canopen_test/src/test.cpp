@@ -89,8 +89,8 @@ int main(int argc, char *argv[]){
     
 
     while(true){
-        sleep(2.0);
-        std::cout << "Status: " << sw.get(false) << std::endl;
+        boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+        LOG("Status: " << sw.get());
     }
     driver->run();
     
