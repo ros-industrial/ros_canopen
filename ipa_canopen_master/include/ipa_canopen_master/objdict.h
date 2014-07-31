@@ -381,7 +381,8 @@ protected:
         }
         return Entry<T>(it->second);
     }
-
+    void init_nolock(const ObjectDict::Key &key, const boost::shared_ptr<const ObjectDict::Entry> &entry);
+    
     ReadDelegate read_delegate_;
     WriteDelegate write_delegate_;
     size_t map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
@@ -408,6 +409,7 @@ public:
     
     ObjectStorage(boost::shared_ptr<const ObjectDict> dict, uint8_t node_id, ReadDelegate read_delegate, WriteDelegate write_delegate);
     
+    void init(const ObjectDict::Key &key);
     void init_all();
 };
 

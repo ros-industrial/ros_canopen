@@ -30,7 +30,7 @@ template<> std::string & ObjectStorage::Data::allocate(){
 void ObjectStorage::Data::init(const HoldAny & any){
     boost::mutex::scoped_lock lock(mutex);
     if (type_guard == any.type()){
-        if(!valid || (buffer != any.data() && buffer == entry->def_val.data())){
+        if(!valid || (buffer != any.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
             buffer = any.data();
             valid = true;
             if(entry->writable)
@@ -339,24 +339,34 @@ ObjectStorage::ObjectStorage(boost::shared_ptr<const ObjectDict> dict, uint8_t n
     assert(!write_delegate_.empty());
 }
     
+void ObjectStorage::init_nolock(const ObjectDict::Key &key, const boost::shared_ptr<const ObjectDict::Entry> &entry){
+
+    if(!entry->init_val.is_empty()){
+        boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(key);
+        
+        if(it == storage_.end()){
+            boost::shared_ptr<Data> data = boost::make_shared<Data>(entry, entry->init_val.type(), read_delegate_, write_delegate_);
+            std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
+            it = ok.first;
+            if(!ok.second){
+                throw std::bad_alloc();
+            }
+        }
+        it->second->init(entry->init_val);
+    }
+}
+void ObjectStorage::init(const ObjectDict::Key &key){
+    boost::mutex::scoped_lock lock(mutex_);
+    init_nolock(key, dict_->get(key));
+}
 void ObjectStorage::init_all(){
     boost::mutex::scoped_lock lock(mutex_);
 
     boost::unordered_map<ObjectDict::Key, boost::shared_ptr<const ObjectDict::Entry> >::const_iterator entry_it;
     while(dict_->iterate(entry_it)){
-        if(!entry_it->second->init_val.is_empty() && entry_it->second->init_val.data() != entry_it->second->def_val.data()){
-            boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(entry_it->first);
-            
-            if(it == storage_.end()){
-                boost::shared_ptr<Data> data = boost::make_shared<Data>(entry_it->second, entry_it->second->init_val.type(), read_delegate_, write_delegate_);
-                std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(entry_it->first, data));
-                it = ok.first;
-                if(!ok.second){
-                    throw std::bad_alloc();
-                }
-            }
-            it->second->init(entry_it->second->init_val);
-        }
+       if(!entry_it->second->init_val.is_empty() && !entry_it->second->def_val.is_empty() && entry_it->second->init_val.data() != entry_it->second->def_val.data()){
+           init_nolock(entry_it->first, entry_it->second);
+       }
     }
 }
 
