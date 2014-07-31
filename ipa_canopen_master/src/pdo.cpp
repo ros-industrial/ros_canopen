@@ -31,8 +31,10 @@ struct PDOmap{
 #pragma pack(pop) /* pop previous alignment from stack */
 
 
+const uint8_t SUB_COM_NUM = 0;
 const uint8_t SUB_COM_COB_ID = 1;
 const uint8_t SUB_COM_TRANSMISSION_TYPE = 2;
+const uint8_t SUB_COM_RESERVED = 4;
 
 const uint8_t SUB_MAP_NUM = 0;
 
@@ -83,15 +85,22 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
     ObjectStorage::Entry<uint8_t> num_entry;
     storage->entry(num_entry, map_index, SUB_MAP_NUM);
 
-    uint8_t map_num = num_entry.desc().value().get<uint8_t>();
+    uint8_t map_num;
+    
+    try{
+        map_num = num_entry.desc().value().get<uint8_t>();
+    }catch(...){
+        map_num = 0;
+    }
     
     bool map_changed = check_map_changed(map_num, dict, map_index);
     
     // disable PDO if needed
-    if(map_changed || check_com_changed(dict, map_index)){
-        ObjectStorage::Entry<uint32_t> cob_id;
-        storage->entry(cob_id, com_index, SUB_COM_COB_ID);
-        
+    ObjectStorage::Entry<uint32_t> cob_id;
+    storage->entry(cob_id, com_index, SUB_COM_COB_ID);
+    
+    bool com_changed = check_com_changed(dict, map_index);
+    if(map_changed || com_changed){
         PDOid cur(cob_id.get_cached());
         cur.invalid = 1;
         cob_id.set(cur.get());
@@ -126,9 +135,23 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
             buffers.push_back(b);
         }
     }
+    if(com_changed){
+        uint8_t subs = dict(com_index, SUB_COM_NUM).value().get<uint8_t>();
+        for(uint8_t i = SUB_COM_NUM+1; i <= subs; ++i){
+            if(i == SUB_COM_COB_ID || i == SUB_COM_RESERVED) continue;
+            storage->init(ObjectDict::Key(com_index, i));
+        }
+    }
     if(map_changed){
         num_entry.set(map_num);
     }
+    if(com_changed || map_changed){
+        storage->init(ObjectDict::Key(com_index, SUB_COM_COB_ID));
+        
+        cob_id.set(NodeIdOffset<uint32_t>::apply(dict(com_index, SUB_COM_COB_ID).value(), storage->node_id_));
+    }
+        
+    
 }
 PDOMapper::PDOMapper(const boost::shared_ptr<ipa_can::Interface> interface)
 :interface_(interface)
