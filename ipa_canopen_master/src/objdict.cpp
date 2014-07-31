@@ -216,7 +216,12 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptre
                 }
             }else{
                 //subs = object->get<uint8_t>("SubNumber");
-                subs = pt.get<uint8_t>(name.substr(2) + "sub0.DefaultValue") + 1;
+                try{
+                    subs = pt.get<uint8_t>(name.substr(2) + "sub0.DefaultValue") + 1;
+                }
+                catch(...){
+                    subs = object->get<uint8_t>("SubNumber");
+                }
                 for(uint8_t i=0; i< subs; ++i){
                    
                    parse_object(dict, pt, name + "sub" + boost::lexical_cast<std::string>((int)i), &i);
