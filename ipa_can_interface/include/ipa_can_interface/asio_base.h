@@ -4,6 +4,7 @@
 #include <ipa_can_interface/interface.h>
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
 
 namespace ipa_can{
@@ -78,6 +79,8 @@ public:
         if(getState().driver_state == State::open){
             boost::asio::io_service::work work(io_service_);
             setDriverState(State::ready);
+
+            boost::thread post_thread(boost::bind(&boost::asio::io_service::run, &io_service_));
             
             triggerReadSome();
             
