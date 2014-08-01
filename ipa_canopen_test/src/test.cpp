@@ -54,6 +54,10 @@ void print_state(const State &f){
     LOG("STATE");
 }
 
+void print_node_state(const Node::State &s){
+    LOG("NMT:" << s);
+}
+
 int main(int argc, char *argv[]){
     
     if(argc < 3){
@@ -78,19 +82,42 @@ int main(int argc, char *argv[]){
     boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
     
     LocalMaster master(driver);
-    boost::shared_ptr<SyncProvider> sync = master.getSync(Header(0x80), boost::posix_time::milliseconds(sync_ms), 240);
+    boost::shared_ptr<SyncProvider> sync = master.getSync(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0);
     
     Node node(driver, dict, 1, sync);
+
     ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  sw;
+    ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  cw;
+    ipa_canopen::ObjectStorage::Entry<int8_t >  op_mode;
+    ipa_canopen::ObjectStorage::Entry<int8_t >  op_mode_disp;
+    
     node.getStorage()->entry(sw, 0x6041);
+    node.getStorage()->entry(op_mode, 0x6060);
+    node.getStorage()->entry(op_mode_disp, 0x6061);
+    node.getStorage()->entry(cw, 0x6040);
+    
+    ipa_canopen::ObjectStorage::Entry<int32_t > actual_vel = node.getStorage()->entry<int32_t>(0x606C);
+    Node::StateListener::Ptr nsl = node.addStateListener(print_node_state);
+    
+    node.reset();
     node.start();
+    
+    //LOG("Homing: " << (int) node.getStorage()->entry<int8_t>(0x6098).get());
     
     sleep(1.0);
     
-
+    op_mode.set(3);
+    LOG("Mode: " << (int) op_mode_disp.get());
+    cw.set(0x6); // ready to switch on
+    cw.set(0x7); // switch on
+    cw.set(0xf); // enable operation
+    
+    node.getStorage()->entry<int32_t>(0x60ff).set(360000); // set target velocity
+    
     while(true){
         boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-        LOG("Status: " << sw.get());
+        //LOG("Status: " << sw.get());
+        LOG("Velocity: " <<  actual_vel.get());
     }
     driver->run();
     
