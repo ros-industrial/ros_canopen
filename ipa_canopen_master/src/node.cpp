@@ -45,7 +45,7 @@ void Node::reset_com(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     getStorage()->clear();
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset_Com));
-    wait_for(BootUp, boost::posix_time::seconds(1));
+    wait_for(BootUp, boost::posix_time::seconds(10));
     state_ = PreOperational;
     heartbeat_.set(heartbeat_.desc().value().get<uint16_t>());
 
@@ -54,7 +54,7 @@ void Node::reset(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     getStorage()->clear();
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset));
-    wait_for(BootUp, boost::posix_time::seconds(1));
+    wait_for(BootUp, boost::posix_time::seconds(10));
     state_ = PreOperational;
     heartbeat_.set(heartbeat_.desc().value().get<uint16_t>());
 }
