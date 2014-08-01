@@ -104,6 +104,7 @@ void Node::switchState(const uint8_t &s){
             ;
     }
     state_ = (State) s;
+    state_dispatcher_.dispatch(state_);
 }
 void Node::handleNMT(const ipa_can::Frame & msg){
     boost::mutex::scoped_lock cond_lock(cond_mutex);

@@ -177,6 +177,14 @@ public:
     void reset_com();
     void prepare();
     
+    typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
+    typedef ipa_can::Listener<const StateDelegate, const State&> StateListener;
+
+    StateListener::Ptr addStateListener(const StateDelegate & s){
+        return state_dispatcher_.createListener(s);
+    }
+
+    
 private:
     template<typename T> void wait_for(const State &s, const T &timeout);
     
@@ -190,7 +198,8 @@ private:
     ipa_can::Interface::FrameListener::Ptr nmt_listener_;
     
     ObjectStorage::Entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16>::type> heartbeat_;
-
+    
+    ipa_can::SimpleDispatcher<StateListener> state_dispatcher_;
     
     void handleNMT(const ipa_can::Frame & msg);
     void switchState(const uint8_t &s);
