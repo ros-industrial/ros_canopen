@@ -27,22 +27,25 @@ template<> std::string & ObjectStorage::Data::allocate(){
     return buffer;
 }
 
-void ObjectStorage::Data::init(const HoldAny & any){
+void ObjectStorage::Data::init(){
     boost::mutex::scoped_lock lock(mutex);
-    if (type_guard == any.type()){
-        if(!valid || (buffer != any.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
-            buffer = any.data();
-            valid = true;
-            if(entry->writable)
-                write_delegate(*entry, buffer);
-        }
-    }else{
-        throw std::bad_cast();
+    if(!valid || (entry->init_val.is_empty() && buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
+        buffer = entry->init_val.data();
+        valid = true;
+        if(entry->writable)
+            write_delegate(*entry, buffer);
     }
-    
 }
 
-
+void ObjectStorage::Data::reset(){
+    boost::mutex::scoped_lock lock(mutex);
+    if(entry->def_val.is_empty()){
+        valid = false;
+    }else{
+        buffer = entry->def_val.data();
+        valid = true;
+    }
+}
 
 bool ObjectDict::iterate(boost::unordered_map<Key, boost::shared_ptr<const Entry> >::const_iterator &it) const{
     if(it != boost::unordered_map<Key, boost::shared_ptr<const Entry> >::const_iterator()){
@@ -357,7 +360,7 @@ void ObjectStorage::init_nolock(const ObjectDict::Key &key, const boost::shared_
                 throw std::bad_alloc();
             }
         }
-        it->second->init(entry->init_val);
+        it->second->init();
     }
 }
 void ObjectStorage::init(const ObjectDict::Key &key){
@@ -375,7 +378,9 @@ void ObjectStorage::init_all(){
     }
 }
 
-void ObjectStorage::clear(){
+void ObjectStorage::reset(){
     boost::mutex::scoped_lock lock(mutex_);
-    storage_.clear();
+    for(boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.begin(); it != storage_.end(); ++it){
+        it->second->reset();
+    }
 }

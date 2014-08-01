@@ -43,7 +43,7 @@ const Node::State& Node::getState(){
 
 void Node::reset_com(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
-    getStorage()->clear();
+    getStorage()->reset();
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset_Com));
     wait_for(BootUp, boost::posix_time::seconds(10));
     state_ = PreOperational;
@@ -52,7 +52,8 @@ void Node::reset_com(){
 }
 void Node::reset(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
-    getStorage()->clear();
+    getStorage()->reset();
+    
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset));
     wait_for(BootUp, boost::posix_time::seconds(10));
     state_ = PreOperational;

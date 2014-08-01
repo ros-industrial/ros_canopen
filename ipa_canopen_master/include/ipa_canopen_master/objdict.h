@@ -306,7 +306,8 @@ protected:
                 write_delegate(*entry, buffer);
             }
         }
-        void init(const HoldAny & any);
+        void init();
+        void reset();
 
     };        
         
@@ -344,7 +345,7 @@ public:
         }
     };
     
-    void clear();
+    void reset();
     
 protected:
     boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> > storage_;
