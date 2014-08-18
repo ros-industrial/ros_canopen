@@ -1,27 +1,16 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ipa_can_interface)
+project(ipa_canopen_master)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
-
-set(PTHREAD_LIB "")
-find_package(Threads)
-if(CMAKE_THREAD_LIBS_INIT)
-  string(LENGTH ${CMAKE_THREAD_LIBS_INIT} _length)
-  if(_length GREATER 2)
-    string(SUBSTRING ${CMAKE_THREAD_LIBS_INIT} 0 2 _prefix)
-    if(${_prefix} STREQUAL "-l")
-      math(EXPR _rest_len "${_length} - 2")
-      string(SUBSTRING ${CMAKE_THREAD_LIBS_INIT} 2 ${_rest_len} PTHREAD_LIB)
-    endif()
-  endif()
-endif()
+find_package(catkin REQUIRED COMPONENTS
+  ipa_can_interface
+  ipa_socketcan_driver
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(Boost REQUIRED COMPONENTS system thread)
 
 
 ###################################
@@ -35,9 +24,9 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PTHREAD_LIB}
-#  CATKIN_DEPENDS other_catkin_pkg
-  DEPENDS Boost
+  LIBRARIES ipa_canopen_master
+  CATKIN_DEPENDS ipa_can_interface
+#  DEPENDS system_lib
 )
 
 ###########
@@ -47,23 +36,23 @@ catkin_package(
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
-# add_library(ipa_can_interface
-#   src/${PROJECT_NAME}/ipa_can_interface.cpp
-# )
+add_library(ipa_canopen_master
+  src/objdict.cpp
+  src/sdo.cpp
+  src/pdo.cpp
+  src/node.cpp
+)
+target_link_libraries(ipa_canopen_master
+  ${catkin_LIBRARIES}
+)
 
 ## Declare a cpp executable
-# add_executable(ipa_can_interface_node src/ipa_can_interface_node.cpp)
+# add_executable(ipa_canopen_master_node src/ipa_canopen_master_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(ipa_can_interface_node ipa_can_interface_generate_messages_cpp)
+# add_dependencies(ipa_canopen_master_node ipa_canopen_master_generate_messages_cpp)
 
-## Specify libraries to link a library or executable target against
-# target_link_libraries(ipa_can_interface_node
-#   ${catkin_LIBRARIES}
-#   ${Boost_LIBRARIES}
-#   ${boost_LIBRARIES}
-# )
 
 #############
 ## Install ##
@@ -80,16 +69,16 @@ include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS ipa_can_interface ipa_can_interface_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS ipa_canopen_master
+ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
+   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+   FILES_MATCHING PATTERN "*.h"
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
@@ -104,7 +93,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test test/test_ipa_can_interface.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_ipa_canopen_master.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
