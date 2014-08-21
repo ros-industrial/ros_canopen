@@ -6,7 +6,6 @@ project(ipa_canopen_master)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   ipa_can_interface
-  ipa_socketcan_driver
 )
 
 ## System dependencies are found with CMake's conventions
