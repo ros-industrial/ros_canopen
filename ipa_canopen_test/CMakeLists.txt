@@ -33,11 +33,11 @@ catkin_package(
 ## Build ##
 ###########
 
-include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+#include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 add_executable(ipa_canopen_test src/test.cpp)
-target_link_libraries(ipa_canopen_test ipa_canopen_master)
-add_dependencies(ipa_canopen_test ipa_canopen_master)
+target_link_libraries(ipa_canopen_test ${catkin_LIBRARIES})
 
 
 #############
