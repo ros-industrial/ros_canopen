@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ipa_canopen_test)
+project(ipa_canopen_402)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   ipa_canopen_master
-  ipa_socketcan_driver
-  ipa_canopen_402
 )
 
 ## System dependencies are found with CMake's conventions
@@ -24,9 +22,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES
-  CATKIN_DEPENDS ipa_canopen_master ipa_canopen_402
+  INCLUDE_DIRS include
+  LIBRARIES ipa_canopen_402
+  CATKIN_DEPENDS ipa_canopen_master
 #  DEPENDS system_lib
 )
 
@@ -34,15 +32,17 @@ catkin_package(
 ## Build ##
 ###########
 
-#include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
-include_directories(${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
-add_executable(ipa_canopen_test src/test.cpp)
-target_link_libraries(ipa_canopen_test ${catkin_LIBRARIES})
+#add_executable(ipa_canopen_402 src/test.cpp)
+#target_link_libraries(ipa_canopen_402 ${catkin_LIBRARIES})
 
-add_executable(ipa_canopen_test_motor src/test_motor.cpp)
-target_link_libraries(ipa_canopen_test_motor ${catkin_LIBRARIES})
-
+add_library(ipa_canopen_402
+  src/ipa_canopen_402/ipa_canopen_402.cpp
+)
+target_link_libraries(ipa_canopen_402
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -59,17 +59,17 @@ target_link_libraries(ipa_canopen_test_motor ${catkin_LIBRARIES})
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ipa_canopen_test
+install(TARGETS ipa_canopen_402
 ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#    FILES_MATCHING PATTERN "*.h"
-# )
+ install(DIRECTORY include/${PROJECT_NAME}/
+    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+    FILES_MATCHING PATTERN "*.h"
+ )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
