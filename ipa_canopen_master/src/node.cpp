@@ -1,9 +1,14 @@
 #include <ipa_canopen_master/canopen.h>
 
+namespace ipa_can{
+std::size_t hash_value(ipa_can::Header const& h){ return (unsigned int)(h);}
+}
+
 using namespace ipa_canopen;
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1) /* set alignment to 1 byte boundary */
+
 
 struct NMTcommand{
     enum Command{
