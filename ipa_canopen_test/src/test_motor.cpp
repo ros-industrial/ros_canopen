@@ -98,21 +98,52 @@ int main(int argc, char *argv[]){
     node.reset();
     node.start();
 
-    motor.enterMode(motor.Profiled_Velocity);
     motor.init();
 
     sleep(1.0);
 
-    motor.setTargetVel(-3600000); // 402 !!!!!!!!!!!
+    bool flag_op = false;
 
-    while(true){
+    while(true)
+    {
         boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
-        LOG("Velocity: " <<  motor.getActualVel());  // 402 !!!!!!!!!!!
-        LOG("Pos: " <<  motor.getActualPos());  // 402 !!!!!!!!!!!
+        motor.turnOff();
+
+        if(flag_op)
+        {
+            LOG("Entering Velocity OP mode");  // 402 !!!!!!!!!!!
+            motor.enterMode(motor.Profiled_Velocity);
+            motor.turnOn();
+            motor.setTargetVel(-360000); // 402 !!!!!!!!!!!
+            motor.operate();
+            std::cout << "Mode:" << static_cast<int>(motor.getMode()) << std::endl;
+            LOG("Velocity: " <<  motor.getActualVel());  // 402 !!!!!!!!!!!
+        }
+        else
+        {
+            LOG("Entering Position OP mode");  // 402 !!!!!!!!!!!
+            motor.enterMode(motor.Profiled_Position);
+            motor.turnOn();
+            motor.setTargetPos(100000); // 402 !!!!!!!!!!!
+            motor.operate();
+
+            std::cout << "Mode:" << static_cast<int>(motor.getMode()) << std::endl;
+            LOG("Pos: " <<  motor.getActualInternalPos());  // 402 !!!!!!!!!!!
+            LOG("Actual Pos: " <<  motor.getActualInternalPos());  // 402 !!!!!!!!!!!
+            sleep(10.0);
+        }
+
+        sleep(2.0);
+
+        motor.setTargetVel(0);
+
+        //flag_op = !flag_op;
     }
+
     driver->run();
 
+    motor.turnOff();
 
     return 0;
 }

@@ -13,8 +13,9 @@ ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode;
 
 ipa_canopen::ObjectStorage::Entry<int32_t> actual_vel;
 ipa_canopen::ObjectStorage::Entry<int32_t> target_velocity;
-
+ipa_canopen::ObjectStorage::Entry<uint32_t> profile_velocity;
 ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
+ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
 ipa_canopen::ObjectStorage::Entry<int32_t> target_position;
 
 
@@ -55,6 +56,7 @@ public:
     void enterState(const State &s);
 
     const double getActualPos();
+    const double getActualInternalPos();
     void setTargetPos(int32_t pos);
 
     const double getActualVel();
@@ -65,7 +67,9 @@ public:
     void recover();
     void configureEntries();
 
-    bool prepareToOperate();
+    bool turnOn();
+    bool operate();
+    bool turnOff();
 
 private:
     template<typename T> void wait_for(const State &s, const T &timeout);

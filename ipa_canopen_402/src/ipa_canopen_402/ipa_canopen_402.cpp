@@ -33,6 +33,14 @@ const double Motor::getActualVel()
 const double Motor::getActualPos()
 {
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
+    pos_ = actual_pos.get();
+    return pos_;
+}
+
+const double Motor::getActualInternalPos()
+{
+    boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
+    pos_ = actual_internal_pos.get();
     return pos_;
 }
 
@@ -60,26 +68,48 @@ void Motor::configureEntries()
 {
     node_storage_->entry(status_word, 0x6041);
     node_storage_->entry(control_word, 0x6040);
+
     node_storage_->entry(op_mode,0x6060);
     node_storage_->entry(op_mode_display,0x6061);
+
     node_storage_->entry(actual_vel,0x606C);
-    node_storage_->entry(target_velocity,0x60ff);
-    node_storage_->entry(target_position,0x607a);
+    node_storage_->entry(target_velocity,0x60FF);
+    node_storage_->entry(profile_velocity,0x6081);
+
+    node_storage_->entry(target_position,0x607A);
     node_storage_->entry(actual_pos,0x6064);
+    node_storage_->entry(actual_internal_pos,0x6063);
 }
 
-bool Motor::prepareToOperate()
+bool Motor::turnOn()
+{
+    control_word.set(0x06);
+    control_word.set(0x07);
+    control_word.set(0x0f);
+
+    return true;
+}
+
+bool Motor::operate()
+{
+    if(getMode()==Profiled_Position)
+    {
+        profile_velocity.set(1000000);
+        control_word.set(0x1f);
+        control_word.set(0x0f);
+    }
+}
+
+bool Motor::turnOff()
 {
     control_word.set(0x6);
-    control_word.set(0x7);
-    control_word.set(0xf);
 
     return true;
 }
 
 bool Motor::init()
 {
-    if(prepareToOperate())
+    if(turnOn())
         return true;
     else
         return false;
