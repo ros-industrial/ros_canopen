@@ -1,4 +1,4 @@
-joint_names: ["torso_lower_neck_tilt_joint","torso_pan_joint","torso_upper_neck_tilt_joint"]
+joint_names: ["plate_joint"]
 home: [[0.0]]
 up: [[0.0]]
 right: [[-1.5708]]

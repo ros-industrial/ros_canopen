@@ -5,8 +5,8 @@
 #    [button_name2,function_name2,parameter_name2]]
 
 group1:
-  group_name: rig
-  component_name: rig
+  group_name: plate
+  component_name: plate
   buttons: [[stop,trigger,stop],
     [init,trigger,init],
     [recover,trigger,recover],
