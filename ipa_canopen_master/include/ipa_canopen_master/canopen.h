@@ -224,5 +224,48 @@ public:
     LocalMaster(boost::shared_ptr<ipa_can::Interface> interface) : Master(interface) {}
 };
 
+template<typename T> class Chain{
+protected:
+    std::vector<boost::shared_ptr<T> > elements;
+public:
+    void call(void (T::*func)(void)){
+        typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
+        while(it != elements.end()){
+            ((**it).*func)();
+            ++it;
+        }
+    }
+    template<typename V> void call(void (T::*func)(const V&), const std::vector<V> &vs){
+        typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
+        typename std::vector<V>::const_iterator it_v = vs.begin();
+        while(it_v != vs.end() &&  it != elements.end()){
+            ((*it)->*func)(*it_v);
+            ++it; ++it_v;
+        }
+    }
+    template<typename V> void call(void (T::*func)(V&), std::vector<V> &vs){
+        vs.resize(elements.size());
+        
+        typename std::vector<boost::shared_ptr<T> >it = elements.begin();
+        typename std::vector<V>::iterator it_v = vs.begin();
+        while(it_v != vs.end() &&  it != elements.end()){
+            ((*it)->*func)(*it_v);
+            ++it; ++it_v;
+        }
+    }
+    void add(boost::shared_ptr<T> t){
+        elements.push_back(t);
+    }
+};
+
+template<typename T> class NodeChain: public Chain<T>{
+public:    
+    void start() { this->call(&T::start); }
+    void stop() { this->call(&T::stop); }
+    void reset() { this->call(&T::reset); }
+    void reset_com() { this->call(&T::reset_com); }
+    void prepare() { this->call(&T::prepare); }
+};
+
 } // ipa_canopen
 #endif // !H_IPA_CANOPEN
