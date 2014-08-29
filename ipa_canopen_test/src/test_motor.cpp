@@ -13,7 +13,6 @@
 
 using namespace ipa_can;
 using namespace ipa_canopen;
-using namespace ipa_canopen_402;
 
 
 template<typename WrappedInterface> class ThreadedInterface : public WrappedInterface{
@@ -91,7 +90,7 @@ int main(int argc, char *argv[]){
     Node node(driver, dict, 1, sync);
 
 
-    Motor motor(node.getStorage());  // 402 !!!!!!!!!!!
+    Node_402 motor(driver, dict, 1, sync);  // 402 !!!!!!!!!!!
 
     Node::StateListener::Ptr nsl = node.addStateListener(print_node_state);
 

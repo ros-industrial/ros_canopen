@@ -1,60 +1,55 @@
 #include <ipa_canopen_402/ipa_canopen_402.h>
 
-using ipa_canopen_402::Motor;
+using namespace ipa_canopen;
 
-Motor::Motor(const boost::shared_ptr<ipa_canopen::ObjectStorage> node_storage)
-: node_storage_(node_storage)
-{
-    configureEntries();
-}
+//Node_402::Motor(const boost::shared_ptr<ipa_canopen::ObjectStorage> node_storage)
+//: node_storage_(node_storage)
+//{
+//    configureEntries();
+//}
 
-const Motor::State& Motor::getState()
+const Node_402::State& Node_402::getState()
 {
-    boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
+
     return state_;
 }
 
-const int8_t Motor::getMode()
+const int8_t Node_402::getMode()
 {
-    boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
-    operation_mode_ = op_mode_display.get();
+    int8_t operation_mode = op_mode_display.get();
 
-    return operation_mode_;
+    return operation_mode;
 }
 
-const double Motor::getActualVel()
+const double Node_402::getActualVel()
 {
-    boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
-    vel_ = actual_vel.get();
-
-    return vel_;
+    double ac_vel = actual_vel.get();
+    return ac_vel;
 }
 
-const double Motor::getActualPos()
+const double Node_402::getActualPos()
 {
-    boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
-    pos_ = actual_pos.get();
-    return pos_;
+    double ac_pos = actual_pos.get();
+    return ac_pos;
 }
 
-const double Motor::getActualInternalPos()
+const double Node_402::getActualInternalPos()
 {
-    boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
-    pos_ = actual_internal_pos.get();
-    return pos_;
+    double internal_pos = actual_internal_pos.get();
+    return internal_pos;
 }
 
-void Motor::setTargetVel(int32_t target_vel)
+void Node_402::setTargetVel(int32_t target_vel)
 {
     target_velocity.set(target_vel);
 }
 
-void Motor::setTargetPos(int32_t target_pos)
+void Node_402::setTargetPos(int32_t target_pos)
 {
     target_position.set(target_pos);
 }
 
-bool Motor::enterMode(const OperationMode &op_mode_var)
+bool Node_402::enterMode(const OperationMode &op_mode_var)
 {
     op_mode.set(op_mode_var);
 
@@ -64,7 +59,7 @@ bool Motor::enterMode(const OperationMode &op_mode_var)
         return false;
 }
 
-void Motor::configureEntries()
+void Node_402::configureEntries()
 {
     node_storage_->entry(status_word, 0x6041);
     node_storage_->entry(control_word, 0x6040);
@@ -81,7 +76,7 @@ void Motor::configureEntries()
     node_storage_->entry(actual_internal_pos,0x6063);
 }
 
-bool Motor::turnOn()
+bool Node_402::turnOn()
 {
     control_word.set(0x06);
     control_word.set(0x07);
@@ -90,7 +85,7 @@ bool Motor::turnOn()
     return true;
 }
 
-bool Motor::operate()
+bool Node_402::operate()
 {
     if(getMode()==Profiled_Position)
     {
@@ -100,17 +95,34 @@ bool Motor::operate()
     }
 }
 
-bool Motor::turnOff()
+bool Node_402::turnOff()
 {
     control_word.set(0x6);
 
     return true;
 }
 
-bool Motor::init()
+bool Node_402::init()
 {
-    if(turnOn())
+    if(Node_402::turnOn())
         return true;
     else
         return false;
 }
+
+
+
+void Node_402::switchState(const Node::State &s){
+    switch(s){
+        case Operational:
+            Node_402::init();
+            break;
+        case BootUp:
+        case PreOperational:
+        case Stopped:
+        default:
+            //error
+            ;
+    }
+}
+
