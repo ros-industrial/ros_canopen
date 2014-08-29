@@ -9,6 +9,7 @@
   <property name="base_radius" value="0.01" />
   <property name="plate_height" value="0.01" />
   <property name="plate_radius" value="0.03" />
+  <property name="indicator_height" value="0.001" />
   
   <link name="base_link" >
     <visual>
@@ -56,5 +57,29 @@
     </xacro:cylinder_inertial>
   </link>
 
+  <joint name="indicator_joint" type="fixed">
+    <parent link="plate_link" />
+    <child link = "indicator_link" />
+    <origin xyz="0.0 0.0 ${plate_height}" rpy="0 0 0" />
+  </joint>
+
+  <link name="indicator_link" >
+    <visual>
+      <origin xyz="${plate_radius/2} 0.0 ${indicator_height/2}" rpy="0 0 0" />
+      <geometry>
+        <box size="${plate_radius} ${indicator_height} ${indicator_height}" />
+      </geometry>
+      <material name="IPA/Orange"/>
+    </visual>
+    <collision>
+      <origin xyz="${plate_radius/2} 0.0 ${indicator_height/2}" rpy="0 0 0" />
+      <geometry>
+        <box size="${plate_radius} ${indicator_height} ${indicator_height}" />
+      </geometry>
+    </collision>
+    <xacro:box_inertial x="${plate_radius}" y="${indicator_height}" z="${indicator_height}" mass="0.050">
+      <origin xyz="${plate_radius/2} 0.0 ${indicator_height/2}" rpy="0 0 0" />
+    </xacro:box_inertial>
+  </link>
 
 </robot>
