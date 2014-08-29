@@ -18,9 +18,11 @@ namespace ipa_can {
 template<typename FrameDelegate, typename StateDelegate> class SocketCANDriver : public AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> {
     typedef AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> BaseClass;
 public:    
-    SocketCANDriver(FrameDelegate frame_delegate, StateDelegate state_delegate)
-    : BaseClass(frame_delegate, state_delegate)
+    SocketCANDriver(FrameDelegate frame_delegate, StateDelegate state_delegate, bool loopback = false)
+    : BaseClass(frame_delegate, state_delegate), loopback_(loopback)
     {}
+    const bool loopback_;
+    
     bool init(const std::string &device, unsigned int bitrate){
         State s = BaseClass::getState();
         if(s.driver_state == State::closed){
@@ -28,7 +30,6 @@ public:
             if(bitrate != 0) return false; // not supported, TODO: use libsocketcan
 
             int sc = socket( PF_CAN, SOCK_RAW, CAN_RAW );
-            std::cout << "sc " << sc << std::endl;
             if(sc < 0){
                 BaseClass::setErrorCode(boost::system::error_code(sc,boost::system::system_category()));
                 return false;
@@ -38,7 +39,6 @@ public:
             strcpy(ifr.ifr_name, device_.c_str());
             int ret = ioctl(sc, SIOCGIFINDEX, &ifr);
 
-            std::cout << "ret1 " << ret << std::endl;
             if(ret != 0){
                 BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
                 close(sc);
@@ -56,12 +56,22 @@ public:
                 return false;
             }
             
+            if(loopback_){
+                int recv_own_msgs = 1; /* 0 = disabled (default), 1 = enabled */
+                ret = setsockopt(sc, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs, sizeof(recv_own_msgs));
+                
+                if(ret != 0){
+                    BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
+                    close(sc);
+                    return false;
+                }
+            }
+            
             struct sockaddr_can addr;
             addr.can_family = AF_CAN;
             addr.can_ifindex = ifr.ifr_ifindex;
             ret = bind( sc, (struct sockaddr*)&addr, sizeof(addr) );            
 
-            std::cout << "ret2 " << ret << std::endl;
             if(ret != 0){
                 BaseClass::setErrorCode(boost::system::error_code(ret,boost::system::system_category()));
                 close(sc);
@@ -74,13 +84,12 @@ public:
             BaseClass::setErrorCode(ec);
             
             if(ec){
-                std::cout << "!ASSIGN"<< std::endl;
                 close(sc);
                 return false;
             }
             BaseClass::setDriverState(State::open);
             return true;
-        }else  std::cout << "NO CLOSED" << std::endl;
+        }
         return false;
     }
     bool recover(){
@@ -89,6 +98,7 @@ public:
             BaseClass::shutdown();
             return init(device_, 0);
         }
+        return false;
     }
     bool translateError(unsigned int internal_error, std::string & str){
         return false; // TODO
@@ -98,6 +108,7 @@ protected:
     can_frame frame_;
     
     void triggerReadSome(){
+        boost::mutex::scoped_lock lock(send_mutex_);
         BaseClass::socket_.async_read_some(boost::asio::buffer(&frame_, sizeof(frame_)), boost::bind( &SocketCANDriver::readFrame,this, boost::asio::placeholders::error));
     }
     
@@ -115,6 +126,7 @@ protected:
         boost::system::error_code ec;
         boost::asio::write(BaseClass::socket_, boost::asio::buffer(&frame, sizeof(frame)),boost::asio::transfer_all(), ec);
         if(ec){
+            LOG("FAILED " << ec);
             BaseClass::setErrorCode(ec);
             BaseClass::setDriverState(State::open);
             return false;
@@ -127,7 +139,7 @@ protected:
         if(!error){
             if(frame_.can_id & CAN_ERR_FLAG){ // error message
                 // TODO
-                std::cout << "error" << std::endl;
+                LOG("error");
             }
 
             BaseClass::input_.is_extended = frame_.can_id & CAN_EFF_FLAG;
@@ -145,5 +157,5 @@ private:
     boost::mutex send_mutex_;
 };
     
-}; // namespace ipa_can
+} // namespace ipa_can
 #endif

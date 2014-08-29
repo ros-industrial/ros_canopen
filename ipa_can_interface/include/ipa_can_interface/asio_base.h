@@ -4,17 +4,23 @@
 #include <ipa_can_interface/interface.h>
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/bind.hpp>
 
 namespace ipa_can{
-    
+
+
 template<typename FrameDelegate, typename StateDelegate, typename Socket> class AsioDriver{
+    static void call_delegate(const FrameDelegate &delegate, const Frame &msg){
+        delegate(msg);
+    }
 
     State state_;
     boost::mutex state_mutex_;
-    boost::mutex send_mutex_;
+    boost::mutex socket_mutex_;
     
     FrameDelegate frame_delegate_;
-     StateDelegate state_delegate_;
+    StateDelegate state_delegate_;
 protected:
     boost::asio::io_service io_service_;
     Socket socket_;
@@ -23,6 +29,9 @@ protected:
     virtual void triggerReadSome() = 0;
     virtual bool enqueue(const Frame & msg) = 0;
     
+    void dispatchFrame(const Frame msg){
+        io_service_.post(boost::bind(call_delegate, frame_delegate_,msg));
+    }
     void setErrorCode(const boost::system::error_code& error){
         boost::mutex::scoped_lock lock(state_mutex_);
         if(state_.error_code != error){
@@ -48,7 +57,7 @@ protected:
     
     void frameReceived(const boost::system::error_code& error){
         if(!error){
-            frame_delegate_(input_);
+            dispatchFrame(input_);
             triggerReadSome();
         }else{
             setErrorCode(error);
@@ -56,7 +65,7 @@ protected:
     }
 
     AsioDriver(FrameDelegate frame_delegate, StateDelegate state_delegate)
-    : socket_(io_service_), frame_delegate_(frame_delegate), state_delegate_(state_delegate)
+    : frame_delegate_(frame_delegate), state_delegate_(state_delegate), socket_(io_service_)
     {}
     
 public:
@@ -70,6 +79,8 @@ public:
         if(getState().driver_state == State::open){
             boost::asio::io_service::work work(io_service_);
             setDriverState(State::ready);
+
+            boost::thread post_thread(boost::bind(&boost::asio::io_service::run, &io_service_));
             
             triggerReadSome();
             
@@ -93,5 +104,5 @@ public:
 };
 
 
-}; // namespace ipa_can
+} // namespace ipa_can
 #endif
