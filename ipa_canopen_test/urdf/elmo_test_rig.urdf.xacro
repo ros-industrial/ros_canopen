@@ -4,6 +4,7 @@
 
   <xacro:include filename="$(find cob_description)/urdf/common.xacro" />
   <xacro:include filename="$(find cob_description)/urdf/materials.urdf.xacro" />
+  <xacro:include filename="$(find ipa_canopen_test)/urdf/elmo_test_rig.transmission.xacro" />
 
   <property name="base_height" value="0.04" />
   <property name="base_radius" value="0.01" />
@@ -81,5 +82,8 @@
       <origin xyz="${plate_radius/2} 0.0 ${indicator_height/2}" rpy="0 0 0" />
     </xacro:box_inertial>
   </link>
+
+  <!-- extensions -->
+  <xacro:torso_transmission name="plate" />
 
 </robot>
