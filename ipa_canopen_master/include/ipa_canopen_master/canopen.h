@@ -267,5 +267,32 @@ public:
     void prepare() { this->call(&T::prepare); }
 };
 
+
+/*template<typename InterfaceType, typename MasterType, typename NodeType> class Bus: boost::noncopyable{
+    boost::weak_ptr <InterfaceType> weak_interface_;
+    boost::weak_ptr <MasterType> weak_master_;
+    
+    const std::string device_;
+    const unsigned int bitrate_;
+public:
+    Bus(const std::string &device, unsigned int bitrate) : device_(device), bitrate_(bitrate) {}
+    boost::shared_ptr<InterfaceType> getInterface(){
+        boost::shared_ptr<InterfaceType> interface = weak_interface_.lock();
+        if(!interface){
+            weak_interface_ = interface = boost::make_shared<InterfaceType>();
+            interface_
+        }
+        return interface;
+    }
+    boost::shared_ptr<MasterType> getMaster(){
+        boost::shared_ptr<MasterType> master = weak_master_.lock();
+        if(!master){
+            boost::shared_ptr<InterfaceType> interface = getInterface();
+            if(interface) weak_master_ = master = boost::make_shared<MasterType>(interface);
+        }
+        return master;
+    }
+};*/
+
 } // ipa_canopen
 #endif // !H_IPA_CANOPEN
