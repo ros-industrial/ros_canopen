@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ipa_canopen_test</name>
+  <name>ipa_canopen_402</name>
   <version>0.0.0</version>
-  <description>The ipa_canopen_test package</description>
+  <description>The ipa_canopen_402 package</description>
 
-  <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
+  <maintainer email="tdf@ipa.fhg.de">Thiago de Freitas</maintainer>
   <license>LGPLv3</license>
 
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
@@ -21,8 +21,6 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>ipa_canopen_master</depend>
-  <depend>ipa_socketcan_driver</depend>
-  <depend>ipa_canopen_402</depend>
 
   <export>
     <!-- You can specify that this package is a metapackage here: -->
