@@ -87,12 +87,21 @@ public:
     }
 };
 
-void update(const ros::TimerEvent& e, controller_manager::ControllerManager &cm, ChainRobot &chain){
-    if(chain.read()){
-        cm.update(e.current_real, e.last_real - e.current_real);
-        chain.write();
+class Updater{
+    controller_manager::ControllerManager &cm_;
+    ChainRobot &chain_;
+    ros::Timer timer_;
+    void update(const ros::TimerEvent& e){
+        if(chain_.read()){
+            cm_.update(e.current_real, e.last_real - e.current_real);
+            chain_.write();
+        }
     }
-}
+public:
+    Updater(double rate, ros::NodeHandle &nh, controller_manager::ControllerManager &cm, ChainRobot &chain)
+    :cm_(cm), chain_(chain), timer_(nh.createTimer(ros::Rate(rate), &Updater::update, this)) {}
+};
+
 int main(int argc, char** argv){
   ros::init(argc, argv, "ipa_canopen_chain_ros_node");
   ros::NodeHandle nh;
@@ -105,8 +114,8 @@ int main(int argc, char** argv){
   }
   controller_manager::ControllerManager cm(&chain);
   
-  ros::Timer timer = nh.createTimer(ros::Rate(100), boost::bind(update, _1, boost::ref(cm), boost::ref(chain)));
-  
-  while (ros::ok()) {
-  }  return 0;
+  Updater updater(100, nh, cm, chain);
+
+  ros::spin();
+  return 0;
 }
