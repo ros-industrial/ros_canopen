@@ -1,5 +1,5 @@
 plate_controller:
-  type: effort_controllers/JointTrajectoryController
+  type: position_controllers/JointTrajectoryController
   topic: "test"
   joints:
     - plate_joint
@@ -14,7 +14,7 @@ plate_controller:
   action_monitor_rate: 10
 
 plate_joint_position_controller:
-  type: effort_controllers/JointPositionController
+  type: position_controllers/JointPositionController
   joint: plate_joint
 
 joint_state_controller:

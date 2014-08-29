@@ -6,11 +6,11 @@
     <transmission name="${name}_trans">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="${name}_joint">
-        <!--hardwareInterface>PositionJointInterface</hardwareInterface--> <!-- this is for indigo -->
+        <hardwareInterface>PositionJointInterface</hardwareInterface> <!-- this is for indigo -->
       </joint>
       <actuator name="${name}_motor">
         <mechanicalReduction>1</mechanicalReduction>
-        <hardwareInterface>EffortJointInterface</hardwareInterface> <!-- this is for hydro -->
+        <!--hardwareInterface>EffortJointInterface</hardwareInterface--> <!-- this is for hydro -->
       </actuator>
     </transmission>
 
