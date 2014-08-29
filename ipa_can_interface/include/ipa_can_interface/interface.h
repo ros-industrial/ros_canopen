@@ -61,7 +61,7 @@ public:
     unsigned int internal_error; ///< driver specific error 
     
     State() : driver_state(closed), internal_error(0) {}
-    virtual bool isReady() const { driver_state == ready; }
+    virtual bool isReady() const { return driver_state == ready; }
     virtual ~State() {}
 };
 
@@ -74,7 +74,7 @@ public:
     typedef boost::shared_ptr<const Listener> Ptr;
     
     Listener(const T &callable):callable_(callable){ }
-    void operator()(const U & u) const { callable_(u); }
+    void operator()(const U & u) const { if(callable_) callable_(u); }
     virtual ~Listener() {} 
 };
 
@@ -153,5 +153,18 @@ public:
     virtual ~Interface() {}
 };
 
-}; // namespace ipa_can
+} // namespace ipa_can
+
+#include <boost/thread/mutex.hpp>
+
+struct _Wrapper{
+    static boost::mutex& get_cout_mutex(){
+        static boost::mutex mutex;
+        return mutex;
+    }
+};
+
+#define LOG(log) { boost::mutex::scoped_lock lock(_Wrapper::get_cout_mutex()); std::cout << log << std::endl; }
+
+
 #endif

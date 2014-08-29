@@ -41,6 +41,11 @@ protected:
             boost::mutex::scoped_lock lock(mutex_);
             listeners_.remove(d);
         }
+        size_t numListeners(){
+            boost::mutex::scoped_lock lock(mutex_);
+            return listeners_.size();
+        }
+
         static typename Listener::Ptr createListener(boost::shared_ptr<DispatcherBase> dispatcher, const  Callable &callable){
             boost::shared_ptr<Listener > l(new GuardedListener(dispatcher,callable));
             dispatcher->listeners_.push_back(l.get());
@@ -58,6 +63,9 @@ public:
     void dispatch(const Type &obj){
         boost::mutex::scoped_lock lock(mutex_);
         dispatcher_->dispatch_nolock(obj);
+    }
+    size_t numListeners(){
+        return dispatcher_->numListeners();
     }
     operator Callable() { return Callable(this,&SimpleDispatcher::dispatch); }
 };
@@ -88,7 +96,7 @@ protected:
     FilteredDispatcher<const unsigned int, FrameListener> frame_dispatcher_;
     SimpleDispatcher<StateListener> state_dispatcher_;
 public:
-    DispatchedInterface(): driver_(frame_dispatcher_, state_dispatcher_) {}
+    DispatchedInterface(bool loopback = false): driver_(frame_dispatcher_, state_dispatcher_, loopback) {}
     
     virtual bool init(const std::string &device, unsigned int bitrate) {
         if(driver_.init(device, bitrate)){
@@ -125,11 +133,11 @@ public:
     }
     
     virtual bool translateError(unsigned int internal_error, std::string & str){
-        driver_.translateError(internal_error, str);
+        return driver_.translateError(internal_error, str);
     }
     
     virtual ~DispatchedInterface() {}
 };
 
-}; // namespace ipa_can
+} // namespace ipa_can
 #endif
