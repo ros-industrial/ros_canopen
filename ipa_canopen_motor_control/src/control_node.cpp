@@ -77,7 +77,7 @@ public:
             std::string name = module["name"];
             
             hardware_interface::JointStateHandle state_handle(name, &pos[i], &vel[i], &eff[i]);
-            jnt_pos_interface.registerHandle(state_handle);
+            jnt_state_interface.registerHandle(state_handle);
             
             hardware_interface::JointHandle pos_handle(jnt_state_interface.getHandle(name), &pos_cmd[i]);            
             jnt_pos_interface.registerHandle(pos_handle);
