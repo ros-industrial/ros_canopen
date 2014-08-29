@@ -224,5 +224,76 @@ public:
     LocalMaster(boost::shared_ptr<ipa_can::Interface> interface) : Master(interface) {}
 };
 
+template<typename T> class Chain{
+protected:
+    std::vector<boost::shared_ptr<T> > elements;
+public:
+    void call(void (T::*func)(void)){
+        typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
+        while(it != elements.end()){
+            ((**it).*func)();
+            ++it;
+        }
+    }
+    template<typename V> void call(void (T::*func)(const V&), const std::vector<V> &vs){
+        typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
+        typename std::vector<V>::const_iterator it_v = vs.begin();
+        while(it_v != vs.end() &&  it != elements.end()){
+            ((**it).*func)(*it_v);
+            ++it; ++it_v;
+        }
+    }
+    template<typename V> void call(void (T::*func)(V&), std::vector<V> &vs){
+        vs.resize(elements.size());
+        
+        typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
+        typename std::vector<V>::iterator it_v = vs.begin();
+        while(it_v != vs.end() &&  it != elements.end()){
+            ((**it).*func)(*it_v);
+            ++it; ++it_v;
+        }
+    }
+    void add(boost::shared_ptr<T> t){
+        elements.push_back(t);
+    }
+};
+
+template<typename T> class NodeChain: public Chain<T>{
+public:
+    const std::vector<boost::shared_ptr<T> >& getElements() { return Chain<T>::elements; }
+    void start() { this->call(&T::start); }
+    void stop() { this->call(&T::stop); }
+    void reset() { this->call(&T::reset); }
+    void reset_com() { this->call(&T::reset_com); }
+    void prepare() { this->call(&T::prepare); }
+};
+
+
+/*template<typename InterfaceType, typename MasterType, typename NodeType> class Bus: boost::noncopyable{
+    boost::weak_ptr <InterfaceType> weak_interface_;
+    boost::weak_ptr <MasterType> weak_master_;
+    
+    const std::string device_;
+    const unsigned int bitrate_;
+public:
+    Bus(const std::string &device, unsigned int bitrate) : device_(device), bitrate_(bitrate) {}
+    boost::shared_ptr<InterfaceType> getInterface(){
+        boost::shared_ptr<InterfaceType> interface = weak_interface_.lock();
+        if(!interface){
+            weak_interface_ = interface = boost::make_shared<InterfaceType>();
+            interface_
+        }
+        return interface;
+    }
+    boost::shared_ptr<MasterType> getMaster(){
+        boost::shared_ptr<MasterType> master = weak_master_.lock();
+        if(!master){
+            boost::shared_ptr<InterfaceType> interface = getInterface();
+            if(interface) weak_master_ = master = boost::make_shared<MasterType>(interface);
+        }
+        return master;
+    }
+};*/
+
 } // ipa_canopen
 #endif // !H_IPA_CANOPEN
