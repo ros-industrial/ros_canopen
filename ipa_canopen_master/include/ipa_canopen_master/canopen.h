@@ -259,7 +259,8 @@ public:
 };
 
 template<typename T> class NodeChain: public Chain<T>{
-public:    
+public:
+    const std::vector<boost::shared_ptr<T> >& getElements() { return Chain<T>::elements; }
     void start() { this->call(&T::start); }
     void stop() { this->call(&T::stop); }
     void reset() { this->call(&T::reset); }
