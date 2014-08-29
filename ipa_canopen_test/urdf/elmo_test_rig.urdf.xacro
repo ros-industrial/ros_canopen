@@ -85,5 +85,12 @@
 
   <!-- extensions -->
   <xacro:torso_transmission name="plate" />
+  
+  <gazebo>
+    <plugin name="ros_control" filename="libgazebo_ros_control.so">
+      <!--robotNamespace>/</robotNamespace-->
+      <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType-->
+    </plugin>
+  </gazebo>
 
 </robot>
