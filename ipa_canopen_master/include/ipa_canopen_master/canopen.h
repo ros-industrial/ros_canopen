@@ -239,17 +239,17 @@ public:
         typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
         typename std::vector<V>::const_iterator it_v = vs.begin();
         while(it_v != vs.end() &&  it != elements.end()){
-            ((*it)->*func)(*it_v);
+            ((**it).*func)(*it_v);
             ++it; ++it_v;
         }
     }
     template<typename V> void call(void (T::*func)(V&), std::vector<V> &vs){
         vs.resize(elements.size());
         
-        typename std::vector<boost::shared_ptr<T> >it = elements.begin();
+        typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
         typename std::vector<V>::iterator it_v = vs.begin();
         while(it_v != vs.end() &&  it != elements.end()){
-            ((*it)->*func)(*it_v);
+            ((**it).*func)(*it_v);
             ++it; ++it_v;
         }
     }
