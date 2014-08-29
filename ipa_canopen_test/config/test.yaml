@@ -1,0 +1,19 @@
+name: arm_controller
+
+bus:
+  device: vcan0
+
+sync:
+  interval_ms: 100
+  overflow: 0
+
+defaults:
+  eds_pkg: ipa_canopen_test
+  eds_file: "test/Whistle Gold V002.dcf"
+
+modules:
+  - name: arm_1_joint
+    id: 1
+  - name: arm_3_joint
+    id: 3   
+     
