@@ -1,0 +1,8 @@
+joint_names: ["plate_joint"]
+home: [[0.0]]
+up: [[0.0]]
+right: [[-1.5708]]
+down: [[3.14]]
+left: [[1.5708]]
+rountrip: [down,left,up,right]
+ticktack: [left,right,left,right]

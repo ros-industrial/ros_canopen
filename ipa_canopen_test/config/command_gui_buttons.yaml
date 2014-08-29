@@ -1,0 +1,19 @@
+#group:
+#  group_name: <group_name>
+#  component_name: <component_name>
+#  buttons: [[button_name1,function_name1,parameter_name2,
+#    [button_name2,function_name2,parameter_name2]]
+
+group1:
+  group_name: plate
+  component_name: plate
+  buttons: [[stop,trigger,stop],
+    [init,trigger,init],
+    [recover,trigger,recover],
+    [home,move,home],
+    [up,move,up],
+    [right,move,right],
+    [down,move,down],
+    [left,move,left],
+    [roundtrip,move,roundtrip],
+    [ticktack,move,ticktack]]
