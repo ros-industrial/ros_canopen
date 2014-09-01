@@ -46,7 +46,9 @@ void Node_402::setTargetVel(int32_t target_vel)
 
 void Node_402::setTargetPos(int32_t target_pos)
 {
+    int32_t oldpos = target_position.get();
     target_position.set(target_pos);
+    if(oldpos != target_pos) operate();
 }
 
 bool Node_402::enterMode(const OperationMode &op_mode_var)
