@@ -21,21 +21,21 @@ const int8_t Node_402::getMode()
     return operation_mode;
 }
 
-const double Node_402::getActualVel()
+const int32_t Node_402::getActualVel()
 {
-    double ac_vel = actual_vel.get();
+    int32_t ac_vel = actual_vel.get();
     return ac_vel;
 }
 
-const double Node_402::getActualPos()
+const int32_t Node_402::getActualPos()
 {
-    double ac_pos = actual_pos.get();
+    int32_t ac_pos = actual_pos.get();
     return ac_pos;
 }
 
-const double Node_402::getActualInternalPos()
+const int32_t Node_402::getActualInternalPos()
 {
-    double internal_pos = actual_internal_pos.get();
+    int32_t internal_pos = actual_internal_pos.get();
     return internal_pos;
 }
 

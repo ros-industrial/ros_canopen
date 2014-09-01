@@ -46,11 +46,11 @@ public:
     const State& getState();
     void enterState(const State &s);
 
-    const double getActualPos();
-    const double getActualInternalPos();
+    const int32_t getActualPos();
+    const int32_t getActualInternalPos();
     void setTargetPos(int32_t pos);
 
-    const double getActualVel();
+    const int32_t getActualVel();
     void setTargetVel(int32_t target_vel);
 
     bool init();
