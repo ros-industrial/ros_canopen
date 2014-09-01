@@ -95,6 +95,7 @@ bool Node_402::operate()
         control_word.set(0x1f);
         control_word.set(0x0f);
     }
+    return true;
 }
 
 bool Node_402::turnOff()
