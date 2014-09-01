@@ -107,9 +107,13 @@ bool Node_402::turnOff()
 
 bool Node_402::init()
 {
-    if(Node_402::turnOn())
+    
+    enterMode(Profiled_Position);
+    
+    if(Node_402::turnOn()){
+        operate();
         return true;
-    else
+    }else
         return false;
 }
 
