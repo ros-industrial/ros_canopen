@@ -355,7 +355,7 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
             break;
         }
         case AbortTranserRequest::command:
-            LOG("abort, reason: " << AbortTranserRequest(msg).data.text());
+            LOG("abort" << std::hex << (uint32_t) AbortTranserRequest(msg).data.index << "#"<< std::dec << (uint32_t) AbortTranserRequest(msg).data.sub_index << ", reason: " << AbortTranserRequest(msg).data.text());
             offset = 0;
             notify = true;
             break;
