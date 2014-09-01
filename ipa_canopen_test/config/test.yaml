@@ -1,19 +1,17 @@
-name: arm_controller
+name: plate_controller
 
 bus:
-  device: vcan0
+  device: can0
 
 sync:
-  interval_ms: 100
+  interval_ms: 20
   overflow: 0
 
 defaults:
   eds_pkg: ipa_canopen_test
-  eds_file: "test/Whistle Gold V002.dcf"
+  eds_file: "config/Whistle Gold V002.dcf"
 
 modules:
-  - name: arm_1_joint
+  - name: plate_joint
     id: 1
-  - name: arm_3_joint
-    id: 3   
      

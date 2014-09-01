@@ -26,7 +26,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES
-  CATKIN_DEPENDS ipa_canopen_master ipa_canopen_402
+#  CATKIN_DEPENDS ipa_canopen_master ipa_canopen_402
 #  DEPENDS system_lib
 )
 

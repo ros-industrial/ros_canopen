@@ -2,10 +2,10 @@
 CreatedBy=Vladyslav Nechayev
 ModifiedBy=Vladyslav Nechayev
 Description=Elmo Gold drive EDS file
-CreationTime=06:58PM
-CreationDate=07-31-2014
-ModificationTime=06:58PM
-ModificationDate=07-31-2014
+CreationTime=03:50PM
+CreationDate=08-29-2014
+ModificationTime=03:50PM
+ModificationDate=08-29-2014
 FileName=Whistle Gold V002.dcf
 FileVersion=002
 FileRevision=01
@@ -788,6 +788,7 @@ ParameterValue=255
 ParameterName=Receive PDO Mapping Parameter 0
 ObjectType=0x9
 SubNumber=9
+ParameterValue=2
 
 [1600sub0]
 ParameterName=Number of entries
@@ -797,6 +798,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
+ParameterValue=2
 
 [1600sub1]
 ParameterName=PDO Mapping Entry
@@ -814,6 +816,7 @@ ParameterName=PDO Mapping Entry_2
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
+ParameterValue=0x607a0020
 PDOMapping=0
 
 [1600sub3]
@@ -1353,7 +1356,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
-ParameterValue=0
+ParameterValue=2
 
 [1A00sub1]
 ParameterName=Status Word
@@ -1371,6 +1374,7 @@ ParameterName=PDO Mapping Entry_2
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
+ParameterValue=0x60640020
 PDOMapping=0
 
 [1A00sub3]
@@ -1502,12 +1506,14 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
+ParameterValue=1
 
 [1A02sub1]
 ParameterName=PDO Mapping Entry
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
+ParameterValue=0x606c0020
 PDOMapping=0
 
 [1A02sub2]

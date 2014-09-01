@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   hardware_interface
   controller_manager
   ipa_socketcan_driver
+  ipa_canopen_402
 )
 
 ## System dependencies are found with CMake's conventions

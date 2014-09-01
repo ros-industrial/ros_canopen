@@ -2,6 +2,8 @@
 #include <ipa_socketcan_driver/socketcan.h>
 #include <ipa_canopen_chain_ros/chain_ros.h>
 
+#include <ipa_canopen_402/ipa_canopen_402.h>
+
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
@@ -11,31 +13,25 @@
 using namespace ipa_can;
 using namespace ipa_canopen;
 
-class Node402: public Node {
+const double SCALE = 360000 / (2*3.14);
+class ScaleNode: public Node_402 {
 public:
-    Node402(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>())
-    :Node(interface, dict, node_id, sync) {}
-    const double getActualPos(){
-        return 0;
+    ScaleNode(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>())
+    :Node_402(interface, dict, node_id, sync) {}
+    void getActualPos(double &val){
+        val = Node_402::getActualPos() / SCALE;
     }
-    const double getActualVel(){
-        return 0;
+    void getActualVel(double &val){
+        val = Node_402::getActualVel() / SCALE;
     }
-    void getActualPosRef(double &val){
-        val = getActualPos();
-    }
-    void getActualVelRef(double &val){
-        val = getActualVel();
-    }
-
-    void setTargetPos(int32_t pos) {}
-    void setTargetPosDouble(const double &pos) {
-        setTargetPos(int32_t( pos*100000));
+   void setTargetPos(const double &pos) {
+        Node_402::setTargetPos(int32_t( pos*SCALE));
     }
     
 };
 
-class ChainRobot: public RosChain<Node402, DispatchedInterface<SocketCANDriver>, LocalMaster>, public hardware_interface::RobotHW {
+
+class ChainRobot: public RosChain<ScaleNode, DispatchedInterface<SocketCANDriver>, LocalMaster>, public hardware_interface::RobotHW {
     hardware_interface::JointStateInterface jnt_state_interface;
     hardware_interface::PositionJointInterface jnt_pos_interface;
     
@@ -48,15 +44,15 @@ public:
     ChainRobot(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv){    }
     bool read(){
         if(this->nodes_){
-            this->nodes_->call(&Node402::getActualPosRef, pos);
-            this->nodes_->call(&Node402::getActualVelRef, vel);
+            this->nodes_->call(&ScaleNode::getActualPos, pos);
+            this->nodes_->call(&ScaleNode::getActualVel, vel);
             return true;
         }
         return false;
     }
     bool write(){
         if(this->nodes_){
-            this->nodes_->call(&Node402::setTargetPosDouble, pos_cmd);
+            this->nodes_->call(&ScaleNode::setTargetPos, pos_cmd);
             return true;
         }
         return false;
@@ -84,6 +80,8 @@ public:
         }
         registerInterface(&jnt_state_interface);
         registerInterface(&jnt_pos_interface);
+        
+        return true;
     }
 };
 

@@ -12,6 +12,7 @@ public:
     Node_402 (const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>()) : Node(interface, dict, node_id, sync)
     {
          state_listener_ = addStateListener(StateDelegate(this, &Node_402::switchState));
+         configureEntries();
     }
 
     enum OperationMode
@@ -46,11 +47,11 @@ public:
     const State& getState();
     void enterState(const State &s);
 
-    const double getActualPos();
-    const double getActualInternalPos();
+    const int32_t getActualPos();
+    const int32_t getActualInternalPos();
     void setTargetPos(int32_t pos);
 
-    const double getActualVel();
+    const int32_t getActualVel();
     void setTargetVel(int32_t target_vel);
 
     bool init();
