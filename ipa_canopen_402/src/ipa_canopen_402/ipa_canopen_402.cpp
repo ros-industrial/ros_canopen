@@ -63,19 +63,19 @@ bool Node_402::enterMode(const OperationMode &op_mode_var)
 
 void Node_402::configureEntries()
 {
-    node_storage_->entry(status_word, 0x6041);
-    node_storage_->entry(control_word, 0x6040);
+    getStorage()->entry(status_word, 0x6041);
+    getStorage()->entry(control_word, 0x6040);
 
-    node_storage_->entry(op_mode,0x6060);
-    node_storage_->entry(op_mode_display,0x6061);
+    getStorage()->entry(op_mode,0x6060);
+    getStorage()->entry(op_mode_display,0x6061);
 
-    node_storage_->entry(actual_vel,0x606C);
-    node_storage_->entry(target_velocity,0x60FF);
-    node_storage_->entry(profile_velocity,0x6081);
+    getStorage()->entry(actual_vel,0x606C);
+    getStorage()->entry(target_velocity,0x60FF);
+    getStorage()->entry(profile_velocity,0x6081);
 
-    node_storage_->entry(target_position,0x607A);
-    node_storage_->entry(actual_pos,0x6064);
-    node_storage_->entry(actual_internal_pos,0x6063);
+    getStorage()->entry(target_position,0x607A);
+    getStorage()->entry(actual_pos,0x6064);
+    getStorage()->entry(actual_internal_pos,0x6063);
 }
 
 bool Node_402::turnOn()
