@@ -7,7 +7,7 @@
         <arg name="paused" value="false" />
     </include>
 
-    <!-- send lwa4p_extended urdf to param server -->
+    <!-- send elmo_test_rig urdf to param server -->
     <param name="robot_description" command="$(find xacro)/xacro.py '$(find ipa_canopen_test)/urdf/elmo_test_rig.urdf.xacro'" />
     
     <!-- push robot_description to factory and spawn robot in gazebo -->
