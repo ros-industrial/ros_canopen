@@ -95,10 +95,9 @@ class Updater{
     ChainRobot &chain_;
     ros::Timer timer_;
     void update(const ros::TimerEvent& e){
-        if(chain_.read()){
-            cm_.update(e.current_real, e.last_real - e.current_real);
-            chain_.write();
-        }
+        chain_.read();
+        cm_.update(e.current_real, e.last_real - e.current_real);
+        chain_.write();
     }
 public:
     Updater(double rate, ros::NodeHandle &nh, controller_manager::ControllerManager &cm, ChainRobot &chain)
@@ -107,6 +106,9 @@ public:
 
 int main(int argc, char** argv){
   ros::init(argc, argv, "ipa_canopen_chain_ros_node");
+  ros::AsyncSpinner spinner(0);
+  spinner.start();
+  
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv("~");
   
@@ -119,6 +121,6 @@ int main(int argc, char** argv){
   
   Updater updater(100, nh, cm, chain);
 
-  ros::spin();
+  ros::waitForShutdown();
   return 0;
 }
