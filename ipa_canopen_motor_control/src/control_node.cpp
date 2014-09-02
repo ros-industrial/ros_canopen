@@ -19,12 +19,15 @@ public:
     ScaleNode(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>())
     :Node_402(interface, dict, node_id, sync) {}
     void getActualPos(double &val){
+        if(Node::getState() == Node::Operational)
         val = Node_402::getActualPos() / SCALE;
     }
     void getActualVel(double &val){
+        if(Node::getState() == Node::Operational)
         val = Node_402::getActualVel() / SCALE;
     }
    void setTargetPos(const double &pos) {
+        if(Node::getState() == Node::Operational)
         Node_402::setTargetPos(int32_t( pos*SCALE));
     }
     
@@ -43,6 +46,7 @@ class ChainRobot: public RosChain<ScaleNode, DispatchedInterface<SocketCANDriver
 public:
     ChainRobot(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv){    }
     bool read(){
+        boost::mutex::scoped_lock lock(mutex_);
         if(this->nodes_){
             this->nodes_->call(&ScaleNode::getActualPos, pos);
             this->nodes_->call(&ScaleNode::getActualVel, vel);
@@ -51,6 +55,7 @@ public:
         return false;
     }
     bool write(){
+        boost::mutex::scoped_lock lock(mutex_);
         if(this->nodes_){
             this->nodes_->call(&ScaleNode::setTargetPos, pos_cmd);
             return true;
