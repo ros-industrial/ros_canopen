@@ -31,9 +31,9 @@ struct NMTcommand{
 
 #pragma pack(pop) /* pop previous alignment from stack */
 
-Node::Node(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync)
+Node::Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync)
 : node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
-    nmt_listener_ = interface_->createMsgListener( ipa_can::Header(0x700 + node_id_), ipa_can::Interface::FrameDelegate(this, &Node::handleNMT));
+    nmt_listener_ = interface_->createMsgListener( ipa_can::Header(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
     
     sdo_.init();
     getStorage()->entry(heartbeat_, 0x1017);
@@ -147,7 +147,7 @@ SyncProvider::SyncListener::Ptr SyncProvider::add(const SyncDelegate & s){
     boost::mutex::scoped_lock lock(mutex_);
     return syncables_.createListener(s);
 }
-SyncProvider::SyncProvider(boost::shared_ptr<ipa_can::Interface> interface,const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t &overflow, bool loopback)
+SyncProvider::SyncProvider(boost::shared_ptr<ipa_can::CommInterface> interface,const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t &overflow, bool loopback)
 : interface_(interface), overflow_(overflow), msg_(h,overflow?1:0), period(t) {
     msg_.data[0] = 0;
     timeout = boost::posix_time::seconds(0);
@@ -157,7 +157,7 @@ SyncProvider::SyncProvider(boost::shared_ptr<ipa_can::Interface> interface,const
         max_timeout = boost::posix_time::milliseconds(1000);
     }
     if(loopback){
-        loop_listener_ = interface_->createMsgListener(h, ipa_can::Interface::FrameDelegate(this,&SyncProvider::handleFrame));
+        loop_listener_ = interface_->createMsgListener(h, ipa_can::CommInterface::FrameDelegate(this,&SyncProvider::handleFrame));
     }
     timer_.start(Timer::TimerDelegate(this, overflow ? &SyncProvider::sync_counter : &SyncProvider::sync_nocounter), period);
 }
@@ -204,7 +204,7 @@ bool SyncProvider::sync_nocounter(){
 }
 
 
-Master::Master(boost::shared_ptr<ipa_can::Interface> interface) : interface_(interface) {
+Master::Master(boost::shared_ptr<ipa_can::CommInterface> interface) : interface_(interface) {
     interface_->send(NMTcommand::Frame(0, NMTcommand::Reset_Com));
     boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 };

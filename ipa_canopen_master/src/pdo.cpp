@@ -154,7 +154,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
         
     
 }
-PDOMapper::PDOMapper(const boost::shared_ptr<ipa_can::Interface> interface)
+PDOMapper::PDOMapper(const boost::shared_ptr<ipa_can::CommInterface> interface)
 :interface_(interface)
 {
 }
@@ -200,7 +200,7 @@ bool PDOMapper::RPDO::init(const boost::shared_ptr<ObjectStorage> &storage, cons
     
     transmission_type = dict(com_index, SUB_COM_TRANSMISSION_TYPE).value().get<uint8_t>();
     
-    listener_ = interface_->createMsgListener(pdoid.header() ,ipa_can::Interface::FrameDelegate(this, &RPDO::handleFrame));
+    listener_ = interface_->createMsgListener(pdoid.header() ,ipa_can::CommInterface::FrameDelegate(this, &RPDO::handleFrame));
     
     return true;
 }

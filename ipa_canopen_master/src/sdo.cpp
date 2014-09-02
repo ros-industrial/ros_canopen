@@ -393,7 +393,7 @@ void SDOClient::init(){
     catch(...){
         server_id = ipa_can::Header(0x580+ storage_->node_id_);
     }
-    listener_ = interface_->createMsgListener(server_id, ipa_can::Interface::FrameDelegate(this, &SDOClient::handleFrame));
+    listener_ = interface_->createMsgListener(server_id, ipa_can::CommInterface::FrameDelegate(this, &SDOClient::handleFrame));
 }
 void SDOClient::wait_for_response(){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
