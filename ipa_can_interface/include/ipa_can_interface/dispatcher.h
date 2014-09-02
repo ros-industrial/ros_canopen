@@ -1,7 +1,7 @@
 #ifndef H_IPA_CAN_DISPATCHER
 #define H_IPA_CAN_DISPATCHER
 
-#include "interface.h"
+#include <ipa_can_interface/interface.h>
 #include <list>
 #include <boost/thread/mutex.hpp>
 #include <boost/unordered_map.hpp>
@@ -90,53 +90,21 @@ public:
     operator typename BaseClass::Callable() { return typename BaseClass::Callable(this,&FilteredDispatcher::dispatch); }
 };
 
-template< template<typename,typename> class Driver> class DispatchedInterface : public Interface{
-protected:
-    Driver<FrameDelegate, StateDelegate> driver_;
-    FilteredDispatcher<const unsigned int, FrameListener> frame_dispatcher_;
-    SimpleDispatcher<StateListener> state_dispatcher_;
+class FrameDispatcher : public FilteredDispatcher<const unsigned int, CommInterface::FrameListener> {
 public:
-    DispatchedInterface(bool loopback = false): driver_(frame_dispatcher_, state_dispatcher_, loopback) {}
-    
-    virtual bool init(const std::string &device, unsigned int bitrate) {
-        if(driver_.init(device, bitrate)){
-            return true;
-        }
-        return false;
+    virtual CommInterface::FrameListener::Ptr createMsgListener(const CommInterface::FrameDelegate &delegate){
+        return createListener(delegate);
     }
-    virtual void run(){
-        std::cout << "run interface" << std::endl;
-        driver_.run();
+    virtual CommInterface::FrameListener::Ptr createMsgListener(const Frame::Header& h, const CommInterface::FrameDelegate &delegate){
+        return createListener(h, delegate);
     }
-    virtual bool recover(){
-        return driver_.recover();
-    }
-    virtual bool send(const Frame & msg){
-        return driver_.send(msg);
-    }
-    virtual State getState(){
-        return driver_.getState();
-    }
+};
 
-    virtual void shutdown(){
-        driver_.shutdown();
+class StateDispatcher : public SimpleDispatcher<StateInterface::StateListener> {
+public:
+    virtual StateInterface::StateListener::Ptr createStateListener(const StateInterface::StateDelegate &delegate) {
+        return createListener(delegate);
     }
-    
-    virtual FrameListener::Ptr createMsgListener(const FrameDelegate &delegate){
-        return frame_dispatcher_.createListener(delegate);
-    }
-    virtual FrameListener::Ptr createMsgListener(const Frame::Header& h, const FrameDelegate &delegate){
-        return frame_dispatcher_.createListener(h, delegate);
-    }
-    virtual StateListener::Ptr createStateListener(const StateDelegate &delegate) {
-        return state_dispatcher_.createListener(delegate);
-    }
-    
-    virtual bool translateError(unsigned int internal_error, std::string & str){
-        return driver_.translateError(internal_error, str);
-    }
-    
-    virtual ~DispatchedInterface() {}
 };
 
 } // namespace ipa_can

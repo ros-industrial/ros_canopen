@@ -10,7 +10,7 @@
 namespace ipa_can{
 
 
-template<typename FrameDelegate, typename StateDelegate, typename Socket> class AsioDriver{
+template<typename FrameDelegate, typename StateDelegate, typename Socket> class AsioDriver : public DriverInterface{
     static void call_delegate(const FrameDelegate &delegate, const Frame &msg){
         delegate(msg);
     }

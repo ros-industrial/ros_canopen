@@ -34,7 +34,7 @@ void print_frame(const Frame &f){
     std::cout << std::dec << std::endl;
 }
 
-SocketCANDriver<Interface::FrameDelegate, Interface::StateDelegate> driver(print_frame, print_error);
+SocketCANDriver<CommInterface::FrameDelegate, StateInterface::StateDelegate> driver(print_frame, print_error);
 
 void print_error(const State & s){
     std::string err;
