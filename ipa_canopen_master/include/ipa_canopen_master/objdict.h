@@ -359,6 +359,12 @@ protected:
     boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> > storage_;
     boost::mutex mutex_;
     
+    void init_nolock(const ObjectDict::Key &key, const boost::shared_ptr<const ObjectDict::Entry> &entry);
+    
+    ReadDelegate read_delegate_;
+    WriteDelegate write_delegate_;
+    size_t map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
+public:
     template<typename T> Entry<T> entry(const ObjectDict::Key &key){
         boost::mutex::scoped_lock lock(mutex_);
         
@@ -390,13 +396,7 @@ protected:
         }
         return Entry<T>(it->second);
     }
-    void init_nolock(const ObjectDict::Key &key, const boost::shared_ptr<const ObjectDict::Entry> &entry);
-    
-    ReadDelegate read_delegate_;
-    WriteDelegate write_delegate_;
-    size_t map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
-public:
-    
+
     size_t map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
     
     template<typename T> Entry<T> entry(uint16_t index){
