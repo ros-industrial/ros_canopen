@@ -184,6 +184,7 @@ void PDOMapper::init(const boost::shared_ptr<ObjectStorage> storage){
 
 
 bool PDOMapper::RPDO::init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
+    boost::mutex::scoped_lock lock(mutex);
     listener_.reset();
     const ipa_canopen::ObjectDict & dict = *storage->dict_;
     parse_and_set_mapping(storage, com_index, map_index, true, false);
@@ -200,11 +201,12 @@ bool PDOMapper::RPDO::init(const boost::shared_ptr<ObjectStorage> &storage, cons
     transmission_type = dict(com_index, SUB_COM_TRANSMISSION_TYPE).value().get<uint8_t>();
     
     listener_ = interface_->createMsgListener(pdoid.header() ,ipa_can::Interface::FrameDelegate(this, &RPDO::handleFrame));
-        
+    
     return true;
 }
 
 bool PDOMapper::TPDO::init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
+    boost::mutex::scoped_lock lock(mutex);
     const ipa_canopen::ObjectDict & dict = *storage->dict_;
 
     parse_and_set_mapping(storage, com_index, map_index, false, true);
