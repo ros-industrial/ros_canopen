@@ -1245,7 +1245,7 @@ DefaultValue=255
 PDOMapping=0
 LowLimit=0
 HighLimit=255
-ParameterValue=255
+ParameterValue=1
 
 [1802sub3]
 ParameterName=Inhibit Time
