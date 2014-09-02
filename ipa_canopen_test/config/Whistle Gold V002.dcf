@@ -1356,7 +1356,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
-ParameterValue=2
+ParameterValue=1
 
 [1A00sub1]
 ParameterName=Status Word
@@ -1506,7 +1506,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
-ParameterValue=1
+ParameterValue=2
 
 [1A02sub1]
 ParameterName=PDO Mapping Entry
@@ -1521,7 +1521,9 @@ ParameterName=PDO Mapping Entry_2
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
+ParameterValue=0x60640020
 PDOMapping=0
+
 
 [1A02sub3]
 ParameterName=PDO Mapping Entry_3
