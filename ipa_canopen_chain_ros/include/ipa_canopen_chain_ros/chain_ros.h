@@ -7,6 +7,7 @@
 #include <cob_srvs/Trigger.h>
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <boost/filesystem/path.hpp>
+#include <boost/weak_ptr.hpp>
 
 namespace ipa_canopen{
 
@@ -52,6 +53,39 @@ template<typename T> bool read_xmlrpc_or_praram(T &val, const std::string &name,
     return nh.getParam(name, val);
 }
 
+template<typename NodeType> class Logger{
+    boost::weak_ptr<NodeType> node_;
+    std::vector<boost::function< void (diagnostic_updater::DiagnosticStatusWrapper &)> > entries_;
+    
+    template<typename T> void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, const std::string &name, const ObjectDict::Key &key){
+        boost::shared_ptr<NodeType> node = node_.lock();
+        if(node){
+            stat.add(name, node->template get<T>(key));
+        }
+    }
+public:
+    Logger(boost::shared_ptr<NodeType> node):  node_(node) {}
+    template<typename T> void add(const std::string &name, const ObjectDict::Key &key){
+            entries_.push_back(boost::bind(&Logger::log_entry<T>, this, _1, name, key));
+    }
+    template<const uint16_t dt> static void func(Logger &l, const std::string &n, const ObjectDict::Key &k){
+        l.template add<typename ObjectStorage::DataType<dt>::type>(n,k);
+    }
+    void add(const uint16_t data_type, const std::string &name, const ObjectDict::Key &key){
+        branch_type<Logger, void (Logger &, const std::string &, const ObjectDict::Key &)>(data_type)(*this,name, key);
+    }
+
+    virtual void log(diagnostic_updater::DiagnosticStatusWrapper &stat){
+        boost::shared_ptr<NodeType> node = node_.lock();
+        if(node){
+            stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "Active");
+            for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat);
+            //ROS_INFO_STREAM(node->getStorage()->template entry<std::string>(0x1008).get_once());
+            //stat.add("desc",std::string());
+        }
+    }
+    virtual ~Logger() {}
+};
 template<typename NodeType, typename InterfaceType, typename MasterType> class RosChain {
 protected:
     
@@ -59,7 +93,7 @@ protected:
     
     boost::shared_ptr<InterfaceType> interface_;
     boost::shared_ptr<MasterType> master_;
-    boost::scoped_ptr<ipa_canopen::NodeChain<NodeType> > nodes_;
+    boost::shared_ptr<NodeChain<NodeType> > nodes_;
     ipa_can::Interface::StateListener::Ptr state_listener_;
     
     boost::scoped_ptr<boost::thread> thread_;
@@ -69,7 +103,7 @@ protected:
     
     diagnostic_updater::Updater diag_updater_;
     ros::Timer diag_timer_;
-    
+
     boost::mutex mutex_;
     ros::ServiceServer srv_init_;
     ros::ServiceServer srv_halt_;
@@ -185,7 +219,7 @@ protected:
         try{
             for (int32_t i = 0; i < modules.size(); ++i){
                 XmlRpc::XmlRpcValue &module = modules[i];
-                // TODO: name
+                std::string name = module["name"];
                 int node_id;
                 try{
                 node_id = module["id"];
@@ -212,13 +246,17 @@ protected:
                 }
                 eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
                 }
-                boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(eds);
+                boost::shared_ptr<ObjectDict>  dict = ObjectDict::fromFile(eds);
                 if(!dict){
                     _destroy();
                     ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
                     return true;
                 }
-                nodes_->add(boost::make_shared<NodeType>(interface_, dict, node_id, sync));
+                boost::shared_ptr<NodeType> node = boost::make_shared<NodeType>(interface_, dict, node_id, sync);
+                boost::shared_ptr<Logger<NodeType> > logger = boost::make_shared<Logger<NodeType> >(node);
+                diag_updater_.add(name, boost::bind(&Logger<NodeType>::log, logger, _1));
+                
+                nodes_->add(node);
             }
             nodes_->start();
         }
