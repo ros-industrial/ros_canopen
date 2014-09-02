@@ -141,52 +141,40 @@ template<typename T> HoldAny parse_typed_value(boost::property_tree::ptree &pt, 
     return HoldAny(pt.get<T>(key));
 }
 
-HoldAny read_value(boost::property_tree::ptree &pt, uint16_t data_type, const std::string &key){
-    switch(ObjectDict::DataTypes(data_type)){
-        case ObjectDict::DEFTYPE_INTEGER8:
-            return parse_int<ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER8>::type>(pt,key);
-        case ObjectDict::DEFTYPE_INTEGER16:
-            return parse_int<ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER16>::type>(pt,key);
-        case ObjectDict::DEFTYPE_INTEGER32:
-            return parse_int<ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER32>::type>(pt,key);
-        case ObjectDict::DEFTYPE_INTEGER64:
-            return parse_int<ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER64>::type>(pt,key);
-            
-        case ObjectDict::DEFTYPE_UNSIGNED8:
-            return parse_int<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED8>::type>(pt,key);
-        case ObjectDict::DEFTYPE_UNSIGNED16:
-            return parse_int<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16>::type>(pt,key);
-        case ObjectDict::DEFTYPE_UNSIGNED32:
-            return parse_int<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED32>::type>(pt,key);
-        case ObjectDict::DEFTYPE_UNSIGNED64:
-            return parse_int<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED64>::type>(pt,key);
-            
-        case ObjectDict::DEFTYPE_DOMAIN:
-            return parse_octets<ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN>::type>(pt,key);
-        case ObjectDict::DEFTYPE_OCTET_STRING:
-            return parse_octets<ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING>::type>(pt,key);
-            
-        case ObjectDict::DEFTYPE_REAL32:
-            return parse_typed_value<ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL32>::type>(pt,key);
-        case ObjectDict::DEFTYPE_REAL64:
-            return parse_typed_value<ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL64>::type>(pt,key);
-            
-        case ObjectDict::DEFTYPE_VISIBLE_STRING:
-            return parse_typed_value<ObjectStorage::DataType<ObjectDict::DEFTYPE_VISIBLE_STRING>::type>(pt,key);
-        case ObjectDict::DEFTYPE_UNICODE_STRING:
-            return parse_typed_value<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNICODE_STRING>::type>(pt,key);
-        default:
-            throw ParseException();
+struct ReadAnyValue{
+    template<const ObjectDict::DataTypes dt> static HoldAny func(boost::property_tree::ptree &pt, const std::string &key);
+    static HoldAny read_value(boost::property_tree::ptree &pt, uint16_t data_type, const std::string &key){
+        return branch_type<ReadAnyValue, HoldAny (boost::property_tree::ptree &, const std::string &)>(data_type)(pt, key);
     }
+};
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER8>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<int8_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER16>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<int16_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER32>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<int32_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER64>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<int64_t>(pt,key); }
+
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED8>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<uint8_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED16>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<uint16_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED32>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<uint32_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED64>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<uint64_t>(pt,key); }
+
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_DOMAIN>(boost::property_tree::ptree &pt, const std::string &key)
+{ return parse_octets<ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN>::type>(pt,key); }
+
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_OCTET_STRING>(boost::property_tree::ptree &pt, const std::string &key)
+{ return parse_octets<ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING>::type>(pt,key); }
+
+template<const ObjectDict::DataTypes dt> HoldAny ReadAnyValue::func(boost::property_tree::ptree &pt, const std::string &key){
+    return parse_typed_value<typename ObjectStorage::DataType<dt>::type>(pt, key);
 }
+
 
 void read_var(ObjectDict::Entry &entry, boost::property_tree::ptree &object){
         entry.data_type = int_from_string<uint16_t>(object.get<std::string>("DataType"));
         entry.mappable = object.get<bool>("PDOMapping", false);
         set_access(entry, object.get<std::string>("AccessType"));
         
-        entry.def_val = read_value(object, entry.data_type, "DefaultValue");
-        entry.init_val = read_value(object, entry.data_type, "ParameterValue");
+        entry.def_val = ReadAnyValue::read_value(object, entry.data_type, "DefaultValue");
+        entry.init_val = ReadAnyValue::read_value(object, entry.data_type, "ParameterValue");
 }
 
 void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptree &pt, const std::string &name, const uint8_t* sub_index = 0){
@@ -215,7 +203,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptre
                     subname = pt.get<std::string>(name.substr(2)+"Denotation." + boost::lexical_cast<std::string>((int)i), subname);
                     
                     dict->insert(true, boost::make_shared<const ipa_canopen::ObjectDict::Entry>(entry->index, i, entry->data_type, name, entry->readable, entry->writable, entry->mappable, entry->def_val,
-                       read_value(pt, entry->data_type, name.substr(2)+"Value." + boost::lexical_cast<std::string>((int)i))));
+                       ReadAnyValue::read_value(pt, entry->data_type, name.substr(2)+"Value." + boost::lexical_cast<std::string>((int)i))));
                 }
             }else{
                 //subs = object->get<uint8_t>("SubNumber");
