@@ -183,6 +183,10 @@ public:
     StateListener::Ptr addStateListener(const StateDelegate & s){
         return state_dispatcher_.createListener(s);
     }
+    
+    template<typename T> T get(const ObjectDict::Key& k){
+        return getStorage()->entry<T>(k).get();
+    }
 
     
 private:
