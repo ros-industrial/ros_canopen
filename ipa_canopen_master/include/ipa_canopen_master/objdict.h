@@ -279,7 +279,11 @@ protected:
                 throw AccessException();
             }
         }
-
+        template<typename T> const T get_once() {
+            if(!valid) get<T>();
+            else return get_cached<T>();
+        }
+        
         template<typename T> const T get() {
             boost::mutex::scoped_lock lock(mutex);
             
@@ -324,6 +328,10 @@ public:
             if(!data) throw AccessException();
 
             return data->get<T>();
+        }        
+        const T get_once() {
+            if(!data) throw AccessException();
+            return data->get_once<T>();
         }        
         const T get_cached() {
             if(!data) throw AccessException();
