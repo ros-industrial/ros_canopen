@@ -215,8 +215,10 @@ public:
     const boost::shared_ptr<ipa_can::Interface> interface_;
     virtual boost::shared_ptr<SyncProvider> getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow = 0, const bool loopback = true) = 0;
     Master(boost::shared_ptr<ipa_can::Interface> interface);
+    virtual ~Master() {}
 };
-class LocalMaster: Master{
+
+class LocalMaster: public Master{
     boost::mutex mutex_;
     boost::unordered_map<ipa_can::Header, boost::shared_ptr<SyncProvider> > providers_;
 public:
