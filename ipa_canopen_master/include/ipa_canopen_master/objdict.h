@@ -312,7 +312,7 @@ protected:
     };        
         
 public:
-    template<uint16_t dt> struct DataType{
+    template<const uint16_t dt> struct DataType{
         typedef void type;
     };
     
@@ -422,15 +422,42 @@ template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER16> { typed
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER32> { typedef int32_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER64> { typedef int64_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED8> { typedef uint8_t type;};
+
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16> { typedef uint16_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED32> { typedef uint32_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED64> { typedef uint64_t type;};
+
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL32> { typedef float type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL64> { typedef double type;};
+
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_VISIBLE_STRING> { typedef std::string type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING> { typedef std::string type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNICODE_STRING> { typedef std::string type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN> { typedef std::string type;};
+
+template<typename T, typename R> static R *branch_type(const uint16_t data_type){
+    switch(ObjectDict::DataTypes(data_type)){
+        case ObjectDict::DEFTYPE_INTEGER8: return T::template func< ObjectDict::DEFTYPE_INTEGER8 >;
+        case ObjectDict::DEFTYPE_INTEGER16: return T::template func< ObjectDict::DEFTYPE_INTEGER16 >;
+        case ObjectDict::DEFTYPE_INTEGER32: return T::template func< ObjectDict::DEFTYPE_INTEGER32 >;
+        case ObjectDict::DEFTYPE_INTEGER64: return T::template func< ObjectDict::DEFTYPE_INTEGER64 >;
+            
+        case ObjectDict::DEFTYPE_UNSIGNED8: return T::template func< ObjectDict::DEFTYPE_UNSIGNED8 >;
+        case ObjectDict::DEFTYPE_UNSIGNED16: return T::template func< ObjectDict::DEFTYPE_UNSIGNED16 >;
+        case ObjectDict::DEFTYPE_UNSIGNED32: return T::template func< ObjectDict::DEFTYPE_UNSIGNED32 >;
+        case ObjectDict::DEFTYPE_UNSIGNED64: return T::template func< ObjectDict::DEFTYPE_UNSIGNED64 >;
+            
+        case ObjectDict::DEFTYPE_REAL32: return T::template func< ObjectDict::DEFTYPE_REAL32 >;
+        case ObjectDict::DEFTYPE_REAL64: return T::template func< ObjectDict::DEFTYPE_REAL64 >;
+
+        case ObjectDict::DEFTYPE_VISIBLE_STRING: return T::template func< ObjectDict::DEFTYPE_VISIBLE_STRING >;
+        case ObjectDict::DEFTYPE_OCTET_STRING: return T::template func< ObjectDict::DEFTYPE_OCTET_STRING >;
+        case ObjectDict::DEFTYPE_UNICODE_STRING: return T::template func< ObjectDict::DEFTYPE_UNICODE_STRING >;
+        case ObjectDict::DEFTYPE_DOMAIN: return T::template func< ObjectDict::DEFTYPE_DOMAIN >;
+           
+        default: return 0;
+    }
+}
 
 } // ipa_canopen
 
