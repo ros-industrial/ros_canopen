@@ -29,8 +29,8 @@ protected:
     virtual void triggerReadSome() = 0;
     virtual bool enqueue(const Frame & msg) = 0;
     
-    void dispatchFrame(const Frame msg){
-        io_service_.post(boost::bind(call_delegate, frame_delegate_,msg));
+    void dispatchFrame(const Frame &msg){
+        io_service_.post(boost::bind(call_delegate, frame_delegate_,msg)); // copies msg
     }
     void setErrorCode(const boost::system::error_code& error){
         boost::mutex::scoped_lock lock(state_mutex_);
@@ -67,8 +67,10 @@ protected:
     AsioDriver(FrameDelegate frame_delegate, StateDelegate state_delegate)
     : frame_delegate_(frame_delegate), state_delegate_(state_delegate), socket_(io_service_)
     {}
-    
+
 public:
+    virtual ~AsioDriver() {}
+    
     State getState(){
         boost::mutex::scoped_lock lock(state_mutex_);
         return state_;
