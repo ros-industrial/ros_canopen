@@ -160,6 +160,8 @@ protected:
 private:
     boost::mutex send_mutex_;
 };
-    
+
+template <typename T> class DispatchedInterface;
+typedef DispatchedInterface<SocketCANDriver<CommInterface::FrameDelegate,StateInterface::StateDelegate> > SocketCANInterface;
 } // namespace ipa_can
 #endif

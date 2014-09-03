@@ -90,22 +90,32 @@ public:
     operator typename BaseClass::Callable() { return typename BaseClass::Callable(this,&FilteredDispatcher::dispatch); }
 };
 
-class FrameDispatcher : public FilteredDispatcher<const unsigned int, CommInterface::FrameListener> {
+
+template <typename T>class DispatchedInterface: public CommInterface, public StateInterface, public T{
+    typedef FilteredDispatcher<const unsigned int, CommInterface::FrameListener> FrameDispatcher;
+    typedef SimpleDispatcher<StateInterface::StateListener> StateDispatcher;
+    FrameDispatcher frame_dispatcher_;
+    StateDispatcher state_dispatcher_;
 public:
-    virtual CommInterface::FrameListener::Ptr createMsgListener(const CommInterface::FrameDelegate &delegate){
-        return createListener(delegate);
+    DispatchedInterface(): T(FrameDelegate(&frame_dispatcher_, &FrameDispatcher::dispatch),StateDelegate(&state_dispatcher_, &StateDispatcher::dispatch)) {}
+    template<typename T1> DispatchedInterface(const T1 &t1): T(FrameDelegate(&frame_dispatcher_, &FrameDispatcher::dispatch),StateDelegate(&state_dispatcher_, &StateDispatcher::dispatch), t1) {}
+    template<typename T1,typename T2> DispatchedInterface(const T1 &t1, const T2 &t2): T(FrameDelegate(&frame_dispatcher_, &FrameDispatcher::dispatch),StateDelegate(&state_dispatcher_, &StateDispatcher::dispatch), t1, t2) {}
+    
+    virtual bool send(const Frame & msg){
+        return T::send(msg);
     }
-    virtual CommInterface::FrameListener::Ptr createMsgListener(const Frame::Header& h, const CommInterface::FrameDelegate &delegate){
-        return createListener(h, delegate);
+
+    virtual FrameListener::Ptr createMsgListener(const FrameDelegate &delegate){
+        return frame_dispatcher_.createListener(delegate);
+    }
+    virtual FrameListener::Ptr createMsgListener(const Frame::Header&h , const FrameDelegate &delegate){
+        return frame_dispatcher_.createListener(h, delegate);
+    }
+    virtual StateListener::Ptr createStateListener(const StateDelegate &delegate){
+        return state_dispatcher_.createListener(delegate);
     }
 };
 
-class StateDispatcher : public SimpleDispatcher<StateInterface::StateListener> {
-public:
-    virtual StateInterface::StateListener::Ptr createStateListener(const StateInterface::StateDelegate &delegate) {
-        return createListener(delegate);
-    }
-};
 
 } // namespace ipa_can
 #endif

@@ -34,7 +34,7 @@ public:
 };
 
 
-class ChainRobot: public RosChain<ScaleNode, DispatchedInterface<SocketCANDriver>, LocalMaster>, public hardware_interface::RobotHW {
+class ChainRobot: public RosChain<ScaleNode, SocketCANInterface, LocalMaster>, public hardware_interface::RobotHW {
     hardware_interface::JointStateInterface jnt_state_interface;
     hardware_interface::PositionJointInterface jnt_pos_interface;
     
