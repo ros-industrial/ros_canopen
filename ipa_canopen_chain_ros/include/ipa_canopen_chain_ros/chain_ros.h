@@ -10,11 +10,11 @@
 #include <boost/weak_ptr.hpp>
 
 namespace ipa_canopen{
-
+    
 class StateWaiter{
     boost::mutex mutex_;
     boost::condition_variable cond_;
-    ipa_can::Interface::StateListener::Ptr state_listener_;
+    ipa_can::StateInterface::StateListener::Ptr state_listener_;
     ipa_can::State state_;
     void updateState(const ipa_can::State &s){
         boost::mutex::scoped_lock lock(mutex_);
@@ -25,7 +25,7 @@ class StateWaiter{
 public:
     template<typename InterfaceType> StateWaiter(boost::shared_ptr<InterfaceType> interface){
         state_ = interface->getState();
-        state_listener_ = interface->createStateListener(ipa_can::Interface::StateDelegate(this, &StateWaiter::updateState));
+        state_listener_ = interface->createStateListener(ipa_can::StateInterface::StateDelegate(this, &StateWaiter::updateState));
     }
     template<typename DurationType> bool wait(const ipa_can::State::DriverState &s, const DurationType &duration){
         boost::mutex::scoped_lock cond_lock(mutex_);
@@ -86,6 +86,7 @@ public:
     }
     virtual ~Logger() {}
 };
+
 template<typename NodeType, typename InterfaceType, typename MasterType> class RosChain {
 protected:
     
@@ -94,7 +95,7 @@ protected:
     boost::shared_ptr<InterfaceType> interface_;
     boost::shared_ptr<MasterType> master_;
     boost::shared_ptr<NodeChain<NodeType> > nodes_;
-    ipa_can::Interface::StateListener::Ptr state_listener_;
+    ipa_can::StateInterface::StateListener::Ptr state_listener_;
     
     boost::scoped_ptr<boost::thread> thread_;
 
@@ -156,7 +157,7 @@ protected:
         bus_nh.param("loopback",can_loopback, true);
 
         interface_ = boost::make_shared<InterfaceType>(can_loopback);
-        state_listener_ = interface_->createStateListener(ipa_can::Interface::StateDelegate(this, &RosChain::logState));
+        state_listener_ = interface_->createStateListener(ipa_can::StateInterface::StateDelegate(this, &RosChain::logState));
         
         if(!interface_->init(can_device, can_bitrate)){
             _destroy();

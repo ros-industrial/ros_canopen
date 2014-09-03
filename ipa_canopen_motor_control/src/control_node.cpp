@@ -16,7 +16,7 @@ using namespace ipa_canopen;
 const double SCALE = 360000 / (2*3.14);
 class ScaleNode: public Node_402 {
 public:
-    ScaleNode(const boost::shared_ptr<ipa_can::Interface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>())
+    ScaleNode(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>())
     :Node_402(interface, dict, node_id, sync) {}
     void getActualPos(double &val){
         if(Node::getState() == Node::Operational)
