@@ -110,6 +110,8 @@ public:
     
     virtual bool translateError(unsigned int internal_error, std::string & str) = 0;
     
+    virtual bool doesLoopBack() const = 0;
+    
     virtual void run()  = 0;
     
     virtual ~DriverInterface() {}

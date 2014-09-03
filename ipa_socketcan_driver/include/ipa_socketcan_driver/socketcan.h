@@ -17,12 +17,16 @@ namespace ipa_can {
 
 template<typename FrameDelegate, typename StateDelegate> class SocketCANDriver : public AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> {
     typedef AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> BaseClass;
+    const bool loopback_;
 public:    
     SocketCANDriver(FrameDelegate frame_delegate, StateDelegate state_delegate, bool loopback = false)
     : BaseClass(frame_delegate, state_delegate), loopback_(loopback)
     {}
-    const bool loopback_;
     
+    bool doesLoopBack() const{
+        return loopback_;
+    }
+
     bool init(const std::string &device, unsigned int bitrate){
         State s = BaseClass::getState();
         if(s.driver_state == State::closed){
