@@ -96,7 +96,7 @@ class Updater{
     ros::Timer timer_;
     void update(const ros::TimerEvent& e){
         chain_.read();
-        cm_.update(e.current_real, e.last_real - e.current_real);
+        cm_.update(e.current_real, e.current_real - e.last_real);
         chain_.write();
     }
 public:
