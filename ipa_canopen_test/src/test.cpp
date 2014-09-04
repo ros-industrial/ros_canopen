@@ -41,7 +41,7 @@ public:
     ThreadedInterface(bool loopback = false) : WrappedInterface(loopback) {}
 };
 
-boost::shared_ptr<ipa_can::Interface> driver = boost::make_shared<ThreadedInterface< DispatchedInterface<SocketCANDriver> > > (true);
+boost::shared_ptr<ThreadedInterface<SocketCANInterface> > driver = boost::make_shared<ThreadedInterface<SocketCANInterface> > (true);
 
 void print_frame(const Frame &f){
     LOG( "in: " << std:: hex << f.id << std::dec);
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
     
     // Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
     // Interface::FrameListener::Ptr tprinter = driver->createMsgListener(Header(0x181), print_tpdo); // printer for all incoming messages
-    Interface::StateListener::Ptr sprinter = driver->createStateListener(print_state); // printer for all incoming messages
+    StateInterface::StateListener::Ptr sprinter = driver->createStateListener(print_state); // printer for all incoming messages
 
     int sync_ms = 10;
     if(argc > 3) sync_ms = atol(argv[3]);
