@@ -4,7 +4,7 @@
 
 #include <ipa_can_interface/dispatcher.h>
 #include <boost/unordered_set.hpp>
-#include <ipa_socketcan_driver/socketcan.h>
+#include <ipa_can_interface/socketcan.h>
 
 #include <boost/thread.hpp>
 

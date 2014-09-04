@@ -6,7 +6,6 @@ project(ipa_canopen_test)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   ipa_canopen_master
-  ipa_socketcan_driver
   ipa_canopen_402
 )
 

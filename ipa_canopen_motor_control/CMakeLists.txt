@@ -8,7 +8,6 @@ find_package(catkin REQUIRED COMPONENTS
   ipa_canopen_chain_ros
   hardware_interface
   controller_manager
-  ipa_socketcan_driver
   ipa_canopen_402
 )
 
