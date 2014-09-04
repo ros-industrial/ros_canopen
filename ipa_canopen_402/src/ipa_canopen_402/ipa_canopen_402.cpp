@@ -46,7 +46,7 @@ void Node_402::setTargetVel(int32_t target_vel)
 
 void Node_402::setTargetPos(int32_t target_pos)
 {
-    int32_t oldpos = target_position.get();
+    int32_t oldpos = target_position.get_once();
     target_position.set(target_pos);
     if(oldpos != target_pos) operate();
 }
