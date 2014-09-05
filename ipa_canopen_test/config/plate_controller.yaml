@@ -3,8 +3,6 @@ plate_controller:
   topic: "test"
   joints:
     - plate_joint
-  gains:
-    plate_joint: {p: 10.0, i: 0.0, d: 0.0, i_clamp: 0.0}
   constraints:
       goal_time: 0.6
       stopped_velocity_tolerance: 0.5
