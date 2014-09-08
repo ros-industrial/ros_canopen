@@ -39,8 +39,20 @@ public:
     template<typename T> static TypeGuard create() { return TypeGuard(TypeInfo<T>::id, sizeof(T)); }
 };
 
+class String: public std::vector<char>{
+public:
+    String() {}
+    String(const std::string &str) : std::vector<char>(str.begin(), str.end()) {}
+    operator const char * () const {
+        return &at(0);
+    }
+    operator const std::string () const {
+        return std::string(begin(), end());
+    }
+};
+
 class HoldAny{
-    std::string buffer;
+    String buffer;
     TypeGuard type_guard;
     bool empty;
 public:
@@ -62,7 +74,7 @@ public:
 
     bool is_empty() const { return empty; }
     
-    const std::string data() const { 
+    const String data() const { 
         if(empty){
             throw std::length_error("buffer empty");
         }        
@@ -79,7 +91,7 @@ public:
     }
 };
 
-template<> const std::string & HoldAny::get() const;
+template<> const String & HoldAny::get() const;
 
 struct DeviceInfo{
     std::string vendor_name;
@@ -215,13 +227,13 @@ template<typename T> std::ostream& operator<<(std::ostream& stream, const NodeId
 
 class ObjectStorage{
 public:
-    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, std::string &> ReadDelegate;
-    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, const std::string &> WriteDelegate;
+    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, String &> ReadDelegate;
+    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, const String &> WriteDelegate;
     
 protected:
     class Data: boost::noncopyable{
         boost::mutex mutex;
-        std::string buffer;
+        String buffer;
         bool valid;
 
         ReadDelegate read_delegate;
@@ -422,8 +434,8 @@ public:
     void init_all();
 };
 
-template<> std::string & ObjectStorage::Data::access();
-template<> std::string & ObjectStorage::Data::allocate();
+template<> String & ObjectStorage::Data::access();
+template<> String & ObjectStorage::Data::allocate();
 
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER8> { typedef int8_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER16> { typedef int16_t type;};
@@ -438,10 +450,10 @@ template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED64> { type
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL32> { typedef float type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL64> { typedef double type;};
 
-template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_VISIBLE_STRING> { typedef std::string type;};
-template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING> { typedef std::string type;};
-template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNICODE_STRING> { typedef std::string type;};
-template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN> { typedef std::string type;};
+template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_VISIBLE_STRING> { typedef String type;};
+template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING> { typedef String type;};
+template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNICODE_STRING> { typedef String type;};
+template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN> { typedef String type;};
 
 template<typename T, typename R> static R *branch_type(const uint16_t data_type){
     switch(ObjectDict::DataTypes(data_type)){

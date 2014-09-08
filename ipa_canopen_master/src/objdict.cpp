@@ -11,17 +11,17 @@ namespace ipa_canopen{
 
 using namespace ipa_canopen;
 
-template<> const std::string & HoldAny::get() const{
+template<> const String & HoldAny::get() const{
     return buffer;
 }
 
-template<> std::string & ObjectStorage::Data::access(){
+template<> String & ObjectStorage::Data::access(){
     if(!valid){
         throw std::length_error("buffer not valid");
     }
     return buffer;
 }
-template<> std::string & ObjectStorage::Data::allocate(){
+template<> String & ObjectStorage::Data::allocate(){
     buffer.resize(0);
     valid = true;
     return buffer;
@@ -126,19 +126,23 @@ uint8_t get_dec(char d){
 template<typename T> HoldAny parse_octets(boost::property_tree::ptree &pt, const std::string &key){
     if(pt.count(key) == 0) return HoldAny(TypeGuard::create<T>());
 
-    std::string in = pt.get<T>(key);
+    std::string in = pt.get<std::string>(key);
     
     if( (in.size() % 2) != 0) throw ParseException();
     std::string out(in.size()/2,0);
     for(size_t i=0; i < out.size(); ++i){
         out[i] = (get_dec(in[i<<1]) << 4) | get_dec(in[(i<<1) +1]);
     }
-    return HoldAny(out);
+    return HoldAny(T(out));
 }
 
 template<typename T> HoldAny parse_typed_value(boost::property_tree::ptree &pt, const std::string &key){
     if(pt.count(key) == 0) return HoldAny(TypeGuard::create<T>());
     return HoldAny(pt.get<T>(key));
+}
+template<> HoldAny parse_typed_value<String>(boost::property_tree::ptree &pt, const std::string &key){
+    if(pt.count(key) == 0) return HoldAny(TypeGuard::create<String>());
+    return HoldAny(String(pt.get<std::string>(key)));
 }
 
 struct ReadAnyValue{

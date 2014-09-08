@@ -30,7 +30,7 @@ class SDOClient{
     
     void handleFrame(const ipa_can::Frame & msg);
     
-    std::string buffer;
+    String buffer;
     size_t offset;
     size_t total;
     ipa_can::Frame last_msg;
@@ -41,8 +41,8 @@ class SDOClient{
 
     const boost::shared_ptr<ipa_can::CommInterface> interface_;
 protected:
-    void read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data);
-    void write(const ipa_canopen::ObjectDict::Entry &entry, const std::string &data);
+    void read(const ipa_canopen::ObjectDict::Entry &entry, String &data);
+    void write(const ipa_canopen::ObjectDict::Entry &entry, const String &data);
 public:
     const boost::shared_ptr<ObjectStorage> storage_;
     
@@ -62,8 +62,8 @@ class PDOMapper{
     public:
         bool read(uint8_t* b, const size_t len);
         void write(const uint8_t* b, const size_t len);
-        void read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data);
-        void write(const ipa_canopen::ObjectDict::Entry &, const std::string &data);
+        void read(const ipa_canopen::ObjectDict::Entry &entry, String &data);
+        void write(const ipa_canopen::ObjectDict::Entry &, const String &data);
         const size_t size;
         Buffer(const size_t sz) : size(sz), dirty(false), empty(true), buffer(sz) {}
         
@@ -279,10 +279,10 @@ public:
     boost::weak_ptr <InterfaceType> weak_interface_;
     boost::weak_ptr <MasterType> weak_master_;
     
-    const std::string device_;
+    const String device_;
     const unsigned int bitrate_;
 public:
-    Bus(const std::string &device, unsigned int bitrate) : device_(device), bitrate_(bitrate) {}
+    Bus(const String &device, unsigned int bitrate) : device_(device), bitrate_(bitrate) {}
     boost::shared_ptr<InterfaceType> getInterface(){
         boost::shared_ptr<InterfaceType> interface = weak_interface_.lock();
         if(!interface){
