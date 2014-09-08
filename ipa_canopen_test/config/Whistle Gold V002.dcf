@@ -37,13 +37,6 @@ NrOfRXPDO=4
 NrOfTXPDO=4
 LSS_Supported=0
 
-[DeviceComissioning]
-NodeID=1
-NodeName=Elmo
-Baudrate=500
-NetNumber=0
-LSS_SerialNumber=0
-
 [DummyUsage]
 Dummy0001=0
 Dummy0002=0
@@ -466,7 +459,6 @@ DefaultValue=127
 PDOMapping=0
 LowLimit=1
 HighLimit=127
-ParameterValue=127
 
 [1010]
 ParameterName=Store Parameters
@@ -665,7 +657,6 @@ DefaultValue=$NODEID+0x200
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x201
 
 [1400sub2]
 ParameterName=Transmission Type
@@ -701,7 +692,6 @@ DefaultValue=$NODEID+0x300
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x301
 
 [1401sub2]
 ParameterName=Transmission Type
@@ -737,7 +727,6 @@ DefaultValue=$NODEID+0x400
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x401
 
 [1402sub2]
 ParameterName=Transmission Type
@@ -773,7 +762,6 @@ DefaultValue=$NODEID+0x500
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x501
 
 [1403sub2]
 ParameterName=Transmission Type
@@ -1100,7 +1088,6 @@ DefaultValue=$NODEID+0x180
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x181
 
 [1800sub2]
 ParameterName=Transmission Type
@@ -1167,7 +1154,6 @@ DefaultValue=$NODEID+0x280
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x281
 
 [1801sub2]
 ParameterName=Transmission Type
@@ -1234,7 +1220,6 @@ DefaultValue=$NODEID+0x380
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x381
 
 [1802sub2]
 ParameterName=Transmission Type
@@ -1301,7 +1286,6 @@ DefaultValue=$NODEID+0x480
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x481
 
 [1803sub2]
 ParameterName=Transmission Type
