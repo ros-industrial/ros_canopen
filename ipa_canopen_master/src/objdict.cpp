@@ -57,6 +57,7 @@ template<typename T> void read_optional(T& var, boost::property_tree::ptree &pt,
     var = pt.get(key, T());
 }
 void set_access( ObjectDict::Entry &entry, const std::string &access){
+    entry.constant = false;
     if(access == "ro"){
         entry.readable = true;
         entry.writable = false;
@@ -73,8 +74,9 @@ void set_access( ObjectDict::Entry &entry, const std::string &access){
         entry.readable = true;
         entry.writable = true;
     }else if (access == "const"){
-        entry.readable = false;
+        entry.readable = true;
         entry.writable = false;
+        entry.constant = true;
     }else{
         throw ParseException();
     }

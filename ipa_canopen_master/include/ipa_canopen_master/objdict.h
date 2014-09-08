@@ -152,6 +152,7 @@ public:
         uint16_t index;
         uint8_t sub_index;
         uint16_t data_type;
+        bool constant;
         bool readable;
         bool writable;
         bool mappable;
