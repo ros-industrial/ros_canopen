@@ -75,10 +75,11 @@ public:
         boost::mutex::scoped_lock lock(state_mutex_);
         return state_;
     }
-    void run(){
+    virtual void run(){
         setDriverState(socket_.is_open()?State::open : State::closed);
         
         if(getState().driver_state == State::open){
+            io_service_.reset();
             boost::asio::io_service::work work(io_service_);
             setDriverState(State::ready);
 
@@ -98,10 +99,13 @@ public:
         return getState().driver_state == State::ready && enqueue(msg);
     }
     
-    void shutdown(){
-        if(socket_.is_open()) socket_.close();
+    virtual void shutdown(){
+        LOG("SHUTDOWN");
+        if(socket_.is_open()){
+            socket_.cancel();
+            socket_.close();
+        }
         io_service_.stop();
-        io_service_.reset();
     }
 };
 
@@ -121,11 +125,12 @@ public:
     virtual void shutdown(){
         WrappedInterface::shutdown();
         if(thread_){
+            thread_->interrupt();
             thread_->join();
             thread_.reset();
         }
     }
-    virtual void run(){
+    void join(){
         if(thread_){
             thread_->join();
         }
