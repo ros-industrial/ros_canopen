@@ -299,14 +299,19 @@ void PDOMapper::RPDO::handleFrame(const ipa_can::Frame & msg){
     }
 }
 
-void PDOMapper::sync(const uint8_t &counter){
+bool PDOMapper::read(){
     boost::mutex::scoped_lock lock(mutex_);
     for(boost::unordered_set<boost::shared_ptr<RPDO> >::iterator it = rpdos_.begin(); it != rpdos_.end(); ++it){
         (*it)->sync();
     }
+    return true; // TODO: check for errors
+}
+bool PDOMapper::write(){
+    boost::mutex::scoped_lock lock(mutex_);
     for(boost::unordered_set<boost::shared_ptr<TPDO> >::iterator it = tpdos_.begin(); it != tpdos_.end(); ++it){
         (*it)->sync();
     }
+    return true; // TODO: check for errors
 }
 
 bool PDOMapper::Buffer::read(uint8_t* b, const size_t len){

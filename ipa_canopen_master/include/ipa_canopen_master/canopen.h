@@ -3,6 +3,7 @@
 
 #include <ipa_can_interface/interface.h>
 #include <ipa_can_interface/dispatcher.h>
+#include "layer.h"
 #include "objdict.h"
 #include "timer.h"
 #include <stdexcept>
@@ -51,7 +52,6 @@ public:
     SDOClient(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id)
     : interface_(interface), storage_(boost::make_shared<ObjectStorage>(dict, node_id, ObjectStorage::ReadDelegate(this, &SDOClient::read), ObjectStorage::WriteDelegate(this, &SDOClient::write)))
     {
-        init();
     }
 };
 
@@ -124,47 +124,31 @@ class PDOMapper{
 
 public:
     PDOMapper(const boost::shared_ptr<ipa_can::CommInterface> interface);
-    void sync(const uint8_t &counter);
+    bool read();
+    bool write();
     void init(const boost::shared_ptr<ObjectStorage> storage);
 };
 
-
-
-class SyncProvider{
-public:
-    typedef fastdelegate::FastDelegate1<const uint8_t&> SyncDelegate;
-    typedef ipa_can::Listener<const SyncDelegate, const uint8_t&> SyncListener;
-    
-    SyncListener::Ptr add(const SyncDelegate & s);
-    SyncProvider(boost::shared_ptr<ipa_can::CommInterface> interface,const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t &overflow, bool loopback = true);
-    const boost::posix_time::time_duration period;
-    const uint8_t overflow_;
-private:
-    boost::shared_ptr<ipa_can::CommInterface> interface_;
-    ipa_can::Frame msg_;
-    ipa_can::SimpleDispatcher<SyncListener> syncables_;
-    Timer timer_;
-    boost::posix_time::time_duration timeout;
-    boost::posix_time::time_duration max_timeout;
-    boost::posix_time::time_duration track_timeout;
-    ipa_can::CommInterface::FrameListener::Ptr loop_listener_;
+class SyncCounter {
     boost::mutex mutex_;
-    
-    void handleFrame(const ipa_can::Frame & msg);
-
-    bool checkSync();
-    
-    bool sync_counter();
-    bool sync_nocounter();
+    volatile unsigned int counter_;
+public:
+    SyncCounter(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : counter_(0), header_(h), period_(p), overflow_(o) {}
+    const ipa_can::Header header_;
+    const boost::posix_time::time_duration period_;
+    const uint8_t overflow_;
+    void addNode() { boost::mutex::scoped_lock lock(mutex_); ++counter_; }
+    void removeNode()  { boost::mutex::scoped_lock lock(mutex_); if(counter_) --counter_; }
+    unsigned int getCounter() { boost::mutex::scoped_lock lock(mutex_); return counter_; }
 };
 
-class Node{
+class Node : public Layer{
 public:
     enum State{
         Unknown = 255, BootUp = 0, Stopped = 4, Operational = 5 , PreOperational = 127
     };
     const uint8_t node_id_;
-    Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>());
+    Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync = boost::shared_ptr<SyncCounter>());
     
     const State& getState();
     void enterState(const State &s);
@@ -188,6 +172,12 @@ public:
         return getStorage()->entry<T>(k).get();
     }
 
+    virtual bool read();
+    virtual bool write();
+    virtual bool report();
+    virtual bool init();
+    virtual bool recover();
+    virtual bool shutdown();
     
 private:
     template<typename T> void wait_for(const State &s, const T &timeout);
@@ -197,8 +187,7 @@ private:
     boost::condition_variable cond;
     
     const boost::shared_ptr<ipa_can::CommInterface> interface_;
-    const boost::shared_ptr<SyncProvider> sync_;
-    SyncProvider::SyncListener::Ptr sync_listener_;
+    const boost::shared_ptr<SyncCounter> sync_;
     ipa_can::CommInterface::FrameListener::Ptr nmt_listener_;
     
     ObjectStorage::Entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16>::type> heartbeat_;
@@ -212,22 +201,6 @@ private:
     SDOClient sdo_;
     //EMCYHandler emcy;
     PDOMapper pdo_;
-};
-
-class Master: boost::noncopyable{
-public:
-    const boost::shared_ptr<ipa_can::CommInterface> interface_;
-    virtual boost::shared_ptr<SyncProvider> getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow = 0, const bool loopback = true) = 0;
-    Master(boost::shared_ptr<ipa_can::CommInterface> interface);
-    virtual ~Master() {}
-};
-
-class LocalMaster: public Master{
-    boost::mutex mutex_;
-    boost::unordered_map<ipa_can::Header, boost::shared_ptr<SyncProvider> > providers_;
-public:
-    boost::shared_ptr<SyncProvider> getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow = 0, const bool loopback = true);
-    LocalMaster(boost::shared_ptr<ipa_can::CommInterface> interface) : Master(interface) {}
 };
 
 template<typename T> class Chain{
