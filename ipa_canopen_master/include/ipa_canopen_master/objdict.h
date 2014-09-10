@@ -74,7 +74,7 @@ public:
 
     bool is_empty() const { return empty; }
     
-    const String data() const { 
+    const String& data() const { 
         if(empty){
             throw std::length_error("buffer empty");
         }        
