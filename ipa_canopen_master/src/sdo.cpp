@@ -375,9 +375,10 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
 void SDOClient::init(){
     assert(storage_);
     assert(interface_);
+    const ipa_canopen::ObjectDict & dict = *storage_->dict_;
 
     try{
-        client_id = SDOid(storage_->entry<uint32_t>(0x1200, 1).get_cached()).header();
+        client_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 1).value(), storage_->node_id_)).header();
     }
     catch(...){
         client_id = ipa_can::Header(0x600+ storage_->node_id_);
@@ -388,7 +389,7 @@ void SDOClient::init(){
 
     ipa_can::Header server_id;
     try{
-        server_id = SDOid(storage_->entry<uint32_t>(0x1200, 2).get_cached()).header();
+        server_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 2).value(), storage_->node_id_)).header();
     }
     catch(...){
         server_id = ipa_can::Header(0x580+ storage_->node_id_);

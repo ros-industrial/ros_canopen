@@ -278,37 +278,19 @@ protected:
             if(r) read_delegate = r;
             if(w) write_delegate = w;
         }
-        template<typename T> const T get_cached() {
+        template<typename T> const T get(bool cached) {
             boost::mutex::scoped_lock lock(mutex);
             
             if(!entry->readable){
-                if(entry->writable){
-                    throw AccessException();
-                }
-            }
-            if(valid){
-                return access<T>();
-            }else{
                 throw AccessException();
             }
-        }
-        template<typename T> const T get_once() {
-            if(!valid) get<T>();
-            else return get_cached<T>();
-        }
-        
-        template<typename T> const T get() {
-            boost::mutex::scoped_lock lock(mutex);
             
-            if(!entry->readable){
-                if(entry->writable){
-                    throw AccessException();
-                }
-                return get_cached<T>();
+            if(entry->constant) cached = true;
+            
+            if(!valid || !cached){
+                allocate<T>();
+                read_delegate(*entry, buffer);
             }
-            
-            allocate<T>();
-            read_delegate(*entry, buffer);
             return access<T>();
         }
         template<typename T>  void set(const T &val) {
@@ -340,16 +322,12 @@ public:
         const T get() {
             if(!data) throw AccessException();
 
-            return data->get<T>();
-        }        
-        const T get_once() {
-            if(!data) throw AccessException();
-            return data->get_once<T>();
+            return data->get<T>(false);
         }        
         const T get_cached() {
             if(!data) throw AccessException();
 
-            return data->get_cached<T>();
+            return data->get<T>(true);
         }        
         void set(const T &val) {
             if(!data) throw AccessException();
