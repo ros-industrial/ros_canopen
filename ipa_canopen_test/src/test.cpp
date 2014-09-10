@@ -11,36 +11,6 @@
 using namespace ipa_can;
 using namespace ipa_canopen;
 
-
-template<typename WrappedInterface> class ThreadedInterface : public WrappedInterface{
-    boost::shared_ptr<boost::thread> thread_;
-    void run_thread(){
-        WrappedInterface::run();
-    }
-public:
-    virtual bool init(const std::string &device, unsigned int bitrate) {
-        if(WrappedInterface::init(device, bitrate)){
-            thread_ = boost::make_shared<boost::thread>(&ThreadedInterface::run_thread, this);
-            return true;
-        }
-        return false;
-    }
-    virtual void shutdown(){
-        WrappedInterface::shutdown();
-        if(thread_){
-            thread_->join();
-            thread_.reset();
-        }
-    }
-    virtual void run(){
-        if(thread_){
-            thread_->join();
-        }
-    }
-    virtual ~ThreadedInterface() {}
-    ThreadedInterface(bool loopback = false) : WrappedInterface(loopback) {}
-};
-
 boost::shared_ptr<ThreadedInterface<SocketCANInterface> > driver = boost::make_shared<ThreadedInterface<SocketCANInterface> > (true);
 
 void print_frame(const Frame &f){
