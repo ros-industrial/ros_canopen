@@ -11,40 +11,6 @@
 
 namespace ipa_canopen{
     
-class StateWaiter{
-    boost::mutex mutex_;
-    boost::condition_variable cond_;
-    ipa_can::StateInterface::StateListener::Ptr state_listener_;
-    ipa_can::State state_;
-    void updateState(const ipa_can::State &s){
-        boost::mutex::scoped_lock lock(mutex_);
-        state_ = s;
-        lock.unlock();
-        cond_.notify_one();
-    }
-public:
-    template<typename InterfaceType> StateWaiter(boost::shared_ptr<InterfaceType> interface){
-        state_ = interface->getState();
-        state_listener_ = interface->createStateListener(ipa_can::StateInterface::StateDelegate(this, &StateWaiter::updateState));
-    }
-    template<typename DurationType> bool wait(const ipa_can::State::DriverState &s, const DurationType &duration){
-        boost::mutex::scoped_lock cond_lock(mutex_);
-        boost::system_time abs_time = boost::get_system_time() + duration;
-        while(s != state_.driver_state)
-        {
-            if(!cond_.timed_wait(cond_lock,abs_time))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-    template<typename InterfaceType, typename DurationType> static bool wait_for(const ipa_can::State::DriverState &s, boost::shared_ptr<InterfaceType> interface, const DurationType &duration){
-        StateWaiter waiter(interface);
-        return waiter.wait(s,duration);
-    }
-};
-
 template<typename T> bool read_xmlrpc_or_praram(T &val, const std::string &name, XmlRpc::XmlRpcValue &valstruct, const ros::NodeHandle &nh){
     if(valstruct.hasMember(name)){
         val = static_cast<T>(valstruct[name]);
