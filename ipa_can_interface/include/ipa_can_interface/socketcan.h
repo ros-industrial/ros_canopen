@@ -163,5 +163,10 @@ private:
 
 template <typename T> class DispatchedInterface;
 typedef DispatchedInterface<SocketCANDriver<CommInterface::FrameDelegate,StateInterface::StateDelegate> > SocketCANInterface;
+
+template <typename T> class ThreadedInterface;
+typedef ThreadedInterface<SocketCANInterface> ThreadedSocketCANInterface;
+
+
 } // namespace ipa_can
 #endif
