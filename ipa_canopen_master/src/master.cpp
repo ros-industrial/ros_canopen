@@ -42,7 +42,7 @@ bool LocalSyncLayer::sync() {
 bool LocalSyncLayer::read() { 
     boost::system_time t = boost::get_system_time() + max_timeout;
     boost::mutex::scoped_lock lock(mutex_);
-    return cond.timed_wait(lock,timeout);
+    return cond.timed_wait(lock,t);
 }
 bool LocalSyncLayer::write()  {
     boost::mutex::scoped_lock lock(mutex_);
