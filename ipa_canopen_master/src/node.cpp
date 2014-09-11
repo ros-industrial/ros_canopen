@@ -89,12 +89,12 @@ void Node::stop(){
 void Node::switchState(const uint8_t &s){
     switch(s){
         case Operational:
-            if(sync_) sync_->addNode();
+            if(sync_) sync_->addNode(this);
             break;
         case BootUp:
         case PreOperational:
         case Stopped:
-            if(sync_) sync_->removeNode();
+            if(sync_) sync_->removeNode(this);
             break;
         default:
             //error
