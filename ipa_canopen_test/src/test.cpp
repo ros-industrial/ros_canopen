@@ -1,4 +1,5 @@
 #include <ipa_canopen_master/canopen.h>
+#include <ipa_canopen_master/master.h>
 #include <boost/make_shared.hpp>
 #include <iostream>
 
@@ -52,7 +53,7 @@ int main(int argc, char *argv[]){
     boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
     
     LocalMaster master(driver);
-    boost::shared_ptr<SyncProvider> sync = master.getSync(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0);
+    boost::shared_ptr<SyncLayer> sync = master.getSync(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0);
     
     Node node(driver, dict, 1, sync);
 
