@@ -155,12 +155,6 @@ public:
     
     const boost::shared_ptr<ObjectStorage> getStorage() { return sdo_.storage_; }
     
-    void start();
-    void stop();
-    void reset();
-    void reset_com();
-    void prepare();
-    
     typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
     typedef ipa_can::Listener<const StateDelegate, const State&> StateListener;
 
@@ -178,6 +172,13 @@ public:
     virtual bool init();
     virtual bool recover();
     virtual bool shutdown();
+
+protected:
+    void start();
+    void stop();
+    void reset();
+    void reset_com();
+    void prepare();
     
 private:
     template<typename T> void wait_for(const State &s, const T &timeout);
