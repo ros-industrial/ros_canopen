@@ -183,6 +183,7 @@ protected:
     }
     bool setup_nodes(){
         nodes_.reset(new ipa_canopen::LayerGroup<ipa_canopen::Node>);
+        add(nodes_);
 
         XmlRpc::XmlRpcValue modules;
         nh_priv_.getParam("modules", modules);
@@ -220,19 +221,20 @@ protected:
                 return false;
             }
             boost::shared_ptr<ipa_canopen::Node> node = boost::make_shared<ipa_canopen::Node>(interface_, dict, node_id, sync_);
+            
+            if(!nodeAdded(module, node)) return false;
 
             boost::shared_ptr<Logger<ipa_canopen::Node> > logger = boost::make_shared<Logger<ipa_canopen::Node> >(node);
             diag_updater_.add(name, boost::bind(&Logger<Node>::log, logger, _1));
             
             nodes_->add(node);
         }
-        add(nodes_);
         return true;
-        
     }
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node) { return true; }
 public:
     RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_){}
-    bool setup(){
+    virtual bool setup(){
         boost::mutex::scoped_lock lock(mutex_);
 
         if(!nh_priv_.getParam("name", chain_name_)){
