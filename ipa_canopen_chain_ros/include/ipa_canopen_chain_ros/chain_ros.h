@@ -88,6 +88,10 @@ protected:
     }
     
     void run(){
+        if(sync_){
+            sync_->read();
+            sync_->write();
+        }
         while(ros::ok()){
             read();
             write();
