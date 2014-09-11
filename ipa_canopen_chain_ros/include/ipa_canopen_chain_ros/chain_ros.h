@@ -149,6 +149,8 @@ protected:
     bool setup_sync(){
         ros::NodeHandle sync_nh(nh_priv_,"sync");
         
+        //TODO: fallback to update_interval
+        
         int sync_ms = 0;
         int sync_overflow = 0;
         
@@ -164,7 +166,7 @@ protected:
         if(!sync_nh.getParam("overflow", sync_overflow)){
             ROS_WARN("Sync overflow was not specified, so overflow is disabled per default");
         }
-        if(sync_overflow < 0 || sync_overflow > 255){
+        if(sync_overflow <= 1 || sync_overflow > 240){
             ROS_ERROR_STREAM("Sync overflow  "<< sync_overflow << " is invalid");
             return false;
         }
@@ -177,8 +179,8 @@ protected:
                 ROS_ERROR_STREAM("Initializing sync master failed");
                 return false;
             }
+            add(sync_);
         }
-        add(sync_);
         return true;
     }
     bool setup_nodes(){
