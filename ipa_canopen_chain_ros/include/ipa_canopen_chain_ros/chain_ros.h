@@ -98,7 +98,9 @@ protected:
     virtual bool handle_init(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
         res.success.data = init();
-        thread_.reset(new boost::thread(&RosChain::run, this));
+        if(res.success.data){
+            thread_.reset(new boost::thread(&RosChain::run, this));
+        }
         return true;
     }
     virtual bool handle_recover(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
