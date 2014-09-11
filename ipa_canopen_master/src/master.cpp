@@ -77,6 +77,7 @@ bool LocalSyncLayer::recover() { return true; }
 
 bool LocalSyncLayer::shutdown() {
     boost::mutex::scoped_lock lock(mutex_);
+    timer_.stop();
     loop_listener_.reset();
     return true;
 }
