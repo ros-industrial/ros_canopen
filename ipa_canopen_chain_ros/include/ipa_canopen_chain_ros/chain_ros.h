@@ -252,6 +252,17 @@ protected:
         return true;
     }
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node) { return true; }
+    void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
+        boost::mutex::scoped_lock lock(mutex_);
+        LayerStatusExtended s;
+        report(s);
+        if(s.bounded(LayerStatus::UNBOUNDED)){ // valid
+            stat.summary(s.get(), s.reason());
+            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = s.values().begin(); it != s.values().end(); ++it){
+                stat.add(it->first, it->second);
+            }
+        }
+    }
 public:
     RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): LayerStack("ROS stack"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_){}
     virtual bool setup(){
@@ -265,6 +276,8 @@ public:
         nh_priv_.param("hardware_id", hw_id, std::string("none"));
         
         diag_updater_.setHardwareID(hw_id);
+        diag_updater_.add(chain_name_, this, &RosChain::report_diagnostics);
+        
         diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),boost::bind(&diagnostic_updater::Updater::update, &diag_updater_));
         
         ros::NodeHandle nh_chain(nh_, chain_name_);
