@@ -172,7 +172,7 @@ protected:
         if(!sync_nh.getParam("overflow", sync_overflow)){
             ROS_WARN("Sync overflow was not specified, so overflow is disabled per default");
         }
-        if(sync_overflow <= 1 || sync_overflow > 240){
+        if(sync_overflow == 1 || sync_overflow > 240){
             ROS_ERROR_STREAM("Sync overflow  "<< sync_overflow << " is invalid");
             return false;
         }
