@@ -47,6 +47,7 @@ public:
 
 class Layer{
 public:
+    const std::string name;
     virtual void read(LayerStatus &status) = 0;
     virtual void write(LayerStatus &status) = 0;
     
@@ -57,6 +58,8 @@ public:
     
     virtual void halt(LayerStatus &status) {} // TODO
     virtual void recover(LayerStatusExtended &status) = 0;
+    
+    Layer(const std::string &n) : name(n) {}
     
     virtual ~Layer() {}
 };
@@ -79,6 +82,9 @@ public:
     virtual bool init()  = 0;
     virtual bool recover()  = 0;
     virtual bool shutdown()  = 0;
+    
+    SimpleLayer(const std::string &n) : Layer(n) {}
+    SimpleLayer() : Layer("NO NAME GIVEN") {}
 };
 
 template<typename T> class VectorHelper{
@@ -131,6 +137,8 @@ public:
     virtual void halt(LayerStatus &status){
         call(&Layer::halt, status, layers.rbegin(), layers.rend());
     }
+
+    LayerStack(const std::string &n) : Layer(n) {}
 };
 
 template<typename T> class LayerGroup : public Layer, public VectorHelper<T>{
@@ -165,6 +173,7 @@ public:
     virtual void halt(LayerStatus &status){
         this->call(&Layer::halt, status, this->layers.begin(), this->layers.end());
     }
+    LayerGroup(const std::string &n) : Layer(n) {}
 };
 
 template<typename Driver> class CANLayer: public SimpleLayer{ // TODO: implement Layer
@@ -173,7 +182,7 @@ template<typename Driver> class CANLayer: public SimpleLayer{ // TODO: implement
     const unsigned int bitrate_;
 public:
     CANLayer(const boost::shared_ptr<Driver> &driver, const std::string &device, const unsigned int bitrate)
-    : driver_(driver), device_(device), bitrate_(bitrate) { assert(driver_); }
+    : SimpleLayer(device + " Layer"), driver_(driver), device_(device), bitrate_(bitrate) { assert(driver_); }
     virtual bool read() { return driver_->getState().isReady(); }
     virtual bool write() { return driver_->getState().isReady(); }
     virtual bool report() { return false; }

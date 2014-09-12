@@ -17,7 +17,7 @@ class Node_402 : public ipa_canopen::SimpleLayer{
     ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
 
 public:
-    Node_402(boost::shared_ptr <ipa_canopen::Node> n) : n_(n) {
+    Node_402(boost::shared_ptr <ipa_canopen::Node> n) : SimpleLayer("Node_402"), n_(n) {
         n->getStorage()->entry(actual_pos, 0x6064);
     }
     virtual bool read() { return true; }
@@ -60,7 +60,7 @@ class ControllerManagerLayer : public SimpleLayer {
     }
 public:
     ControllerManagerLayer(double rate, ros::NodeHandle &nh, hardware_interface::RobotHW *robot)
-    :cm_(robot), timer_(nh.createTimer(ros::Rate(rate), &ControllerManagerLayer::timer_func, this)), running_(false), recover_(false), last_time_(ros::Time::now()) {}
+    :SimpleLayer("ControllerManager"), cm_(robot), timer_(nh.createTimer(ros::Rate(rate), &ControllerManagerLayer::timer_func, this)), running_(false), recover_(false), last_time_(ros::Time::now()) {}
     
     virtual bool read() { 
         boost::mutex::scoped_lock lock(mutex_);
@@ -126,7 +126,7 @@ class HandleLayer: public SimpleLayer{
     boost::shared_ptr<CommandWriter> jhw_; 
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<Node_402> & motor)
-    : motor_(motor), jsh(name, &pos, &vel, &eff) {}
+    : SimpleLayer(name + " Handle"), motor_(motor), jsh(name, &pos, &vel, &eff) {}
     
     void registerHandle(hardware_interface::JointStateInterface &iface){
         iface.registerHandle(jsh);
@@ -207,8 +207,8 @@ public:
     MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv){}
     
     virtual bool setup() {
-        motors_.reset( new LayerGroup<Node_402>);
-        handles_.reset( new LayerGroup<HandleLayer>);
+        motors_.reset( new LayerGroup<Node_402>("402 Layer"));
+        handles_.reset( new LayerGroup<HandleLayer>("Handle Layer"));
         
         if(RosChain::setup()){
             add(motors_);

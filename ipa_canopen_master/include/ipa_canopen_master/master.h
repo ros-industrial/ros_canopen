@@ -7,7 +7,7 @@ namespace ipa_canopen{
 
 class SyncLayer: public SimpleLayer, public SyncCounter{ // TODO: implement Layer
 public:
-    SyncLayer(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : SyncCounter(h,p,o) {}
+    SyncLayer(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : SimpleLayer("Sync layer"), SyncCounter(h,p,o) {}
 };
 
 class Master: boost::noncopyable{
