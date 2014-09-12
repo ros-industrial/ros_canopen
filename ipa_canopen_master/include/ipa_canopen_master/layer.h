@@ -26,14 +26,15 @@ private:
 };
 
 class LayerStatusExtended : public LayerStatus{
-    std::vector<std::string> reasons_;
+    std::string reason_;
     std::vector<std::pair<std::string, std::string> > values_;
 public:
-    const std::vector<std::string> &reasons() { return reasons_; }
+    const std::string &reason() { return reason_; }
     const std::vector<std::pair<std::string, std::string> > &values() { return values_; }
     
-    void reason(const std::string &reason) {
-        reasons_.push_back(reason);
+    void reason(const std::string &r) {
+        if(reason_.empty())  reason_ = r;
+        else reason_ += "; " + r;
     }
     void add(const std::string &key, const std::string &value){
         values_.push_back(std::make_pair(key,value));
