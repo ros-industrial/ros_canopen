@@ -134,11 +134,11 @@ template<typename T> void Node::wait_for(const State &s, const T &timeout){
 }
 
 bool Node::read(){
-    if(!getState() == Operational) return false;
+    if(getState() != Operational) return false;
     return pdo_.read();
 }
 bool Node::write(){
-    if(!getState() == Operational) return false;
+    if(getState() != Operational) return false;
     return pdo_.write();
 }
 bool Node::report(){
