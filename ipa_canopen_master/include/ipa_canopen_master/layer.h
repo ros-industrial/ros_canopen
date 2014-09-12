@@ -66,7 +66,7 @@ public:
 
 class SimpleLayer: public Layer {
     void adapt(bool (SimpleLayer::*func) (void), LayerStatus &status){
-        if (!(this->*func)()) status.set(LayerStatus::ERROR);
+         status.set( ( (this->*func)())? LayerStatus::OK : LayerStatus::ERROR);
     }
 public:
     virtual void read(LayerStatus &status) { adapt(&SimpleLayer::read, status); }
@@ -158,7 +158,7 @@ public:
         this->call(&Layer::report, status, this->layers.begin(), this->layers.end());
     }
     virtual void init(LayerStatusExtended &status) {
-        typename V::vector_type::iterator it = this->call(&Layer::recover, status, this->layers.begin(), this->layers.end(), LayerStatus::WARN);
+        typename V::vector_type::iterator it = this->call(&Layer::init, status, this->layers.begin(), this->layers.end(), LayerStatus::WARN);
         LayerStatus omit;
         if(it != this->layers.end()) this->call(&Layer::shutdown, omit, this->layers.begin(), this->layers.end());
     }
