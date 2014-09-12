@@ -142,7 +142,7 @@ public:
     unsigned int getCounter() { boost::mutex::scoped_lock lock(mutex_); return nodes_.size(); }
 };
 
-class Node : public Layer{
+class Node : public SimpleLayer{
 public:
     enum State{
         Unknown = 255, BootUp = 0, Stopped = 4, Operational = 5 , PreOperational = 127

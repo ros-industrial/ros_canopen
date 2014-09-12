@@ -11,7 +11,7 @@
 #include <controller_manager/controller_manager.h>
 
 // Dummy class
-class Node_402 : public ipa_canopen::Layer{
+class Node_402 : public ipa_canopen::SimpleLayer{
     boost::shared_ptr <ipa_canopen::Node> n_;
     volatile bool running;
     ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
@@ -40,7 +40,7 @@ public:
 using namespace ipa_can;
 using namespace ipa_canopen;
 
-class ControllerManagerLayer : public Layer {
+class ControllerManagerLayer : public SimpleLayer {
     controller_manager::ControllerManager cm_;
     ros::Timer timer_;
     boost::mutex mutex_;
@@ -109,7 +109,7 @@ public:
     void read() { value = (obj_.*reader_)(); }
 };
 
-class HandleLayer: public Layer{
+class HandleLayer: public SimpleLayer{
     boost::shared_ptr<Node_402> motor_;
     double pos, vel, eff;
     hardware_interface::JointStateHandle jsh;

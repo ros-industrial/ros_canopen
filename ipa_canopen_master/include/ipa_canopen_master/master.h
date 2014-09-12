@@ -5,7 +5,7 @@
 
 namespace ipa_canopen{
 
-class SyncLayer: public Layer, public SyncCounter{
+class SyncLayer: public SimpleLayer, public SyncCounter{ // TODO: implement Layer
 public:
     SyncLayer(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : SyncCounter(h,p,o) {}
 };
@@ -16,7 +16,7 @@ public:
     virtual ~Master() {}
 };
     
-class LocalSyncLayer:  public SyncLayer{
+class LocalSyncLayer:  public SyncLayer{  // TODO: implement Layer
 public:
     LocalSyncLayer(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o, boost::shared_ptr<ipa_can::CommInterface> interface, bool loopback);
     

@@ -88,20 +88,27 @@ protected:
     }
     
     void run(){
+
+        LayerStatus s;
         if(sync_){
-            sync_->read();
-            sync_->write();
+            sync_->read(s);
+            s.reset();
+            sync_->write(s);
         }
         while(ros::ok()){
-            read();
-            write();
+            s.reset();
+            read(s);
+            s.reset();
+            write(s);
             boost::this_thread::interruption_point();
         }
     }
     
     virtual bool handle_init(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
-        res.success.data = init();
+        LayerStatusExtended s;
+        init(s);
+        res.success.data = s.bounded(LayerStatus::WARN);
         if(res.success.data){
             thread_.reset(new boost::thread(&RosChain::run, this));
         }
@@ -109,7 +116,9 @@ protected:
     }
     virtual bool handle_recover(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
-        res.success.data = recover();
+        LayerStatusExtended s;
+        recover(s);
+        res.success.data = s.bounded(LayerStatus::WARN);
         return true;
     }
     virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
@@ -119,7 +128,9 @@ protected:
             thread_->join();
         }
         thread_.reset();
-        res.success.data = shutdown();
+        LayerStatus s;
+        shutdown(s);
+        res.success.data = s.bounded(LayerStatus::WARN);
         return true;
     }
     bool setup_bus(){
@@ -233,6 +244,7 @@ protected:
             if(!nodeAdded(module, node)) return false;
 
             boost::shared_ptr<Logger<ipa_canopen::Node> > logger = boost::make_shared<Logger<ipa_canopen::Node> >(node);
+            //logger->add(4,"pos", ipa_canopen::ObjectDict::Key(0x6064));
             diag_updater_.add(name, boost::bind(&Logger<Node>::log, logger, _1));
             
             nodes_->add(node);
@@ -264,7 +276,8 @@ public:
         return setup_bus() && setup_sync() && setup_nodes();
     }
     virtual ~RosChain(){
-        shutdown();
+        LayerStatus s;
+        shutdown(s);
     }
 };
 
