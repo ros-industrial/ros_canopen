@@ -186,7 +186,7 @@ public:
     : SimpleLayer(device + " Layer"), driver_(driver), device_(device), bitrate_(bitrate) { assert(driver_); }
     virtual bool read() { return driver_->getState().isReady(); }
     virtual bool write() { return driver_->getState().isReady(); }
-    virtual bool report() { return false; }
+    virtual bool report() { return driver_->getState().isReady(); }
     virtual bool init() { return driver_->init(device_, bitrate_); }
     virtual bool recover() { return driver_->recover(); }
     virtual bool shutdown() { driver_->shutdown(); return true;}
