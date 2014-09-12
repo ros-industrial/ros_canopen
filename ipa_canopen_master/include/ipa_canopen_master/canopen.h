@@ -130,16 +130,13 @@ public:
 };
 
 class SyncCounter {
-    boost::mutex mutex_;
-    boost::unordered_set<void const *> nodes_;
 public:
     SyncCounter(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : header_(h), period_(p), overflow_(o) {}
     const ipa_can::Header header_;
     const boost::posix_time::time_duration period_;
     const uint8_t overflow_;
-    void addNode(void * const ptr) { boost::mutex::scoped_lock lock(mutex_); nodes_.insert(ptr); }
-    void removeNode(void * const ptr)  { boost::mutex::scoped_lock lock(mutex_); nodes_.erase(ptr); }
-    unsigned int getCounter() { boost::mutex::scoped_lock lock(mutex_); return nodes_.size(); }
+    virtual void addNode(void * const ptr)  = 0;
+    virtual  void removeNode(void * const ptr) = 0;
 };
 
 class Node : public SimpleLayer{

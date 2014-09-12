@@ -21,7 +21,7 @@ void LocalSyncLayer::handleFrame(const ipa_can::Frame & msg){
 }
 
 bool LocalSyncLayer::checkSync(){
-    if(getCounter() == 0) return false;
+    if(nodes_.empty()) return false;
     if(!loop_listener_) return true;
 
     bool okay = timeout == boost::posix_time::seconds(0);

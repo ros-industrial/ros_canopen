@@ -27,9 +27,13 @@ public:
     virtual bool recover();
     virtual bool shutdown();
     
+    virtual void addNode(void * const ptr) { boost::mutex::scoped_lock lock(mutex_); nodes_.insert(ptr); }
+    virtual void removeNode(void * const ptr)  { boost::mutex::scoped_lock lock(mutex_); nodes_.erase(ptr); }
 private:
+    
     boost::mutex mutex_;
     boost::condition_variable cond;
+    boost::unordered_set<void const *> nodes_;
     
     boost::shared_ptr<ipa_can::CommInterface> interface_;
     ipa_can::Frame msg_;
