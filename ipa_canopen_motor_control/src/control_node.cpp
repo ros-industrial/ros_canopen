@@ -211,6 +211,7 @@ public:
         handles_.reset( new LayerGroup<HandleLayer>("Handle Layer"));
         
         if(RosChain::setup()){
+            boost::mutex::scoped_lock lock(mutex_);
             add(motors_);
             add(handles_);
             
