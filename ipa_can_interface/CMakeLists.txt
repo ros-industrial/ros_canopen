@@ -52,7 +52,11 @@ include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 # )
 
 ## Declare a cpp executable
-# add_executable(ipa_can_interface_node src/ipa_can_interface_node.cpp)
+add_executable(ipa_can_dump src/candump.cpp)
+target_link_libraries(ipa_can_dump
+   ${catkin_LIBRARIES}
+   ${Boost_LIBRARIES}
+)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -80,11 +84,11 @@ include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS ipa_can_interface ipa_can_interface_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS ipa_can_dump
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ )
 
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/

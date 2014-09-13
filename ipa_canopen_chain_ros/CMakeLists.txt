@@ -9,7 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   ipa_canopen_master
   cob_srvs
-  ipa_socketcan_driver
   diagnostic_updater
 )
 

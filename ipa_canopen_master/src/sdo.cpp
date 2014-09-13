@@ -53,7 +53,7 @@ struct InitiateLong{
         else if(!expedited && size_indicated) return payload[0] | (payload[3]<<8);
         else return 0;
     }
-    size_t apply_buffer(const std::string &buffer){
+    size_t apply_buffer(const String &buffer){
         size_t size = buffer.size();
         size_indicated = 1;
         if(size > 4){
@@ -87,7 +87,7 @@ struct SegmentLong{
     size_t data_size(){
         return 7-num;
     }
-    size_t apply_buffer(const std::string &buffer, const size_t offset){
+    size_t apply_buffer(const String &buffer, const size_t offset){
         size_t size = buffer.size() - offset;
         if(size > 7) size = 7;
         num = size;
@@ -98,7 +98,7 @@ struct SegmentLong{
 struct DownloadInitiateRequest: public FrameOverlay<InitiateLong>{
     static const uint8_t command = 1;
     
-    DownloadInitiateRequest(const Header &h, const ipa_canopen::ObjectDict::Entry &entry, const std::string &buffer, size_t &offset) : FrameOverlay(h) {
+    DownloadInitiateRequest(const Header &h, const ipa_canopen::ObjectDict::Entry &entry, const String &buffer, size_t &offset) : FrameOverlay(h) {
         data.command = command;
         data.index = entry.index;
         data.sub_index = entry.sub_index;
@@ -127,7 +127,7 @@ struct DownloadSegmentRequest: public FrameOverlay<SegmentLong>{
     
     DownloadSegmentRequest(const ipa_can::Frame &f) : FrameOverlay(f){ }
     
-    DownloadSegmentRequest(const Header &h, bool toggle, const std::string &buffer, size_t& offset) : FrameOverlay(h) {
+    DownloadSegmentRequest(const Header &h, bool toggle, const String &buffer, size_t& offset) : FrameOverlay(h) {
         data.command = command;
         data.toggle = toggle?1:0;
         offset = data.apply_buffer(buffer, offset);
@@ -178,7 +178,7 @@ struct UploadInitiateResponse: public FrameOverlay<InitiateLong>{
         reason = 0x08000000; // General error
         return false;
     }
-    bool read_data(std::string & buffer, size_t & offset, size_t & total){
+    bool read_data(String & buffer, size_t & offset, size_t & total){
         if(data.expedited){
             memcpy(&buffer[0], data.payload, buffer.size());
             offset = buffer.size();
@@ -214,7 +214,7 @@ struct UploadSegmentResponse : public FrameOverlay<SegmentLong>{
         }
         return true;
     }
-    bool read_data(std::string & buffer, size_t & offset, const size_t & total){
+    bool read_data(String & buffer, size_t & offset, const size_t & total){
         uint32_t n = data.data_size();
         if(total == 0){
             buffer.resize(offset + n);
@@ -375,9 +375,10 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
 void SDOClient::init(){
     assert(storage_);
     assert(interface_);
+    const ipa_canopen::ObjectDict & dict = *storage_->dict_;
 
     try{
-        client_id = SDOid(storage_->entry<uint32_t>(0x1200, 1).get_cached()).header();
+        client_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 1).value(), storage_->node_id_)).header();
     }
     catch(...){
         client_id = ipa_can::Header(0x600+ storage_->node_id_);
@@ -388,12 +389,12 @@ void SDOClient::init(){
 
     ipa_can::Header server_id;
     try{
-        server_id = SDOid(storage_->entry<uint32_t>(0x1200, 2).get_cached()).header();
+        server_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 2).value(), storage_->node_id_)).header();
     }
     catch(...){
         server_id = ipa_can::Header(0x580+ storage_->node_id_);
     }
-    listener_ = interface_->createMsgListener(server_id, ipa_can::Interface::FrameDelegate(this, &SDOClient::handleFrame));
+    listener_ = interface_->createMsgListener(server_id, ipa_can::CommInterface::FrameDelegate(this, &SDOClient::handleFrame));
 }
 void SDOClient::wait_for_response(){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
@@ -406,7 +407,7 @@ void SDOClient::wait_for_response(){
         throw TimeoutException(); // TODO
     }
 }
-void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data){
+void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
     boost::timed_mutex::scoped_lock lock(mutex, boost::posix_time::seconds(2));
     if(lock){
 
@@ -423,7 +424,7 @@ void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, std::string &d
         throw TimeoutException();
     }
 }
-void SDOClient::write(const ipa_canopen::ObjectDict::Entry &entry, const std::string &data){
+void SDOClient::write(const ipa_canopen::ObjectDict::Entry &entry, const String &data){
     boost::timed_mutex::scoped_lock lock(mutex, boost::posix_time::seconds(2));
     if(lock){
         buffer = data;

@@ -40,6 +40,7 @@ add_library(ipa_canopen_master
   src/sdo.cpp
   src/pdo.cpp
   src/node.cpp
+  src/master.cpp
 )
 target_link_libraries(ipa_canopen_master
   ${catkin_LIBRARIES}

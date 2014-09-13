@@ -21,7 +21,6 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>ipa_canopen_master</depend>
-  <depend>ipa_socketcan_driver</depend>
   <depend>ipa_canopen_402</depend>
   <exec_depend>ipa_canopen_motor_control</exec_depend>
 

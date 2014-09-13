@@ -1,10 +1,11 @@
 #include <ipa_canopen_master/canopen.h>
+#include <ipa_canopen_master/master.h>
 #include <boost/make_shared.hpp>
 #include <iostream>
 
 #include <ipa_can_interface/dispatcher.h>
 #include <boost/unordered_set.hpp>
-#include <ipa_socketcan_driver/socketcan.h>
+#include <ipa_can_interface/socketcan.h>
 
 #include <boost/thread.hpp>
 
@@ -14,37 +15,7 @@
 using namespace ipa_can;
 using namespace ipa_canopen;
 
-
-template<typename WrappedInterface> class ThreadedInterface : public WrappedInterface{
-    boost::shared_ptr<boost::thread> thread_;
-    void run_thread(){
-        WrappedInterface::run();
-    }
-public:
-    virtual bool init(const std::string &device, unsigned int bitrate) {
-        if(WrappedInterface::init(device, bitrate)){
-            thread_ = boost::make_shared<boost::thread>(&ThreadedInterface::run_thread, this);
-            return true;
-        }
-        return false;
-    }
-    virtual void shutdown(){
-        WrappedInterface::shutdown();
-        if(thread_){
-            thread_->join();
-            thread_.reset();
-        }
-    }
-    virtual void run(){
-        if(thread_){
-            thread_->join();
-        }
-    }
-    virtual ~ThreadedInterface() {}
-    ThreadedInterface(bool loopback = false) : WrappedInterface(loopback) {}
-};
-
-boost::shared_ptr<ipa_can::Interface> driver = boost::make_shared<ThreadedInterface< DispatchedInterface<SocketCANDriver> > > (true);
+boost::shared_ptr<ThreadedInterface<SocketCANInterface> > driver = boost::make_shared<ThreadedInterface<SocketCANInterface> > (true);
 
 void print_frame(const Frame &f){
     LOG( "in: " << std:: hex << f.id << std::dec);
@@ -70,7 +41,7 @@ int main(int argc, char *argv[]){
 
     // Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
     // Interface::FrameListener::Ptr tprinter = driver->createMsgListener(Header(0x181), print_tpdo); // printer for all incoming messages
-    Interface::StateListener::Ptr sprinter = driver->createStateListener(print_state); // printer for all incoming messages
+    StateInterface::StateListener::Ptr sprinter = driver->createStateListener(print_state); // printer for all incoming messages
 
     int sync_ms = 10;
     if(argc > 3) sync_ms = atol(argv[3]);
@@ -85,7 +56,7 @@ int main(int argc, char *argv[]){
     boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
 
     LocalMaster master(driver);
-    boost::shared_ptr<SyncProvider> sync = master.getSync(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0);
+    boost::shared_ptr<SyncLayer> sync = master.getSync(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0);
 
     Node node(driver, dict, 1, sync);
 

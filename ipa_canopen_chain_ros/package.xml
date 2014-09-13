@@ -24,7 +24,6 @@
   <depend>roscpp</depend>
   <depend>ipa_canopen_master</depend>
   <depend>cob_srvs</depend>
-  <depend>ipa_socketcan_driver</depend>
   <depend>diagnostic_updater</depend>
 
   <!-- The export tag contains other, unspecified, tags -->

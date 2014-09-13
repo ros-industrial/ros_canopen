@@ -10,7 +10,7 @@
 namespace ipa_can{
 
 
-template<typename FrameDelegate, typename StateDelegate, typename Socket> class AsioDriver{
+template<typename FrameDelegate, typename StateDelegate, typename Socket> class AsioDriver : public DriverInterface{
     static void call_delegate(const FrameDelegate &delegate, const Frame &msg){
         delegate(msg);
     }
@@ -29,8 +29,8 @@ protected:
     virtual void triggerReadSome() = 0;
     virtual bool enqueue(const Frame & msg) = 0;
     
-    void dispatchFrame(const Frame msg){
-        io_service_.post(boost::bind(call_delegate, frame_delegate_,msg));
+    void dispatchFrame(const Frame &msg){
+        io_service_.post(boost::bind(call_delegate, frame_delegate_,msg)); // copies msg
     }
     void setErrorCode(const boost::system::error_code& error){
         boost::mutex::scoped_lock lock(state_mutex_);
@@ -67,16 +67,19 @@ protected:
     AsioDriver(FrameDelegate frame_delegate, StateDelegate state_delegate)
     : frame_delegate_(frame_delegate), state_delegate_(state_delegate), socket_(io_service_)
     {}
-    
+
 public:
+    virtual ~AsioDriver() {}
+    
     State getState(){
         boost::mutex::scoped_lock lock(state_mutex_);
         return state_;
     }
-    void run(){
+    virtual void run(){
         setDriverState(socket_.is_open()?State::open : State::closed);
         
         if(getState().driver_state == State::open){
+            io_service_.reset();
             boost::asio::io_service::work work(io_service_);
             setDriverState(State::ready);
 
@@ -96,11 +99,81 @@ public:
         return getState().driver_state == State::ready && enqueue(msg);
     }
     
-    void shutdown(){
-        if(socket_.is_open()) socket_.close();
+    virtual void shutdown(){
+        LOG("SHUTDOWN");
+        if(socket_.is_open()){
+            socket_.cancel();
+            socket_.close();
+        }
         io_service_.stop();
-        io_service_.reset();
     }
+};
+
+class StateWaiter{
+    boost::mutex mutex_;
+    boost::condition_variable cond_;
+    ipa_can::StateInterface::StateListener::Ptr state_listener_;
+    ipa_can::State state_;
+    void updateState(const ipa_can::State &s){
+        boost::mutex::scoped_lock lock(mutex_);
+        state_ = s;
+        lock.unlock();
+        cond_.notify_one();
+    }
+public:
+    template<typename InterfaceType> StateWaiter(InterfaceType *interface){
+        state_ = interface->getState();
+        state_listener_ = interface->createStateListener(ipa_can::StateInterface::StateDelegate(this, &StateWaiter::updateState));
+    }
+    template<typename DurationType> bool wait(const ipa_can::State::DriverState &s, const DurationType &duration){
+        boost::mutex::scoped_lock cond_lock(mutex_);
+        boost::system_time abs_time = boost::get_system_time() + duration;
+        while(s != state_.driver_state)
+        {
+            if(!cond_.timed_wait(cond_lock,abs_time))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    template<typename InterfaceType, typename DurationType> static bool wait_for(const ipa_can::State::DriverState &s, InterfaceType *interface, const DurationType &duration){
+        StateWaiter waiter(interface);
+        return waiter.wait(s,duration);
+    }
+};
+
+template<typename WrappedInterface> class ThreadedInterface : public WrappedInterface{
+    boost::shared_ptr<boost::thread> thread_;
+    void run_thread(){
+        WrappedInterface::run();
+    }
+public:
+    virtual bool init(const std::string &device, unsigned int bitrate) {
+        if(!thread_ && WrappedInterface::init(device, bitrate)){
+            thread_.reset(new boost::thread(&ThreadedInterface::run_thread, this));
+            return StateWaiter::wait_for(ipa_can::State::ready, this, boost::posix_time::seconds(1));
+        }
+        return false;
+    }
+    virtual void shutdown(){
+        WrappedInterface::shutdown();
+        if(thread_){
+            thread_->interrupt();
+            thread_->join();
+            thread_.reset();
+        }
+    }
+    void join(){
+        if(thread_){
+            thread_->join();
+        }
+    }
+    virtual ~ThreadedInterface() {}
+    ThreadedInterface(): WrappedInterface() {}
+    template<typename T1> ThreadedInterface(const T1 &t1): WrappedInterface(t1) {}
+    template<typename T1, typename T2> ThreadedInterface(const T1 &t1, const T2 &t2): WrappedInterface(t1, t2) {}
+    
 };
 
 

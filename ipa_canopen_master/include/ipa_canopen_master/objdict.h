@@ -39,8 +39,20 @@ public:
     template<typename T> static TypeGuard create() { return TypeGuard(TypeInfo<T>::id, sizeof(T)); }
 };
 
+class String: public std::vector<char>{
+public:
+    String() {}
+    String(const std::string &str) : std::vector<char>(str.begin(), str.end()) {}
+    operator const char * () const {
+        return &at(0);
+    }
+    operator const std::string () const {
+        return std::string(begin(), end());
+    }
+};
+
 class HoldAny{
-    std::string buffer;
+    String buffer;
     TypeGuard type_guard;
     bool empty;
 public:
@@ -62,7 +74,7 @@ public:
 
     bool is_empty() const { return empty; }
     
-    const std::string data() const { 
+    const String& data() const { 
         if(empty){
             throw std::length_error("buffer empty");
         }        
@@ -79,7 +91,7 @@ public:
     }
 };
 
-template<> const std::string & HoldAny::get() const;
+template<> const String & HoldAny::get() const;
 
 struct DeviceInfo{
     std::string vendor_name;
@@ -140,6 +152,7 @@ public:
         uint16_t index;
         uint8_t sub_index;
         uint16_t data_type;
+        bool constant;
         bool readable;
         bool writable;
         bool mappable;
@@ -215,13 +228,13 @@ template<typename T> std::ostream& operator<<(std::ostream& stream, const NodeId
 
 class ObjectStorage{
 public:
-    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, std::string &> ReadDelegate;
-    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, const std::string &> WriteDelegate;
+    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, String &> ReadDelegate;
+    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, const String &> WriteDelegate;
     
 protected:
     class Data: boost::noncopyable{
         boost::mutex mutex;
-        std::string buffer;
+        String buffer;
         bool valid;
 
         ReadDelegate read_delegate;
@@ -265,33 +278,19 @@ protected:
             if(r) read_delegate = r;
             if(w) write_delegate = w;
         }
-        template<typename T> const T get_cached() {
+        template<typename T> const T get(bool cached) {
             boost::mutex::scoped_lock lock(mutex);
             
             if(!entry->readable){
-                if(entry->writable){
-                    throw AccessException();
-                }
-            }
-            if(valid){
-                return access<T>();
-            }else{
                 throw AccessException();
             }
-        }
-
-        template<typename T> const T get() {
-            boost::mutex::scoped_lock lock(mutex);
             
-            if(!entry->readable){
-                if(entry->writable){
-                    throw AccessException();
-                }
-                return get_cached<T>();
+            if(entry->constant) cached = true;
+            
+            if(!valid || !cached){
+                allocate<T>();
+                read_delegate(*entry, buffer);
             }
-            
-            allocate<T>();
-            read_delegate(*entry, buffer);
             return access<T>();
         }
         template<typename T>  void set(const T &val) {
@@ -312,7 +311,7 @@ protected:
     };        
         
 public:
-    template<uint16_t dt> struct DataType{
+    template<const uint16_t dt> struct DataType{
         typedef void type;
     };
     
@@ -323,12 +322,12 @@ public:
         const T get() {
             if(!data) throw AccessException();
 
-            return data->get<T>();
+            return data->get<T>(false);
         }        
         const T get_cached() {
             if(!data) throw AccessException();
 
-            return data->get_cached<T>();
+            return data->get<T>(true);
         }        
         void set(const T &val) {
             if(!data) throw AccessException();
@@ -351,6 +350,12 @@ protected:
     boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> > storage_;
     boost::mutex mutex_;
     
+    void init_nolock(const ObjectDict::Key &key, const boost::shared_ptr<const ObjectDict::Entry> &entry);
+    
+    ReadDelegate read_delegate_;
+    WriteDelegate write_delegate_;
+    size_t map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
+public:
     template<typename T> Entry<T> entry(const ObjectDict::Key &key){
         boost::mutex::scoped_lock lock(mutex_);
         
@@ -382,13 +387,7 @@ protected:
         }
         return Entry<T>(it->second);
     }
-    void init_nolock(const ObjectDict::Key &key, const boost::shared_ptr<const ObjectDict::Entry> &entry);
-    
-    ReadDelegate read_delegate_;
-    WriteDelegate write_delegate_;
-    size_t map(const boost::shared_ptr<const ObjectDict::Entry> &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
-public:
-    
+
     size_t map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
     
     template<typename T> Entry<T> entry(uint16_t index){
@@ -414,23 +413,50 @@ public:
     void init_all();
 };
 
-template<> std::string & ObjectStorage::Data::access();
-template<> std::string & ObjectStorage::Data::allocate();
+template<> String & ObjectStorage::Data::access();
+template<> String & ObjectStorage::Data::allocate();
 
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER8> { typedef int8_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER16> { typedef int16_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER32> { typedef int32_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER64> { typedef int64_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED8> { typedef uint8_t type;};
+
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16> { typedef uint16_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED32> { typedef uint32_t type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED64> { typedef uint64_t type;};
+
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL32> { typedef float type;};
 template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL64> { typedef double type;};
-template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_VISIBLE_STRING> { typedef std::string type;};
-template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING> { typedef std::string type;};
-template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNICODE_STRING> { typedef std::string type;};
-template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN> { typedef std::string type;};
+
+template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_VISIBLE_STRING> { typedef String type;};
+template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING> { typedef String type;};
+template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_UNICODE_STRING> { typedef String type;};
+template<> struct ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN> { typedef String type;};
+
+template<typename T, typename R> static R *branch_type(const uint16_t data_type){
+    switch(ObjectDict::DataTypes(data_type)){
+        case ObjectDict::DEFTYPE_INTEGER8: return T::template func< ObjectDict::DEFTYPE_INTEGER8 >;
+        case ObjectDict::DEFTYPE_INTEGER16: return T::template func< ObjectDict::DEFTYPE_INTEGER16 >;
+        case ObjectDict::DEFTYPE_INTEGER32: return T::template func< ObjectDict::DEFTYPE_INTEGER32 >;
+        case ObjectDict::DEFTYPE_INTEGER64: return T::template func< ObjectDict::DEFTYPE_INTEGER64 >;
+            
+        case ObjectDict::DEFTYPE_UNSIGNED8: return T::template func< ObjectDict::DEFTYPE_UNSIGNED8 >;
+        case ObjectDict::DEFTYPE_UNSIGNED16: return T::template func< ObjectDict::DEFTYPE_UNSIGNED16 >;
+        case ObjectDict::DEFTYPE_UNSIGNED32: return T::template func< ObjectDict::DEFTYPE_UNSIGNED32 >;
+        case ObjectDict::DEFTYPE_UNSIGNED64: return T::template func< ObjectDict::DEFTYPE_UNSIGNED64 >;
+            
+        case ObjectDict::DEFTYPE_REAL32: return T::template func< ObjectDict::DEFTYPE_REAL32 >;
+        case ObjectDict::DEFTYPE_REAL64: return T::template func< ObjectDict::DEFTYPE_REAL64 >;
+
+        case ObjectDict::DEFTYPE_VISIBLE_STRING: return T::template func< ObjectDict::DEFTYPE_VISIBLE_STRING >;
+        case ObjectDict::DEFTYPE_OCTET_STRING: return T::template func< ObjectDict::DEFTYPE_OCTET_STRING >;
+        case ObjectDict::DEFTYPE_UNICODE_STRING: return T::template func< ObjectDict::DEFTYPE_UNICODE_STRING >;
+        case ObjectDict::DEFTYPE_DOMAIN: return T::template func< ObjectDict::DEFTYPE_DOMAIN >;
+           
+        default: return 0;
+    }
+}
 
 } // ipa_canopen
 
