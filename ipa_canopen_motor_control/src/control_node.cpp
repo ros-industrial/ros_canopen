@@ -220,7 +220,8 @@ public:
             robot_.registerInterface(&vel_interface_);
             robot_.registerInterface(&eff_interface_);
             
-            cm_.reset(new ControllerManagerLayer(100, nh_, &robot_));
+            ros::NodeHandle chain_handle(nh_,chain_name_);
+            cm_.reset(new ControllerManagerLayer(100, chain_handle, &robot_));
             add(cm_);
             
             return true;
