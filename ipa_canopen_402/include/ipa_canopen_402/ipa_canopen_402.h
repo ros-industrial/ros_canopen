@@ -3,97 +3,157 @@
 
 #include <ipa_canopen_master/canopen.h>
 
-namespace ipa_canopen{
-
-class Node_402 : public Node
+namespace ipa_canopen
 {
-
+class Node_402 : public ipa_canopen::Layer
+{
 public:
-    Node_402 (const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>()) : Node(interface, dict, node_id, sync)
-    {
-         state_listener_ = addStateListener(StateDelegate(this, &Node_402::switchState));
-         configureEntries();
-    }
+  Node_402(boost::shared_ptr <ipa_canopen::Node> n, std::string &name) : Layer(name), n_(n)
+  {
+    configureEntries();
+  }
 
-    enum OperationMode
-    {
-        No_Mode,
-        Profiled_Position,
-        Velocity,
-        Profiled_Velocity,
-        Profiled_Torque,
-        Reserved,
-        Homing,
-        Interpolated_Position,
-        Cyclic_Synchronous_Position,
-    };
+  enum StatusWord
+  {
+    SW_Ready_To_Switch_On,
+    SW_Switched_On,
+    SW_Operation_enabled,
+    SW_Fault,
+    SW_Voltage_enabled,
+    SW_Quick_stop,
+    SW_Switch_on_disabled,
+    SW_Warning,
+    SW_Manufacturer_specific0,
+    SW_Remote,
+    SW_Target_reached,
+    SW_Internal_limit,
+    SW_Operation_specific0,
+    SW_Operation_specific1,
+    SW_Manufacturer_specific1,
+    SW_Manufacturer_specific2
+  };
 
-    enum State{
-        Start,
-        Not_Ready_To_Switch_On,
-        Switch_On_Disabled,
-        Ready_To_Switch_On,
-        Switched_On,
-        Operation_Enable,
-        Quick_Stop_Active,
-        Fault_Reaction_Active
-    };
+  enum ControlWord
+  {
+    CW_Switch_On,
+    CW_Enable_Voltage,
+    CW_Quick_Stop,
+    CW_Enable_Operation,
+    CW_Operation_mode_specific0,
+    CW_Operation_mode_specific1,
+    CW_Operation_mode_specific2,
+    CW_Fault_Reset,
+    CW_Halt,
+    CW_Reserved0,
+    CW_Reserved1,
+    CW_Manufacturer_specific0,
+    CW_Manufacturer_specific1,
+    CW_Manufacturer_specific2,
+    CW_Manufacturer_specific3,
+    CW_Manufacturer_specific4,
+  };
 
-    const boost::shared_ptr<ipa_canopen::ObjectStorage> node_storage_;
+  enum OperationMode
+  {
+    No_Mode,
+    Profiled_Position,
+    Velocity,
+    Profiled_Velocity,
+    Profiled_Torque,
+    Reserved,
+    Homing,
+    Interpolated_Position,
+    Cyclic_Synchronous_Position,
+  };
 
-    const int8_t getMode();
-    bool enterMode(const OperationMode &op_mode);
+  enum State
+  {
+    Start,
+    Not_Ready_To_Switch_On,
+    Switch_On_Disabled,
+    Ready_To_Switch_On,
+    Switched_On,
+    Operation_Enable,
+    Quick_Stop_Active,
+    Fault_Reaction_Active,
+    Fault
+  };
 
-    const State& getState();
-    void enterState(const State &s);
+  const int8_t getMode();
+  bool enterMode(const OperationMode &op_mode);
 
-    const int32_t getActualPos();
-    const int32_t getActualInternalPos();
-    void setTargetPos(int32_t pos);
+  const State& getState();
+  void enterState(const State &s);
 
-    const int32_t getActualVel();
-    void setTargetVel(int32_t target_vel);
 
-    bool init();
-    void stop();
-    void recover();
+  virtual void read(LayerStatus &status);
+  virtual void write(LayerStatus &status);
 
-    bool turnOn();
-    bool operate();
-    bool turnOff();
+  virtual void report(LayerStatusExtended &status);
+
+  virtual void init(LayerStatusExtended &status);
+  virtual void shutdown(LayerStatus &status);
+
+  virtual void halt(LayerStatus &status) {} // TODO
+  virtual void recover(LayerStatusExtended &status);
+
+  const double getActualPos();
+  const double getActualInternalPos();
+
+  const double getActualVel();
+  const double getActualEff();
+
+  void setTargetPos(const double &target_pos);
+  void setTargetVel(const double &target_vel);
+  void setTargetEff(const double &v);
+
+  const double getTargetPos();
+  const double getTargetVel();
+  const double getTargetEff();
+
+  bool turnOn();
+  bool operate();
+  bool turnOff();
+
+  void configureEntries();
 
 private:
-    ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  status_word;
-    ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  control_word;
-    ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode_display;
-    ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode;
+  boost::shared_ptr <ipa_canopen::Node> n_;
+  volatile bool running;
+  State state_;
+  State target_state_;
 
-    ipa_canopen::ObjectStorage::Entry<int32_t> actual_vel;
-    ipa_canopen::ObjectStorage::Entry<int32_t> target_velocity;
-    ipa_canopen::ObjectStorage::Entry<uint32_t> profile_velocity;
-    ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
-    ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
-    ipa_canopen::ObjectStorage::Entry<int32_t> target_position;
+  ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  status_word;
+  ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  control_word;
+  ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode_display;
+  ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode;
 
-    void configureEntries();
+  ipa_canopen::ObjectStorage::Entry<int32_t> actual_vel;
+  ipa_canopen::ObjectStorage::Entry<int32_t> target_velocity;
+  ipa_canopen::ObjectStorage::Entry<uint32_t> profile_velocity;
+  ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
+  ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
+  ipa_canopen::ObjectStorage::Entry<int32_t> target_position;
 
-    template<typename T> void wait_for(const State &s, const T &timeout);
+  int32_t ac_vel_;
+  double ac_eff_;
 
-    State state_;
-   // Motor motor_;
+  int8_t operation_mode_;
+  int8_t operation_mode_to_set_;
+  bool check_mode;
 
-    StateListener::Ptr state_listener_;
-    void switchState(const Node::State &s);
+  int32_t ac_pos_;
+  int32_t internal_pos_;
+  int32_t oldpos_;
 
-  //  void setupNode(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncProvider> sync = boost::shared_ptr<SyncProvider>());
+  std::bitset<15> status_word_bitset;
+  std::bitset<15> control_word_bitset;
 
-    boost::timed_mutex mutex;
-    boost::mutex cond_mutex;
-    boost::condition_variable cond;
+  int32_t target_vel_;
+  int32_t target_pos_;
 
-    //Node node_;
-    //Motor motor_;
+  std::vector<int> control_word_buffer;
+
 };
-
 }  //  namespace ipa_canopen
 #endif  // H_IPA_CANOPEN_402
