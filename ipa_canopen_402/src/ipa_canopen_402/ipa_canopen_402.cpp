@@ -230,6 +230,8 @@ bool Node_402::enterMode(const OperationMode &op_mode_var)
   operation_mode_to_set_ = op_mode_var;
 
   check_mode = true;
+
+  return true;
 }
 
 void Node_402::configureEntries()
