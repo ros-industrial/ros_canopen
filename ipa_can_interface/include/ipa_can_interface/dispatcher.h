@@ -1,7 +1,7 @@
 #ifndef H_IPA_CAN_DISPATCHER
 #define H_IPA_CAN_DISPATCHER
 
-#include "interface.h"
+#include <ipa_can_interface/interface.h>
 #include <list>
 #include <boost/thread/mutex.hpp>
 #include <boost/unordered_map.hpp>
@@ -90,54 +90,32 @@ public:
     operator typename BaseClass::Callable() { return typename BaseClass::Callable(this,&FilteredDispatcher::dispatch); }
 };
 
-template< template<typename,typename> class Driver> class DispatchedInterface : public Interface{
-protected:
-    Driver<FrameDelegate, StateDelegate> driver_;
-    FilteredDispatcher<const unsigned int, FrameListener> frame_dispatcher_;
-    SimpleDispatcher<StateListener> state_dispatcher_;
+
+template <typename T>class DispatchedInterface: public CommInterface, public StateInterface, public T{
+    typedef FilteredDispatcher<const unsigned int, CommInterface::FrameListener> FrameDispatcher;
+    typedef SimpleDispatcher<StateInterface::StateListener> StateDispatcher;
+    FrameDispatcher frame_dispatcher_;
+    StateDispatcher state_dispatcher_;
 public:
-    DispatchedInterface(bool loopback = false): driver_(frame_dispatcher_, state_dispatcher_, loopback) {}
+    DispatchedInterface(): T(FrameDelegate(&frame_dispatcher_, &FrameDispatcher::dispatch),StateDelegate(&state_dispatcher_, &StateDispatcher::dispatch)) {}
+    template<typename T1> DispatchedInterface(const T1 &t1): T(FrameDelegate(&frame_dispatcher_, &FrameDispatcher::dispatch),StateDelegate(&state_dispatcher_, &StateDispatcher::dispatch), t1) {}
+    template<typename T1,typename T2> DispatchedInterface(const T1 &t1, const T2 &t2): T(FrameDelegate(&frame_dispatcher_, &FrameDispatcher::dispatch),StateDelegate(&state_dispatcher_, &StateDispatcher::dispatch), t1, t2) {}
     
-    virtual bool init(const std::string &device, unsigned int bitrate) {
-        if(driver_.init(device, bitrate)){
-            return true;
-        }
-        return false;
-    }
-    virtual void run(){
-        std::cout << "run interface" << std::endl;
-        driver_.run();
-    }
-    virtual bool recover(){
-        return driver_.recover();
-    }
     virtual bool send(const Frame & msg){
-        return driver_.send(msg);
-    }
-    virtual State getState(){
-        return driver_.getState();
+        return T::send(msg);
     }
 
-    virtual void shutdown(){
-        driver_.shutdown();
-    }
-    
     virtual FrameListener::Ptr createMsgListener(const FrameDelegate &delegate){
         return frame_dispatcher_.createListener(delegate);
     }
-    virtual FrameListener::Ptr createMsgListener(const Frame::Header& h, const FrameDelegate &delegate){
+    virtual FrameListener::Ptr createMsgListener(const Frame::Header&h , const FrameDelegate &delegate){
         return frame_dispatcher_.createListener(h, delegate);
     }
-    virtual StateListener::Ptr createStateListener(const StateDelegate &delegate) {
+    virtual StateListener::Ptr createStateListener(const StateDelegate &delegate){
         return state_dispatcher_.createListener(delegate);
     }
-    
-    virtual bool translateError(unsigned int internal_error, std::string & str){
-        return driver_.translateError(internal_error, str);
-    }
-    
-    virtual ~DispatchedInterface() {}
 };
+
 
 } // namespace ipa_can
 #endif

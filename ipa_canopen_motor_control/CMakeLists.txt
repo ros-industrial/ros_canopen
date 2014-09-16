@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   ipa_canopen_chain_ros
   hardware_interface
   controller_manager
-  ipa_socketcan_driver
+  ipa_canopen_402
 )
 
 ## System dependencies are found with CMake's conventions
@@ -143,9 +143,9 @@ install(TARGETS ipa_canopen_motor_control_node
 #   PATTERN ".svn" EXCLUDE
 # )
 
-install(DIRECTORY launch/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
-)
+#install(DIRECTORY launch/
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+#)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES

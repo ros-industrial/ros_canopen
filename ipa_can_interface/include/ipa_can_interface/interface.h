@@ -78,13 +78,8 @@ public:
     virtual ~Listener() {} 
 };
 
-class Interface{
+class DriverInterface{
 public:
-    typedef fastdelegate::FastDelegate1<const Frame&> FrameDelegate;
-    typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
-    typedef Listener<const FrameDelegate, const Frame&> FrameListener;
-    typedef Listener<const StateDelegate, const State&> StateListener;
-
     /**
      * initialize interface
      * 
@@ -102,14 +97,6 @@ public:
     virtual bool recover() = 0;
 
     /**
-     * enqueue frame for sending
-     * 
-     * @param[in] msg: message to be enqueued
-     * @return true if frame was enqueued succesfully, otherwise false
-     */
-    virtual bool send(const Frame & msg) = 0;
-    
-    /**
      * @return current state of driver
      */
     virtual State getState() = 0;
@@ -120,6 +107,44 @@ public:
      * @return true if shutdown was succesful, false otherwise
      */
     virtual void shutdown() = 0;
+    
+    virtual bool translateError(unsigned int internal_error, std::string & str) = 0;
+    
+    virtual bool doesLoopBack() const = 0;
+    
+    virtual void run()  = 0;
+    
+    virtual ~DriverInterface() {}
+};
+
+class StateInterface{
+public:
+    typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
+    typedef Listener<const StateDelegate, const State&> StateListener;
+
+    /**
+     * acquire a listener for the specified delegate, that will get called for all state changes
+     * 
+     * @param[in] delegate: delegate to be bound by the listener
+     * @return managed pointer to listener
+     */
+    virtual StateListener::Ptr createStateListener(const StateDelegate &delegate) = 0;
+
+    virtual ~StateInterface() {}
+};
+
+class CommInterface{
+public:
+    typedef fastdelegate::FastDelegate1<const Frame&> FrameDelegate;
+    typedef Listener<const FrameDelegate, const Frame&> FrameListener;
+
+    /**
+     * enqueue frame for sending
+     * 
+     * @param[in] msg: message to be enqueued
+     * @return true if frame was enqueued succesfully, otherwise false
+     */
+    virtual bool send(const Frame & msg) = 0;
     
     /**
      * acquire a listener for the specified delegate, that will get called for all messages
@@ -138,19 +163,7 @@ public:
      */
     virtual FrameListener::Ptr createMsgListener(const Frame::Header&, const FrameDelegate &delegate) = 0;
     
-    /**
-     * acquire a listener for the specified delegate, that will get called for all state changes
-     * 
-     * @param[in] delegate: delegate to be bound by the listener
-     * @return managed pointer to listener
-     */
-    virtual StateListener::Ptr createStateListener(const StateDelegate &delegate) = 0;
-    
-    virtual bool translateError(unsigned int internal_error, std::string & str) = 0;
-    
-    virtual void run() {}
-    
-    virtual ~Interface() {}
+    virtual ~CommInterface() {}
 };
 
 } // namespace ipa_can

@@ -2,10 +2,10 @@
 CreatedBy=Vladyslav Nechayev
 ModifiedBy=Vladyslav Nechayev
 Description=Elmo Gold drive EDS file
-CreationTime=06:58PM
-CreationDate=07-31-2014
-ModificationTime=06:58PM
-ModificationDate=07-31-2014
+CreationTime=03:50PM
+CreationDate=08-29-2014
+ModificationTime=03:50PM
+ModificationDate=08-29-2014
 FileName=Whistle Gold V002.dcf
 FileVersion=002
 FileRevision=01
@@ -36,13 +36,6 @@ GroupMessaging=0
 NrOfRXPDO=4
 NrOfTXPDO=4
 LSS_Supported=0
-
-[DeviceComissioning]
-NodeID=1
-NodeName=Elmo
-Baudrate=500
-NetNumber=0
-LSS_SerialNumber=0
 
 [DummyUsage]
 Dummy0001=0
@@ -466,7 +459,6 @@ DefaultValue=127
 PDOMapping=0
 LowLimit=1
 HighLimit=127
-ParameterValue=127
 
 [1010]
 ParameterName=Store Parameters
@@ -665,7 +657,6 @@ DefaultValue=$NODEID+0x200
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x201
 
 [1400sub2]
 ParameterName=Transmission Type
@@ -701,7 +692,6 @@ DefaultValue=$NODEID+0x300
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x301
 
 [1401sub2]
 ParameterName=Transmission Type
@@ -737,7 +727,6 @@ DefaultValue=$NODEID+0x400
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x401
 
 [1402sub2]
 ParameterName=Transmission Type
@@ -773,7 +762,6 @@ DefaultValue=$NODEID+0x500
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x501
 
 [1403sub2]
 ParameterName=Transmission Type
@@ -788,6 +776,7 @@ ParameterValue=255
 ParameterName=Receive PDO Mapping Parameter 0
 ObjectType=0x9
 SubNumber=9
+ParameterValue=2
 
 [1600sub0]
 ParameterName=Number of entries
@@ -797,6 +786,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
+ParameterValue=2
 
 [1600sub1]
 ParameterName=PDO Mapping Entry
@@ -814,6 +804,7 @@ ParameterName=PDO Mapping Entry_2
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
+ParameterValue=0x607a0020
 PDOMapping=0
 
 [1600sub3]
@@ -1097,7 +1088,6 @@ DefaultValue=$NODEID+0x180
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x181
 
 [1800sub2]
 ParameterName=Transmission Type
@@ -1164,7 +1154,6 @@ DefaultValue=$NODEID+0x280
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x281
 
 [1801sub2]
 ParameterName=Transmission Type
@@ -1231,7 +1220,6 @@ DefaultValue=$NODEID+0x380
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x381
 
 [1802sub2]
 ParameterName=Transmission Type
@@ -1242,7 +1230,7 @@ DefaultValue=255
 PDOMapping=0
 LowLimit=0
 HighLimit=255
-ParameterValue=255
+ParameterValue=1
 
 [1802sub3]
 ParameterName=Inhibit Time
@@ -1298,7 +1286,6 @@ DefaultValue=$NODEID+0x480
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
-ParameterValue=0x481
 
 [1803sub2]
 ParameterName=Transmission Type
@@ -1353,7 +1340,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
-ParameterValue=0
+ParameterValue=2
 
 [1A00sub1]
 ParameterName=Status Word
@@ -1371,6 +1358,7 @@ ParameterName=PDO Mapping Entry_2
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
+ParameterValue=0x60610008
 PDOMapping=0
 
 [1A00sub3]
@@ -1502,12 +1490,14 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
+ParameterValue=2
 
 [1A02sub1]
 ParameterName=PDO Mapping Entry
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
+ParameterValue=0x606c0020
 PDOMapping=0
 
 [1A02sub2]
@@ -1515,7 +1505,9 @@ ParameterName=PDO Mapping Entry_2
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
+ParameterValue=0x60640020
 PDOMapping=0
+
 
 [1A02sub3]
 ParameterName=PDO Mapping Entry_3

@@ -21,21 +21,21 @@ const int8_t Node_402::getMode()
     return operation_mode;
 }
 
-const double Node_402::getActualVel()
+const int32_t Node_402::getActualVel()
 {
-    double ac_vel = actual_vel.get();
+    int32_t ac_vel = actual_vel.get();
     return ac_vel;
 }
 
-const double Node_402::getActualPos()
+const int32_t Node_402::getActualPos()
 {
-    double ac_pos = actual_pos.get();
+    int32_t ac_pos = actual_pos.get();
     return ac_pos;
 }
 
-const double Node_402::getActualInternalPos()
+const int32_t Node_402::getActualInternalPos()
 {
-    double internal_pos = actual_internal_pos.get();
+    int32_t internal_pos = actual_internal_pos.get();
     return internal_pos;
 }
 
@@ -46,7 +46,9 @@ void Node_402::setTargetVel(int32_t target_vel)
 
 void Node_402::setTargetPos(int32_t target_pos)
 {
+    int32_t oldpos = target_position.get_cached();
     target_position.set(target_pos);
+    if(oldpos != target_pos) operate();
 }
 
 bool Node_402::enterMode(const OperationMode &op_mode_var)
@@ -61,19 +63,19 @@ bool Node_402::enterMode(const OperationMode &op_mode_var)
 
 void Node_402::configureEntries()
 {
-    node_storage_->entry(status_word, 0x6041);
-    node_storage_->entry(control_word, 0x6040);
+    getStorage()->entry(status_word, 0x6041);
+    getStorage()->entry(control_word, 0x6040);
 
-    node_storage_->entry(op_mode,0x6060);
-    node_storage_->entry(op_mode_display,0x6061);
+    getStorage()->entry(op_mode,0x6060);
+    getStorage()->entry(op_mode_display,0x6061);
 
-    node_storage_->entry(actual_vel,0x606C);
-    node_storage_->entry(target_velocity,0x60FF);
-    node_storage_->entry(profile_velocity,0x6081);
+    getStorage()->entry(actual_vel,0x606C);
+    getStorage()->entry(target_velocity,0x60FF);
+    getStorage()->entry(profile_velocity,0x6081);
 
-    node_storage_->entry(target_position,0x607A);
-    node_storage_->entry(actual_pos,0x6064);
-    node_storage_->entry(actual_internal_pos,0x6063);
+    getStorage()->entry(target_position,0x607A);
+    getStorage()->entry(actual_pos,0x6064);
+    getStorage()->entry(actual_internal_pos,0x6063);
 }
 
 bool Node_402::turnOn()
@@ -93,6 +95,7 @@ bool Node_402::operate()
         control_word.set(0x1f);
         control_word.set(0x0f);
     }
+    return true;
 }
 
 bool Node_402::turnOff()
@@ -104,9 +107,13 @@ bool Node_402::turnOff()
 
 bool Node_402::init()
 {
-    if(Node_402::turnOn())
+    
+    enterMode(Profiled_Position);
+    
+    if(Node_402::turnOn()){
+        operate();
         return true;
-    else
+    }else
         return false;
 }
 

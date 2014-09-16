@@ -127,7 +127,8 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
                 ObjectStorage::WriteDelegate wd;
                 if(read) rd = ObjectStorage::ReadDelegate(b.get(), &Buffer::read);
                 if(write) wd = ObjectStorage::WriteDelegate(b.get(), &Buffer::write);
-                assert(storage->map(param.index, param.sub_index, rd, wd) == param.length/8);
+                size_t l = storage->map(param.index, param.sub_index, rd, wd);
+                assert(l  == param.length/8);
             }
             
             offset += b->size;
@@ -153,7 +154,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
         
     
 }
-PDOMapper::PDOMapper(const boost::shared_ptr<ipa_can::Interface> interface)
+PDOMapper::PDOMapper(const boost::shared_ptr<ipa_can::CommInterface> interface)
 :interface_(interface)
 {
 }
@@ -183,6 +184,7 @@ void PDOMapper::init(const boost::shared_ptr<ObjectStorage> storage){
 
 
 bool PDOMapper::RPDO::init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
+    boost::mutex::scoped_lock lock(mutex);
     listener_.reset();
     const ipa_canopen::ObjectDict & dict = *storage->dict_;
     parse_and_set_mapping(storage, com_index, map_index, true, false);
@@ -198,12 +200,13 @@ bool PDOMapper::RPDO::init(const boost::shared_ptr<ObjectStorage> &storage, cons
     
     transmission_type = dict(com_index, SUB_COM_TRANSMISSION_TYPE).value().get<uint8_t>();
     
-    listener_ = interface_->createMsgListener(pdoid.header() ,ipa_can::Interface::FrameDelegate(this, &RPDO::handleFrame));
-        
+    listener_ = interface_->createMsgListener(pdoid.header() ,ipa_can::CommInterface::FrameDelegate(this, &RPDO::handleFrame));
+    
     return true;
 }
 
 bool PDOMapper::TPDO::init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
+    boost::mutex::scoped_lock lock(mutex);
     const ipa_canopen::ObjectDict & dict = *storage->dict_;
 
     parse_and_set_mapping(storage, com_index, map_index, false, true);
@@ -296,14 +299,19 @@ void PDOMapper::RPDO::handleFrame(const ipa_can::Frame & msg){
     }
 }
 
-void PDOMapper::sync(const uint8_t &counter){
+bool PDOMapper::read(){
     boost::mutex::scoped_lock lock(mutex_);
     for(boost::unordered_set<boost::shared_ptr<RPDO> >::iterator it = rpdos_.begin(); it != rpdos_.end(); ++it){
         (*it)->sync();
     }
+    return true; // TODO: check for errors
+}
+bool PDOMapper::write(){
+    boost::mutex::scoped_lock lock(mutex_);
     for(boost::unordered_set<boost::shared_ptr<TPDO> >::iterator it = tpdos_.begin(); it != tpdos_.end(); ++it){
         (*it)->sync();
     }
+    return true; // TODO: check for errors
 }
 
 bool PDOMapper::Buffer::read(uint8_t* b, const size_t len){
@@ -329,7 +337,7 @@ void PDOMapper::Buffer::write(const uint8_t* b, const size_t len){
     lock.unlock();
     cond.notify_all();
 }
-void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, std::string &data){
+void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
     boost::mutex::scoped_lock lock(mutex);
     boost::system_time abs_time = boost::get_system_time() + boost::posix_time::seconds(1);
     if(size != data.size()){
@@ -346,7 +354,7 @@ void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, std::s
         dirty = false;
     }
 }
-void PDOMapper::Buffer::write(const ipa_canopen::ObjectDict::Entry &, const std::string &data){
+void PDOMapper::Buffer::write(const ipa_canopen::ObjectDict::Entry &, const String &data){
     boost::mutex::scoped_lock lock(mutex);
     if(size != data.size()){
         throw std::bad_cast();

@@ -1,9 +1,7 @@
 #include <iostream>
 #include <boost/unordered_set.hpp>
 
-
-#include <ipa_socketcan_driver/socketcan.h>
-#include <ipa_can_interface/dispatcher.h>
+#include <ipa_can_interface/socketcan.h>
 
 using namespace ipa_can;
 
@@ -34,7 +32,7 @@ void print_frame(const Frame &f){
     std::cout << std::dec << std::endl;
 }
 
-SocketCANDriver<Interface::FrameDelegate, Interface::StateDelegate> driver(print_frame, print_error);
+SocketCANDriver<CommInterface::FrameDelegate, StateInterface::StateDelegate> driver(print_frame, print_error);
 
 void print_error(const State & s){
     std::string err;

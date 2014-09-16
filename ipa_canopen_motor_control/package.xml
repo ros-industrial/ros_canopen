@@ -23,7 +23,7 @@
   <depend>ipa_canopen_chain_ros</depend>
   <depend>hardware_interface</depend>
   <depend>controller_manager</depend>
-  <depend>ipa_socketcan_driver</depend>
+  <depend>ipa_canopen_402</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
