@@ -143,18 +143,13 @@ protected:
             return false;
         }
         
-        bool can_loopback;
-
         bus_nh.param("bitrate",can_bitrate, 0);
         
         if(can_bitrate < 0){
             ROS_ERROR_STREAM("CAN bitrate  "<< can_bitrate << " is invalid");
             return false;
         }
-        
-        bus_nh.param("loopback",can_loopback, true);
-
-        interface_ = boost::make_shared<InterfaceType>(can_loopback);
+        interface_ = boost::make_shared<InterfaceType>(true); // enable loopback
         state_listener_ = interface_->createStateListener(ipa_can::StateInterface::StateDelegate(this, &RosChain::logState));
         
         master_ = boost::make_shared<MasterType>(interface_);
