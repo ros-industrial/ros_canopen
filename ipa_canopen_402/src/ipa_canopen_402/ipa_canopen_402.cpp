@@ -50,7 +50,7 @@ void Node_402::read(LayerStatus &status)
   operation_mode_ = op_mode_display.get();
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
-  internal_pos_ = actual_internal_pos.get();
+  //internal_pos_ = actual_internal_pos.get();
   oldpos_ = target_position.get_cached();
 
   if(check_mode)
