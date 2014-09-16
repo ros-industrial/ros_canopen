@@ -32,7 +32,7 @@ catkin_package(
 ## Build ##
 ###########
 
-include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
 add_library(ipa_canopen_master
