@@ -8,7 +8,7 @@
     </include>
 
     <!-- send elmo_test_rig urdf to param server -->
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find ipa_canopen_test)/urdf/elmo_test_rig.urdf.xacro'" />
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find ipa_canopen_test)/urdf/1dof.urdf.xacro'" />
     
     <!-- push robot_description to factory and spawn robot in gazebo -->
     <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model elmo_test_rig -z 0.01 " respawn="false" output="screen" />
