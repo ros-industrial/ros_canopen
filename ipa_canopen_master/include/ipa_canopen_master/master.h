@@ -6,6 +6,7 @@
 #include <boost/interprocess/sync/interprocess_condition.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
 
 namespace ipa_canopen{
 
@@ -297,6 +298,31 @@ class LocalMaster: public Master{
 public:
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
     LocalMaster(const std::string &name, boost::shared_ptr<ipa_can::CommInterface> interface) : interface_(interface)  {}
+};
+
+class SharedIPCSyncMaster : public IPCSyncMaster{
+    boost::interprocess::managed_shared_memory &managed_shm_;
+    const SyncProperties properties_;
+    virtual SyncObject * getSyncObject(LayerStatusExtended &status);
+public:
+    bool matches(const SyncProperties &p) const { return p == properties_; }
+    SharedIPCSyncMaster(boost::interprocess::managed_shared_memory &managed_shm, const SyncProperties &properties, boost::shared_ptr<ipa_can::CommInterface> interface)
+    : IPCSyncMaster(interface), managed_shm_(managed_shm), properties_(properties)  { }
+};
+
+class SharedMaster: public Master{
+    const std::string name_;
+    boost::interprocess::managed_shared_memory managed_shm_;
+    boost::interprocess::remove_shared_memory_on_destroy remover_;
+    boost::mutex mutex_;
+    boost::unordered_map<ipa_can::Header, boost::shared_ptr<SharedIPCSyncMaster> > syncmasters_;
+    boost::shared_ptr<ipa_can::CommInterface> interface_;
+public:
+    SharedMaster(const std::string &name, boost::shared_ptr<ipa_can::CommInterface> interface)
+    : name_("ipa_canopen_master_shm_"+name),
+        managed_shm_(boost::interprocess::open_or_create, name_.c_str(), 4096),
+        remover_(name_.c_str()), interface_(interface)  {}
+    virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
 };
 
 } // ipa_canopen
