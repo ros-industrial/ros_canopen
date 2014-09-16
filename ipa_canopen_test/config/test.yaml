@@ -1,17 +1,10 @@
 name: plate_controller
 
-bus:
-  device: can0
-
-sync:
-  interval_ms: 20
-  overflow: 0
-
 defaults:
   eds_pkg: ipa_canopen_test
   eds_file: "config/Whistle Gold V002.dcf"
 
 modules:
   - name: plate_joint
-    id: 1
+    id: 85
      
