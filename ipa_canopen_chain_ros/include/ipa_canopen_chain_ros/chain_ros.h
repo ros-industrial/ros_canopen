@@ -152,7 +152,7 @@ protected:
         interface_ = boost::make_shared<InterfaceType>(true); // enable loopback
         state_listener_ = interface_->createStateListener(ipa_can::StateInterface::StateDelegate(this, &RosChain::logState));
         
-        master_ = boost::make_shared<MasterType>(interface_);
+        master_ = boost::make_shared<MasterType>(can_device, interface_);
         
         add(boost::make_shared<CANLayer<InterfaceType> >(interface_, can_device, can_bitrate));
         
