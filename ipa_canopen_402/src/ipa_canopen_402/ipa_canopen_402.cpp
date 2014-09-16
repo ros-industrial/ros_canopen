@@ -4,6 +4,7 @@ using namespace ipa_canopen;
 
 void Node_402::read(LayerStatus &status)
 {
+
   std::bitset<15> sw_new(status_word.get());
 
   status_word_bitset = sw_new;
@@ -90,6 +91,13 @@ const double Node_402::getTargetPos()
 void Node_402::write(LayerStatus &status)
 {
 
+  if(!control_word_buffer.empty())
+  {
+    int16_t cw_set = control_word_buffer.back();
+    control_word_buffer.pop_back();
+    control_word.set(cw_set);
+  }
+
   if (state_ != target_state_)
   {
 
@@ -108,25 +116,27 @@ void Node_402::write(LayerStatus &status)
       control_word_bitset.set(CW_Quick_Stop);
     }
 
-    if(state_ = Ready_To_Switch_On)
+    else if(state_ == Ready_To_Switch_On)
     {
       if (target_state_ == Switch_On_Disabled)
       {
-        control_word_bitset.reset(CW_Enable_Voltage);
+        control_word_bitset.set(CW_Enable_Voltage);
       }
       else
       {
-        control_word.set(CW_Switch_On);
+        control_word_bitset.set(CW_Enable_Voltage);
+        control_word_bitset.set(CW_Switch_On);
+        control_word_bitset.set(CW_Quick_Stop);
       }
     }
 
-    if (state_ == Switched_On)
+    else if (state_ == Switched_On)
     {
       if (target_state_ == Switch_On_Disabled)
       {
         control_word_bitset.reset(CW_Enable_Voltage);
       }
-      else if (target_state_ = Ready_To_Switch_On)
+      else if (target_state_ == Ready_To_Switch_On)
       {
         // 0x06 Shutdown
         control_word_bitset.reset(CW_Switch_On);
@@ -138,16 +148,17 @@ void Node_402::write(LayerStatus &status)
         // 0x07 Enable Operation
         control_word_bitset.set(CW_Switch_On);
         control_word_bitset.set(CW_Enable_Voltage);
+        control_word_bitset.set(CW_Enable_Operation);
         control_word_bitset.set(CW_Quick_Stop);
       }
     }
-    if (state_ = Operation_Enable)
+    else if (state_ == Operation_Enable)
     {
-      if (target_state_ = Switch_On_Disabled)
+      if (target_state_ == Switch_On_Disabled)
       {
         control_word_bitset.reset(CW_Enable_Voltage);
       }
-      else if (target_state_ = Ready_To_Switch_On)
+      else if (target_state_ == Ready_To_Switch_On)
       {
         // 0x06 Shutdown
         control_word_bitset.reset(CW_Switch_On);
@@ -156,7 +167,6 @@ void Node_402::write(LayerStatus &status)
       }
       //Disable operation ?
     }
-
     control_word_buffer.push_back(static_cast<int>(control_word_bitset.to_ulong()));
 
     status.WARN;
@@ -168,14 +178,6 @@ void Node_402::write(LayerStatus &status)
     target_position.set(target_pos_);
   else if(operation_mode_ == Profiled_Velocity)
     target_velocity.set(target_vel_);
-
-
-  if(!control_word_buffer.empty())
-  {
-    int16_t cw_set = control_word_buffer.back();
-    control_word_buffer.pop_back();
-    control_word.set(cw_set);
-  }
 
 }
 
@@ -258,6 +260,8 @@ bool Node_402::operate()
 {
   if(getMode()==Profiled_Position)
   {
+    control_word_buffer.push_back(0x1f);
+    control_word_buffer.push_back(0x0f);
     profile_velocity.set(1000000);
   }
   return true;
