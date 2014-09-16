@@ -190,7 +190,7 @@ protected:
 
         if(sync_ms){
             // TODO: parse header
-            sync_ = master_->getSync(ipa_can::Header(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow);
+            sync_ = master_->getSync(SyncProperties(ipa_can::Header(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
             
             if(!sync_ && sync_ms){
                 ROS_ERROR_STREAM("Initializing sync master failed");

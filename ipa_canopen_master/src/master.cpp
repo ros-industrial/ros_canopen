@@ -6,8 +6,8 @@ std::size_t hash_value(ipa_can::Header const& h){ return (unsigned int)(h);}
 
 using namespace ipa_canopen;
 
-LocalSyncLayer::LocalSyncLayer(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o, boost::shared_ptr<ipa_can::CommInterface> interface, bool loopback)
-: SyncLayer(h,p,o), interface_(interface), msg_(h,o?1:0), loopback_(loopback)
+LocalSyncLayer::LocalSyncLayer(const SyncProperties &p, boost::shared_ptr<ipa_can::CommInterface> interface, bool loopback)
+: SyncLayer(p), interface_(interface), msg_(p.header_,p.overflow_?1:0), loopback_(loopback)
 {
 }
 
@@ -30,7 +30,7 @@ bool LocalSyncLayer::checkSync(){
         throw TimeoutException();
     }
     
-    timeout += period_;
+    timeout += properties.period_;
     return okay;
 }
 
@@ -48,9 +48,9 @@ bool LocalSyncLayer::write()  {
     boost::mutex::scoped_lock lock(mutex_);
     if(!checkSync()) return true;
     
-    if(overflow_){
+    if(properties.overflow_){
         ++msg_.data[0];
-        if(msg_.data[0] > overflow_) msg_.data[0] = 1;
+        if(msg_.data[0] > properties.overflow_) msg_.data[0] = 1;
     }
     
     interface_->send(msg_);
@@ -63,14 +63,14 @@ bool LocalSyncLayer::init() {
     msg_.data[0] = 0;
     timeout = boost::posix_time::seconds(0);
     track_timeout = boost::posix_time::seconds(0);
-    max_timeout =  period_ + period_;
+    max_timeout =  properties.period_ + properties.period_;
     if(max_timeout < boost::posix_time::milliseconds(1000)){
         max_timeout = boost::posix_time::milliseconds(1000);
     }
     if(loopback_){
-        loop_listener_ = interface_->createMsgListener(header_, ipa_can::CommInterface::FrameDelegate(this,&LocalSyncLayer::handleFrame));
+        loop_listener_ = interface_->createMsgListener(properties.header_, ipa_can::CommInterface::FrameDelegate(this,&LocalSyncLayer::handleFrame));
     }
-    timer_.start(Timer::TimerDelegate(this, &LocalSyncLayer::sync), period_);
+    timer_.start(Timer::TimerDelegate(this, &LocalSyncLayer::sync), properties.period_);
     return true;
 } 
 bool LocalSyncLayer::recover() { return true; } 
@@ -82,12 +82,12 @@ bool LocalSyncLayer::shutdown() {
     return true;
 }
 
-boost::shared_ptr<SyncLayer> LocalMaster::getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow){
+boost::shared_ptr<SyncLayer> LocalMaster::getSync(const SyncProperties &p){
     boost::mutex::scoped_lock lock(mutex_);
-    boost::unordered_map<ipa_can::Header, boost::shared_ptr<LocalSyncLayer> >::iterator it = layers_.find(h);
+    boost::unordered_map<ipa_can::Header, boost::shared_ptr<LocalSyncLayer> >::iterator it = layers_.find(p.header_);
     if(it == layers_.end()){
         
-        std::pair<boost::unordered_map<ipa_can::Header, boost::shared_ptr<LocalSyncLayer> >::iterator, bool> res = layers_.insert(std::make_pair(h, boost::make_shared<LocalSyncLayer>(h, t, overflow, interface_, loopback_)));
+        std::pair<boost::unordered_map<ipa_can::Header, boost::shared_ptr<LocalSyncLayer> >::iterator, bool> res = layers_.insert(std::make_pair(p.header_, boost::make_shared<LocalSyncLayer>(p, interface_, loopback_)));
         it = res.first;
     }
     return it->second;

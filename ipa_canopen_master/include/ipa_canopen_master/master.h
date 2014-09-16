@@ -7,18 +7,18 @@ namespace ipa_canopen{
 
 class SyncLayer: public SimpleLayer, public SyncCounter{ // TODO: implement Layer
 public:
-    SyncLayer(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : SimpleLayer("Sync layer"), SyncCounter(h,p,o) {}
+    SyncLayer(const SyncProperties &p) : SimpleLayer("Sync layer"), SyncCounter(p) {}
 };
 
 class Master: boost::noncopyable{
 public:
-    virtual boost::shared_ptr<SyncLayer> getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow) = 0;
+    virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &p) = 0;
     virtual ~Master() {}
 };
     
 class LocalSyncLayer:  public SyncLayer{  // TODO: implement Layer
 public:
-    LocalSyncLayer(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o, boost::shared_ptr<ipa_can::CommInterface> interface, bool loopback);
+    LocalSyncLayer(const SyncProperties &p, boost::shared_ptr<ipa_can::CommInterface> interface, bool loopback);
     
     virtual bool read();
     virtual bool write();
@@ -58,7 +58,7 @@ class LocalMaster: public Master{
     boost::shared_ptr<ipa_can::CommInterface> interface_;
     const bool loopback_;
 public:
-    boost::shared_ptr<SyncLayer> getSync(const ipa_can::Header &h, const boost::posix_time::time_duration &t, const uint8_t overflow);
+    boost::shared_ptr<SyncLayer> getSync(const SyncProperties &p);
     template<typename Driver> LocalMaster(boost::shared_ptr<Driver> interface): interface_(interface), loopback_(interface->doesLoopBack()) {}
 };
 
