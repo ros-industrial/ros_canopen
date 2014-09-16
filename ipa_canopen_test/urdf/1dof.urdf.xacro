@@ -10,4 +10,11 @@
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
   </xacro:elmo_test_rig>
 
+  <gazebo>
+    <plugin name="ros_control" filename="libgazebo_ros_control.so">
+      <!--robotNamespace>/</robotNamespace-->
+      <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType-->
+    </plugin>
+  </gazebo>
+
 </robot>
