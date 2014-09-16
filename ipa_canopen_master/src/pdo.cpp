@@ -324,7 +324,7 @@ bool PDOMapper::Buffer::read(uint8_t* b, const size_t len){
     memcpy(b,&buffer[0], size);
     bool was_dirty = dirty;
     dirty = false;
-    return !was_dirty;
+    return was_dirty;
 }
 void PDOMapper::Buffer::write(const uint8_t* b, const size_t len){
     boost::mutex::scoped_lock lock(mutex);
