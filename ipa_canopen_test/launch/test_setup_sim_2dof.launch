@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="paused" default="false"/>
+
+    <!-- start gazebo with empty world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" value="false" />
+    </include>
+
+    <!-- send lwa4p_extended urdf to param server -->
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find ipa_canopen_test)/urdf/2dof.urdf.xacro'" />
+    
+    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model elmo_test_rig -z 0.01 " respawn="false" output="screen" />
+
+    <!-- robot state publisher -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="50.0" />
+        <param name="tf_prefix" type="string" value="" />
+    </node>
+
+    <!-- joint state controller -->
+    <rosparam command="load" file="$(find ipa_canopen_test)/config/plate_controller_2dof.yaml" />
+    <node name="joint_state_controller_spawner" pkg="controller_manager" type="spawner" args="joint_state_controller" />
+    <!--node name="plate_joint_position_controller_spawner" pkg="controller_manager" type="spawner" args="plate_joint_position_controller" /-->
+    <node name="plate_controller_spawner" pkg="controller_manager" type="spawner" args="plate_controller" />
+
+    <!-- upload script server parameters -->
+    <rosparam command="load" ns="/script_server/plate" file="$(find ipa_canopen_test)/config/plate_joint_configurations_2dof.yaml"/>
+
+</launch>

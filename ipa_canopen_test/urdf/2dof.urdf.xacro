@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="elmo_test_rig" >
+
+  <xacro:include filename="$(find ipa_canopen_test)/urdf/elmo_test_rig.urdf.xacro" />
+
+  <link name="world" />"
+
+  <xacro:elmo_test_rig prefix="rig1_" parent="world">
+    <origin xyz="0.0 0.2 0.0" rpy="0 0 0" />
+  </xacro:elmo_test_rig>
+
+  <xacro:elmo_test_rig prefix="rig2_" parent="world">
+    <origin xyz="0.0 -0.2 0.0" rpy="0 0 0" />
+  </xacro:elmo_test_rig>
+
+  <gazebo>
+    <plugin name="ros_control" filename="libgazebo_ros_control.so">
+      <!--robotNamespace>/</robotNamespace-->
+      <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType-->
+    </plugin>
+  </gazebo>
+
+</robot>
