@@ -13,7 +13,6 @@
     </include>
 
     <!-- joint state controller -->
-    <rosparam command="load" file="$(find ipa_canopen_test)/config/plate_controller.yaml" />
     <!--<node name="joint_state_controller_spawner" pkg="controller_manager" type="spawner" args="joint_state_controller" />
     <node name="plate_joint_position_controller_spawner" pkg="controller_manager" type="spawner" args="plate_joint_position_controller" /> -->
 <!--

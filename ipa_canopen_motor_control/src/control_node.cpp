@@ -59,8 +59,8 @@ class ControllerManagerLayer : public SimpleLayer {
         last_time_ = now;
     }
 public:
-    ControllerManagerLayer(double rate, ros::NodeHandle &nh, hardware_interface::RobotHW *robot)
-    :SimpleLayer("ControllerManager"), cm_(robot), timer_(nh.createTimer(ros::Rate(rate), &ControllerManagerLayer::timer_func, this)), running_(false), recover_(false), last_time_(ros::Time::now()) {}
+    ControllerManagerLayer(double rate, const ros::NodeHandle &nh, hardware_interface::RobotHW *robot)
+    :SimpleLayer("ControllerManager"), cm_(robot, nh), timer_(nh.createTimer(ros::Rate(rate), &ControllerManagerLayer::timer_func, this)), running_(false), recover_(false), last_time_(ros::Time::now()) {}
     
     virtual bool read() { 
         boost::mutex::scoped_lock lock(mutex_);
