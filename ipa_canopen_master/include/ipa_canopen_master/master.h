@@ -324,7 +324,7 @@ class SharedMaster: public Master{
     boost::shared_ptr<ipa_can::CommInterface> interface_;
 public:
     SharedMaster(const std::string &name, boost::shared_ptr<ipa_can::CommInterface> interface)
-    : name_("ipa_canopen_master_shm_"+name), remover_(name_.c_str())
+    : name_("ipa_canopen_master_shm_"+name), remover_(name_.c_str()),
         managed_shm_(boost::interprocess::open_or_create, name_.c_str(), 4096),
         interface_(interface)  {}
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
