@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find ipa_canopen_test)/urdf/rig12.urdf.xacro'" />
+    
+    <!-- robot state publisher -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="50.0" />
+        <param name="tf_prefix" type="string" value="" />
+    </node>
+
+    <rosparam command="load" ns="rig1_plate_controller" file="$(find ipa_canopen_test)/config/rig1_plate_controller.yaml" />
+    
+    <include file="$(find ipa_canopen_test)/launch/controller_manager.launch">
+        <arg name="config" value="$(find ipa_canopen_test)/config/canopen_rig1.yaml"/>
+    </include>
+
+    <rosparam command="load" ns="rig2_plate_controller" file="$(find ipa_canopen_test)/config/rig2_plate_controller.yaml" />
+    
+    <include file="$(find ipa_canopen_test)/launch/controller_manager.launch">
+        <arg name="config" value="$(find ipa_canopen_test)/config/canopen_rig2.yaml"/>
+    </include>
+
+    
+    <!-- upload script server parameters -->
+    <rosparam command="load" ns="/script_server/rig1_plate" file="$(find ipa_canopen_test)/config/rig1_plate_joint_configurations.yaml"/>
+    <rosparam command="load" ns="/script_server/rig2_plate" file="$(find ipa_canopen_test)/config/rig2_plate_joint_configurations.yaml"/>
+
+</launch>

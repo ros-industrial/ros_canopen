@@ -129,12 +129,19 @@ public:
     void init(const boost::shared_ptr<ObjectStorage> storage);
 };
 
-class SyncCounter {
-public:
-    SyncCounter(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : header_(h), period_(p), overflow_(o) {}
+struct SyncProperties{
     const ipa_can::Header header_;
     const boost::posix_time::time_duration period_;
     const uint8_t overflow_;
+    SyncProperties(const ipa_can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : header_(h), period_(p), overflow_(o) {}
+    bool operator==(const SyncProperties &p) const { return p.header_ == (int) header_ && p.overflow_ == overflow_ && p.period_ == period_; }
+
+};
+
+class SyncCounter {
+public:
+    const SyncProperties properties;
+    SyncCounter(const SyncProperties &p) : properties(p) {}
     virtual void addNode(void * const ptr)  = 0;
     virtual  void removeNode(void * const ptr) = 0;
 };

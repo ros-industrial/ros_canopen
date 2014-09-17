@@ -6,19 +6,6 @@ project(ipa_can_interface)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED)
 
-set(PTHREAD_LIB "")
-find_package(Threads)
-if(CMAKE_THREAD_LIBS_INIT)
-  string(LENGTH ${CMAKE_THREAD_LIBS_INIT} _length)
-  if(_length GREATER 2)
-    string(SUBSTRING ${CMAKE_THREAD_LIBS_INIT} 0 2 _prefix)
-    if(${_prefix} STREQUAL "-l")
-      math(EXPR _rest_len "${_length} - 2")
-      string(SUBSTRING ${CMAKE_THREAD_LIBS_INIT} 2 ${_rest_len} PTHREAD_LIB)
-    endif()
-  endif()
-endif()
-
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 find_package(Boost REQUIRED COMPONENTS system thread)
@@ -35,7 +22,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PTHREAD_LIB}
+  LIBRARIES
 #  CATKIN_DEPENDS other_catkin_pkg
   DEPENDS Boost
 )
