@@ -112,7 +112,6 @@ public:
   const double getTargetEff();
 
   bool turnOn();
-  bool operate();
   bool turnOff();
 
   void configureEntries();
@@ -122,6 +121,8 @@ private:
   volatile bool running;
   State state_;
   State target_state_;
+
+  bool new_target_pos_;
 
   ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  status_word;
   ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  control_word;
@@ -135,22 +136,22 @@ private:
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_position;
 
-  int32_t ac_vel_;
+  double ac_vel_;
   double ac_eff_;
 
   int8_t operation_mode_;
   int8_t operation_mode_to_set_;
   bool check_mode;
 
-  int32_t ac_pos_;
-  int32_t internal_pos_;
-  int32_t oldpos_;
+  double ac_pos_;
+  double internal_pos_;
+  double oldpos_;
 
-  std::bitset<15> status_word_bitset;
-  std::bitset<15> control_word_bitset;
+  std::bitset<16> status_word_bitset;
+  std::bitset<16> control_word_bitset;
 
-  int32_t target_vel_;
-  int32_t target_pos_;
+  double target_vel_;
+  double target_pos_;
 
   std::vector<int> control_word_buffer;
 
