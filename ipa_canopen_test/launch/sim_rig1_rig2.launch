@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- start 1 dof setup -->
+    <include file="$(find ipa_canopen_test)/launch/test_setup_sim_multichain.launch">
+        <arg name="chain1" value="rig1" />
+        <arg name="chain2" value="rig2" />
+        <arg name="name" value="rig12" />
+    </include>
+
+</launch>

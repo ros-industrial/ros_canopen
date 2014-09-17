@@ -5,8 +5,34 @@
 #    [button_name2,function_name2,parameter_name2]]
 
 group1:
-  group_name: plate
-  component_name: plate
+  group_name: rig1
+  component_name: rig1
+  buttons: [[stop,trigger,stop],
+    [init,trigger,init],
+    [recover,trigger,recover],
+    [home,move,home],
+    [up,move,up],
+    [right,move,right],
+    [down,move,down],
+    [left,move,left],
+    [roundtrip,move,roundtrip],
+    [ticktack,move,ticktack]]
+group2:
+  group_name: rig2
+  component_name: rig2
+  buttons: [[stop,trigger,stop],
+    [init,trigger,init],
+    [recover,trigger,recover],
+    [home,move,home],
+    [up,move,up],
+    [right,move,right],
+    [down,move,down],
+    [left,move,left],
+    [roundtrip,move,roundtrip],
+    [ticktack,move,ticktack]]
+group3:
+  group_name: rig1_rig2
+  component_name: rig1_rig2
   buttons: [[stop,trigger,stop],
     [init,trigger,init],
     [recover,trigger,recover],

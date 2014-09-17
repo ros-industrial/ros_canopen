@@ -10,7 +10,7 @@
       </joint>
       <actuator name="${name}_motor">
         <mechanicalReduction>1</mechanicalReduction>
-        <!--hardwareInterface>EffortJointInterface</hardwareInterface--> <!-- this is for hydro -->
+        <!--hardwareInterface>PositionJointInterface</hardwareInterface--> <!-- this is for hydro -->
       </actuator>
     </transmission>
 

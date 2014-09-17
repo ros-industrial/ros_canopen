@@ -52,8 +52,8 @@ int main(int argc, char *argv[]){
 
     boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
     
-    LocalMaster master(driver);
-    boost::shared_ptr<SyncLayer> sync = master.getSync(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0);
+    LocalMaster master(argv[1], driver);
+    boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0));
     
     Node node(driver, dict, 1, sync);
 

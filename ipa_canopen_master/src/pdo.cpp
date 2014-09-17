@@ -111,7 +111,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
             num_entry.set(0);
         }
         
-        size_t offset = 0;
+        frame.dlc = 0;
         for(uint8_t sub = 1; sub <=map_num; ++sub){
             ObjectStorage::Entry<uint32_t> mapentry;
             storage->entry(mapentry, map_index, sub);
@@ -131,8 +131,8 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
                 assert(l  == param.length/8);
             }
             
-            offset += b->size;
-            assert( offset <= 8 );
+            frame.dlc += b->size;
+            assert( frame.dlc <= 8 );
             buffers.push_back(b);
         }
     }
@@ -209,11 +209,11 @@ bool PDOMapper::TPDO::init(const boost::shared_ptr<ObjectStorage> &storage, cons
     boost::mutex::scoped_lock lock(mutex);
     const ipa_canopen::ObjectDict & dict = *storage->dict_;
 
-    parse_and_set_mapping(storage, com_index, map_index, false, true);
     
     PDOid pdoid( NodeIdOffset<uint32_t>::apply(dict(com_index, SUB_COM_COB_ID).value(), storage->node_id_) );
     frame = pdoid.header();
     
+    parse_and_set_mapping(storage, com_index, map_index, false, true);
     if(buffers.empty() || pdoid.invalid){
        return false;     
     }
@@ -324,7 +324,7 @@ bool PDOMapper::Buffer::read(uint8_t* b, const size_t len){
     memcpy(b,&buffer[0], size);
     bool was_dirty = dirty;
     dirty = false;
-    return !was_dirty;
+    return was_dirty;
 }
 void PDOMapper::Buffer::write(const uint8_t* b, const size_t len){
     boost::mutex::scoped_lock lock(mutex);

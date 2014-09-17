@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- start 1 dof setup -->
+    <include file="$(find ipa_canopen_test)/launch/test_setup_sim_singlechain.launch">
+        <arg name="rig" value="rig2" />
+    </include>
+
+</launch>
