@@ -1,10 +1,10 @@
-name: plate_controller
+name: rig2_plate_controller
 
 defaults:
   eds_pkg: ipa_canopen_test
   eds_file: "config/Whistle Gold V002.dcf"
 
 modules:
-  - name: plate_joint
+  - name: rig2_plate_joint
     id: 85
      

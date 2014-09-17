@@ -2,7 +2,7 @@ plate_controller:
   type: position_controllers/JointTrajectoryController
   topic: "test"
   joints:
-    - plate_joint
+    - rig1_plate_joint
   constraints:
       goal_time: 0.6
       stopped_velocity_tolerance: 0.5
@@ -11,9 +11,9 @@ plate_controller:
   state_publish_rate:  25
   action_monitor_rate: 10
 
-plate_joint_position_controller:
+rig1_plate_joint_position_controller:
   type: position_controllers/JointPositionController
-  joint: plate_joint
+  joint: rig1_plate_joint
 
 joint_state_controller:
     type: joint_state_controller/JointStateController
