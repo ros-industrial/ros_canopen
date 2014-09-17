@@ -82,8 +82,15 @@ IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatusExtend
     
     
     SyncObject * sync_obj = 0;
-    
-    boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(*list_mutex);
+
+    boost::posix_time::ptime abs_time = boost::get_system_time() + boost::posix_time::seconds(1);
+        
+    boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(*list_mutex, abs_time);
+    if(!lock){
+        status.set(LayerStatus::ERROR);
+        status.reason("Could not lock master mutex");
+        return 0;
+    }
     
     for(SyncList::iterator it = synclist->begin(); it != synclist->end(); ++it){
         if( it->properties.header_ == properties_.header_){
