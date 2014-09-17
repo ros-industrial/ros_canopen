@@ -19,7 +19,7 @@ group1:
     [ticktack,move,ticktack]]
 group2:
   group_name: rig2
-  component_name: rig2
+  component_name: rig2_controller/rig2
   buttons: [[stop,trigger,stop],
     [init,trigger,init],
     [recover,trigger,recover],

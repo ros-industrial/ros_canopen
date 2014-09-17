@@ -18,100 +18,82 @@ using namespace ipa_canopen;
 boost::shared_ptr<ThreadedInterface<SocketCANInterface> > driver = boost::make_shared<ThreadedInterface<SocketCANInterface> > (true);
 
 void print_frame(const Frame &f){
-    LOG( "in: " << std:: hex << f.id << std::dec);
+  LOG( "in: " << std:: hex << f.id << std::dec);
 }
 void print_tpdo(const Frame &f){
-    LOG( "TPDO: " << std:: hex << f.id << std::dec);
+  LOG( "TPDO: " << std:: hex << f.id << std::dec);
 }
 
 void print_state(const State &f){
-    LOG("STATE");
+  LOG("STATE");
 }
 
 void print_node_state(const Node::State &s){
-    LOG("NMT:" << s);
+  LOG("NMT:" << s);
 }
 
 int main(int argc, char *argv[]){
 
-    if(argc < 3){
-        std::cout << "Usage: " << argv[0] << " DEVICE EDS/DCF [sync_ms]" << std::endl;
-        return -1;
-    }
+  if(argc < 3){
+    std::cout << "Usage: " << argv[0] << " DEVICE EDS/DCF [sync_ms]" << std::endl;
+    return -1;
+  }
 
-    // Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
-    // Interface::FrameListener::Ptr tprinter = driver->createMsgListener(Header(0x181), print_tpdo); // printer for all incoming messages
-    StateInterface::StateListener::Ptr sprinter = driver->createStateListener(print_state); // printer for all incoming messages
+  // Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
+  // Interface::FrameListener::Ptr tprinter = driver->createMsgListener(Header(0x181), print_tpdo); // printer for all incoming messages
+  StateInterface::StateListener::Ptr sprinter = driver->createStateListener(print_state); // printer for all incoming messages
 
-    int sync_ms = 10;
-    if(argc > 3) sync_ms = atol(argv[3]);
+  int sync_ms = 10;
+  if(argc > 3) sync_ms = atol(argv[3]);
 
-    if(!driver->init(argv[1],0)){
-        std::cout << "init failed" << std::endl;
-        return -1;
-    }
+//  if(!driver->init(argv[1],0)){
+//    std::cout << "init failed" << std::endl;
+//    return -1;
+//  }
 
-    sleep(1.0);
+  sleep(1.0);
 
-    boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
+  boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
 
-    LocalMaster master(argv[1], driver);
-    boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0));
+  LocalMaster master(argv[1], driver);
+  boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0));
 
-    boost::shared_ptr<ipa_canopen::Node> node (new Node(driver, dict, 1, sync));
+  boost::shared_ptr<ipa_canopen::Node> node (new Node(driver, dict, 85, sync));
 
-    std::string name = "402";
-    boost::shared_ptr<Node_402> motor( new Node_402(node, name));
+  std::string name = "402";
+  boost::shared_ptr<Node_402> motor( new Node_402(node, name));
 
 
-    node->reset();
-    node->start();
-    LayerStatusExtended s;
-    motor->init(s);
+  LayerStack stack("test");
+  stack.add(boost::make_shared<CANLayer<ThreadedSocketCANInterface > >(driver, argv[1], 0));
+  stack.add(sync);
+  stack.add(node);
+  stack.add(motor);
+  LayerStatusExtended es;
 
-    sleep(1.0);
+  stack.init(es);
+  LOG("init: " << (int) es.get()<< " " << es.reason());
+  LayerStatus s;
 
-    bool flag_op = false;
+  if(sync){
+      sync->read(s);
+      s.reset();
+      sync->write(s);
+  }
 
-    while(true)
-    {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-
-        motor->turnOff();
-
-        if(flag_op)
-        {
-            LOG("Entering Velocity OP mode");  // 402 !!!!!!!!!!!
-            motor->enterMode(motor->Profiled_Velocity);
-            motor->turnOn();
-            motor->setTargetVel(-360000); // 402 !!!!!!!!!!!
-            std::cout << "Mode:" << static_cast<int>(motor->getMode()) << std::endl;
-            LOG("Velocity: " <<  motor->getActualVel());  // 402 !!!!!!!!!!!
-        }
-        else
-        {
-            LOG("Entering Position OP mode");  // 402 !!!!!!!!!!!
-            motor->enterMode(motor->Profiled_Position);
-            motor->turnOn();
-            motor->setTargetPos(100000); // 402 !!!!!!!!!!!
-
-            std::cout << "Mode:" << static_cast<int>(motor->getMode()) << std::endl;
-            LOG("Pos: " <<  motor->getActualInternalPos());  // 402 !!!!!!!!!!!
-            LOG("Actual Pos: " <<  motor->getActualInternalPos());  // 402 !!!!!!!!!!!
-            sleep(10.0);
-        }
-
-        sleep(2.0);
-
-        motor->setTargetVel(0);
-
-        //flag_op = !flag_op;
-    }
-
-    driver->run();
-
-    motor->turnOff();
-
-    return 0;
+  LOG("after sync");
+  while(true)
+  {
+    s.reset();
+    stack.read(s);
+    LOG("read: " << (int) s.get());
+    s.reset();
+    stack.write(s);
+    LOG("write: " << (int) s.get());
+    boost::this_thread::interruption_point();
+    //motor.switch_mode()
+  }
+  stack.shutdown(s);
+  return 0;
 }
 

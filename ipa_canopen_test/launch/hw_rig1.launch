@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="rig" vlaue="rig1"/>
+    <arg name="rig" value="rig1"/>
     <!-- send elmo_test_rig urdf to param server -->
     <param name="robot_description" command="$(find xacro)/xacro.py '$(find ipa_canopen_test)/urdf/$(arg rig).urdf.xacro'" />
     
@@ -10,13 +10,13 @@
         <param name="tf_prefix" type="string" value="" />
     </node>
 
-    <rosparam command="load" ns="$(arg rig)_plate_controller" file="$(find ipa_canopen_test)/config/$(arg rig)_plate_controller.yaml" />
+    <rosparam command="load" ns="$(arg rig)_controller" file="$(find ipa_canopen_test)/config/$(arg rig)_controller.yaml" />
     
     <include file="$(find ipa_canopen_test)/launch/controller_manager.launch">
         <arg name="config" value="$(find ipa_canopen_test)/config/canopen_$(arg rig).yaml"/>
     </include>
     
     <!-- upload script server parameters -->
-    <rosparam command="load" ns="/script_server/$(arg rig)_plate" file="$(find ipa_canopen_test)/config/$(arg rig)_plate_joint_configurations.yaml"/>
+    <rosparam command="load" ns="/script_server/$(arg rig)" file="$(find ipa_canopen_test)/config/$(arg rig)_joint_configurations.yaml"/>
 
 </launch>

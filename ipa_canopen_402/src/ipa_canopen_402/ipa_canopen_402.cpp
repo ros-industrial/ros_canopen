@@ -50,7 +50,7 @@ void Node_402::read(LayerStatus &status)
   ac_pos_ = actual_pos.get();
   //internal_pos_ = actual_internal_pos.get();
   oldpos_ = target_position.get_cached();
-  status.OK;
+  status.set(status.OK);
   if(check_mode)
   {
     if(operation_mode_ == operation_mode_to_set_)
@@ -59,7 +59,7 @@ void Node_402::read(LayerStatus &status)
     }
     else
     {
-      status.WARN;
+      status.set(status.WARN);
     }
   }
 
@@ -156,32 +156,30 @@ void Node_402::write(LayerStatus &status)
       }
       //Disable operation ?
     }
-    int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
-    control_word.set(cw_set);
-
-    status.WARN;
+    status.set(status.WARN);
   }
   else
   {
-    status.OK;
+    status.set(status.OK);
     if(operation_mode_ == Profiled_Position)
     {
       if(new_target_pos_)
       {
-        control_word.set(0x0f);
+        control_word_bitset.reset(CW_Operation_mode_specific0);
         new_target_pos_ = false;
       }
       else if(oldpos_ != target_pos_)
       {
-        profile_velocity.set(1000000);
         target_position.set(target_pos_);
         new_target_pos_ = true;
-        control_word.set(0x1f);
+        control_word_bitset.set(CW_Operation_mode_specific0);
       }
     }
     else if(operation_mode_ == Profiled_Velocity)
       target_velocity.set(target_vel_);
-    }
+  }
+  int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
+  control_word.set(cw_set);
 }
 
 const Node_402::State& Node_402::getState()
@@ -270,12 +268,13 @@ void Node_402::init(LayerStatusExtended &s)
 {
 
   enterMode(Profiled_Position);
+  profile_velocity.set(100000);
 
   if(Node_402::turnOn())
   {
-    s.OK;
+    s.set(s.OK);
     running=true;
   }
   else
-    s.ERROR;
+    s.set(s.ERROR);
 }
