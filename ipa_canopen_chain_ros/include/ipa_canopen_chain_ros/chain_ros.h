@@ -109,6 +109,7 @@ protected:
         LayerStatusExtended s;
         init(s);
         res.success.data = s.bounded(LayerStatus::WARN);
+        res.error_message.data = s.reason();
         if(res.success.data){
             thread_.reset(new boost::thread(&RosChain::run, this));
         }
@@ -143,21 +144,16 @@ protected:
             return false;
         }
         
-        bool can_loopback;
-
         bus_nh.param("bitrate",can_bitrate, 0);
         
         if(can_bitrate < 0){
             ROS_ERROR_STREAM("CAN bitrate  "<< can_bitrate << " is invalid");
             return false;
         }
-        
-        bus_nh.param("loopback",can_loopback, true);
-
-        interface_ = boost::make_shared<InterfaceType>(can_loopback);
+        interface_ = boost::make_shared<InterfaceType>(true); // enable loopback
         state_listener_ = interface_->createStateListener(ipa_can::StateInterface::StateDelegate(this, &RosChain::logState));
         
-        master_ = boost::make_shared<MasterType>(interface_);
+        master_ = boost::make_shared<MasterType>(can_device, interface_);
         
         add(boost::make_shared<CANLayer<InterfaceType> >(interface_, can_device, can_bitrate));
         
@@ -190,7 +186,7 @@ protected:
 
         if(sync_ms){
             // TODO: parse header
-            sync_ = master_->getSync(ipa_can::Header(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow);
+            sync_ = master_->getSync(SyncProperties(ipa_can::Header(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
             
             if(!sync_ && sync_ms){
                 ROS_ERROR_STREAM("Initializing sync master failed");

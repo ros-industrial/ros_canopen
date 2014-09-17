@@ -55,20 +55,19 @@ int main(int argc, char *argv[]){
 
     boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
 
-    LocalMaster master(driver);
-    boost::shared_ptr<SyncLayer> sync = master.getSync(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0);
+    LocalMaster master(argv[1], driver);
+    boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0));
 
-    Node node(driver, dict, 1, sync);
+    boost::shared_ptr<ipa_canopen::Node> node (new Node(driver, dict, 1, sync));
+
+    std::string name = "402";
+    boost::shared_ptr<Node_402> motor( new Node_402(node, name));
 
 
-    Node_402 motor(driver, dict, 1, sync);  // 402 !!!!!!!!!!!
-
-    Node::StateListener::Ptr nsl = node.addStateListener(print_node_state);
-
-    node.reset();
-    node.start();
-
-    motor.init();
+    node->reset();
+    node->start();
+    LayerStatusExtended s;
+    motor->init(s);
 
     sleep(1.0);
 
@@ -78,42 +77,42 @@ int main(int argc, char *argv[]){
     {
         boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
-        motor.turnOff();
+        motor->turnOff();
 
         if(flag_op)
         {
             LOG("Entering Velocity OP mode");  // 402 !!!!!!!!!!!
-            motor.enterMode(motor.Profiled_Velocity);
-            motor.turnOn();
-            motor.setTargetVel(-360000); // 402 !!!!!!!!!!!
-            motor.operate();
-            std::cout << "Mode:" << static_cast<int>(motor.getMode()) << std::endl;
-            LOG("Velocity: " <<  motor.getActualVel());  // 402 !!!!!!!!!!!
+            motor->enterMode(motor->Profiled_Velocity);
+            motor->turnOn();
+            motor->setTargetVel(-360000); // 402 !!!!!!!!!!!
+            motor->operate();
+            std::cout << "Mode:" << static_cast<int>(motor->getMode()) << std::endl;
+            LOG("Velocity: " <<  motor->getActualVel());  // 402 !!!!!!!!!!!
         }
         else
         {
             LOG("Entering Position OP mode");  // 402 !!!!!!!!!!!
-            motor.enterMode(motor.Profiled_Position);
-            motor.turnOn();
-            motor.setTargetPos(100000); // 402 !!!!!!!!!!!
-            motor.operate();
+            motor->enterMode(motor->Profiled_Position);
+            motor->turnOn();
+            motor->setTargetPos(100000); // 402 !!!!!!!!!!!
+            motor->operate();
 
-            std::cout << "Mode:" << static_cast<int>(motor.getMode()) << std::endl;
-            LOG("Pos: " <<  motor.getActualInternalPos());  // 402 !!!!!!!!!!!
-            LOG("Actual Pos: " <<  motor.getActualInternalPos());  // 402 !!!!!!!!!!!
+            std::cout << "Mode:" << static_cast<int>(motor->getMode()) << std::endl;
+            LOG("Pos: " <<  motor->getActualInternalPos());  // 402 !!!!!!!!!!!
+            LOG("Actual Pos: " <<  motor->getActualInternalPos());  // 402 !!!!!!!!!!!
             sleep(10.0);
         }
 
         sleep(2.0);
 
-        motor.setTargetVel(0);
+        motor->setTargetVel(0);
 
         //flag_op = !flag_op;
     }
 
     driver->run();
 
-    motor.turnOff();
+    motor->turnOff();
 
     return 0;
 }

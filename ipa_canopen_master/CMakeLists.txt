@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ipa_canopen_master
+  LIBRARIES ipa_canopen_master ${RT_LIBRARY}
   CATKIN_DEPENDS ipa_can_interface
 #  DEPENDS system_lib
 )
@@ -32,7 +32,7 @@ catkin_package(
 ## Build ##
 ###########
 
-include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
 add_library(ipa_canopen_master
