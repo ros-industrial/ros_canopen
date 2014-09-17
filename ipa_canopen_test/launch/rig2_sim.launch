@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- start 1 dof setup -->
+    <include file="$(find ipa_canopen_test)/launch/test_setup_sim_1dof.launch">
+        <arg name="robot" value="rig2" />
+    </include>
+
+</launch>
