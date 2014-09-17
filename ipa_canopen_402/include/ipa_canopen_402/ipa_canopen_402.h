@@ -8,7 +8,7 @@ namespace ipa_canopen
 class Node_402 : public ipa_canopen::Layer
 {
 public:
-  Node_402(boost::shared_ptr <ipa_canopen::Node> n, std::string &name) : Layer(name), n_(n)
+  Node_402(boost::shared_ptr <ipa_canopen::Node> n, const std::string &name) : Layer(name), n_(n)
   {
     configureEntries();
   }

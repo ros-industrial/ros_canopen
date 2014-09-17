@@ -11,13 +11,13 @@
 #include <controller_manager/controller_manager.h>
 
 //// Dummy class
-//class Node_402 : public ipa_canopen::SimpleLayer{
+//class MotorNode : public ipa_canopen::SimpleLayer{
 //    boost::shared_ptr <ipa_canopen::Node> n_;
 //    volatile bool running;
 //    ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
 
 //public:
-//    Node_402(boost::shared_ptr <ipa_canopen::Node> n) : SimpleLayer("Node_402"), n_(n) {
+//    MotorNode(boost::shared_ptr <ipa_canopen::Node> n) : SimpleLayer("MotorNode"), n_(n) {
 //        n->getStorage()->entry(actual_pos, 0x6064);
 //    }
 //    virtual bool read() { return true; }
@@ -39,6 +39,26 @@
 
 using namespace ipa_can;
 using namespace ipa_canopen;
+
+
+//typedef Node_402 MotorNode;
+
+class MotorNode : public Node_402{
+    double scale_factor;
+public:
+   MotorNode(boost::shared_ptr <ipa_canopen::Node> n, const std::string &name) : Node_402(n, name), scale_factor(360*1000/(2*M_PI)) {
+   }
+   const double getActualPos() { return Node_402::getActualPos() / scale_factor; }
+   const double getActualVel() { return Node_402::getActualVel() / scale_factor; }
+   const double getActualEff() { return Node_402::getActualEff() / scale_factor; }
+   void setTargetPos(const double &v) { Node_402::setTargetPos(v*scale_factor); }
+   void setTargetVel(const double &v) { Node_402::setTargetVel(v*scale_factor); }
+   void setTargetEff(const double &v) { Node_402::setTargetEff(v*scale_factor); }
+   const double getTargetPos() { return Node_402::getTargetPos() / scale_factor; }
+   const double getTargetVel() { return Node_402::getTargetVel() / scale_factor; }
+   const double getTargetEff() { return Node_402::getTargetEff() / scale_factor; }
+};
+
 
 class ControllerManagerLayer : public SimpleLayer {
     controller_manager::ControllerManager cm_;
@@ -110,14 +130,14 @@ public:
 };
 
 class HandleLayer: public SimpleLayer{
-    boost::shared_ptr<Node_402> motor_;
+    boost::shared_ptr<MotorNode> motor_;
     double pos, vel, eff;
     hardware_interface::JointStateHandle jsh;
-    typedef JointHandleWriter<Node_402> CommandWriter;
+    typedef JointHandleWriter<MotorNode> CommandWriter;
     typedef boost::unordered_map< const std::string, boost::shared_ptr<CommandWriter> > CommandMap;
     CommandMap commands_;
 
-    template <typename T> void addHandle( T &iface, void (Node_402::*writer)(const double &), const double (Node_402::*reader)(void)){
+    template <typename T> void addHandle( T &iface, void (MotorNode::*writer)(const double &), const double (MotorNode::*reader)(void)){
         boost::shared_ptr<CommandWriter> jhw (new CommandWriter(jsh, *motor_, writer, reader));
         commands_[hardware_interface::internal::demangledTypeName<T>()] = jhw;
         iface.registerHandle(*jhw);
@@ -125,7 +145,7 @@ class HandleLayer: public SimpleLayer{
     }
     boost::shared_ptr<CommandWriter> jhw_;
 public:
-    HandleLayer(const std::string &name, const boost::shared_ptr<Node_402> & motor)
+    HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor)
     : SimpleLayer(name + " Handle"), motor_(motor), jsh(name, &pos, &vel, &eff) {}
 
     void registerHandle(hardware_interface::JointStateInterface &iface){
@@ -133,15 +153,15 @@ public:
     }
     void registerHandle(hardware_interface::PositionJointInterface &iface){
        // if pos mode supported
-       addHandle(iface, &Node_402::setTargetPos, &Node_402::getTargetPos);
+       addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos);
     }
     void registerHandle(hardware_interface::VelocityJointInterface &iface){
        // if vel mode supported
-       // addHandle(iface,&Node_402::setTargetVel, &Node_402::getTargetVel);
+       // addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel);
     }
     void registerHandle(hardware_interface::EffortJointInterface &iface){
        // if eff mode supported
-       // addHandle(iface,&Node_402::setTargetEff, &Node_402::getTargetEff);
+       // addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff);
     }
     void setTargetInterface(const std::string &name){
         CommandMap::iterator it = commands_.find(name);
@@ -179,7 +199,7 @@ public:
 };
 
 class MotorChain : RosChain<ThreadedSocketCANInterface, SharedMaster>{
-    boost::shared_ptr< LayerGroup<Node_402> > motors_;
+    boost::shared_ptr< LayerGroup<MotorNode> > motors_;
     boost::shared_ptr< LayerGroup<HandleLayer> > handles_;
     boost::shared_ptr< ControllerManagerLayer> cm_;
 
@@ -191,10 +211,11 @@ class MotorChain : RosChain<ThreadedSocketCANInterface, SharedMaster>{
 
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node)
     {
-        boost::shared_ptr<Node_402> motor( new Node_402(node, module["name"]));
+        std::string name = module["name"];
+        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor"));
         motors_->add(motor);
 
-        boost::shared_ptr<HandleLayer> handle( new HandleLayer(module["name"], motor));
+        boost::shared_ptr<HandleLayer> handle( new HandleLayer(name, motor));
         handle->registerHandle(state_interface_);
         handle->registerHandle(pos_interface_);
         handle->registerHandle(vel_interface_);
@@ -208,7 +229,7 @@ public:
     MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv){}
 
     virtual bool setup() {
-        motors_.reset( new LayerGroup<Node_402>("402 Layer"));
+        motors_.reset( new LayerGroup<MotorNode>("402 Layer"));
         handles_.reset( new LayerGroup<HandleLayer>("Handle Layer"));
 
         if(RosChain::setup()){

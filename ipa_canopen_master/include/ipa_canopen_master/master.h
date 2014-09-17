@@ -311,17 +311,22 @@ public:
 };
 
 class SharedMaster: public Master{
+    // TODO: test multi chain 
     const std::string name_;
+    struct Remover{
+        const std::string name;
+        Remover(const std::string &n) : name(n) {  boost::interprocess::shared_memory_object::remove(name.c_str()); }
+        ~Remover(){  boost::interprocess::shared_memory_object::remove(name.c_str()); }
+    } remover_;
     boost::interprocess::managed_shared_memory managed_shm_;
-    boost::interprocess::remove_shared_memory_on_destroy remover_;
     boost::mutex mutex_;
     boost::unordered_map<ipa_can::Header, boost::shared_ptr<SharedIPCSyncMaster> > syncmasters_;
     boost::shared_ptr<ipa_can::CommInterface> interface_;
 public:
     SharedMaster(const std::string &name, boost::shared_ptr<ipa_can::CommInterface> interface)
-    : name_("ipa_canopen_master_shm_"+name),
+    : name_("ipa_canopen_master_shm_"+name), remover_(name_.c_str())
         managed_shm_(boost::interprocess::open_or_create, name_.c_str(), 4096),
-        remover_(name_.c_str()), interface_(interface)  {}
+        interface_(interface)  {}
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
 };
 
