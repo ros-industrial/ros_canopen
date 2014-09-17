@@ -4,8 +4,7 @@ using namespace ipa_canopen;
 
 void Node_402::read(LayerStatus &status)
 {
-
-  std::bitset<15> sw_new(status_word.get());
+  std::bitset<16> sw_new(status_word.get());
 
   status_word_bitset = sw_new;
 
@@ -22,7 +21,6 @@ void Node_402::read(LayerStatus &status)
     else
       state_ = Not_Ready_To_Switch_On;
   }
-
   else
   {
     if(status_word_bitset.test(SW_Switched_On))
@@ -50,9 +48,9 @@ void Node_402::read(LayerStatus &status)
   operation_mode_ = op_mode_display.get();
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
-  internal_pos_ = actual_internal_pos.get();
+  //internal_pos_ = actual_internal_pos.get();
   oldpos_ = target_position.get_cached();
-
+  status.OK;
   if(check_mode)
   {
     if(operation_mode_ == operation_mode_to_set_)
@@ -65,7 +63,6 @@ void Node_402::read(LayerStatus &status)
     }
   }
 
-  status.OK;
 }
 
 void Node_402::shutdown(LayerStatus &status)
@@ -90,14 +87,6 @@ const double Node_402::getTargetPos()
 
 void Node_402::write(LayerStatus &status)
 {
-
-  if(!control_word_buffer.empty())
-  {
-    int16_t cw_set = control_word_buffer.back();
-    control_word_buffer.pop_back();
-    control_word.set(cw_set);
-  }
-
   if (state_ != target_state_)
   {
 
@@ -167,18 +156,32 @@ void Node_402::write(LayerStatus &status)
       }
       //Disable operation ?
     }
-    control_word_buffer.push_back(static_cast<int>(control_word_bitset.to_ulong()));
+    int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
+    control_word.set(cw_set);
 
     status.WARN;
   }
   else
+  {
     status.OK;
-
-  if(operation_mode_ == Profiled_Position)
-    target_position.set(target_pos_);
-  else if(operation_mode_ == Profiled_Velocity)
-    target_velocity.set(target_vel_);
-
+    if(operation_mode_ == Profiled_Position)
+    {
+      if(new_target_pos_)
+      {
+        control_word.set(0x0f);
+        new_target_pos_ = false;
+      }
+      else if(oldpos_ != target_pos_)
+      {
+        profile_velocity.set(1000000);
+        target_position.set(target_pos_);
+        new_target_pos_ = true;
+        control_word.set(0x1f);
+      }
+    }
+    else if(operation_mode_ == Profiled_Velocity)
+      target_velocity.set(target_vel_);
+    }
 }
 
 const Node_402::State& Node_402::getState()
@@ -219,8 +222,6 @@ void Node_402::setTargetVel(const double &target_vel)
 void Node_402::setTargetPos(const double &target_pos)
 {
   target_pos_ = target_pos;
-
-  if(oldpos_ != target_pos) operate();
 }
 
 bool Node_402::enterMode(const OperationMode &op_mode_var)
@@ -258,17 +259,6 @@ bool Node_402::turnOn()
   return true;
 }
 
-bool Node_402::operate()
-{
-  if(getMode()==Profiled_Position)
-  {
-    control_word_buffer.push_back(0x1f);
-    control_word_buffer.push_back(0x0f);
-    profile_velocity.set(1000000);
-  }
-  return true;
-}
-
 bool Node_402::turnOff()
 {
   control_word_buffer.clear();
@@ -283,7 +273,6 @@ void Node_402::init(LayerStatusExtended &s)
 
   if(Node_402::turnOn())
   {
-    operate();
     s.OK;
     running=true;
   }

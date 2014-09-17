@@ -85,7 +85,6 @@ int main(int argc, char *argv[]){
             motor->enterMode(motor->Profiled_Velocity);
             motor->turnOn();
             motor->setTargetVel(-360000); // 402 !!!!!!!!!!!
-            motor->operate();
             std::cout << "Mode:" << static_cast<int>(motor->getMode()) << std::endl;
             LOG("Velocity: " <<  motor->getActualVel());  // 402 !!!!!!!!!!!
         }
@@ -95,7 +94,6 @@ int main(int argc, char *argv[]){
             motor->enterMode(motor->Profiled_Position);
             motor->turnOn();
             motor->setTargetPos(100000); // 402 !!!!!!!!!!!
-            motor->operate();
 
             std::cout << "Mode:" << static_cast<int>(motor->getMode()) << std::endl;
             LOG("Pos: " <<  motor->getActualInternalPos());  // 402 !!!!!!!!!!!
