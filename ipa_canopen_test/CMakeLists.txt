@@ -7,6 +7,7 @@ project(ipa_canopen_test)
 find_package(catkin REQUIRED COMPONENTS
   ipa_canopen_master
   ipa_canopen_402
+  roslaunch
 )
 
 ## System dependencies are found with CMake's conventions
@@ -86,6 +87,16 @@ RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
+
+roslaunch_add_file_check(launch/sim_rig1.launch)
+roslaunch_add_file_check(launch/sim_rig2.launch)
+roslaunch_add_file_check(launch/sim_rig12.launch)
+roslaunch_add_file_check(launch/sim_rig1_rig2.launch)
+
+roslaunch_add_file_check(launch/hw_rig1.launch)
+roslaunch_add_file_check(launch/hw_rig2.launch)
+roslaunch_add_file_check(launch/hw_rig12.launch)
+roslaunch_add_file_check(launch/hw_rig1_rig2.launch)
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

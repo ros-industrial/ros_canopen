@@ -23,6 +23,9 @@
   <depend>ipa_canopen_master</depend>
   <depend>ipa_canopen_402</depend>
   <exec_depend>ipa_canopen_motor_control</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
 
   <export>
     <!-- You can specify that this package is a metapackage here: -->
