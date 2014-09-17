@@ -1,4 +1,4 @@
-joint_names: ["plate_joint"]
+joint_names: ["rig1_plate_joint"]
 home: [[0.0]]
 up: [[0.0]]
 right: [[-1.5708]]
