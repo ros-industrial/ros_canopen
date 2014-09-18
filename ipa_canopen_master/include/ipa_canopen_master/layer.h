@@ -6,9 +6,8 @@
 namespace ipa_canopen{
 
 class LayerStatus{
-protected:
     enum State{
-        OK = 0, WARN = 1, ERROR= 2, STALE = 3, UNDEFINED = -1, UNBOUNDED = 3
+        OK = 0, WARN = 1, ERROR= 2, STALE = 3, UNBOUNDED = 3
     };
     State state;
 public:
@@ -19,14 +18,13 @@ public:
     struct Unbounded { static const State state = UNBOUNDED; private: Unbounded(); };
     
     template<typename T> bool bounded() const{
-        return state != UNDEFINED && state <= T::state;
+        return state <= T::state;
     }
     
-    LayerStatus() : state(UNDEFINED) {}
+    LayerStatus() : state(OK) {}
     
     int get() const { return state; }
     
-    const LayerStatus & ok() { return set(OK); }
     const LayerStatus & warn() { return set(WARN); }
     const LayerStatus & error() { return set(ERROR); }
     const LayerStatus & stale() { return set(STALE); }
@@ -54,7 +52,6 @@ public:
     const std::string &reason() const { return reason_; }
     const std::vector<std::pair<std::string, std::string> > &values() const { return values_; }
     
-    const LayerStatus & ok(const std::string & r = "") { reason(r); return LayerStatus::ok(); }
     const LayerStatus & warn(const std::string & r = "") { reason(r); return LayerStatus::warn(); }
     const LayerStatus & error(const std::string & r = "") { reason(r); return LayerStatus::error(); }
     const LayerStatus & stale(const std::string & r = "") { reason(r); return LayerStatus::stale(); }
@@ -87,8 +84,7 @@ public:
 
 class SimpleLayer: public Layer {
     void adapt(bool (SimpleLayer::*func) (void), LayerStatus &status){
-        if((this->*func)()) status.ok();
-        else status.error();
+        if(!(this->*func)()) status.error();
     }
 public:
     virtual void read(LayerStatus &status) { adapt(&SimpleLayer::read, status); }

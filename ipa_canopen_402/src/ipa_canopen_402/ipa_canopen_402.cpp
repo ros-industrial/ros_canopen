@@ -50,7 +50,6 @@ void Node_402::read(LayerStatus &status)
   ac_pos_ = actual_pos.get();
   //internal_pos_ = actual_internal_pos.get();
   oldpos_ = target_position.get_cached();
-  status.ok();
   if(check_mode)
   {
     if(operation_mode_ == operation_mode_to_set_)
@@ -163,7 +162,6 @@ void Node_402::write(LayerStatus &status)
   }
   else
   {
-    status.ok();
     if(operation_mode_ == Profiled_Position)
     {
       if(new_target_pos_)
@@ -273,7 +271,6 @@ void Node_402::init(LayerStatusExtended &s)
 
   if(Node_402::turnOn())
   {
-    s.ok();
     running=true;
   }
   else

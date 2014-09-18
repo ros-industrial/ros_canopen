@@ -147,7 +147,7 @@ public:
         sync_obj_ = getSyncObject(status);
         if(sync_obj_){
             thread_.reset(new boost::thread(&IPCSyncMaster::run, this));
-        }
+        }else status.error("Sync object not found");
         
     }
     void stop(LayerStatus &status){
@@ -172,16 +172,14 @@ public:
     void wait(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.wait(sync_obj_->properties.period_);
-            if(ok) status.ok();
-            else status.error();
-        }
+            if(!ok) status.error();
+        }else status.warn();
     }
     void notify(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.done(sync_obj_->properties.period_);
-            if(ok) status.ok();
-            else status.error();
-        }
+            if(!ok) status.error();
+        }else status.warn();
     }
 
 private:
