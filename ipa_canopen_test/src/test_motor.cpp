@@ -72,7 +72,6 @@ int main(int argc, char *argv[]){
   LayerStatusExtended es;
 
   stack.init(es);
-  LOG("init: " << (int) es.get()<< " " << es.reason());
   LayerStatus s;
 
   if(sync){
@@ -81,19 +80,38 @@ int main(int argc, char *argv[]){
       sync->write(s);
   }
 
-  LOG("after sync");
+  bool flag_op = false;
+  int count = 0;
+
   while(true)
   {
     s.reset();
     stack.read(s);
-    LOG("read: " << (int) s.get());
     s.reset();
     stack.write(s);
-    LOG("write: " << (int) s.get());
     boost::this_thread::interruption_point();
-    //motor.switch_mode()
+    if(count > 500)
+    {
+      count = 0;
+      flag_op = !flag_op;
+    }
+    if(flag_op)
+    {
+      LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
+      motor->enterMode(motor->Profiled_Velocity);
+      motor->setTargetVel(-360000);
+    }
+    else
+    {
+      LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
+      motor->setTargetPos(1000);
+      motor->enterMode(motor->Profiled_Position);
+    }
+    count++;
   }
+
   stack.shutdown(s);
+
   return 0;
 }
 

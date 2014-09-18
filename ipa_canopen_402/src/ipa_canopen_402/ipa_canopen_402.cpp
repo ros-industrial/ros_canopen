@@ -49,7 +49,7 @@ void Node_402::read(LayerStatus &status)
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
   //internal_pos_ = actual_internal_pos.get();
-  oldpos_ = target_position.get_cached();
+  oldpos_ = ac_pos_;//target_position.get_cached();
   status.set(status.OK);
   if(check_mode)
   {
@@ -268,7 +268,7 @@ void Node_402::init(LayerStatusExtended &s)
 {
 
   enterMode(Profiled_Position);
-  profile_velocity.set(100000);
+  profile_velocity.set(1000000);
 
   if(Node_402::turnOn())
   {
