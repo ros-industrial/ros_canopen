@@ -29,8 +29,7 @@ void IPCSyncMaster::run() {
 void IPCSyncLayer::init(LayerStatusExtended &status) {
     boost::mutex::scoped_lock lock(mutex_);
     if(!nodes_.empty()){
-        status.set(LayerStatus::WARN);
-        status.reason("Nodes list was not empty");
+        status.warn("Nodes list was not empty");
         nodes_.clear();
     }
     
@@ -67,16 +66,14 @@ IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatusExtend
     boost::interprocess::interprocess_mutex  *list_mutex = managed_shm_.find_or_construct<boost::interprocess::interprocess_mutex>("SyncListMutex")();
     
     if(!list_mutex){
-        status.set(status.ERROR);
-        status.reason("Could not find/construct SyncListMutex");
+        status.error("Could not find/construct SyncListMutex");
         return 0;
     }
     
     SyncList *synclist = managed_shm_.find_or_construct<SyncList>("SyncList")(managed_shm_.get_allocator<SyncAllocator>());
     
     if(!synclist){
-        status.set(status.ERROR);
-        status.reason("Could not find/construct SyncList");
+        status.error("Could not find/construct SyncList");
         return 0;
     }
     
@@ -87,8 +84,7 @@ IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatusExtend
         
     boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(*list_mutex, abs_time);
     if(!lock){
-        status.set(LayerStatus::ERROR);
-        status.reason("Could not lock master mutex");
+        status.error("Could not lock master mutex");
         return 0;
     }
     
@@ -96,8 +92,7 @@ IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatusExtend
         if( it->properties.header_ == properties_.header_){
             
             if(it->properties.overflow_ != properties_.overflow_ || sync_obj->properties.period_ != properties_.period_){
-                status.set(LayerStatus::ERROR);
-                status.reason("sync properties mismatch");
+                status.error("sync properties mismatch");
                 return 0;
             }
             

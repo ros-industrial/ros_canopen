@@ -89,17 +89,15 @@ protected:
     
     void run(){
 
-        LayerStatus s;
         if(sync_){
-            sync_->read(s);
-            s.reset();
-            sync_->write(s);
+            LayerStatus r,w;
+            sync_->read(r);
+            sync_->write(w);
         }
         while(ros::ok()){
-            s.reset();
-            read(s);
-            s.reset();
-            write(s);
+            LayerStatus r,w;
+            read(r);
+            write(w);
             boost::this_thread::interruption_point();
         }
     }
@@ -108,7 +106,7 @@ protected:
         boost::mutex::scoped_lock lock(mutex_);
         LayerStatusExtended s;
         init(s);
-        res.success.data = s.bounded(LayerStatus::WARN);
+        res.success.data = s.bounded<LayerStatus::Warn>();
         res.error_message.data = s.reason();
         if(res.success.data){
             thread_.reset(new boost::thread(&RosChain::run, this));
@@ -119,7 +117,8 @@ protected:
         boost::mutex::scoped_lock lock(mutex_);
         LayerStatusExtended s;
         recover(s);
-        res.success.data = s.bounded(LayerStatus::WARN);
+        res.success.data = s.bounded<LayerStatus::Warn>();
+        res.error_message.data = s.reason();
         return true;
     }
     virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
@@ -131,7 +130,7 @@ protected:
         thread_.reset();
         LayerStatus s;
         shutdown(s);
-        res.success.data = s.bounded(LayerStatus::WARN);
+        res.success.data = s.bounded<LayerStatus::Warn>();
         return true;
     }
     bool setup_bus(){
@@ -252,7 +251,7 @@ protected:
         boost::mutex::scoped_lock lock(mutex_);
         LayerStatusExtended s;
         report(s);
-        if(s.bounded(LayerStatus::UNBOUNDED)){ // valid
+        if(s.bounded<LayerStatus::Unbounded>()){ // valid
             stat.summary(s.get(), s.reason());
             for(std::vector<std::pair<std::string, std::string> >::const_iterator it = s.values().begin(); it != s.values().end(); ++it){
                 stat.add(it->first, it->second);
