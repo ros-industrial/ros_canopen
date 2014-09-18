@@ -126,12 +126,12 @@ class LayerStack : public Layer, public VectorHelper<Layer>{
 public:
     virtual void read(LayerStatus &status){
         vector_type::iterator it = call<LayerStatus::Warn>(&Layer::read, status, layers.begin(), layers.end());
-        LayerStatus omit;
+        LayerStatus omit(status);
         if(it != layers.end()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it) +1);
     }
     virtual void write(LayerStatus &status){
         vector_type::reverse_iterator it = call(&Layer::write, status, layers.rbegin(), layers.rend());
-        LayerStatus omit;
+        LayerStatus omit(status);
         if(it != layers.rend()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it) +1);
     }
     virtual void report(LayerStatusExtended &status){
@@ -139,12 +139,12 @@ public:
     }
     virtual void init(LayerStatusExtended &status) {
         vector_type::iterator it = call<LayerStatus::Warn>(&Layer::init, status, layers.begin(), layers.end());
-        LayerStatus omit;
+        LayerStatus omit(status);
         if(it != layers.end()) call(&Layer::shutdown, omit, vector_type::reverse_iterator(it), layers.rend());
     }
     virtual void recover(LayerStatusExtended &status){
         vector_type::iterator it = call<LayerStatus::Warn>(&Layer::recover, status, layers.begin(), layers.end());
-        LayerStatus omit;
+        LayerStatus omit(status);
         if(it != layers.end()) call(&Layer::halt, omit, vector_type::reverse_iterator(it), layers.rend());
     }
     virtual void shutdown(LayerStatus &status){
@@ -162,12 +162,12 @@ template<typename T> class LayerGroup : public Layer, public VectorHelper<T>{
 public:
     virtual void read(LayerStatus &status){
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::read, status, this->layers.begin(), this->layers.end());
-        LayerStatus omit;
+        LayerStatus omit(status);
         if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
     }
     virtual void write(LayerStatus &status){
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::write, status, this->layers.begin(), this->layers.end());
-        LayerStatus omit;
+        LayerStatus omit(status);
         if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
     }
     virtual void report(LayerStatusExtended &status){
@@ -175,12 +175,12 @@ public:
     }
     virtual void init(LayerStatusExtended &status) {
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::init, status, this->layers.begin(), this->layers.end());
-        LayerStatus omit;
+        LayerStatus omit(status);
         if(it != this->layers.end()) this->template call(&Layer::shutdown, omit, this->layers.begin(), this->layers.end());
     }
     virtual void recover(LayerStatusExtended &status){
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::recover, status, this->layers.begin(), this->layers.end());
-        LayerStatus omit;
+        LayerStatus omit(status);
         if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
     }
     virtual void shutdown(LayerStatus &status){
