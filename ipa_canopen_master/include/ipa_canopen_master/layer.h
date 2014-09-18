@@ -10,6 +10,9 @@ class LayerStatus{
         OK = 0, WARN = 1, ERROR= 2, STALE = 3, UNBOUNDED = 3
     };
     State state;
+	void set(const State &s){
+        if(s > state) state = s;
+    }
 public:
     struct Ok { static const State state = OK; private: Ok();};
     struct Warn { static const State state = WARN; private: Warn(); };
@@ -25,17 +28,10 @@ public:
     
     int get() const { return state; }
     
-    const LayerStatus & warn() { return set(WARN); }
-    const LayerStatus & error() { return set(ERROR); }
-    const LayerStatus & stale() { return set(STALE); }
+    const void warn() { set(WARN); }
+    const void error() { set(ERROR); }
+    const void stale() { set(STALE); }
 
-    LayerStatus & operator=(const LayerStatus &s){
-        set(s.state); return *this;
-    }
-    const LayerStatus & set(const State &s){
-        if(s > state) state = s;
-        return *this;
-    }
 
 };
 
@@ -52,9 +48,9 @@ public:
     const std::string &reason() const { return reason_; }
     const std::vector<std::pair<std::string, std::string> > &values() const { return values_; }
     
-    const LayerStatus & warn(const std::string & r = "") { reason(r); return LayerStatus::warn(); }
-    const LayerStatus & error(const std::string & r = "") { reason(r); return LayerStatus::error(); }
-    const LayerStatus & stale(const std::string & r = "") { reason(r); return LayerStatus::stale(); }
+    const void warn(const std::string & r = "") { reason(r); LayerStatus::warn(); }
+    const void error(const std::string & r = "") { reason(r); LayerStatus::error(); }
+    const void stale(const std::string & r = "") { reason(r); LayerStatus::stale(); }
     
     template<typename T> void add(const std::string &key, const T &value) {
         std::stringstream str;
