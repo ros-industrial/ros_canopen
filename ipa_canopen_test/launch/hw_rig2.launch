@@ -1,25 +1,9 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="rig" value="rig2"/>
-    <!-- send elmo_test_rig urdf to param server -->
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find ipa_canopen_test)/urdf/$(arg rig).urdf.xacro'" />
-    
-    <!-- robot state publisher -->
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
-        <param name="publish_frequency" type="double" value="50.0" />
-        <param name="tf_prefix" type="string" value="" />
-    </node>
 
-    <rosparam command="load" ns="$(arg rig)_controller" file="$(find ipa_canopen_test)/config/$(arg rig)_controller.yaml" />
-    
-    <remap from="/$(arg rig)_controller/joint_states" to="/joint_states" />
-        
-    <include file="$(find ipa_canopen_test)/launch/controller_manager.launch">
-        <arg name="config" value="$(find ipa_canopen_test)/config/canopen_$(arg rig).yaml"/>
+    <include file="$(find ipa_canopen_test)/launch/test_setup_singlechain.launch">
+        <arg name="rig" value="rig2" />
+        <arg name="sim" value="false" />
     </include>
-
-    
-    <!-- upload script server parameters -->
-    <rosparam command="load" ns="/script_server/$(arg rig)" file="$(find ipa_canopen_test)/config/$(arg rig)_joint_configurations.yaml"/>
 
 </launch>

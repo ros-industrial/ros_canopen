@@ -6,7 +6,7 @@
         <arg name="chain1" value="rig1" />
         <arg name="chain2" value="rig2" />
         <arg name="name" value="rig12" />
-        <arg name="sim" value="false" />
+        <arg name="sim" value="true" />
     </include>
 
 </launch>

@@ -3,7 +3,7 @@
 
     <include file="$(find ipa_canopen_test)/launch/test_setup_singlechain.launch">
         <arg name="rig" value="rig12" />
-        <arg name="sim" value="false" />
+        <arg name="sim" value="true" />
     </include>
 
 </launch>

@@ -31,8 +31,8 @@ group2:
     [roundtrip,move,roundtrip],
     [ticktack,move,ticktack]]
 group3:
-  group_name: rig1_rig2
-  component_name: rig1_rig2
+  group_name: rig12
+  component_name: rig12
   buttons: [[stop,trigger,stop],
     [init,trigger,init],
     [recover,trigger,recover],
