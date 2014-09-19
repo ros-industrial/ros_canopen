@@ -75,9 +75,9 @@ int main(int argc, char *argv[]){
   LayerStatus s;
 
   if(sync){
-      sync->read(s);
-      s.reset();
-      sync->write(s);
+      LayerStatus r,w;
+      sync->read(r);
+      sync->write(w);
   }
 
   bool flag_op = false;
@@ -85,10 +85,9 @@ int main(int argc, char *argv[]){
 
   while(true)
   {
-    s.reset();
-    stack.read(s);
-    s.reset();
-    stack.write(s);
+    LayerStatus r,w;
+    stack.read(r);
+    stack.write(w);
     boost::this_thread::interruption_point();
     if(count > 500)
     {

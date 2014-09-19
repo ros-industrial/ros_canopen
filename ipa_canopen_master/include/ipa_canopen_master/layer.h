@@ -6,43 +6,56 @@
 namespace ipa_canopen{
 
 class LayerStatus{
-public:
     enum State{
-        OK = 0, WARN = 1, ERROR= 2, STALE = 3, UNDEFINED = -1, UNBOUNDED = 3
+        OK = 0, WARN = 1, ERROR= 2, STALE = 3, UNBOUNDED = 3
     };
-    const State& get() const{
-        return state;
-    }
-    bool bounded(const State &s) const{
-        return state != UNDEFINED && state <= s;
-    }
-    void set(const State &s) {
+    State state;
+	void set(const State &s){
         if(s > state) state = s;
     }
-    LayerStatus() : state(UNDEFINED) {}
-    void reset() { state = UNDEFINED; }
-private:
-    State state;
+public:
+    struct Ok { static const State state = OK; private: Ok();};
+    struct Warn { static const State state = WARN; private: Warn(); };
+    struct Error { static const State state = ERROR; private: Error(); };
+    struct Stale { static const State state = STALE; private: Stale(); };
+    struct Unbounded { static const State state = UNBOUNDED; private: Unbounded(); };
+    
+    template<typename T> bool bounded() const{
+        return state <= T::state;
+    }
+    
+    LayerStatus() : state(OK) {}
+    
+    int get() const { return state; }
+    
+    const void warn() { set(WARN); }
+    const void error() { set(ERROR); }
+    const void stale() { set(STALE); }
+
+
 };
 
 class LayerStatusExtended : public LayerStatus{
     std::string reason_;
     std::vector<std::pair<std::string, std::string> > values_;
+    void reason(const std::string &r){
+        if(!r.empty()){
+            if(reason_.empty())  reason_ = r;
+            else reason_ += "; " + r;
+        }
+    }
 public:
-    const std::string &reason() { return reason_; }
-    const std::vector<std::pair<std::string, std::string> > &values() { return values_; }
+    const std::string &reason() const { return reason_; }
+    const std::vector<std::pair<std::string, std::string> > &values() const { return values_; }
     
-    void reason(const std::string &r) {
-        if(reason_.empty())  reason_ = r;
-        else reason_ += "; " + r;
-    }
-    void add(const std::string &key, const std::string &value){
-        values_.push_back(std::make_pair(key,value));
-    }
-    template<typename T> void add_typed(const std::string &key, const T &value){
+    const void warn(const std::string & r = "") { reason(r); LayerStatus::warn(); }
+    const void error(const std::string & r = "") { reason(r); LayerStatus::error(); }
+    const void stale(const std::string & r = "") { reason(r); LayerStatus::stale(); }
+    
+    template<typename T> void add(const std::string &key, const T &value) {
         std::stringstream str;
         str << value;
-        add(key, str.str());
+        values_.push_back(std::make_pair(key,value));
     }
 };
 
@@ -67,7 +80,7 @@ public:
 
 class SimpleLayer: public Layer {
     void adapt(bool (SimpleLayer::*func) (void), LayerStatus &status){
-         status.set( ( (this->*func)())? LayerStatus::OK : LayerStatus::ERROR);
+        if(!(this->*func)()) status.error();
     }
 public:
     virtual void read(LayerStatus &status) { adapt(&SimpleLayer::read, status); }
@@ -93,15 +106,17 @@ protected:
     typedef std::vector<boost::shared_ptr<T> > vector_type ;
     vector_type layers;
     
-    template<typename Iterator, typename Data> Iterator call(void(Layer::*func)(Data&), Data &status, const Iterator &begin, const Iterator &end, const LayerStatus::State &bound = LayerStatus::UNBOUNDED){
+    template<typename Bound, typename Iterator, typename Data> Iterator call(void(Layer::*func)(Data&), Data &status, const Iterator &begin, const Iterator &end){
         for(Iterator it = begin; it != end; ++it){
             ((**it).*func)(status);
-            if(!status.bounded(bound)){
+            if(!status.template bounded<Bound>()){
                 return it;
             }
         }
         return end;
-
+    }
+    template<typename Iterator, typename Data> Iterator call(void(Layer::*func)(Data&), Data &status, const Iterator &begin, const Iterator &end){
+        return call<LayerStatus::Unbounded, Iterator, Data>(func, status, begin, end);
     }
 public:
     void add(const boost::shared_ptr<T> &l) { layers.push_back(l); }
@@ -110,26 +125,26 @@ public:
 class LayerStack : public Layer, public VectorHelper<Layer>{
 public:
     virtual void read(LayerStatus &status){
-        vector_type::iterator it = call(&Layer::read, status, layers.begin(), layers.end(), LayerStatus::WARN);
-        LayerStatus omit;
+        vector_type::iterator it = call<LayerStatus::Warn>(&Layer::read, status, layers.begin(), layers.end());
+        LayerStatus omit(status);
         if(it != layers.end()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it) +1);
     }
     virtual void write(LayerStatus &status){
-        vector_type::reverse_iterator it = call(&Layer::write, status, layers.rbegin(), layers.rend(), LayerStatus::WARN);
-        LayerStatus omit;
+        vector_type::reverse_iterator it = call(&Layer::write, status, layers.rbegin(), layers.rend());
+        LayerStatus omit(status);
         if(it != layers.rend()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it) +1);
     }
     virtual void report(LayerStatusExtended &status){
         vector_type::iterator it = call(&Layer::report, status, layers.begin(), layers.end());
     }
     virtual void init(LayerStatusExtended &status) {
-        vector_type::iterator it = call(&Layer::init, status, layers.begin(), layers.end(), LayerStatus::WARN);
-        LayerStatus omit;
+        vector_type::iterator it = call<LayerStatus::Warn>(&Layer::init, status, layers.begin(), layers.end());
+        LayerStatus omit(status);
         if(it != layers.end()) call(&Layer::shutdown, omit, vector_type::reverse_iterator(it), layers.rend());
     }
     virtual void recover(LayerStatusExtended &status){
-        vector_type::iterator it = call(&Layer::recover, status, layers.begin(), layers.end(), LayerStatus::WARN);
-        LayerStatus omit;
+        vector_type::iterator it = call<LayerStatus::Warn>(&Layer::recover, status, layers.begin(), layers.end());
+        LayerStatus omit(status);
         if(it != layers.end()) call(&Layer::halt, omit, vector_type::reverse_iterator(it), layers.rend());
     }
     virtual void shutdown(LayerStatus &status){
@@ -146,33 +161,33 @@ template<typename T> class LayerGroup : public Layer, public VectorHelper<T>{
     typedef VectorHelper<T> V;
 public:
     virtual void read(LayerStatus &status){
-        typename V::vector_type::iterator it = this->call(&Layer::read, status, this->layers.begin(), this->layers.end(), LayerStatus::WARN);
-        LayerStatus omit;
-        if(it != this->layers.end()) this->call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+        typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::read, status, this->layers.begin(), this->layers.end());
+        LayerStatus omit(status);
+        if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
     }
     virtual void write(LayerStatus &status){
-        typename V::vector_type::iterator it = this->call(&Layer::write, status, this->layers.begin(), this->layers.end(), LayerStatus::WARN);
-        LayerStatus omit;
-        if(it != this->layers.end()) this->call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+        typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::write, status, this->layers.begin(), this->layers.end());
+        LayerStatus omit(status);
+        if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
     }
     virtual void report(LayerStatusExtended &status){
-        this->call(&Layer::report, status, this->layers.begin(), this->layers.end());
+        this->template call(&Layer::report, status, this->layers.begin(), this->layers.end());
     }
     virtual void init(LayerStatusExtended &status) {
-        typename V::vector_type::iterator it = this->call(&Layer::init, status, this->layers.begin(), this->layers.end(), LayerStatus::WARN);
-        LayerStatus omit;
-        if(it != this->layers.end()) this->call(&Layer::shutdown, omit, this->layers.begin(), this->layers.end());
+        typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::init, status, this->layers.begin(), this->layers.end());
+        LayerStatus omit(status);
+        if(it != this->layers.end()) this->template call(&Layer::shutdown, omit, this->layers.begin(), this->layers.end());
     }
     virtual void recover(LayerStatusExtended &status){
-        typename V::vector_type::iterator it = this->call(&Layer::recover, status, this->layers.begin(), this->layers.end(), LayerStatus::WARN);
-        LayerStatus omit;
-        if(it != this->layers.end()) this->call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+        typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::recover, status, this->layers.begin(), this->layers.end());
+        LayerStatus omit(status);
+        if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
     }
     virtual void shutdown(LayerStatus &status){
-        this->call(&Layer::shutdown, status, this->layers.begin(), this->layers.end());
+        this->template call(&Layer::shutdown, status, this->layers.begin(), this->layers.end());
     }
     virtual void halt(LayerStatus &status){
-        this->call(&Layer::halt, status, this->layers.begin(), this->layers.end());
+        this->template call(&Layer::halt, status, this->layers.begin(), this->layers.end());
     }
     LayerGroup(const std::string &n) : Layer(n) {}
 };

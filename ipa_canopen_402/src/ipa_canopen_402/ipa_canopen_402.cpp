@@ -50,7 +50,6 @@ void Node_402::read(LayerStatus &status)
   ac_pos_ = actual_pos.get();
   //internal_pos_ = actual_internal_pos.get();
   oldpos_ = ac_pos_;//target_position.get_cached();
-  status.set(status.OK);
   if(check_mode)
   {
     if(operation_mode_ == operation_mode_to_set_)
@@ -59,7 +58,7 @@ void Node_402::read(LayerStatus &status)
     }
     else
     {
-      status.set(status.WARN);
+      status.warn();
     }
   }
 
@@ -156,11 +155,10 @@ void Node_402::write(LayerStatus &status)
       }
       //Disable operation ?
     }
-    status.set(status.WARN);
+    status.warn();
   }
   else
   {
-    status.set(status.OK);
     if(operation_mode_ == Profiled_Position)
     {
       if(new_target_pos_)
@@ -272,9 +270,8 @@ void Node_402::init(LayerStatusExtended &s)
 
   if(Node_402::turnOn())
   {
-    s.set(s.OK);
     running=true;
   }
   else
-    s.set(s.ERROR);
+    s.error();
 }
