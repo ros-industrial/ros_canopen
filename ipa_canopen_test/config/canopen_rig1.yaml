@@ -1,4 +1,4 @@
-name: rig1_plate_controller
+name: rig1_controller
 
 defaults:
   eds_pkg: ipa_canopen_test
