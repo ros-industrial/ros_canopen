@@ -11,6 +11,17 @@
 
 #include <ipa_canopen_402/ipa_canopen_402.h>
 
+#include <signal.h>
+#include <cstdlib>
+#include <cstdio>
+#include <unistd.h>
+
+bool running = true;
+
+void my_handler(int s){
+           printf("Caught signal %d\n",s);
+           running = false;
+}
 
 using namespace ipa_can;
 using namespace ipa_canopen;
@@ -32,12 +43,21 @@ void print_node_state(const Node::State &s){
   LOG("NMT:" << s);
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 
   if(argc < 3){
     std::cout << "Usage: " << argv[0] << " DEVICE EDS/DCF [sync_ms]" << std::endl;
     return -1;
   }
+
+  struct sigaction sigIntHandler;
+
+  sigIntHandler.sa_handler = my_handler;
+  sigemptyset(&sigIntHandler.sa_mask);
+  sigIntHandler.sa_flags = 0;
+
+  sigaction(SIGINT, &sigIntHandler, NULL);
 
   // Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
   // Interface::FrameListener::Ptr tprinter = driver->createMsgListener(Header(0x181), print_tpdo); // printer for all incoming messages
@@ -83,7 +103,7 @@ int main(int argc, char *argv[]){
   bool flag_op = false;
   int count = 0;
 
-  while(true)
+  while(running)
   {
     LayerStatus r,w;
     stack.read(r);
@@ -108,6 +128,8 @@ int main(int argc, char *argv[]){
     }
     count++;
   }
+
+  motor->turnOff();
 
   stack.shutdown(s);
 

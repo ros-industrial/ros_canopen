@@ -11,6 +11,13 @@ public:
   Node_402(boost::shared_ptr <ipa_canopen::Node> n, const std::string &name) : Layer(name), n_(n)
   {
     configureEntries();
+    status_word_mask.set(SW_Ready_To_Switch_On);
+    status_word_mask.set(SW_Switched_On);
+    status_word_mask.set(SW_Operation_enabled);
+    status_word_mask.set(SW_Fault);
+    status_word_mask.reset(SW_Voltage_enabled);
+    status_word_mask.set(SW_Quick_stop);
+    status_word_mask.set(Switch_On_Disabled);
   }
 
   enum StatusWord
@@ -149,6 +156,7 @@ private:
 
   std::bitset<16> status_word_bitset;
   std::bitset<16> control_word_bitset;
+  std::bitset<16> status_word_mask;
 
   double target_vel_;
   double target_pos_;
