@@ -97,8 +97,7 @@ public:
         return lock_sync && start_sync(abs_time) && wait_done(abs_time);
     }
     scoped_mutex_lock get_lock(){
-        scoped_mutex_lock lock(master_mutex);
-        return boost::move(lock);
+        return scoped_mutex_lock(master_mutex); // well-behaved compilers won't copy (RVO)
     }
     IPCSyncWaiter() : sync_started(false), number(0) {}
 };
