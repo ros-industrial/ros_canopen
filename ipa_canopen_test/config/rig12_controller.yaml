@@ -1,4 +1,4 @@
-rig12_controller:
+joint_trajectory_controller:
   type: position_controllers/JointTrajectoryController
   topic: "test"
   joints:
@@ -13,15 +13,13 @@ rig12_controller:
   state_publish_rate:  25
   action_monitor_rate: 10
 
-# does this make sense for a chain of joints?
-#rig1_joint_position_controller:
-#  type: position_controllers/JointPositionController
-#  joint: rig1_plate_joint
+rig1_joint_position_controller:
+  type: position_controllers/JointPositionController
+  joint: rig1_plate_joint
 
-# does this make sense for a chain of joints?
-#rig2_joint_position_controller:
-#  type: position_controllers/JointPositionController
-#  joint: rig2_plate_joint
+rig2_joint_position_controller:
+  type: position_controllers/JointPositionController
+  joint: rig2_plate_joint
 
 joint_state_controller:
     type: joint_state_controller/JointStateController

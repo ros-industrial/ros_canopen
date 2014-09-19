@@ -275,11 +275,11 @@ public:
         
         diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),boost::bind(&diagnostic_updater::Updater::update, &diag_updater_));
         
-        ros::NodeHandle nh_chain(nh_, chain_name_);
+        ros::NodeHandle nh_driver(nh_, "driver");
         
-        srv_init_ = nh_chain.advertiseService("init",&RosChain::handle_init, this);
-        srv_recover_ = nh_chain.advertiseService("recover",&RosChain::handle_recover, this);
-        srv_shutdown_ = nh_chain.advertiseService("shutdown",&RosChain::handle_shutdown, this);
+        srv_init_ = nh_driver.advertiseService("init",&RosChain::handle_init, this);
+        srv_recover_ = nh_driver.advertiseService("recover",&RosChain::handle_recover, this);
+        srv_shutdown_ = nh_driver.advertiseService("shutdown",&RosChain::handle_shutdown, this);
         
         return setup_bus() && setup_sync() && setup_nodes();
     }

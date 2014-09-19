@@ -1,4 +1,4 @@
-rig2_controller:
+joint_trajectory_controller:
   type: position_controllers/JointTrajectoryController
   topic: "test"
   joints:
