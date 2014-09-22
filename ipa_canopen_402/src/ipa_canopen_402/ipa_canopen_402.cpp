@@ -83,6 +83,10 @@ const double Node_402::getTargetPos()
 {
   return target_pos_;
 }
+const double Node_402::getTargetVel()
+{
+  return target_vel_;
+}
 
 void Node_402::write(LayerStatus &status)
 {
