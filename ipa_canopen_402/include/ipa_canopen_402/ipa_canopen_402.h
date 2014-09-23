@@ -55,15 +55,16 @@ public:
 
   enum OperationMode
   {
-    No_Mode,
-    Profiled_Position,
-    Velocity,
-    Profiled_Velocity,
-    Profiled_Torque,
-    Reserved,
-    Homing,
-    Interpolated_Position,
-    Cyclic_Synchronous_Position,
+    No_Mode = 0,
+    Profiled_Position = 1,
+    Velocity = 2,
+    Profiled_Velocity = 3,
+    Profiled_Torque = 4,
+    Homing = 6,
+    Interpolated_Position = 7,
+    Cyclic_Synchronous_Position = 8,
+    Cyclic_Synchronous_Velocity = 9,
+    Cyclic_Synchronous_Torque = 10,
   };
 
   enum State
@@ -79,7 +80,7 @@ public:
     Fault
   };
 
-  const int8_t getMode();
+  const OperationMode getMode();
   bool enterMode(const OperationMode &op_mode);
 
   const State& getState();
@@ -139,8 +140,8 @@ private:
   double ac_vel_;
   double ac_eff_;
 
-  int8_t operation_mode_;
-  int8_t operation_mode_to_set_;
+  OperationMode operation_mode_;
+  OperationMode operation_mode_to_set_;
   bool check_mode;
 
   double ac_pos_;

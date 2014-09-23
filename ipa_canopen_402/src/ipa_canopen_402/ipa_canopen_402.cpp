@@ -45,7 +45,7 @@ void Node_402::read(LayerStatus &status)
   if(status_word_bitset.test(SW_Fault) & status_word_bitset.test(SW_Operation_enabled) & status_word_bitset.test(SW_Switched_On) & status_word_bitset.test(SW_Ready_To_Switch_On))
     state_ = Fault_Reaction_Active;
 
-  operation_mode_ = op_mode_display.get();
+  operation_mode_ = (OperationMode) op_mode_display.get(); // TODO: check validity
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
   //internal_pos_ = actual_internal_pos.get();
@@ -189,7 +189,7 @@ const Node_402::State& Node_402::getState()
   return state_;
 }
 
-const int8_t Node_402::getMode()
+const Node_402::OperationMode Node_402::getMode()
 {
   return operation_mode_;
 }
