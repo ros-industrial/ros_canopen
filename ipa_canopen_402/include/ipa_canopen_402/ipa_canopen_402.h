@@ -82,6 +82,7 @@ public:
 
   const OperationMode getMode();
   bool enterMode(const OperationMode &op_mode);
+  bool isModeSupported(const OperationMode &op_mode);
 
   const State& getState();
   void enterState(const State &s);
@@ -107,7 +108,7 @@ public:
   void setTargetPos(const double &target_pos);
   void setTargetVel(const double &target_vel);
   void setTargetEff(const double &v);
-
+  
   const double getTargetPos();
   const double getTargetVel();
   const double getTargetEff();
@@ -129,6 +130,7 @@ private:
   ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  control_word;
   ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode_display;
   ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode;
+  ipa_canopen::ObjectStorage::Entry<uint32_t>  supported_drive_modes;
 
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_vel;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_velocity;

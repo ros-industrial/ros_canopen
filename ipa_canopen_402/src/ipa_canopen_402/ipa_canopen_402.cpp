@@ -194,6 +194,25 @@ const Node_402::OperationMode Node_402::getMode()
   return operation_mode_;
 }
 
+bool Node_402::isModeSupported(const OperationMode &op_mode)
+{
+    switch(op_mode){
+        case Profiled_Position:
+        case Velocity:
+        case Profiled_Velocity:
+        case Profiled_Torque:
+        case Interpolated_Position:
+        case Cyclic_Synchronous_Position:
+        case Cyclic_Synchronous_Velocity:
+        case Cyclic_Synchronous_Torque:
+            return supported_drive_modes.get_cached() & (1<<(op_mode-1));
+        case No_Mode:
+        case Homing:
+            return false;
+    }
+    return false;
+}
+
 const double Node_402::getActualVel()
 {
   return ac_vel_;
@@ -242,6 +261,7 @@ void Node_402::configureEntries()
 
   n_->getStorage()->entry(op_mode,0x6060);
   n_->getStorage()->entry(op_mode_display,0x6061);
+  n_->getStorage()->entry(supported_drive_modes,0x6502);
 
   n_->getStorage()->entry(actual_vel,0x606C);
   n_->getStorage()->entry(target_velocity,0x60FF);
