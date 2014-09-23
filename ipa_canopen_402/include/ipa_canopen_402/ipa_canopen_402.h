@@ -107,11 +107,11 @@ public:
 
   void setTargetPos(const double &target_pos);
   void setTargetVel(const double &target_vel);
-  void setTargetEff(const double &v);
+  void setTargetEff(const double &v) {} //TODO
   
   const double getTargetPos();
   const double getTargetVel();
-  const double getTargetEff();
+  const double getTargetEff()  { return 0; } // TODO
 
   bool turnOn();
   bool turnOff();
