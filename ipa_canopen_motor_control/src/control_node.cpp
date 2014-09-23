@@ -123,8 +123,9 @@ template <typename T> class JointHandleWriter : public hardware_interface::Joint
     void (T::*writer_)(const double &);
     const double (T::*reader_)(void);
 public:
-    JointHandleWriter(const hardware_interface::JointStateHandle &jsh, T&  obj, void (T::*writer)(const double &), const double (T::*reader)(void))
-    : JointHandle(jsh, &value), obj_(obj), writer_(writer), reader_(reader) {}
+    const uint32_t mode_mask_;
+    JointHandleWriter(const hardware_interface::JointStateHandle &jsh, T&  obj, void (T::*writer)(const double &), const double (T::*reader)(void), const uint32_t mode_mask)
+    : JointHandle(jsh, &value), obj_(obj), writer_(writer), reader_(reader), mode_mask_(mode_mask) {}
     void write() { (obj_.*writer_)(value); }
     void read() { value = (obj_.*reader_)(); }
 };
@@ -137,8 +138,15 @@ class HandleLayer: public SimpleLayer{
     typedef boost::unordered_map< const std::string, boost::shared_ptr<CommandWriter> > CommandMap;
     CommandMap commands_;
 
-    template <typename T> void addHandle( T &iface, void (MotorNode::*writer)(const double &), const double (MotorNode::*reader)(void)){
-        boost::shared_ptr<CommandWriter> jhw (new CommandWriter(jsh, *motor_, writer, reader));
+    template <typename T> void addHandle( T &iface, void (MotorNode::*writer)(const double &), const double (MotorNode::*reader)(void), const std::vector<MotorNode::OperationMode> & modes){
+        uint32_t mode_mask = 0;
+        for(size_t i=0; i < modes.size(); ++i){
+            if(motor_->isModeSupported(modes[i]))
+                mode_mask |= MotorNode::getModeMask(modes[i]);
+        }
+        if(mode_mask == 0) return;
+
+        boost::shared_ptr<CommandWriter> jhw (new CommandWriter(jsh, *motor_, writer, reader, mode_mask));
         commands_[hardware_interface::internal::demangledTypeName<T>()] = jhw;
         iface.registerHandle(*jhw);
         jhw_ = jhw; //TODO: remove
@@ -152,22 +160,24 @@ public:
         iface.registerHandle(jsh);
     }
     void registerHandle(hardware_interface::PositionJointInterface &iface){
-        // if pos mode supported
-        if(motor_->isModeSupported(MotorNode::Profiled_Position) || motor_->isModeSupported(MotorNode::Interpolated_Position) ||  motor_->isModeSupported(MotorNode::Cyclic_Synchronous_Position)){
-           addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos);
-        }
+        std::vector<MotorNode::OperationMode> modes;
+        modes.push_back(MotorNode::Profiled_Position);
+        modes.push_back(MotorNode::Interpolated_Position);
+        modes.push_back(MotorNode::Cyclic_Synchronous_Position);
+        addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos, modes);
     }
     void registerHandle(hardware_interface::VelocityJointInterface &iface){
-       // if vel mode supported
-        if(motor_->isModeSupported(MotorNode::Velocity) || motor_->isModeSupported(MotorNode::Profiled_Velocity) ||  motor_->isModeSupported(MotorNode::Cyclic_Synchronous_Velocity)){
-            addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel);
-        }
+        std::vector<MotorNode::OperationMode> modes;
+        modes.push_back(MotorNode::Velocity);
+        modes.push_back(MotorNode::Profiled_Velocity);
+        modes.push_back(MotorNode::Cyclic_Synchronous_Velocity);
+        addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel, modes);
     }
     void registerHandle(hardware_interface::EffortJointInterface &iface){
-        // if eff mode supported
-        if(motor_->isModeSupported(MotorNode::Profiled_Torque) ||  motor_->isModeSupported(MotorNode::Cyclic_Synchronous_Torque)){
-            addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff);
-        }
+        std::vector<MotorNode::OperationMode> modes;
+        modes.push_back(MotorNode::Profiled_Torque);
+        modes.push_back(MotorNode::Cyclic_Synchronous_Torque);
+        addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff, modes);
     }
     void setTargetInterface(const std::string &name){
         CommandMap::iterator it = commands_.find(name);
