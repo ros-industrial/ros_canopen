@@ -83,6 +83,7 @@ public:
   const OperationMode getMode();
   bool enterMode(const OperationMode &op_mode);
   bool isModeSupported(const OperationMode &op_mode);
+  static uint32_t getModeMask(const OperationMode &op_mode);
 
   const State& getState();
   void enterState(const State &s);

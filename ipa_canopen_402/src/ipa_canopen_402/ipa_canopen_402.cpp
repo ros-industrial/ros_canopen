@@ -196,6 +196,10 @@ const Node_402::OperationMode Node_402::getMode()
 
 bool Node_402::isModeSupported(const OperationMode &op_mode)
 {
+    return supported_drive_modes.get_cached() & getModeMask(op_mode);
+}
+uint32_t Node_402::getModeMask(const OperationMode &op_mode)
+{
     switch(op_mode){
         case Profiled_Position:
         case Velocity:
@@ -205,12 +209,12 @@ bool Node_402::isModeSupported(const OperationMode &op_mode)
         case Cyclic_Synchronous_Position:
         case Cyclic_Synchronous_Velocity:
         case Cyclic_Synchronous_Torque:
-            return supported_drive_modes.get_cached() & (1<<(op_mode-1));
+            return (1<<(op_mode-1));
         case No_Mode:
         case Homing:
-            return false;
+            return 0;
     }
-    return false;
+    return 0;
 }
 
 const double Node_402::getActualVel()
