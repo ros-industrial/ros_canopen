@@ -152,16 +152,22 @@ public:
         iface.registerHandle(jsh);
     }
     void registerHandle(hardware_interface::PositionJointInterface &iface){
-       // if pos mode supported
-       addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos);
+        // if pos mode supported
+        if(motor_->isModeSupported(MotorNode::Profiled_Position) || motor_->isModeSupported(MotorNode::Interpolated_Position) ||  motor_->isModeSupported(MotorNode::Cyclic_Synchronous_Position)){
+           addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos);
+        }
     }
     void registerHandle(hardware_interface::VelocityJointInterface &iface){
        // if vel mode supported
-       // addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel);
+        if(motor_->isModeSupported(MotorNode::Velocity) || motor_->isModeSupported(MotorNode::Profiled_Velocity) ||  motor_->isModeSupported(MotorNode::Cyclic_Synchronous_Velocity)){
+            addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel);
+        }
     }
     void registerHandle(hardware_interface::EffortJointInterface &iface){
-       // if eff mode supported
-       // addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff);
+        // if eff mode supported
+        if(motor_->isModeSupported(MotorNode::Profiled_Torque) ||  motor_->isModeSupported(MotorNode::Cyclic_Synchronous_Torque)){
+            addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff);
+        }
     }
     void setTargetInterface(const std::string &name){
         CommandMap::iterator it = commands_.find(name);
