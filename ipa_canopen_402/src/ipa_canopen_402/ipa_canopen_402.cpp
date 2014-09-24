@@ -216,6 +216,10 @@ uint32_t Node_402::getModeMask(const OperationMode &op_mode)
     }
     return 0;
 }
+bool Node_402::isModeMaskRunning(const uint32_t &mask)
+{
+    return mask & getModeMask(operation_mode_);
+}
 
 const double Node_402::getActualVel()
 {
