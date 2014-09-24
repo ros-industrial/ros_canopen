@@ -13,7 +13,6 @@
     <include file="$(find ipa_canopen_test)/launch/test_setup_controller.xml">
         <arg name="name" value="rig2"/>
         <arg name="sim" value="$(arg sim)"/>
-        <arg name="spawn_sim_js" value="false"/>
     </include>
 
 </launch>
