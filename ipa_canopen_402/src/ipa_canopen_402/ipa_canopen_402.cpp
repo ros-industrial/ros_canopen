@@ -25,7 +25,8 @@ void Node_402::read(LayerStatus &status)
     default: LOG("Motor currently in an unknown state");
   }
 
-  operation_mode_ = op_mode_display.get();
+
+  operation_mode_ = (OperationMode) op_mode_display.get(); // TODO: check validity
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
   //internal_pos_ = actual_internal_pos.get();
@@ -62,6 +63,10 @@ void Node_402::recover(LayerStatusExtended &status)
 const double Node_402::getTargetPos()
 {
   return target_pos_;
+}
+const double Node_402::getTargetVel()
+{
+  return target_vel_;
 }
 
 void Node_402::write(LayerStatus &status)
@@ -165,9 +170,36 @@ const Node_402::State& Node_402::getState()
   return state_;
 }
 
-const int8_t Node_402::getMode()
+const Node_402::OperationMode Node_402::getMode()
 {
   return operation_mode_;
+}
+
+bool Node_402::isModeSupported(const OperationMode &op_mode)
+{
+    return supported_drive_modes.get_cached() & getModeMask(op_mode);
+}
+uint32_t Node_402::getModeMask(const OperationMode &op_mode)
+{
+    switch(op_mode){
+        case Profiled_Position:
+        case Velocity:
+        case Profiled_Velocity:
+        case Profiled_Torque:
+        case Interpolated_Position:
+        case Cyclic_Synchronous_Position:
+        case Cyclic_Synchronous_Velocity:
+        case Cyclic_Synchronous_Torque:
+            return (1<<(op_mode-1));
+        case No_Mode:
+        case Homing:
+            return 0;
+    }
+    return 0;
+}
+bool Node_402::isModeMaskRunning(const uint32_t &mask)
+{
+    return mask & getModeMask(operation_mode_);
 }
 
 const double Node_402::getActualVel()
@@ -218,6 +250,7 @@ void Node_402::configureEntries()
 
   n_->getStorage()->entry(op_mode,0x6060);
   n_->getStorage()->entry(op_mode_display,0x6061);
+  n_->getStorage()->entry(supported_drive_modes,0x6502);
 
   n_->getStorage()->entry(actual_vel,0x606C);
   n_->getStorage()->entry(target_velocity,0x60FF);

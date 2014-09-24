@@ -62,15 +62,16 @@ public:
 
   enum OperationMode
   {
-    No_Mode,
-    Profiled_Position,
-    Velocity,
-    Profiled_Velocity,
-    Profiled_Torque,
-    Reserved,
-    Homing,
-    Interpolated_Position,
-    Cyclic_Synchronous_Position,
+    No_Mode = 0,
+    Profiled_Position = 1,
+    Velocity = 2,
+    Profiled_Velocity = 3,
+    Profiled_Torque = 4,
+    Homing = 6,
+    Interpolated_Position = 7,
+    Cyclic_Synchronous_Position = 8,
+    Cyclic_Synchronous_Velocity = 9,
+    Cyclic_Synchronous_Torque = 10,
   };
 
   enum State
@@ -86,8 +87,11 @@ public:
     Fault
   };
 
-  const int8_t getMode();
+  const OperationMode getMode();
   bool enterMode(const OperationMode &op_mode);
+  bool isModeSupported(const OperationMode &op_mode);
+  static uint32_t getModeMask(const OperationMode &op_mode);
+  bool isModeMaskRunning(const uint32_t &mask);
 
   const State& getState();
   void enterState(const State &s);
@@ -112,11 +116,11 @@ public:
 
   void setTargetPos(const double &target_pos);
   void setTargetVel(const double &target_vel);
-  void setTargetEff(const double &v);
-
+  void setTargetEff(const double &v) {} //TODO
+  
   const double getTargetPos();
   const double getTargetVel();
-  const double getTargetEff();
+  const double getTargetEff()  { return 0; } // TODO
 
   bool turnOn();
   bool turnOff();
@@ -135,6 +139,7 @@ private:
   ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  control_word;
   ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode_display;
   ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode;
+  ipa_canopen::ObjectStorage::Entry<uint32_t>  supported_drive_modes;
 
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_vel;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_velocity;
@@ -146,8 +151,8 @@ private:
   double ac_vel_;
   double ac_eff_;
 
-  int8_t operation_mode_;
-  int8_t operation_mode_to_set_;
+  OperationMode operation_mode_;
+  OperationMode operation_mode_to_set_;
   bool check_mode;
 
   double ac_pos_;
