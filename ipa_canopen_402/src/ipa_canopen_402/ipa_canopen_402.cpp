@@ -10,24 +10,24 @@ void Node_402::read(LayerStatus &status)
 
   switch((status_word_bitset & status_word_mask).to_ulong())
   {
-    case 0b0000000: // fall-through
-    case 0b0100000: state_ = Not_Ready_To_Switch_On; break;
-    case 0b1000000: // fall-through
-    case 0b1100000: state_ = Switch_On_Disabled; break;
-    case 0b0100001: state_ = Ready_To_Switch_On; break;
-    case 0b0100011: state_ = Switched_On; break;
-    case 0b0100111: state_ = Operation_Enable; break;
-    case 0b0000111: state_ = Quick_Stop_Active; break;
-    case 0b0001111: // fall-through
-    case 0b0101111: state_ = Fault_Reaction_Active; break;
-    case 0b0001000: // fall-through
-    case 0b0101000: state_ = Fault; break;
-    default: LOG("Motor currently in an unknown state");
+  case 0b0000000: // fall-through
+  case 0b0100000: state_ = Not_Ready_To_Switch_On; break;
+  case 0b1000000: // fall-through
+  case 0b1100000: state_ = Switch_On_Disabled; break;
+  case 0b0100001: state_ = Ready_To_Switch_On; break;
+  case 0b0100011: state_ = Switched_On; break;
+  case 0b0100111: state_ = Operation_Enable; break;
+  case 0b0000111: state_ = Quick_Stop_Active; break;
+  case 0b0001111: // fall-through
+  case 0b0101111: state_ = Fault_Reaction_Active; break;
+  case 0b0001000: // fall-through
+  case 0b0101000: state_ = Fault; break;
+  default: LOG("Motor currently in an unknown state");
   }
 
 
   operation_mode_ = (OperationMode) op_mode_display.get(); // TODO: check validity
-  ac_vel_ = actual_vel.get();
+  //ac_vel_ = actual_vel.get(); //TODO
   ac_pos_ = actual_pos.get();
   //internal_pos_ = actual_internal_pos.get();
   oldpos_ = ac_pos_;//target_position.get_cached();
@@ -160,6 +160,11 @@ void Node_402::write(LayerStatus &status)
     }
     else if(operation_mode_ == Profiled_Velocity)
       target_velocity.set(target_vel_);
+    else if(operation_mode_ == Interpolated_Position)
+    {
+      target_interpolated_position.set(target_pos_);
+      control_word_bitset.set(CW_Operation_mode_specific0);
+    }
   }
   int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
   control_word.set(cw_set);
@@ -177,29 +182,29 @@ const Node_402::OperationMode Node_402::getMode()
 
 bool Node_402::isModeSupported(const OperationMode &op_mode)
 {
-    return supported_drive_modes.get_cached() & getModeMask(op_mode);
+  return supported_drive_modes.get_cached() & getModeMask(op_mode);
 }
 uint32_t Node_402::getModeMask(const OperationMode &op_mode)
 {
-    switch(op_mode){
-        case Profiled_Position:
-        case Velocity:
-        case Profiled_Velocity:
-        case Profiled_Torque:
-        case Interpolated_Position:
-        case Cyclic_Synchronous_Position:
-        case Cyclic_Synchronous_Velocity:
-        case Cyclic_Synchronous_Torque:
-            return (1<<(op_mode-1));
-        case No_Mode:
-        case Homing:
-            return 0;
-    }
+  switch(op_mode){
+  case Profiled_Position:
+  case Velocity:
+  case Profiled_Velocity:
+  case Profiled_Torque:
+  case Interpolated_Position:
+  case Cyclic_Synchronous_Position:
+  case Cyclic_Synchronous_Velocity:
+  case Cyclic_Synchronous_Torque:
+    return (1<<(op_mode-1));
+  case No_Mode:
+  case Homing:
     return 0;
+  }
+  return 0;
 }
 bool Node_402::isModeMaskRunning(const uint32_t &mask)
 {
-    return mask & getModeMask(operation_mode_);
+  return mask & getModeMask(operation_mode_);
 }
 
 const double Node_402::getActualVel()
@@ -252,13 +257,26 @@ void Node_402::configureEntries()
   n_->getStorage()->entry(op_mode_display,0x6061);
   n_->getStorage()->entry(supported_drive_modes,0x6502);
 
-  n_->getStorage()->entry(actual_vel,0x606C);
-  n_->getStorage()->entry(target_velocity,0x60FF);
-  n_->getStorage()->entry(profile_velocity,0x6081);
+//  n_->getStorage()->entry(actual_vel,0x606C); //TODO
 
-  n_->getStorage()->entry(target_position,0x607A);
   n_->getStorage()->entry(actual_pos,0x6064);
-  n_->getStorage()->entry(actual_internal_pos,0x6063);
+}
+
+void Node_402::configureModeSpecificEntries()
+{
+  if(isModeSupported(Profiled_Position))
+  {
+    n_->getStorage()->entry(target_position,0x607A);
+    n_->getStorage()->entry(profile_velocity,0x6081);
+  }
+  if(isModeSupported(Profiled_Velocity))
+  {
+    n_->getStorage()->entry(target_velocity,0x60FF);
+  }
+  if(isModeSupported(Interpolated_Position))
+  {
+    n_->getStorage()->entry(target_interpolated_position,0x60C1,0x01);
+  }
 }
 
 bool Node_402::turnOn()
@@ -276,9 +294,9 @@ bool Node_402::turnOff()
 
 void Node_402::init(LayerStatusExtended &s)
 {
+  supported_drive_modes.get();
 
-  enterMode(Profiled_Position);
-  profile_velocity.set(1000000);
+  Node_402::configureModeSpecificEntries();
 
   if(Node_402::turnOn())
   {

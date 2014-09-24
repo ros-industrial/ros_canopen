@@ -117,7 +117,7 @@ public:
   void setTargetPos(const double &target_pos);
   void setTargetVel(const double &target_vel);
   void setTargetEff(const double &v) {} //TODO
-  
+
   const double getTargetPos();
   const double getTargetVel();
   const double getTargetEff()  { return 0; } // TODO
@@ -126,6 +126,7 @@ public:
   bool turnOff();
 
   void configureEntries();
+  void configureModeSpecificEntries();
 
 private:
   boost::shared_ptr <ipa_canopen::Node> n_;
@@ -147,6 +148,7 @@ private:
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_position;
+  ipa_canopen::ObjectStorage::Entry<int32_t> target_interpolated_position;
 
   double ac_vel_;
   double ac_eff_;
