@@ -176,7 +176,7 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
     boost::shared_ptr<controller_manager::ControllerManager> cm_;
     boost::mutex mutex_;
     bool recover_;
-    mutable bool paused_;
+    bool paused_;
     ros::Time last_time_;
     ControllerManagerLayer * this_non_const;
     
@@ -194,9 +194,21 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
 
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
+
+    void pause(){
+        boost::mutex::scoped_lock lock(mutex_);
+        if(cm_) paused_ = true;
+    }
+    void resume(){
+        boost::mutex::scoped_lock lock(mutex_);
+        if(paused_){
+            paused_ = false;
+            recover_ = true;
+        }
+    }
+    
 public:
     virtual bool checkForConflict(const std::list<hardware_interface::ControllerInfo>& info) const{
-        boost::mutex::scoped_lock lock(mutex_);
         bool in_conflict = RobotHW::checkForConflict(info);
         if(in_conflict) return true;
 
@@ -216,7 +228,6 @@ public:
                     ROS_ERROR_STREAM(*res_it << " not found");
                     return true;
                 }
-                ROS_INFO_STREAM("need ode " << mode << "  for " << *res_it);
                 if(int res = h_it->second->canSwitch((MotorNode::OperationMode)mode)){
                     if(res > 0) to_switch.push_back(std::make_pair(h_it->second, MotorNode::OperationMode(mode)));
                 }else{
@@ -281,17 +292,6 @@ public:
         boost::mutex::scoped_lock lock(mutex_);
         if(cm_) cm_.reset();
         return true;
-    }
-    void pause(){
-        boost::mutex::scoped_lock lock(mutex_);
-        if(cm_) paused_ = true;
-    }
-    void resume(){
-        boost::mutex::scoped_lock lock(mutex_);
-        if(paused_){
-            paused_ = false;
-            recover_ = true;
-        }
     }
     void add(const std::string &name, boost::shared_ptr<HandleLayer> handle){
         handles_.insert(std::make_pair(name, handle));
