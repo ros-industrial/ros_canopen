@@ -175,7 +175,6 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
     ros::NodeHandle nh_;
     boost::shared_ptr<controller_manager::ControllerManager> cm_;
     boost::mutex mutex_;
-    bool running_;
     bool recover_;
     mutable bool paused_;
     ros::Time last_time_;
@@ -239,7 +238,7 @@ public:
     }
 
     ControllerManagerLayer(const ros::NodeHandle &nh)
-    :SimpleLayer("ControllerManager"), nh_(nh), running_(false), recover_(false), paused_(false), last_time_(ros::Time::now()), this_non_const(this) {
+    :SimpleLayer("ControllerManager"), nh_(nh), recover_(false), paused_(false), last_time_(ros::Time::now()), this_non_const(this) {
         registerInterface(&state_interface_);
         registerInterface(&pos_interface_);
         registerInterface(&vel_interface_);
@@ -248,7 +247,7 @@ public:
 
     virtual bool read() {
         boost::mutex::scoped_lock lock(mutex_);
-        return running_;
+        return cm_;
     }
     virtual bool write()  {
         boost::mutex::scoped_lock lock(mutex_);
@@ -274,7 +273,7 @@ public:
     }
     virtual bool recover() {
         boost::mutex::scoped_lock lock(mutex_);
-        if(!running_) return false;
+        if(!cm_) return false;
         recover_ = true;
         return true;
     }
