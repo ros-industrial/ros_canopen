@@ -98,6 +98,13 @@ class HandleLayer: public SimpleLayer{
         }
     }
     boost::shared_ptr<CommandWriter> jhw_;
+    bool select(const MotorNode::OperationMode &m){
+        CommandMap::iterator it = commands_.find(m);
+        if(it == commands_.end()) return false;
+
+        jhw_ = it->second;
+        return true;
+    }
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor)
     : SimpleLayer(name + " Handle"), motor_(motor), jsh(name, &pos, &vel, &eff) {}
@@ -111,8 +118,7 @@ public:
         CommandMap::iterator it = commands_.find(m);
         if(it == commands_.end()) return false;
 
-        jhw_ = it->second;
-        return motor_->enterMode(m);
+        return motor_->enterMode(m) && select(m);
     }
 
     void registerHandle(hardware_interface::JointStateInterface &iface){
@@ -145,7 +151,12 @@ public:
             pos = motor_->getActualPos();
             vel = motor_->getActualVel();
             eff = motor_->getActualEff();
-            if(jhw_) jhw_->read();
+            if(jhw_){
+                jhw_->read();
+            }else{
+                MotorNode::OperationMode m = motor_->getMode();
+                if(m != MotorNode::No_Mode) select(m);
+            }
         }
         return okay;
     }
@@ -154,7 +165,7 @@ public:
             jhw_->write();
             return true;
         }
-        return false;
+        return motor_->getMode() != MotorNode::No_Mode;
     }
     virtual bool report() { return true; }
     virtual bool init() {
