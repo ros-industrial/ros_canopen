@@ -171,14 +171,14 @@ public:
     void wait(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.wait(sync_obj_->properties.period_);
-            if(!ok) status.error();
-        }else status.warn();
+            if(!ok) status.warn();
+        }else status.error();
     }
     void notify(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.done(sync_obj_->properties.period_);
-            if(!ok) status.error();
-        }else status.warn();
+            if(!ok) status.warn();
+        }else status.error();
     }
 
 private:
