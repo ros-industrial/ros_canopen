@@ -186,18 +186,21 @@ bool Node_402::isModeSupported(const OperationMode &op_mode)
 }
 uint32_t Node_402::getModeMask(const OperationMode &op_mode)
 {
-  switch(op_mode){
-  case Profiled_Position:
-  case Velocity:
-  case Profiled_Velocity:
-  case Profiled_Torque:
-  case Interpolated_Position:
-  case Cyclic_Synchronous_Position:
-  case Cyclic_Synchronous_Velocity:
-  case Cyclic_Synchronous_Torque:
+  SupportedOperationMode sup_mode = static_cast<SupportedOperationMode>((op_mode)-1);
+
+  switch(op_mode)
+  {
+  case Sup_Profiled_Position:
+  case Sup_Velocity:
+  case Sup_Profiled_Velocity:
+  case Sup_Profiled_Torque:
+  case Sup_Interpolated_Position:
+  case Sup_Cyclic_Synchronous_Position:
+  case Sup_Cyclic_Synchronous_Velocity:
+  case Sup_Cyclic_Synchronous_Torque:
     return (1<<(op_mode-1));
-  case No_Mode:
-  case Homing:
+  case Sup_Reserved:
+  case Sup_Homing:
     return 0;
   }
   return 0;
@@ -257,7 +260,7 @@ void Node_402::configureEntries()
   n_->getStorage()->entry(op_mode_display,0x6061);
   n_->getStorage()->entry(supported_drive_modes,0x6502);
 
-//  n_->getStorage()->entry(actual_vel,0x606C); //TODO
+  //  n_->getStorage()->entry(actual_vel,0x606C); //TODO
 
   n_->getStorage()->entry(actual_pos,0x6064);
 }
@@ -294,9 +297,9 @@ bool Node_402::turnOff()
 
 void Node_402::init(LayerStatusExtended &s)
 {
-  supported_drive_modes.get();
-
   Node_402::configureModeSpecificEntries();
+
+  //op_mode.set(Interpolated_Position);
 
   if(Node_402::turnOn())
   {
