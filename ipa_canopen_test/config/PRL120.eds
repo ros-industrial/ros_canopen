@@ -440,7 +440,7 @@ ParameterName=Number of mapped Application Objects
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=2
+ParameterValue=2
 PDOMapping=0
 LowLimit=0
 HighLimit=8
@@ -451,7 +451,7 @@ ParameterName=1. mapped Object
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x60400010
+ParameterValue=0x60400010
 PDOMapping=0
 ObjFlags=0
 
@@ -460,7 +460,7 @@ ParameterName=2. mapped Object
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x60c10120
+ParameterValue=0x60c10120
 PDOMapping=0
 ObjFlags=0
 
