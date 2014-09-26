@@ -214,7 +214,12 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptre
             }else{
                 //subs = object->get<uint8_t>("SubNumber");
                 try{
-                    subs = pt.get<uint8_t>(name.substr(2) + "sub0.DefaultValue") + 1;
+                    try{
+                        subs = pt.get<uint8_t>(name.substr(2) + "sub0.ParameterValue") + 1;
+                    }
+                    catch(...){
+                        subs = pt.get<uint8_t>(name.substr(2) + "sub0.DefaultValue") + 1;
+                    }
                 }
                 catch(...){
                     subs = object->get<uint8_t>("SubNumber");
