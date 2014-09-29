@@ -55,7 +55,7 @@ public:
     template<typename T> void add(const std::string &key, const T &value) {
         std::stringstream str;
         str << value;
-        values_.push_back(std::make_pair(key,value));
+        values_.push_back(std::make_pair(key,str.str()));
     }
 };
 
