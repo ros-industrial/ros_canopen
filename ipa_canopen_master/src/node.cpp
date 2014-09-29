@@ -149,8 +149,16 @@ bool Node::write(){
     if(getState() != Operational) return false;
     return pdo_.write();
 }
-bool Node::report(){
-    return true;
+
+
+void Node::report(LayerStatusExtended &status){
+    State state = getState();
+    if(state != Operational){
+        status.error("Mode not operational");
+        status.add("Node state", (int)state);
+    }else if(!checkHeartbeat()){
+        status.error("Heartbeat timeout");
+    }
 }
 bool Node::init(){
     nmt_listener_ = interface_->createMsgListener( ipa_can::Header(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));

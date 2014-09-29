@@ -179,7 +179,8 @@ public:
 
     virtual bool read();
     virtual bool write();
-    virtual bool report();
+    virtual void report(LayerStatusExtended &status);
+    virtual bool report() { return false; } //unused
     virtual bool init();
     virtual bool recover();
     virtual bool shutdown();
