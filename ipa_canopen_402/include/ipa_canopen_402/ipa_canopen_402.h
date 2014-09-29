@@ -164,6 +164,8 @@ private:
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_position;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_interpolated_position;
+  ipa_canopen::ObjectStorage::Entry<int32_t> target_profiled_velocity;
+
 
   double ac_vel_;
   double ac_eff_;

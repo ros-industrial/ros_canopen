@@ -93,6 +93,10 @@ int main(int argc, char *argv[])
 
   stack.init(es);
   LayerStatus s;
+  ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x007>::type >  sup_mod;
+  node->getStorage()->entry(sup_mod, 0x6502);
+  
+  LOG("modes: " << sup_mod.get());
 
   if(sync){
     LayerStatus r,w;

@@ -1227,6 +1227,7 @@ ObjectType=0x7
 DataType=0x0005
 AccessType=rw
 DefaultValue=8
+ParameterValue=50
 PDOMapping=0
 
 [60C2sub2]
@@ -1336,7 +1337,6 @@ ParameterName=supported_drive_modes
 ObjectType=0x7
 DataType=0x0007
 AccessType=ro
-DefaultValue=0x00000060
 PDOMapping=0
 
 [ManufacturerObjects]

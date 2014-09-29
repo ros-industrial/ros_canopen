@@ -29,10 +29,10 @@ void Node_402::read(LayerStatus &status)
   operation_mode_ = (OperationMode) op_mode_display.get(); // TODO: check validity
   //ac_vel_ = actual_vel.get(); //TODO
   ac_pos_ = actual_pos.get();
-  //internal_pos_ = actual_internal_pos.get();
   oldpos_ = ac_pos_;//target_position.get_cached();
   if(check_mode)
   {
+    target_pos_ = ac_pos_;
     if(operation_mode_ == operation_mode_to_set_)
     {
       check_mode = false;
@@ -57,7 +57,7 @@ void Node_402::report(LayerStatusExtended &status)
 
 void Node_402::recover(LayerStatusExtended &status)
 {
-
+  control_word_bitset.reset();
 }
 
 const double Node_402::getTargetPos()
@@ -73,7 +73,6 @@ void Node_402::write(LayerStatus &status)
 {
   if (state_ != target_state_)
   {
-
     if (state_ == Fault)
     {
       control_word_bitset.set(CW_Fault_Reset);
@@ -159,12 +158,14 @@ void Node_402::write(LayerStatus &status)
       }
     }
     else if(operation_mode_ == Profiled_Velocity)
-      target_velocity.set(target_vel_);
+      target_profiled_velocity.set(target_vel_);
     else if(operation_mode_ == Interpolated_Position)
     {
       target_interpolated_position.set(target_pos_);
       control_word_bitset.set(CW_Operation_mode_specific0);
     }
+    else if(operation_mode_ == Velocity)
+      target_velocity.set(target_vel_);
   }
   int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
   control_word.set(cw_set);
@@ -274,11 +275,15 @@ void Node_402::configureModeSpecificEntries()
   }
   if(isModeSupported(Profiled_Velocity))
   {
-    n_->getStorage()->entry(target_velocity,0x60FF);
+    n_->getStorage()->entry(target_profiled_velocity,0x60FF);
   }
   if(isModeSupported(Interpolated_Position))
   {
     n_->getStorage()->entry(target_interpolated_position,0x60C1,0x01);
+  }
+  if(isModeSupported(Velocity))
+  {
+    //n_->getStorage()->entry(target_velocity,0x6042); //TODO: add to the eds file
   }
 }
 
