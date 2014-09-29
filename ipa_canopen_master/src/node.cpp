@@ -105,6 +105,7 @@ void Node::switchState(const uint8_t &s){
 }
 void Node::handleNMT(const ipa_can::Frame & msg){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
+    heartbeat_timeout_ = boost::chrono::high_resolution_clock::now() + boost::chrono::milliseconds(3*heartbeat_.get_cached());
     assert(msg.dlc == 1);
     switchState(msg.data[0]);
     cond_lock.unlock();
@@ -132,8 +133,15 @@ template<typename T> void Node::wait_for(const State &s, const T &timeout){
         }
    }
 }
+bool Node::checkHeartbeat(){
+    if(!heartbeat_.get_cached()) return true; //disabled
+    boost::mutex::scoped_lock cond_lock(cond_mutex);
+    return heartbeat_timeout_ >= boost::chrono::high_resolution_clock::now();
+}
+
 
 bool Node::read(){
+    if(!checkHeartbeat()) return false;
     if(getState() != Operational) return false;
     return pdo_.read();
 }

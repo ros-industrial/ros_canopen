@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS chrono)
 
 
 ###################################
@@ -25,7 +25,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ipa_canopen_master ${RT_LIBRARY}
   CATKIN_DEPENDS ipa_can_interface
-#  DEPENDS system_lib
+  DEPENDS Boost
 )
 
 ###########

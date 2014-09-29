@@ -8,6 +8,7 @@
 #include "timer.h"
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
+#include <boost/chrono/system_clocks.hpp>
 
 namespace ipa_canopen{
 
@@ -205,6 +206,9 @@ private:
     SDOClient sdo_;
     //EMCYHandler emcy;
     PDOMapper pdo_;
+
+    boost::chrono::high_resolution_clock::time_point heartbeat_timeout_;
+    bool checkHeartbeat();
 };
 
 template<typename T> class Chain{
