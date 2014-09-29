@@ -31,7 +31,7 @@ Node::Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boos
 : SimpleLayer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
 }
     
-const Node::State& Node::getState(){
+const Node::State Node::getState(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     return state_;
 }

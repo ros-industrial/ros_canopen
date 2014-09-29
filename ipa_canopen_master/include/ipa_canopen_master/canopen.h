@@ -154,7 +154,7 @@ public:
     const uint8_t node_id_;
     Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync = boost::shared_ptr<SyncCounter>());
     
-    const State& getState();
+    const State getState();
     void enterState(const State &s);
     
     const boost::shared_ptr<ObjectStorage> getStorage() { return sdo_.storage_; }
