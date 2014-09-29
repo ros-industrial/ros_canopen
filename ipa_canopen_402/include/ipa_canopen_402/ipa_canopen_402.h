@@ -11,6 +11,13 @@ public:
   Node_402(boost::shared_ptr <ipa_canopen::Node> n, const std::string &name) : Layer(name), n_(n)
   {
     configureEntries();
+    status_word_mask.set(SW_Ready_To_Switch_On);
+    status_word_mask.set(SW_Switched_On);
+    status_word_mask.set(SW_Operation_enabled);
+    status_word_mask.set(SW_Fault);
+    status_word_mask.reset(SW_Voltage_enabled);
+    status_word_mask.set(SW_Quick_stop);
+    status_word_mask.set(Switch_On_Disabled);
   }
 
   enum StatusWord
@@ -60,6 +67,7 @@ public:
     Velocity = 2,
     Profiled_Velocity = 3,
     Profiled_Torque = 4,
+    Reserved=5,
     Homing = 6,
     Interpolated_Position = 7,
     Cyclic_Synchronous_Position = 8,
@@ -67,17 +75,31 @@ public:
     Cyclic_Synchronous_Torque = 10,
   };
 
+  enum SupportedOperationMode
+  {
+    Sup_Profiled_Position = 0,
+    Sup_Velocity = 1,
+    Sup_Profiled_Velocity = 2,
+    Sup_Profiled_Torque = 3,
+    Sup_Reserved = 4,
+    Sup_Homing = 5,
+    Sup_Interpolated_Position = 6,
+    Sup_Cyclic_Synchronous_Position = 7,
+    Sup_Cyclic_Synchronous_Velocity = 8,
+    Sup_Cyclic_Synchronous_Torque = 9
+  };
+
   enum State
   {
-    Start,
-    Not_Ready_To_Switch_On,
-    Switch_On_Disabled,
-    Ready_To_Switch_On,
-    Switched_On,
-    Operation_Enable,
-    Quick_Stop_Active,
-    Fault_Reaction_Active,
-    Fault
+    Start=0,
+    Not_Ready_To_Switch_On=1,
+    Switch_On_Disabled=2,
+    Ready_To_Switch_On=3,
+    Switched_On=4,
+    Operation_Enable=5,
+    Quick_Stop_Active=6,
+    Fault_Reaction_Active=7,
+    Fault=8,
   };
 
   const OperationMode getMode();
@@ -110,7 +132,7 @@ public:
   void setTargetPos(const double &target_pos);
   void setTargetVel(const double &target_vel);
   void setTargetEff(const double &v) {} //TODO
-  
+
   const double getTargetPos();
   const double getTargetVel();
   const double getTargetEff()  { return 0; } // TODO
@@ -119,6 +141,7 @@ public:
   bool turnOff();
 
   void configureEntries();
+  void configureModeSpecificEntries();
 
 private:
   boost::shared_ptr <ipa_canopen::Node> n_;
@@ -140,6 +163,9 @@ private:
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_position;
+  ipa_canopen::ObjectStorage::Entry<int32_t> target_interpolated_position;
+  ipa_canopen::ObjectStorage::Entry<int32_t> target_profiled_velocity;
+
 
   double ac_vel_;
   double ac_eff_;
@@ -154,6 +180,7 @@ private:
 
   std::bitset<16> status_word_bitset;
   std::bitset<16> control_word_bitset;
+  std::bitset<16> status_word_mask;
 
   double target_vel_;
   double target_pos_;

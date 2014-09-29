@@ -11,6 +11,17 @@
 
 #include <ipa_canopen_402/ipa_canopen_402.h>
 
+#include <signal.h>
+#include <cstdlib>
+#include <cstdio>
+#include <unistd.h>
+
+bool running = true;
+
+void my_handler(int s){
+  printf("Caught signal %d\n",s);
+  running = false;
+}
 
 using namespace ipa_can;
 using namespace ipa_canopen;
@@ -32,24 +43,33 @@ void print_node_state(const Node::State &s){
   LOG("NMT:" << s);
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 
-  if(argc < 3){
-    std::cout << "Usage: " << argv[0] << " DEVICE EDS/DCF [sync_ms]" << std::endl;
+  if(argc < 4){
+    std::cout << "Usage: " << argv[0] << " DEVICE EDS/DCF [sync_ms] ID" << std::endl;
     return -1;
   }
 
-  // Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
-  // Interface::FrameListener::Ptr tprinter = driver->createMsgListener(Header(0x181), print_tpdo); // printer for all incoming messages
+  struct sigaction sigIntHandler;
+
+  sigIntHandler.sa_handler = my_handler;
+  sigemptyset(&sigIntHandler.sa_mask);
+  sigIntHandler.sa_flags = 0;
+
+  sigaction(SIGINT, &sigIntHandler, NULL);
+
   StateInterface::StateListener::Ptr sprinter = driver->createStateListener(print_state); // printer for all incoming messages
 
   int sync_ms = 10;
-  if(argc > 3) sync_ms = atol(argv[3]);
+  int id;
 
-//  if(!driver->init(argv[1],0)){
-//    std::cout << "init failed" << std::endl;
-//    return -1;
-//  }
+  if(argc > 3)
+  {
+    sync_ms = atol(argv[3]);
+    id = atoi(argv[4]);
+  }
+  std::cout << "ID" << id;
 
   sleep(1.0);
 
@@ -58,13 +78,13 @@ int main(int argc, char *argv[]){
   LocalMaster master(argv[1], driver);
   boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0));
 
-  boost::shared_ptr<ipa_canopen::Node> node (new Node(driver, dict, 85, sync));
+  boost::shared_ptr<ipa_canopen::Node> node (new Node(driver, dict, id, sync));
 
   std::string name = "402";
   boost::shared_ptr<Node_402> motor( new Node_402(node, name));
 
 
-  LayerStack stack("test");
+  LayerStack stack("test402");
   stack.add(boost::make_shared<CANLayer<ThreadedSocketCANInterface > >(driver, argv[1], 0));
   stack.add(sync);
   stack.add(node);
@@ -73,41 +93,60 @@ int main(int argc, char *argv[]){
 
   stack.init(es);
   LayerStatus s;
+  ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x007>::type >  sup_mod;
+  node->getStorage()->entry(sup_mod, 0x6502);
+  
+  LOG("modes: " << sup_mod.get());
 
   if(sync){
-      LayerStatus r,w;
-      sync->read(r);
-      sync->write(w);
+    LayerStatus r,w;
+    sync->read(r);
+    sync->write(w);
   }
 
   bool flag_op = false;
   int count = 0;
 
-  while(true)
+  while(running)
   {
     LayerStatus r,w;
     stack.read(r);
     stack.write(w);
     boost::this_thread::interruption_point();
-    if(count > 500)
+//    if(motor->getState() == motor->Ready_To_Switch_On)
+//    {
+//      break;
+//    }
+    if(count > 10000000)
     {
+
       count = 0;
       flag_op = !flag_op;
     }
-    if(flag_op)
-    {
-      LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
-      motor->enterMode(motor->Profiled_Velocity);
-      motor->setTargetVel(-360000);
-    }
-    else
-    {
-      LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
-      motor->setTargetPos(1000);
-      motor->enterMode(motor->Profiled_Position);
-    }
-    count++;
+////        if(flag_op)
+////        {
+////          //LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
+////          motor->enterMode(motor->Profiled_Velocity);
+////          motor->setTargetVel(-360000);
+////        }
+////        else
+////        {
+////         // LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
+////          motor->setTargetPos(1000);
+////          motor->enterMode(motor->Profiled_Position);
+////        }
+        LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos() << "Target Pos" << motor->getTargetPos());
+        if(count==1)
+        {
+          motor->setTargetPos((motor->getActualPos()));
+          motor->enterMode(motor->Interpolated_Position);
+        }
+        motor->setTargetPos((motor->getActualPos()-100));
+        //motor->setTargetPos((motor->getActualPos()+10));
+        count++;
   }
+
+  motor->turnOff();
 
   stack.shutdown(s);
 
