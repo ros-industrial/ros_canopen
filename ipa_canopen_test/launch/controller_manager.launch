@@ -3,8 +3,9 @@
   <!--  launch-prefix="gdb -ex run -/-args" -->
   <!-- valgrind -/-tool=helgrind -->
   <arg name="config" />
-  <node name="$(anon plate_controller)" pkg="ipa_canopen_motor_control" type="ipa_canopen_motor_control_node" output="screen" clear_params="true" launch-prefix="">
+  <node name="driver" pkg="ipa_canopen_motor_control" type="ipa_canopen_motor_control_node" output="screen" clear_params="true" launch-prefix="">
     <rosparam command="load" file="$(find ipa_canopen_test)/config/can0.yaml" />
     <rosparam command="load" file="$(arg config)" />
+    <remap from="joint_states" to="/joint_states"/>
   </node>
 </launch>
