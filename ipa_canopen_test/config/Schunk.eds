@@ -697,21 +697,21 @@ ParameterName=vl_target_velocity
 ObjectType=0x7
 DataType=0x0003
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6043]
 ParameterName=vl_velocity_demand
 ObjectType=0x7
 DataType=0x0003
 AccessType=ro
-PDOMapping=0
+PDOMapping=1
 
 [6044]
 ParameterName=vl_velocity_actual_value
 ObjectType=0x7
 DataType=0x0003
 AccessType=ro
-PDOMapping=0
+PDOMapping=1
 
 [6046]
 ParameterName=vl_velocity_min_max_amount
@@ -731,14 +731,14 @@ ParameterName=vl_velocity_min_max_amount_vl_velocity_min_amount
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6046sub2]
 ParameterName=vl_velocity_min_max_amount_vl_velocity_max_amount
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6048]
 ParameterName=vl_velocity_acceleration
@@ -758,14 +758,14 @@ ParameterName=vl_velocity_acceleration_delta_speed
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6048sub2]
 ParameterName=vl_velocity_acceleration_delta_time
 ObjectType=0x7
 DataType=0x0006
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6049]
 ParameterName=vl_velocity_deceleration
@@ -785,21 +785,21 @@ ParameterName=vl_velocity_deceleration_delta_speed
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6049sub2]
 ParameterName=vl_velocity_deceleration_delta_time
 ObjectType=0x7
 DataType=0x0006
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6060]
 ParameterName=modes_of_operation
 ObjectType=0x7
 DataType=0x0002
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6061]
 ParameterName=modes_of_operation_display
@@ -813,7 +813,7 @@ ParameterName=position_demand_value
 ObjectType=0x7
 DataType=0x0004
 AccessType=ro
-PDOMapping=0
+PDOMapping=1
 
 [6064]
 ParameterName=position_actual_value
@@ -848,7 +848,7 @@ ParameterName=max_current
 ObjectType=0x7
 DataType=0x0006
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6075]
 ParameterName=motor_rated_current
@@ -869,7 +869,7 @@ ParameterName=target_position
 ObjectType=0x7
 DataType=0x0004
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [607C]
 ParameterName=home_offset
@@ -910,14 +910,14 @@ ParameterName=profile_velocity
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6083]
 ParameterName=profile_acceleration
 ObjectType=0x7
 DataType=0x0007
 AccessType=rw
-PDOMapping=0
+PDOMapping=1
 
 [6086]
 ParameterName=motion_profile_type
@@ -1080,7 +1080,7 @@ ParameterName=following_error_actual_value
 ObjectType=0x7
 DataType=0x0004
 AccessType=ro
-PDOMapping=0
+PDOMapping=1
 
 [60FE]
 ParameterName=digital_outputs
@@ -1101,7 +1101,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 DefaultValue=0x1
-PDOMapping=0
+PDOMapping=1
 
 [60FEsub2]
 ParameterName=digital_outputs_bit_mask
