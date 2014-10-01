@@ -8,6 +8,12 @@
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
 
+#include <joint_limits_interface/joint_limits.h>
+#include <joint_limits_interface/joint_limits_urdf.h>
+#include <joint_limits_interface/joint_limits_rosparam.h>
+#include <joint_limits_interface/joint_limits_interface.h>
+#include <urdf/model.h>
+
 #include <controller_manager/controller_manager.h>
 
 //// Dummy class
@@ -198,6 +204,13 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
         cm_->update(now, period, recover_);
         recover_ = false;
         last_time_ = now;
+
+        pos_saturation_interface_.enforceLimits(period);
+        pos_soft_limits_interface_.enforceLimits(period);
+        vel_saturation_interface_.enforceLimits(period);
+        vel_soft_limits_interface_.enforceLimits(period);
+        eff_saturation_interface_.enforceLimits(period);
+        eff_soft_limits_interface_.enforceLimits(period);
     }
 
     hardware_interface::JointStateInterface state_interface_;
@@ -205,6 +218,13 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
     hardware_interface::VelocityJointInterface vel_interface_;
     hardware_interface::EffortJointInterface eff_interface_;
 
+    joint_limits_interface::PositionJointSoftLimitsInterface pos_soft_limits_interface_;
+    joint_limits_interface::PositionJointSaturationInterface pos_saturation_interface_;
+    joint_limits_interface::VelocityJointSoftLimitsInterface vel_soft_limits_interface_;
+    joint_limits_interface::VelocityJointSaturationInterface vel_saturation_interface_;
+    joint_limits_interface::EffortJointSoftLimitsInterface eff_soft_limits_interface_;
+    joint_limits_interface::EffortJointSaturationInterface eff_saturation_interface_;
+    
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
 
@@ -267,6 +287,14 @@ public:
         registerInterface(&pos_interface_);
         registerInterface(&vel_interface_);
         registerInterface(&eff_interface_);
+
+        registerInterface(&pos_saturation_interface_);
+        registerInterface(&pos_soft_limits_interface_);
+        registerInterface(&vel_saturation_interface_);
+        registerInterface(&vel_soft_limits_interface_);
+        registerInterface(&eff_saturation_interface_);
+        registerInterface(&eff_soft_limits_interface_);
+        
     }
 
     virtual bool read() {
@@ -285,11 +313,58 @@ public:
         boost::mutex::scoped_lock lock(mutex_);
         if(cm_) return false;
 
+        urdf::Model urdf;
+        urdf.initParam("robot_description");
+        
         for(HandleMap::iterator it = handles_.begin(); it != handles_.end(); ++it){
+            joint_limits_interface::JointLimits limits;
+            joint_limits_interface::SoftJointLimits soft_limits;
+
+            boost::shared_ptr<const urdf::Joint> joint = urdf.getJoint(it->first);
+            if(!joint){
+                return false;
+            }
+
+            bool has_joint_limits = joint_limits_interface::getJointLimits(joint, limits);
+
+            has_joint_limits = joint_limits_interface::getJointLimits(it->first, nh_, limits) || has_joint_limits;
+
+            bool has_soft_limits = has_joint_limits && joint_limits_interface::getSoftJointLimits(joint, soft_limits);
+
+            if(!has_joint_limits){
+                ROS_WARN_STREAM("No limits found for " << it->first);
+            }
+
             it->second->registerHandle(state_interface_);
-            it->second->registerHandle(pos_interface_);
-            it->second->registerHandle(vel_interface_);
-            it->second->registerHandle(eff_interface_);
+
+            const hardware_interface::JointHandle *h  = 0;
+            h = it->second->registerHandle(pos_interface_);
+            if(h && has_joint_limits){
+                joint_limits_interface::PositionJointSaturationHandle sathandle(*h, limits);
+                pos_saturation_interface_.registerHandle(sathandle);
+                if(has_soft_limits){
+                    joint_limits_interface::PositionJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
+                    pos_soft_limits_interface_.registerHandle(softhandle);
+                }
+            }
+            h = it->second->registerHandle(vel_interface_);
+            if(h && has_joint_limits){
+                joint_limits_interface::VelocityJointSaturationHandle sathandle(*h, limits);
+                vel_saturation_interface_.registerHandle(sathandle);
+                if(has_soft_limits){
+                    joint_limits_interface::VelocityJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
+                    vel_soft_limits_interface_.registerHandle(softhandle);
+                }
+            }
+            h = it->second->registerHandle(eff_interface_);
+            if(h && has_joint_limits){
+                joint_limits_interface::EffortJointSaturationHandle sathandle(*h, limits);
+                eff_saturation_interface_.registerHandle(sathandle);
+                if(has_soft_limits){
+                    joint_limits_interface::EffortJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
+                    eff_soft_limits_interface_.registerHandle(softhandle);
+                }
+            }
         }
         cm_.reset(new controller_manager::ControllerManager(this, nh_));
         recover_ = true;
