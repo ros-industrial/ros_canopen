@@ -27,7 +27,7 @@ void Node_402::read(LayerStatus &status)
 
 
   operation_mode_ = (OperationMode) op_mode_display.get(); // TODO: check validity
-  //ac_vel_ = actual_vel.get(); //TODO
+  ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
   oldpos_ = ac_pos_;//target_position.get_cached();
   if(check_mode)
@@ -58,6 +58,9 @@ void Node_402::report(LayerStatusExtended &status)
 void Node_402::recover(LayerStatusExtended &status)
 {
   control_word_bitset.reset();
+  target_vel_ = 0;
+  target_pos_ = actual_pos.get_cached();
+  LOG("RECOVER");
 }
 
 const double Node_402::getTargetPos()
@@ -148,24 +151,41 @@ void Node_402::write(LayerStatus &status)
       if(new_target_pos_)
       {
         control_word_bitset.reset(CW_Operation_mode_specific0);
+        control_word_bitset.reset(CW_Operation_mode_specific1);
+        control_word_bitset.reset(CW_Operation_mode_specific2);
         new_target_pos_ = false;
       }
       else if(oldpos_ != target_pos_)
       {
+        profile_velocity.set(10000);
         target_position.set(target_pos_);
         new_target_pos_ = true;
         control_word_bitset.set(CW_Operation_mode_specific0);
+        control_word_bitset.reset(CW_Operation_mode_specific1);
+        control_word_bitset.reset(CW_Operation_mode_specific2);
       }
     }
     else if(operation_mode_ == Profiled_Velocity)
+    {
       target_profiled_velocity.set(target_vel_);
+      control_word_bitset.reset(CW_Operation_mode_specific0);
+      control_word_bitset.reset(CW_Operation_mode_specific1);
+      control_word_bitset.reset(CW_Operation_mode_specific2);
+    }
     else if(operation_mode_ == Interpolated_Position)
     {
       target_interpolated_position.set(target_pos_);
       control_word_bitset.set(CW_Operation_mode_specific0);
+      control_word_bitset.reset(CW_Operation_mode_specific1);
+      control_word_bitset.reset(CW_Operation_mode_specific2);
     }
     else if(operation_mode_ == Velocity)
+    {
       target_velocity.set(target_vel_);
+      control_word_bitset.set(CW_Operation_mode_specific0);
+      control_word_bitset.set(CW_Operation_mode_specific1);
+      control_word_bitset.set(CW_Operation_mode_specific2);
+    }
   }
   int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
   control_word.set(cw_set);
@@ -261,7 +281,7 @@ void Node_402::configureEntries()
   n_->getStorage()->entry(op_mode_display,0x6061);
   n_->getStorage()->entry(supported_drive_modes,0x6502);
 
-  //  n_->getStorage()->entry(actual_vel,0x606C); //TODO
+  n_->getStorage()->entry(actual_vel,0x606C); //TODO
 
   n_->getStorage()->entry(actual_pos,0x6064);
 }
@@ -283,7 +303,7 @@ void Node_402::configureModeSpecificEntries()
   }
   if(isModeSupported(Velocity))
   {
-    //n_->getStorage()->entry(target_velocity,0x6042); //TODO: add to the eds file
+    n_->getStorage()->entry(target_velocity,0x6042); //TODO: add to the eds file
   }
 }
 

@@ -158,7 +158,7 @@ private:
   ipa_canopen::ObjectStorage::Entry<uint32_t>  supported_drive_modes;
 
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_vel;
-  ipa_canopen::ObjectStorage::Entry<int32_t> target_velocity;
+  ipa_canopen::ObjectStorage::Entry<int16_t> target_velocity;
   ipa_canopen::ObjectStorage::Entry<uint32_t> profile_velocity;
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;

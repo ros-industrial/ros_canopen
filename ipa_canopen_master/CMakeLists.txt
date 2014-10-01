@@ -44,6 +44,7 @@ add_library(ipa_canopen_master
 )
 target_link_libraries(ipa_canopen_master
   ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
 )
 
 ## Declare a cpp executable
