@@ -10,19 +10,21 @@ void Node_402::read(LayerStatus &status)
 
   switch((status_word_bitset & status_word_mask).to_ulong())
   {
-  case 0b0000000: // fall-through
+  case 0b0000000:
   case 0b0100000: state_ = Not_Ready_To_Switch_On; break;
-  case 0b1000000: // fall-through
+  case 0b1000000:
   case 0b1100000: state_ = Switch_On_Disabled; break;
   case 0b0100001: state_ = Ready_To_Switch_On; break;
   case 0b0100011: state_ = Switched_On; break;
   case 0b0100111: state_ = Operation_Enable; break;
   case 0b0000111: state_ = Quick_Stop_Active; break;
-  case 0b0001111: // fall-through
+  case 0b0001111:
   case 0b0101111: state_ = Fault_Reaction_Active; break;
-  case 0b0001000: // fall-through
+  case 0b0001000:
   case 0b0101000: state_ = Fault; break;
-  default: LOG("Motor currently in an unknown state");
+  default:
+    LOG("Motor currently in an unknown state");
+    //status.error();
   }
 
 
@@ -281,7 +283,7 @@ void Node_402::configureEntries()
   n_->getStorage()->entry(op_mode_display,0x6061);
   n_->getStorage()->entry(supported_drive_modes,0x6502);
 
-  n_->getStorage()->entry(actual_vel,0x606C); //TODO
+  n_->getStorage()->entry(actual_vel,0x606C);
 
   n_->getStorage()->entry(actual_pos,0x6064);
 }
@@ -303,7 +305,7 @@ void Node_402::configureModeSpecificEntries()
   }
   if(isModeSupported(Velocity))
   {
-    n_->getStorage()->entry(target_velocity,0x6042); //TODO: add to the eds file
+    n_->getStorage()->entry(target_velocity,0x6042);
   }
 }
 
@@ -323,8 +325,6 @@ bool Node_402::turnOff()
 void Node_402::init(LayerStatusExtended &s)
 {
   Node_402::configureModeSpecificEntries();
-
-  //op_mode.set(Interpolated_Position);
 
   if(Node_402::turnOn())
   {
