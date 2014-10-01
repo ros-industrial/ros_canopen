@@ -8,6 +8,12 @@
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
 
+#include <joint_limits_interface/joint_limits.h>
+#include <joint_limits_interface/joint_limits_urdf.h>
+#include <joint_limits_interface/joint_limits_rosparam.h>
+#include <joint_limits_interface/joint_limits_interface.h>
+#include <urdf/model.h>
+
 #include <controller_manager/controller_manager.h>
 
 //// Dummy class
@@ -82,13 +88,13 @@ class HandleLayer: public SimpleLayer{
     typedef boost::unordered_map< MotorNode::OperationMode, boost::shared_ptr<CommandWriter> > CommandMap;
     CommandMap commands_;
 
-    template <typename T> void addHandle( T &iface, void (MotorNode::*writer)(const double &), const double (MotorNode::*reader)(void), const std::vector<MotorNode::OperationMode> & modes){
+    template <typename T> hardware_interface::JointHandle* addHandle( T &iface, void (MotorNode::*writer)(const double &), const double (MotorNode::*reader)(void), const std::vector<MotorNode::OperationMode> & modes){
         uint32_t mode_mask = 0;
         for(size_t i=0; i < modes.size(); ++i){
             if(motor_->isModeSupported(modes[i]))
                 mode_mask |= MotorNode::getModeMask(modes[i]);
         }
-        if(mode_mask == 0) return;
+        if(mode_mask == 0) return 0;
 
         boost::shared_ptr<CommandWriter> jhw (new CommandWriter(jsh, *motor_, writer, reader, mode_mask));
 
@@ -96,6 +102,7 @@ class HandleLayer: public SimpleLayer{
         for(size_t i=0; i < modes.size(); ++i){
             commands_[modes[i]] = jhw;
         }
+        return jhw.get();
     }
     boost::shared_ptr<CommandWriter> jhw_;
     bool select(const MotorNode::OperationMode &m){
@@ -124,25 +131,25 @@ public:
     void registerHandle(hardware_interface::JointStateInterface &iface){
         iface.registerHandle(jsh);
     }
-    void registerHandle(hardware_interface::PositionJointInterface &iface){
+    hardware_interface::JointHandle* registerHandle(hardware_interface::PositionJointInterface &iface){
         std::vector<MotorNode::OperationMode> modes;
         modes.push_back(MotorNode::Profiled_Position);
         modes.push_back(MotorNode::Interpolated_Position);
         modes.push_back(MotorNode::Cyclic_Synchronous_Position);
-        addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos, modes);
+        return addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos, modes);
     }
-    void registerHandle(hardware_interface::VelocityJointInterface &iface){
+    hardware_interface::JointHandle* registerHandle(hardware_interface::VelocityJointInterface &iface){
         std::vector<MotorNode::OperationMode> modes;
         modes.push_back(MotorNode::Velocity);
         modes.push_back(MotorNode::Profiled_Velocity);
         modes.push_back(MotorNode::Cyclic_Synchronous_Velocity);
-        addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel, modes);
+        return addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel, modes);
     }
-    void registerHandle(hardware_interface::EffortJointInterface &iface){
+    hardware_interface::JointHandle* registerHandle(hardware_interface::EffortJointInterface &iface){
         std::vector<MotorNode::OperationMode> modes;
         modes.push_back(MotorNode::Profiled_Torque);
         modes.push_back(MotorNode::Cyclic_Synchronous_Torque);
-        addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff, modes);
+        return addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff, modes);
     }
     virtual bool read() {
         bool okay = true;
@@ -193,9 +200,17 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
     
     void update(){
         ros::Time now = ros::Time::now();
-        cm_->update(now, now -last_time_, recover_);
+        ros::Duration period(now -last_time_);
+        cm_->update(now, period, recover_);
         recover_ = false;
         last_time_ = now;
+
+        pos_saturation_interface_.enforceLimits(period);
+        pos_soft_limits_interface_.enforceLimits(period);
+        vel_saturation_interface_.enforceLimits(period);
+        vel_soft_limits_interface_.enforceLimits(period);
+        eff_saturation_interface_.enforceLimits(period);
+        eff_soft_limits_interface_.enforceLimits(period);
     }
 
     hardware_interface::JointStateInterface state_interface_;
@@ -203,6 +218,13 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
     hardware_interface::VelocityJointInterface vel_interface_;
     hardware_interface::EffortJointInterface eff_interface_;
 
+    joint_limits_interface::PositionJointSoftLimitsInterface pos_soft_limits_interface_;
+    joint_limits_interface::PositionJointSaturationInterface pos_saturation_interface_;
+    joint_limits_interface::VelocityJointSoftLimitsInterface vel_soft_limits_interface_;
+    joint_limits_interface::VelocityJointSaturationInterface vel_saturation_interface_;
+    joint_limits_interface::EffortJointSoftLimitsInterface eff_soft_limits_interface_;
+    joint_limits_interface::EffortJointSaturationInterface eff_saturation_interface_;
+    
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
 
@@ -265,6 +287,14 @@ public:
         registerInterface(&pos_interface_);
         registerInterface(&vel_interface_);
         registerInterface(&eff_interface_);
+
+        registerInterface(&pos_saturation_interface_);
+        registerInterface(&pos_soft_limits_interface_);
+        registerInterface(&vel_saturation_interface_);
+        registerInterface(&vel_soft_limits_interface_);
+        registerInterface(&eff_saturation_interface_);
+        registerInterface(&eff_soft_limits_interface_);
+        
     }
 
     virtual bool read() {
@@ -283,11 +313,58 @@ public:
         boost::mutex::scoped_lock lock(mutex_);
         if(cm_) return false;
 
+        urdf::Model urdf;
+        urdf.initParam("robot_description");
+        
         for(HandleMap::iterator it = handles_.begin(); it != handles_.end(); ++it){
+            joint_limits_interface::JointLimits limits;
+            joint_limits_interface::SoftJointLimits soft_limits;
+
+            boost::shared_ptr<const urdf::Joint> joint = urdf.getJoint(it->first);
+            if(!joint){
+                return false;
+            }
+
+            bool has_joint_limits = joint_limits_interface::getJointLimits(joint, limits);
+
+            has_joint_limits = joint_limits_interface::getJointLimits(it->first, nh_, limits) || has_joint_limits;
+
+            bool has_soft_limits = has_joint_limits && joint_limits_interface::getSoftJointLimits(joint, soft_limits);
+
+            if(!has_joint_limits){
+                ROS_WARN_STREAM("No limits found for " << it->first);
+            }
+
             it->second->registerHandle(state_interface_);
-            it->second->registerHandle(pos_interface_);
-            it->second->registerHandle(vel_interface_);
-            it->second->registerHandle(eff_interface_);
+
+            const hardware_interface::JointHandle *h  = 0;
+            h = it->second->registerHandle(pos_interface_);
+            if(h && has_joint_limits){
+                joint_limits_interface::PositionJointSaturationHandle sathandle(*h, limits);
+                pos_saturation_interface_.registerHandle(sathandle);
+                if(has_soft_limits){
+                    joint_limits_interface::PositionJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
+                    pos_soft_limits_interface_.registerHandle(softhandle);
+                }
+            }
+            h = it->second->registerHandle(vel_interface_);
+            if(h && has_joint_limits){
+                joint_limits_interface::VelocityJointSaturationHandle sathandle(*h, limits);
+                vel_saturation_interface_.registerHandle(sathandle);
+                if(has_soft_limits){
+                    joint_limits_interface::VelocityJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
+                    vel_soft_limits_interface_.registerHandle(softhandle);
+                }
+            }
+            h = it->second->registerHandle(eff_interface_);
+            if(h && has_joint_limits){
+                joint_limits_interface::EffortJointSaturationHandle sathandle(*h, limits);
+                eff_saturation_interface_.registerHandle(sathandle);
+                if(has_soft_limits){
+                    joint_limits_interface::EffortJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
+                    eff_soft_limits_interface_.registerHandle(softhandle);
+                }
+            }
         }
         cm_.reset(new controller_manager::ControllerManager(this, nh_));
         recover_ = true;
