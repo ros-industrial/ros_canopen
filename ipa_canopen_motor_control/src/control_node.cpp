@@ -194,7 +194,8 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
     
     void update(){
         ros::Time now = ros::Time::now();
-        cm_->update(now, now -last_time_, recover_);
+        ros::Duration period(now -last_time_);
+        cm_->update(now, period, recover_);
         recover_ = false;
         last_time_ = now;
     }
