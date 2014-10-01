@@ -82,13 +82,13 @@ class HandleLayer: public SimpleLayer{
     typedef boost::unordered_map< MotorNode::OperationMode, boost::shared_ptr<CommandWriter> > CommandMap;
     CommandMap commands_;
 
-    template <typename T> void addHandle( T &iface, void (MotorNode::*writer)(const double &), const double (MotorNode::*reader)(void), const std::vector<MotorNode::OperationMode> & modes){
+    template <typename T> hardware_interface::JointHandle* addHandle( T &iface, void (MotorNode::*writer)(const double &), const double (MotorNode::*reader)(void), const std::vector<MotorNode::OperationMode> & modes){
         uint32_t mode_mask = 0;
         for(size_t i=0; i < modes.size(); ++i){
             if(motor_->isModeSupported(modes[i]))
                 mode_mask |= MotorNode::getModeMask(modes[i]);
         }
-        if(mode_mask == 0) return;
+        if(mode_mask == 0) return 0;
 
         boost::shared_ptr<CommandWriter> jhw (new CommandWriter(jsh, *motor_, writer, reader, mode_mask));
 
@@ -96,6 +96,7 @@ class HandleLayer: public SimpleLayer{
         for(size_t i=0; i < modes.size(); ++i){
             commands_[modes[i]] = jhw;
         }
+        return jhw.get();
     }
     boost::shared_ptr<CommandWriter> jhw_;
     bool select(const MotorNode::OperationMode &m){
@@ -124,25 +125,25 @@ public:
     void registerHandle(hardware_interface::JointStateInterface &iface){
         iface.registerHandle(jsh);
     }
-    void registerHandle(hardware_interface::PositionJointInterface &iface){
+    hardware_interface::JointHandle* registerHandle(hardware_interface::PositionJointInterface &iface){
         std::vector<MotorNode::OperationMode> modes;
         modes.push_back(MotorNode::Profiled_Position);
         modes.push_back(MotorNode::Interpolated_Position);
         modes.push_back(MotorNode::Cyclic_Synchronous_Position);
-        addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos, modes);
+        return addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos, modes);
     }
-    void registerHandle(hardware_interface::VelocityJointInterface &iface){
+    hardware_interface::JointHandle* registerHandle(hardware_interface::VelocityJointInterface &iface){
         std::vector<MotorNode::OperationMode> modes;
         modes.push_back(MotorNode::Velocity);
         modes.push_back(MotorNode::Profiled_Velocity);
         modes.push_back(MotorNode::Cyclic_Synchronous_Velocity);
-        addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel, modes);
+        return addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel, modes);
     }
-    void registerHandle(hardware_interface::EffortJointInterface &iface){
+    hardware_interface::JointHandle* registerHandle(hardware_interface::EffortJointInterface &iface){
         std::vector<MotorNode::OperationMode> modes;
         modes.push_back(MotorNode::Profiled_Torque);
         modes.push_back(MotorNode::Cyclic_Synchronous_Torque);
-        addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff, modes);
+        return addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff, modes);
     }
     virtual bool read() {
         bool okay = true;
