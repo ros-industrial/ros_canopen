@@ -97,12 +97,11 @@ public:
         return false;
     }
     bool recover(){
-        State s = BaseClass::getState();
-        if(s.driver_state == State::open){
+        if(!BaseClass::getState().isReady()){
             BaseClass::shutdown();
             return init(device_, 0);
         }
-        return false;
+        return BaseClass::getState().isReady();
     }
     bool translateError(unsigned int internal_error, std::string & str){
         return false; // TODO
