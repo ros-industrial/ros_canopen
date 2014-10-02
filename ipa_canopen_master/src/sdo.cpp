@@ -401,10 +401,10 @@ void SDOClient::wait_for_response(){
     if(!cond.timed_wait(cond_lock,boost::posix_time::seconds(1)))
     {
         abort(0x05040000); // SDO protocol timed out.
-        throw TimeoutException();
+        BOOST_THROW_EXCEPTION( TimeoutException() );
     }
     if(offset == 0 || offset != total){
-        throw TimeoutException(); // TODO
+        BOOST_THROW_EXCEPTION( TimeoutException() ); // TODO
     }
 }
 void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
@@ -421,7 +421,7 @@ void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
         wait_for_response();
         data = buffer;
     }else{
-        throw TimeoutException();
+        BOOST_THROW_EXCEPTION( TimeoutException() );
     }
 }
 void SDOClient::write(const ipa_canopen::ObjectDict::Entry &entry, const String &data){
@@ -436,6 +436,6 @@ void SDOClient::write(const ipa_canopen::ObjectDict::Entry &entry, const String 
 
         wait_for_response();
     }else{
-        throw TimeoutException();
+        BOOST_THROW_EXCEPTION( TimeoutException() );
     }
 }

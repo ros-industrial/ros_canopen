@@ -128,7 +128,7 @@ template<typename T> void Node::wait_for(const State &s, const T &timeout){
         if(!cond.timed_wait(cond_lock,abs_time))
         {
             if(s != state_){
-                throw TimeoutException();
+                BOOST_THROW_EXCEPTION( TimeoutException() );
             }
         }
    }

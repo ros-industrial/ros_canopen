@@ -8,11 +8,9 @@
 #include <boost/make_shared.hpp>
 #include <typeinfo> 
 #include <vector>
+#include "exceptions.h"
 
 namespace ipa_canopen{
-class AccessException {};
-class TimeoutException {};
-class ParseException {};
 
 class TypeGuard{
     const std::type_info& (*get_type)();
@@ -66,7 +64,7 @@ public:
     }
     HoldAny(const std::string &t): type_guard(TypeGuard::create<std::string>()), empty(false){
         if(!type_guard.is_type<std::string>()){
-            throw std::bad_cast();
+            BOOST_THROW_EXCEPTION(std::bad_cast());
         }
         buffer = t;
     }
@@ -76,16 +74,16 @@ public:
     
     const String& data() const { 
         if(empty){
-            throw std::length_error("buffer empty");
+            BOOST_THROW_EXCEPTION(std::length_error("buffer empty"));
         }        
         return buffer;
     }
 
     template<typename T> const T & get() const{
         if(!type_guard.is_type<T>()){
-            throw std::bad_cast();
+            BOOST_THROW_EXCEPTION(std::bad_cast());
         }else if(empty){
-            throw std::length_error("buffer empty");
+            BOOST_THROW_EXCEPTION(std::length_error("buffer empty"));
         }
         return *(T*)&buffer[0];
     }
@@ -218,7 +216,7 @@ public:
                 return no.adder(u, no.offset);
             }
         }else{
-            throw std::bad_cast();
+            BOOST_THROW_EXCEPTION(std::bad_cast());
         }
         
     }
@@ -229,6 +227,13 @@ template<typename T> std::ostream& operator<<(std::ostream& stream, const NodeId
     return stream;
  }
 
+class AccessException : public Exception{
+    const ObjectDict::Key k_;
+public:
+    AccessException(const ObjectDict::Key &k) : k_(k) {}
+};
+ 
+ 
 class ObjectStorage{
 public:
     typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, String &> ReadDelegate;
@@ -245,7 +250,7 @@ protected:
         
         template <typename T> T & access(){
             if(!valid){
-                throw std::length_error("buffer not valid");
+                BOOST_THROW_EXCEPTION(std::length_error("buffer not valid"));
             }
             return *(T*)&buffer[0];
         }
@@ -286,7 +291,7 @@ protected:
             boost::mutex::scoped_lock lock(mutex);
             
             if(!entry->readable){
-                throw AccessException();
+                BOOST_THROW_EXCEPTION( AccessException(key) );
             }
             
             if(entry->constant) cached = true;
@@ -302,7 +307,7 @@ protected:
             
             if(!entry->writable){
                 if(access<T>() != val){
-                    throw AccessException();
+                    BOOST_THROW_EXCEPTION( AccessException(key) );
                 }
             }else{
                 allocate<T>() = val;
@@ -324,17 +329,17 @@ public:
     public:
         typedef T type;
         const T get() {
-            if(!data) throw AccessException();
+            if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
 
             return data->get<T>(false);
         }        
         const T get_cached() {
-            if(!data) throw AccessException();
+            if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
 
             return data->get<T>(true);
         }        
         void set(const T &val) {
-            if(!data) throw AccessException();
+            if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
             data->set(val);
         }
         
@@ -373,12 +378,12 @@ public:
     
             if(!e->def_val.is_empty()){
                 T val = NodeIdOffset<T>::apply(e->def_val, node_id_);
-                data = boost::make_shared<Data>(e,val, read_delegate_, write_delegate_);
+                data = boost::make_shared<Data>(key, e,val, read_delegate_, write_delegate_);
             }else{
                 if(!e->def_val.type().valid() ||  e->def_val.type() == type) {
-                    data = boost::make_shared<Data>(e,type, read_delegate_, write_delegate_);
+                    data = boost::make_shared<Data>(key,e,type, read_delegate_, write_delegate_);
                 }else{
-                    throw std::bad_cast();
+                    BOOST_THROW_EXCEPTION( std::bad_cast() );
                 }
             }
             
@@ -387,7 +392,7 @@ public:
         }
         
         if(!it->second->type_guard.is_type<T>()){
-            throw std::bad_cast();
+            BOOST_THROW_EXCEPTION( std::bad_cast() );
         }
         return Entry<T>(it->second);
     }

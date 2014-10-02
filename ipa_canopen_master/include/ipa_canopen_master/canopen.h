@@ -3,6 +3,7 @@
 
 #include <ipa_can_interface/interface.h>
 #include <ipa_can_interface/dispatcher.h>
+#include "exceptions.h"
 #include "layer.h"
 #include "objdict.h"
 #include "timer.h"
