@@ -11,6 +11,10 @@ namespace ipa_can{
 
 /** Header for CAN id an meta data*/
 struct Header{
+    static const unsigned int ERROR_MASK = (1 << 29);
+    static const unsigned int RTR_MASK = (1 << 30);
+    static const unsigned int EXTENDED_MASK = (1 << 31);
+    
     unsigned int id:29; ///< CAN ID (11 or 29 bits valid, depending on is_extended member
     unsigned int is_error:1; ///< marks an error frame (only used internally)
     unsigned int is_rtr:1; ///< frame is a remote transfer request
@@ -27,7 +31,7 @@ struct Header{
     
     Header(unsigned int i=0, bool extended = false, bool rtr = false) 
     : id(i),is_error(0),is_rtr(rtr?1:0), is_extended(extended?1:0) {}
-    operator const unsigned int() const { return *(unsigned int*) this; }
+    operator const unsigned int() const { return is_error ? (ERROR_MASK) : *(unsigned int*) this; }
 };
     
     
