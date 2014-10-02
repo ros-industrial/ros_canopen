@@ -105,7 +105,12 @@ protected:
     virtual bool handle_init(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
         LayerStatusExtended s;
-        init(s);
+        try{
+            init(s);
+        }
+        catch( const ipa_canopen::Exception &e){
+            ROS_ERROR_STREAM(boost::diagnostic_information(e));
+        }
         res.success.data = s.bounded<LayerStatus::Warn>();
         res.error_message.data = s.reason();
         if(res.success.data){

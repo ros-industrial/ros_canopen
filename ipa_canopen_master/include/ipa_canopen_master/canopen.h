@@ -182,7 +182,8 @@ public:
     virtual bool write();
     virtual void report(LayerStatusExtended &status);
     virtual bool report() { return false; } //unused
-    virtual bool init();
+    virtual void init(LayerStatusExtended &status);
+    virtual bool init() { return false; } //unused
     virtual bool recover();
     virtual bool shutdown();
     

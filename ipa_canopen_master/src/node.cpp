@@ -160,14 +160,25 @@ void Node::report(LayerStatusExtended &status){
         status.error("Heartbeat timeout");
     }
 }
-bool Node::init(){
+void Node::init(LayerStatusExtended &status){
     nmt_listener_ = interface_->createMsgListener( ipa_can::Header(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
 
     getStorage()->entry(heartbeat_, 0x1017);
     sdo_.init();
-    reset_com();
-    start();
-    return true;
+    try{
+        reset_com();
+    }
+    catch(const TimeoutException&){
+        status.error(boost::str(boost::format("cound not reset node '%1%'") % (int)node_id_));
+        return;
+    }
+
+    try{
+        start();
+    }
+    catch(const TimeoutException&){
+        status.warn(boost::str(boost::format("cound not start node '%1%'") %  (int)node_id_));
+    }
 }
 bool Node::recover(){
     return true;
