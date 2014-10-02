@@ -34,6 +34,7 @@ void IPCSyncLayer::init(LayerStatusExtended &status) {
     }
     
     sync_master_->start(status);
+    sync_listener_ = interface_->createMsgListener( properties.header_, ipa_can::CommInterface::FrameDelegate(this, &IPCSyncLayer::handleFrame));
 }
 
 // TODO: unify/combine

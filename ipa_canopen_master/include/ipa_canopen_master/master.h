@@ -254,6 +254,7 @@ public:
         if(!nodes_.empty()){
             sync_master_->disableSync();
         }
+        sync_listener_.reset();
         nodes_.clear();
         sync_master_->stop(status);
     }
