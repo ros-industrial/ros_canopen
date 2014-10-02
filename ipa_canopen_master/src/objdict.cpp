@@ -39,11 +39,11 @@ void ObjectStorage::Data::init(){
 
 void ObjectStorage::Data::reset(){
     boost::mutex::scoped_lock lock(mutex);
-    if(entry->def_val.is_empty()){
-        valid = false;
-    }else{
+    if(!entry->def_val.is_empty() && entry->def_val.type() == type_guard){
         buffer = entry->def_val.data();
         valid = true;
+    }else{
+        valid = false;
     }
 }
 
