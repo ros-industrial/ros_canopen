@@ -101,7 +101,8 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
     
     bool com_changed = check_com_changed(dict, map_index);
     if(map_changed || com_changed){
-        PDOid cur(cob_id.get_cached());
+        
+        PDOid cur(cob_id.get());
         cur.invalid = 1;
         cob_id.set(cur.get());
     }
