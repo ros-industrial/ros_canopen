@@ -14,7 +14,7 @@ struct PDOid{
         *(uint32_t*) this = val;
     }
     ipa_can::Header header() {
-        return ipa_can::Header(id, extended);
+        return ipa_can::Header(id, extended, false, false);
     }
     const uint32_t get() const { return *(uint32_t*) this; }
 };

@@ -29,10 +29,26 @@ struct Header{
         * @param[in] rtr: is rtr frame, defaults to false
         */
     
-    Header(unsigned int i=0, bool extended = false, bool rtr = false) 
-    : id(i),is_error(0),is_rtr(rtr?1:0), is_extended(extended?1:0) {}
     operator const unsigned int() const { return is_error ? (ERROR_MASK) : *(unsigned int*) this; }
+
+    Header()
+    : id(0),is_error(0),is_rtr(0), is_extended(0) {}
+    
+    Header(unsigned int i, bool extended, bool rtr, bool error)
+    : id(i),is_error(error?1:0),is_rtr(rtr?1:0), is_extended(extended?1:0) {}
 };
+
+
+struct MsgHeader : public Header{
+    MsgHeader(unsigned int i=0, bool rtr = false) : Header(i, false, rtr, false) {}
+};
+struct ExtendedHeader : public Header{
+    ExtendedHeader(unsigned int i=0, bool rtr = false) : Header(i, true, rtr, false) {}
+};
+struct ErrorHeader : public Header{
+    ErrorHeader(unsigned int i=0) : Header(i, false, false, true) {}
+};
+
     
     
 /** reprentation of a CAN frame */   
@@ -51,8 +67,8 @@ struct Frame: public Header{
      * @param[in] extended: uses 29 bit identifier, defaults to false
      * @param[in] rtr: is rtr frame, defaults to false
      */
-    Frame(const Header &h = Header(), unsigned char l = 0)
-    :Header(h), dlc(l) {}
+    Frame() : Header(), dlc(0) {}
+    Frame(const Header &h, unsigned char l = 0) : Header(h), dlc(l) {}
 };
 
 /** extended error information */

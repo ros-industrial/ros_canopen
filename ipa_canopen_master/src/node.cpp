@@ -18,7 +18,7 @@ struct NMTcommand{
     uint8_t node_id;
     
     struct Frame: public FrameOverlay<NMTcommand>{
-        Frame(uint8_t node_id, const Command &c) : FrameOverlay(ipa_can::Header(0)) {
+        Frame(uint8_t node_id, const Command &c) : FrameOverlay(ipa_can::Header()) {
             data.command = c;
             data.node_id = node_id;
         }
@@ -161,7 +161,7 @@ void Node::report(LayerStatusExtended &status){
     }
 }
 void Node::init(LayerStatusExtended &status){
-    nmt_listener_ = interface_->createMsgListener( ipa_can::Header(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
+    nmt_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
 
     getStorage()->entry(heartbeat_, 0x1017);
     sdo_.init();

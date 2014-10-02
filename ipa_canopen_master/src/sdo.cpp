@@ -26,7 +26,7 @@ struct SDOid{
         *(uint32_t*) this = val;
     }
     ipa_can::Header header() {
-        return ipa_can::Header(id, extended);
+        return ipa_can::Header(id, extended, false, false);
     }
 };
 
@@ -381,7 +381,7 @@ void SDOClient::init(){
         client_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 1).value(), storage_->node_id_)).header();
     }
     catch(...){
-        client_id = ipa_can::Header(0x600+ storage_->node_id_);
+        client_id = ipa_can::MsgHeader(0x600+ storage_->node_id_);
     }
     
     last_msg = AbortTranserRequest(client_id, 0,0,0);
@@ -392,7 +392,7 @@ void SDOClient::init(){
         server_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 2).value(), storage_->node_id_)).header();
     }
     catch(...){
-        server_id = ipa_can::Header(0x580+ storage_->node_id_);
+        server_id = ipa_can::MsgHeader(0x580+ storage_->node_id_);
     }
     listener_ = interface_->createMsgListener(server_id, ipa_can::CommInterface::FrameDelegate(this, &SDOClient::handleFrame));
 }
