@@ -128,12 +128,12 @@ public:
     virtual void read(LayerStatus &status){
         vector_type::iterator it = call<LayerStatus::Warn>(&Layer::read, status, layers.begin(), layers.end());
         LayerStatus omit(status);
-        if(it != layers.end()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it) +1);
+        if(it != layers.end()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it));
     }
     virtual void write(LayerStatus &status){
         vector_type::reverse_iterator it = call(&Layer::write, status, layers.rbegin(), layers.rend());
         LayerStatus omit(status);
-        if(it != layers.rend()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it) +1);
+        if(it != layers.rend()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it));
     }
     virtual void report(LayerStatusExtended &status){
         vector_type::iterator it = call(&Layer::report, status, layers.begin(), layers.end());
