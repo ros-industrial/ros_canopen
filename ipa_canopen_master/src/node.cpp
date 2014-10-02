@@ -40,7 +40,7 @@ void Node::reset_com(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     getStorage()->reset();
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset_Com));
-    wait_for(BootUp, boost::posix_time::seconds(10));
+    wait_for(BootUp, boost::chrono::seconds(10));
     state_ = PreOperational;
     heartbeat_.set(heartbeat_.desc().value().get<uint16_t>());
 
@@ -50,7 +50,7 @@ void Node::reset(){
     getStorage()->reset();
     
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset));
-    wait_for(BootUp, boost::posix_time::seconds(10));
+    wait_for(BootUp, boost::chrono::seconds(10));
     state_ = PreOperational;
     heartbeat_.set(heartbeat_.desc().value().get<uint16_t>());
 }
@@ -61,7 +61,7 @@ void Node::prepare(){
         // ERROR
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Prepare));
-    wait_for(PreOperational, boost::posix_time::milliseconds(heartbeat_.get_cached() * 3));
+    wait_for(PreOperational, boost::chrono::milliseconds(heartbeat_.get_cached() * 3));
 }
 void Node::start(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
@@ -75,7 +75,7 @@ void Node::start(){
         // TODO: set SYNC data
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Start));
-    wait_for(Operational, boost::posix_time::milliseconds(heartbeat_.get_cached() * 3));
+    wait_for(Operational, boost::chrono::milliseconds(heartbeat_.get_cached() * 3));
 }
 void Node::stop(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
@@ -83,7 +83,7 @@ void Node::stop(){
         // ERROR
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Stop));
-    wait_for(Stopped, boost::posix_time::milliseconds(heartbeat_.get_cached() * 3));
+    wait_for(Stopped, boost::chrono::milliseconds(heartbeat_.get_cached() * 3));
 }
 
 void Node::switchState(const uint8_t &s){
@@ -115,17 +115,17 @@ void Node::handleNMT(const ipa_can::Frame & msg){
 
 template<typename T> void Node::wait_for(const State &s, const T &timeout){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
-    boost::system_time abs_time = boost::get_system_time() + timeout;
+    time_point abs_time = get_abs_time(timeout);
     
-    if(timeout == boost::posix_time::milliseconds(0)){
-        boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+    if(timeout == boost::chrono::milliseconds(0)){
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
         switchState(s);
         boost::this_thread::yield();
     }
     
     while(s != state_)
     {
-        if(!cond.timed_wait(cond_lock,abs_time))
+        if(!cond.wait_until(cond_lock,abs_time))
         {
             if(s != state_){
                 BOOST_THROW_EXCEPTION( TimeoutException() );

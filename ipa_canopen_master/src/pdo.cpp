@@ -344,12 +344,12 @@ void PDOMapper::Buffer::write(const uint8_t* b, const size_t len){
 }
 void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
     boost::mutex::scoped_lock lock(mutex);
-    boost::system_time abs_time = boost::get_system_time() + boost::posix_time::seconds(1);
+    time_point abs_time = get_abs_time(boost::chrono::seconds(1));
     if(size != data.size()){
         BOOST_THROW_EXCEPTION( std::bad_cast() );
     }
     while(empty){
-        if(!cond.timed_wait(lock,abs_time))
+        if(!cond.wait_until(lock,abs_time))
         {
             BOOST_THROW_EXCEPTION( TimeoutException() );
         }
