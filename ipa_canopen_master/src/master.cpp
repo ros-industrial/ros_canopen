@@ -91,7 +91,7 @@ IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatusExtend
     for(SyncList::iterator it = synclist->begin(); it != synclist->end(); ++it){
         if( it->properties.header_ == properties_.header_){
             
-            if(it->properties.overflow_ != properties_.overflow_ || sync_obj->properties.period_ != properties_.period_){
+            if(it->properties.overflow_ != properties_.overflow_ || it->properties.period_ != properties_.period_){
                 status.error("sync properties mismatch");
                 return 0;
             }
