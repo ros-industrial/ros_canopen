@@ -32,7 +32,7 @@ void IPCSyncLayer::init(LayerStatusExtended &status) {
         status.warn("Nodes list was not empty");
         nodes_.clear();
     }
-    
+    last_sync_ = 0;
     sync_master_->start(status);
     sync_listener_ = interface_->createMsgListener( properties.header_, ipa_can::CommInterface::FrameDelegate(this, &IPCSyncLayer::handleFrame));
 }
