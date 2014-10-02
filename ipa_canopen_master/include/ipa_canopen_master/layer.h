@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
+
 namespace ipa_canopen{
 
 class LayerStatus{
@@ -192,20 +193,6 @@ public:
     LayerGroup(const std::string &n) : Layer(n) {}
 };
 
-template<typename Driver> class CANLayer: public SimpleLayer{ // TODO: implement Layer
-    boost::shared_ptr<Driver> driver_;
-    const std::string device_;
-    const unsigned int bitrate_;
-public:
-    CANLayer(const boost::shared_ptr<Driver> &driver, const std::string &device, const unsigned int bitrate)
-    : SimpleLayer(device + " Layer"), driver_(driver), device_(device), bitrate_(bitrate) { assert(driver_); }
-    virtual bool read() { return driver_->getState().isReady(); }
-    virtual bool write() { return driver_->getState().isReady(); }
-    virtual bool report() { return driver_->getState().isReady(); }
-    virtual bool init() { return driver_->init(device_, bitrate_); }
-    virtual bool recover() { return driver_->recover(); }
-    virtual bool shutdown() { driver_->shutdown(); return true;}
-};
 } // namespace ipa_canopen
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <ipa_canopen_master/canopen.h>
 #include <ipa_canopen_master/master.h>
+#include <ipa_canopen_master/can_layer.h>
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <cob_srvs/Trigger.h>
