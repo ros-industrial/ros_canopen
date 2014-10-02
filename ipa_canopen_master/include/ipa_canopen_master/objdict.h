@@ -120,6 +120,9 @@ public:
         const size_t hash;
         Key(const uint16_t i) : hash((i<<16)| 0xFFFF) {}
         Key(const uint16_t i, const uint8_t s): hash((i<<16)| s) {}
+        bool hasSub() const { return (hash & 0xFFFF) != 0xFFFF; }
+        uint8_t sub_index() const { return hash & 0xFFFF; }
+        uint16_t index() const { return hash  >> 16;}
         bool operator==(const Key &other) const { return hash == other.hash; }
     };
     enum Code{
@@ -256,17 +259,18 @@ protected:
     public:
         const TypeGuard type_guard;
         const boost::shared_ptr<const ObjectDict::Entry> entry;
+        const ObjectDict::Key key;
         size_t size() { boost::mutex::scoped_lock lock(mutex); return buffer.size(); }
         
-        template<typename T> Data(const boost::shared_ptr<const ObjectDict::Entry> &e, const T &val, const ReadDelegate &r, const WriteDelegate &w)
-        : valid(false), read_delegate(r), write_delegate(w), type_guard(TypeGuard::create<T>()), entry(e){
+        template<typename T> Data(const ObjectDict::Key &k, const boost::shared_ptr<const ObjectDict::Entry> &e, const T &val, const ReadDelegate &r, const WriteDelegate &w)
+        : valid(false), read_delegate(r), write_delegate(w), type_guard(TypeGuard::create<T>()), entry(e), key(k){
             assert(!r.empty());
             assert(!w.empty());
             assert(e);
             allocate<T>() = val;
         }
-        Data(const boost::shared_ptr<const ObjectDict::Entry> &e, const TypeGuard &t, const ReadDelegate &r, const WriteDelegate &w)
-        : valid(false), read_delegate(r), write_delegate(w), type_guard(t), entry(e){
+        Data(const ObjectDict::Key &k, const boost::shared_ptr<const ObjectDict::Entry> &e, const TypeGuard &t, const ReadDelegate &r, const WriteDelegate &w)
+        : valid(false), read_delegate(r), write_delegate(w), type_guard(t), entry(e), key(k){
             assert(!r.empty());
             assert(!w.empty());
             assert(e);

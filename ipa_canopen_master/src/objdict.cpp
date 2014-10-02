@@ -301,7 +301,7 @@ size_t ObjectStorage::map(const boost::shared_ptr<const ObjectDict::Entry> &e, c
             throw std::bad_cast();
         }
         
-        data = boost::make_shared<Data>(e,e->def_val.type(),read_delegate_, write_delegate_);
+        data = boost::make_shared<Data>(key, e,e->def_val.type(),read_delegate_, write_delegate_);
         
         std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
         it = ok.first;
@@ -341,7 +341,7 @@ void ObjectStorage::init_nolock(const ObjectDict::Key &key, const boost::shared_
         boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(key);
         
         if(it == storage_.end()){
-            boost::shared_ptr<Data> data = boost::make_shared<Data>(entry, entry->init_val.type(), read_delegate_, write_delegate_);
+            boost::shared_ptr<Data> data = boost::make_shared<Data>(key,entry, entry->init_val.type(), read_delegate_, write_delegate_);
             std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
             it = ok.first;
             if(!ok.second){
