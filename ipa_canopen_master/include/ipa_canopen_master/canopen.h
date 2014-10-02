@@ -9,7 +9,6 @@
 #include "timer.h"
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
-#include <boost/chrono/system_clocks.hpp>
 
 namespace ipa_canopen{
 
