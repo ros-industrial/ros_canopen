@@ -38,10 +38,10 @@ catkin_package(
 include_directories(${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 add_executable(ipa_canopen_test src/test.cpp)
-target_link_libraries(ipa_canopen_test ${catkin_LIBRARIES})
+target_link_libraries(ipa_canopen_test ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 add_executable(ipa_canopen_test_motor src/test_motor.cpp)
-target_link_libraries(ipa_canopen_test_motor ${catkin_LIBRARIES})
+target_link_libraries(ipa_canopen_test_motor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 
 #############

@@ -8,6 +8,7 @@
 #include "timer.h"
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
+#include <boost/chrono/system_clocks.hpp>
 
 namespace ipa_canopen{
 
@@ -154,7 +155,7 @@ public:
     const uint8_t node_id_;
     Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync = boost::shared_ptr<SyncCounter>());
     
-    const State& getState();
+    const State getState();
     void enterState(const State &s);
     
     const boost::shared_ptr<ObjectStorage> getStorage() { return sdo_.storage_; }
@@ -178,7 +179,8 @@ public:
 
     virtual bool read();
     virtual bool write();
-    virtual bool report();
+    virtual void report(LayerStatusExtended &status);
+    virtual bool report() { return false; } //unused
     virtual bool init();
     virtual bool recover();
     virtual bool shutdown();
@@ -205,6 +207,9 @@ private:
     SDOClient sdo_;
     //EMCYHandler emcy;
     PDOMapper pdo_;
+
+    boost::chrono::high_resolution_clock::time_point heartbeat_timeout_;
+    bool checkHeartbeat();
 };
 
 template<typename T> class Chain{

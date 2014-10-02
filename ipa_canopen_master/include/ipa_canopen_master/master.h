@@ -97,8 +97,7 @@ public:
         return lock_sync && start_sync(abs_time) && wait_done(abs_time);
     }
     scoped_mutex_lock get_lock(){
-        scoped_mutex_lock lock(master_mutex);
-        return boost::move(lock);
+        return scoped_mutex_lock(master_mutex); // well-behaved compilers won't copy (RVO)
     }
     IPCSyncWaiter() : sync_started(false), number(0) {}
 };
@@ -141,19 +140,18 @@ public:
     }
     void start(LayerStatusExtended &status){
         if(thread_){
-            status.set(status.WARN);
-            status.reason("Sync thread already running");
+            status.warn("Sync thread already running");
             return;
         }
         sync_obj_ = getSyncObject(status);
         if(sync_obj_){
             thread_.reset(new boost::thread(&IPCSyncMaster::run, this));
-        }
+        }else status.error("Sync object not found");
         
     }
     void stop(LayerStatus &status){
         if(!thread_){
-            status.set(status.ERROR);
+            status.error();
             return;
         }
         thread_->interrupt();
@@ -173,14 +171,14 @@ public:
     void wait(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.wait(sync_obj_->properties.period_);
-            status.set(ok?status.OK:status.ERROR);
-        }
+            if(!ok) status.warn();
+        }else status.error();
     }
     void notify(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.done(sync_obj_->properties.period_);
-            status.set(ok?status.OK:status.ERROR);
-        }
+            if(!ok) status.warn();
+        }else status.error();
     }
 
 private:
@@ -233,7 +231,7 @@ public:
         boost::mutex::scoped_lock lock(mutex_);
         if(!nodes_.empty()){
             if(!waitSync()){
-                status.set(status.WARN);
+                status.warn();
             }
         }
         sync_master_->wait(status);

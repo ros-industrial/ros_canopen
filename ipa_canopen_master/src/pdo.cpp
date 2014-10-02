@@ -140,7 +140,12 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
         uint8_t subs = dict(com_index, SUB_COM_NUM).value().get<uint8_t>();
         for(uint8_t i = SUB_COM_NUM+1; i <= subs; ++i){
             if(i == SUB_COM_COB_ID || i == SUB_COM_RESERVED) continue;
-            storage->init(ObjectDict::Key(com_index, i));
+            try{
+                storage->init(ObjectDict::Key(com_index, i));
+            }
+            catch (const std::out_of_range &){
+                // entry was not provided, so skip it
+            }
         }
     }
     if(map_changed){

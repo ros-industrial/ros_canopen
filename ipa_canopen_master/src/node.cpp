@@ -31,7 +31,7 @@ Node::Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boos
 : SimpleLayer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
 }
     
-const Node::State& Node::getState(){
+const Node::State Node::getState(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     return state_;
 }
@@ -105,6 +105,7 @@ void Node::switchState(const uint8_t &s){
 }
 void Node::handleNMT(const ipa_can::Frame & msg){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
+    heartbeat_timeout_ = boost::chrono::high_resolution_clock::now() + boost::chrono::milliseconds(3*heartbeat_.get_cached());
     assert(msg.dlc == 1);
     switchState(msg.data[0]);
     cond_lock.unlock();
@@ -132,8 +133,15 @@ template<typename T> void Node::wait_for(const State &s, const T &timeout){
         }
    }
 }
+bool Node::checkHeartbeat(){
+    if(!heartbeat_.get_cached()) return true; //disabled
+    boost::mutex::scoped_lock cond_lock(cond_mutex);
+    return heartbeat_timeout_ >= boost::chrono::high_resolution_clock::now();
+}
+
 
 bool Node::read(){
+    if(!checkHeartbeat()) return false;
     if(getState() != Operational) return false;
     return pdo_.read();
 }
@@ -141,8 +149,16 @@ bool Node::write(){
     if(getState() != Operational) return false;
     return pdo_.write();
 }
-bool Node::report(){
-    return true;
+
+
+void Node::report(LayerStatusExtended &status){
+    State state = getState();
+    if(state != Operational){
+        status.error("Mode not operational");
+        status.add("Node state", (int)state);
+    }else if(!checkHeartbeat()){
+        status.error("Heartbeat timeout");
+    }
 }
 bool Node::init(){
     nmt_listener_ = interface_->createMsgListener( ipa_can::Header(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
