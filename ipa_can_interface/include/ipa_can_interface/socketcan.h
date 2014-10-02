@@ -94,7 +94,7 @@ public:
             BaseClass::setDriverState(State::open);
             return true;
         }
-        return false;
+        return BaseClass::getState().isReady();
     }
     bool recover(){
         if(!BaseClass::getState().isReady()){
