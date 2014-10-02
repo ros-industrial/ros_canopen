@@ -29,7 +29,7 @@ template<> String & ObjectStorage::Data::allocate(){
 
 void ObjectStorage::Data::init(){
     boost::mutex::scoped_lock lock(mutex);
-    if(!valid || (entry->init_val.is_empty() && buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
+    if(!valid || (!entry->init_val.is_empty() && buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
         buffer = entry->init_val.data();
         valid = true;
         if(entry->writable)
