@@ -80,6 +80,8 @@ protected:
     ros::ServiceServer srv_init_;
     ros::ServiceServer srv_recover_;
     ros::ServiceServer srv_shutdown_;
+
+    time_duration update_duration_;
     
     void logState(const ipa_can::State &s){
         boost::shared_ptr<InterfaceType> interface = interface_;
@@ -97,6 +99,7 @@ protected:
             sync_->write(w);
         }
         while(ros::ok()){
+            time_point abs_time = get_abs_time(update_duration_);
             LayerStatus r,w;
             try{
                 read(r);
@@ -105,7 +108,7 @@ protected:
             catch(const ipa_canopen::Exception& e){
                 ROS_ERROR_STREAM(boost::diagnostic_information(e));
             }
-            boost::this_thread::interruption_point();
+            boost::this_thread::sleep_until(abs_time);
         }
     }
     
@@ -186,8 +189,6 @@ protected:
     bool setup_sync(){
         ros::NodeHandle sync_nh(nh_priv_,"sync");
         
-        //TODO: fallback to update_interval
-        
         int sync_ms = 0;
         int sync_overflow = 0;
         
@@ -195,6 +196,15 @@ protected:
             ROS_WARN("Sync interval was not specified, so sync is disabled per default");
         }
         
+        int update_ms = sync_ms;
+        nh_priv_.getParam("update_ms", update_ms);
+        if(update_ms == 0 || update_ms < sync_ms){
+            ROS_ERROR_STREAM("Update interval  "<< sync_ms << " is invalid");
+            return false;
+        }else{
+            update_duration_ = boost::chrono::milliseconds(update_ms);
+        }
+
         if(sync_ms < 0){
             ROS_ERROR_STREAM("Sync interval  "<< sync_ms << " is invalid");
             return false;
