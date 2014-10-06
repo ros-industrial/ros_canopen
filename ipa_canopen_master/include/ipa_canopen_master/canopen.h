@@ -35,6 +35,7 @@ class SDOClient{
     String buffer;
     size_t offset;
     size_t total;
+    bool done;
     ipa_can::Frame last_msg;
     const ipa_canopen::ObjectDict::Entry * current_entry;
     
