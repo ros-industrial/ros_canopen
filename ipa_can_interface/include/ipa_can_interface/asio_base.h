@@ -154,7 +154,7 @@ public:
             thread_.reset(new boost::thread(&ThreadedInterface::run_thread, this));
             return StateWaiter::wait_for(ipa_can::State::ready, this, boost::posix_time::seconds(1));
         }
-        return false;
+        return WrappedInterface::getState().isReady();
     }
     virtual void shutdown(){
         WrappedInterface::shutdown();

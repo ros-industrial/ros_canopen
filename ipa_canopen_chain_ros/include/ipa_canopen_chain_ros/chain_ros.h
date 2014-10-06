@@ -3,6 +3,7 @@
 
 #include <ipa_canopen_master/canopen.h>
 #include <ipa_canopen_master/master.h>
+#include <ipa_canopen_master/can_layer.h>
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <cob_srvs/Trigger.h>
@@ -82,32 +83,51 @@ protected:
     
     void logState(const ipa_can::State &s){
         boost::shared_ptr<InterfaceType> interface = interface_;
-        std::string msg =  "Undefined";
-        if(interface) interface->translateError(s.internal_error, msg);
+        std::string msg;
+        if(interface && !interface->translateError(s.internal_error, msg)) msg  =  "Undefined"; ;
         ROS_INFO_STREAM("Current state: " << s.driver_state << " device error: " << s.error_code << " internal_error: " << s.internal_error << " (" << msg << ")");
     }
     
     void run(){
 
         if(sync_){
+            LOG("SYNC");
             LayerStatus r,w;
             sync_->read(r);
             sync_->write(w);
         }
         while(ros::ok()){
             LayerStatus r,w;
-            read(r);
-            write(w);
+            try{
+                read(r);
+                write(w);
+            }
+            catch(const ipa_canopen::Exception& e){
+                ROS_ERROR_STREAM(boost::diagnostic_information(e));
+            }
             boost::this_thread::interruption_point();
         }
     }
     
     virtual bool handle_init(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
+        if(thread_){
+            res.success.data = true;
+            res.error_message.data = "already initialized";
+            return true;
+        }
         LayerStatusExtended s;
-        init(s);
-        res.success.data = s.bounded<LayerStatus::Warn>();
-        res.error_message.data = s.reason();
+        try{
+            init(s);
+            res.success.data = s.bounded<LayerStatus::Warn>();
+            res.error_message.data = s.reason();
+        }
+        catch( const ipa_canopen::Exception &e){
+            std::string info = boost::diagnostic_information(e);
+            ROS_ERROR_STREAM(info);
+            res.success.data = false;
+            res.error_message.data = info;
+        }
         if(res.success.data){
             thread_.reset(new boost::thread(&RosChain::run, this));
         }
@@ -126,11 +146,16 @@ protected:
         if(thread_){
             thread_->interrupt();
             thread_->join();
+            
+            LayerStatus s;
+            shutdown(s);
+            res.success.data = s.bounded<LayerStatus::Warn>();
+            thread_.reset();
+        }else{
+            res.success.data = false;
+            res.error_message.data = "not running";
+            
         }
-        thread_.reset();
-        LayerStatus s;
-        shutdown(s);
-        res.success.data = s.bounded<LayerStatus::Warn>();
         return true;
     }
     bool setup_bus(){
@@ -185,7 +210,7 @@ protected:
 
         if(sync_ms){
             // TODO: parse header
-            sync_ = master_->getSync(SyncProperties(ipa_can::Header(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
+            sync_ = master_->getSync(SyncProperties(ipa_can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
             
             if(!sync_ && sync_ms){
                 ROS_ERROR_STREAM("Initializing sync master failed");

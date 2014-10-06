@@ -3,12 +3,12 @@
 
 #include <ipa_can_interface/interface.h>
 #include <ipa_can_interface/dispatcher.h>
+#include "exceptions.h"
 #include "layer.h"
 #include "objdict.h"
 #include "timer.h"
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
-#include <boost/chrono/system_clocks.hpp>
 
 namespace ipa_canopen{
 
@@ -181,7 +181,8 @@ public:
     virtual bool write();
     virtual void report(LayerStatusExtended &status);
     virtual bool report() { return false; } //unused
-    virtual bool init();
+    virtual void init(LayerStatusExtended &status);
+    virtual bool init() { return false; } //unused
     virtual bool recover();
     virtual bool shutdown();
     

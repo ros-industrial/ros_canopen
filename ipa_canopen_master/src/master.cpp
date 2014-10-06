@@ -32,8 +32,9 @@ void IPCSyncLayer::init(LayerStatusExtended &status) {
         status.warn("Nodes list was not empty");
         nodes_.clear();
     }
-    
+    last_sync_ = 0;
     sync_master_->start(status);
+    sync_listener_ = interface_->createMsgListener( properties.header_, ipa_can::CommInterface::FrameDelegate(this, &IPCSyncLayer::handleFrame));
 }
 
 // TODO: unify/combine
@@ -91,7 +92,7 @@ IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatusExtend
     for(SyncList::iterator it = synclist->begin(); it != synclist->end(); ++it){
         if( it->properties.header_ == properties_.header_){
             
-            if(it->properties.overflow_ != properties_.overflow_ || sync_obj->properties.period_ != properties_.period_){
+            if(it->properties.overflow_ != properties_.overflow_ || it->properties.period_ != properties_.period_){
                 status.error("sync properties mismatch");
                 return 0;
             }
