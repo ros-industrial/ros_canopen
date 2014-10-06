@@ -180,8 +180,11 @@ void Node::init(LayerStatusExtended &status){
         status.warn(boost::str(boost::format("cound not start node '%1%'") %  (int)node_id_));
     }
 }
-bool Node::recover(){
-    return true;
+void Node::recover(LayerStatusExtended &status){
+    if(getState() != Operational){
+        init(status);
+    }
+
 }
 bool Node::shutdown(){
     stop();

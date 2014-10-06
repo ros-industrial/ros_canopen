@@ -184,7 +184,8 @@ public:
     virtual bool report() { return false; } //unused
     virtual void init(LayerStatusExtended &status);
     virtual bool init() { return false; } //unused
-    virtual bool recover();
+    virtual void recover(LayerStatusExtended &status);
+    virtual bool recover() { return false; } //unused
     virtual bool shutdown();
     
 private:
