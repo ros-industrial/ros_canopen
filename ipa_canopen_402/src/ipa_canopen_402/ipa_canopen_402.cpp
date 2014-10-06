@@ -35,6 +35,7 @@ void Node_402::read(LayerStatus &status)
   if(check_mode)
   {
     target_pos_ = ac_pos_;
+    target_vel_ = 0;
     if(operation_mode_ == operation_mode_to_set_)
     {
       check_mode = false;
@@ -146,7 +147,7 @@ void Node_402::write(LayerStatus &status)
     }
     status.warn();
   }
-  else
+  else if(state_ == Operation_Enable)
   {
     if(operation_mode_ == Profiled_Position)
     {
