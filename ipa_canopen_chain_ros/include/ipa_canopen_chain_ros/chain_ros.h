@@ -92,18 +92,11 @@ protected:
     
     void run(){
 
-        if(sync_){
-            LOG("SYNC");
-            LayerStatus r,w;
-            sync_->read(r);
-            sync_->write(w);
-        }
         while(ros::ok()){
             time_point abs_time = get_abs_time(update_duration_);
-            LayerStatus r,w;
+            LayerStatus s;
             try{
-                read(r);
-                write(w);
+                LayerStack::run(s);
             }
             catch(const ipa_canopen::Exception& e){
                 ROS_ERROR_STREAM(boost::diagnostic_information(e));
@@ -119,10 +112,11 @@ protected:
             res.error_message.data = "already initialized";
             return true;
         }
+        thread_.reset(new boost::thread(&RosChain::run, this));
         LayerStatusExtended s;
         try{
-            init(s);
-            res.success.data = s.bounded<LayerStatus::Warn>();
+            bringup(s);
+            res.success.data = s.bounded<LayerStatus::Ok>();
             res.error_message.data = s.reason();
         }
         catch( const ipa_canopen::Exception &e){
@@ -130,9 +124,12 @@ protected:
             ROS_ERROR_STREAM(info);
             res.success.data = false;
             res.error_message.data = info;
+            s.error(info);
         }
-        if(res.success.data){
-            thread_.reset(new boost::thread(&RosChain::run, this));
+        if(!s.bounded<LayerStatus::Warn>()){
+            thread_->interrupt();
+            thread_->join();
+            thread_.reset();
         }
         return true;
     }

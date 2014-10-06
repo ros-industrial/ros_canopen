@@ -124,6 +124,8 @@ public:
 };
     
 class LayerStack : public Layer, public VectorHelper<Layer>{
+    boost::mutex it_mutex_;
+    vector_type::iterator init_it_;
 public:
     virtual void read(LayerStatus &status){
         vector_type::iterator it = call<LayerStatus::Warn>(&Layer::read, status, layers.begin(), layers.end());
@@ -143,6 +145,37 @@ public:
         LayerStatus omit(status);
         if(it != layers.end()) call(&Layer::shutdown, omit, vector_type::reverse_iterator(it), layers.rend());
     }
+    virtual void bringup(LayerStatusExtended &status) {
+        vector_type::iterator it = layers.begin();
+        for(; it != layers.end(); ++it){
+            {
+                boost::mutex::scoped_lock lock(it_mutex_);
+                init_it_ = it;
+            }
+            (**it).init(status);
+            if(!status.bounded<LayerStatus::Warn>()) break;
+        }
+        LayerStatus omit(status);
+        if(it != layers.end()){
+            call(&Layer::shutdown, omit, vector_type::reverse_iterator(it), layers.rend());
+            boost::mutex::scoped_lock lock(it_mutex_);
+            init_it_ = layers.begin();
+        }
+        else{
+            boost::mutex::scoped_lock lock(it_mutex_);
+            init_it_ = layers.end();
+        }
+    }
+    virtual void run(LayerStatus &status) {
+        vector_type::iterator it = layers.begin();
+        {
+            boost::mutex::scoped_lock lock(it_mutex_);
+            it = init_it_;
+        }
+        call<LayerStatus::Warn>(&Layer::read, status, layers.begin(), it);
+        call<LayerStatus::Warn>(&Layer::write, status, vector_type::reverse_iterator(it), layers.rend());
+    }
+    
     virtual void recover(LayerStatusExtended &status){
         vector_type::iterator it = call<LayerStatus::Warn>(&Layer::recover, status, layers.begin(), layers.end());
         LayerStatus omit(status);
