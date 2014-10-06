@@ -125,7 +125,7 @@ template<typename T> void Node::wait_for(const State &s, const T &timeout){
     
     while(s != state_)
     {
-        if(!cond.wait_until(cond_lock,abs_time))
+        if(cond.wait_until(cond_lock,abs_time) == boost::cv_status::timeout)
         {
             if(s != state_){
                 BOOST_THROW_EXCEPTION( TimeoutException() );
