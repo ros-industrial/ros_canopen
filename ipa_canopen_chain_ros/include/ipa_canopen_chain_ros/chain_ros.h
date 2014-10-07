@@ -146,10 +146,10 @@ protected:
     virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
+            LayerStatus s;
+            halt(s);
             thread_->interrupt();
             thread_->join();
-            
-            LayerStatus s;
             shutdown(s);
             res.success.data = s.bounded<LayerStatus::Warn>();
             thread_.reset();
@@ -319,6 +319,11 @@ public:
     }
     virtual ~RosChain(){
         LayerStatus s;
+        halt(s);
+        if(thread_){
+            thread_->interrupt();
+            thread_->join();
+        }
         shutdown(s);
     }
 };
