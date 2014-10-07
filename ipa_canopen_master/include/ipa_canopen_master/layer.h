@@ -147,6 +147,16 @@ public:
             (**end).pending(status);
         }
     }
+    virtual void pending(LayerStatus &status){
+        vector_type::iterator end;
+        {
+            boost::mutex::scoped_lock lock(end_mutex_);
+            end = run_end_;
+        }
+        if(end != layers.end()){
+            (**end).pending(status);
+        }
+    }
     virtual void write(LayerStatus &status){
         vector_type::reverse_iterator begin;
         {
@@ -229,6 +239,9 @@ public:
 template<typename T> class LayerGroup : public Layer, public VectorHelper<T>{
     typedef VectorHelper<T> V;
 public:
+    virtual void pending(LayerStatus &status){
+        this->template call<LayerStatus::Warn>(&Layer::pending, status, this->layers.begin(), this->layers.end());
+    }
     virtual void read(LayerStatus &status){
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::read, status, this->layers.begin(), this->layers.end());
         LayerStatus omit(status);
