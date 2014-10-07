@@ -117,7 +117,7 @@ protected:
         thread_.reset(new boost::thread(&RosChain::run, this));
         LayerStatusExtended s;
         try{
-            bringup(s);
+            init(s);
             res.success.data = s.bounded<LayerStatus::Ok>();
             res.error_message.data = s.reason();
         }
