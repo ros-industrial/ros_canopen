@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
   boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
 
   LocalMaster master(argv[1], driver);
-  boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(Header(0x80), boost::posix_time::milliseconds(sync_ms), 0));
+  boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(ipa_can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), 0));
 
   boost::shared_ptr<ipa_canopen::Node> node (new Node(driver, dict, id, sync));
 
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
   LayerStatus s;
   ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x007>::type >  sup_mod;
   node->getStorage()->entry(sup_mod, 0x6502);
-  
+
   LOG("modes: " << sup_mod.get());
 
   if(sync){
@@ -114,37 +114,37 @@ int main(int argc, char *argv[])
     stack.read(r);
     stack.write(w);
     boost::this_thread::interruption_point();
-//    if(motor->getState() == motor->Ready_To_Switch_On)
-//    {
-//      break;
-//    }
+    //    if(motor->getState() == motor->Ready_To_Switch_On)
+    //    {
+    //      break;
+    //    }
     if(count > 10000000)
     {
 
       count = 0;
       flag_op = !flag_op;
     }
-////        if(flag_op)
-////        {
-////          //LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
-////          motor->enterMode(motor->Profiled_Velocity);
-////          motor->setTargetVel(-360000);
-////        }
-////        else
-////        {
-////         // LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
-////          motor->setTargetPos(1000);
-////          motor->enterMode(motor->Profiled_Position);
-////        }
-        LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos() << "Target Pos" << motor->getTargetPos());
-        if(count==1)
-        {
-          motor->setTargetPos((motor->getActualPos()));
-          motor->enterMode(motor->Interpolated_Position);
-        }
-        motor->setTargetPos((motor->getActualPos()-100));
-        //motor->setTargetPos((motor->getActualPos()+10));
-        count++;
+    ////        if(flag_op)
+    ////        {
+    ////          //LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
+    ////          motor->enterMode(motor->Profiled_Velocity);
+    ////          motor->setTargetVel(-360000);
+    ////        }
+    ////        else
+    ////        {
+    ////         // LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos());
+    ////          motor->setTargetPos(1000);
+    ////          motor->enterMode(motor->Profiled_Position);
+    ////        }
+    LOG("Current mode:" << (int)motor->getMode() << " Count: " << count << "Current Pos: " << motor->getActualPos() << "Target Pos" << motor->getTargetPos());
+    if(count==1)
+    {
+      motor->setTargetPos((motor->getActualPos()));
+      motor->enterMode(motor->Interpolated_Position);
+    }
+    motor->setTargetPos((motor->getActualPos()-100));
+    //motor->setTargetPos((motor->getActualPos()+10));
+    count++;
   }
 
   motor->turnOff();
