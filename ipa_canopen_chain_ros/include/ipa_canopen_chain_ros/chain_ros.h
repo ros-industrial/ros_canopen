@@ -99,7 +99,7 @@ protected:
                 LayerStack::run(s);
             }
             catch(const ipa_canopen::Exception& e){
-                ROS_ERROR_STREAM(boost::diagnostic_information(e));
+                ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
             }
             boost::this_thread::sleep_until(abs_time);
         }
