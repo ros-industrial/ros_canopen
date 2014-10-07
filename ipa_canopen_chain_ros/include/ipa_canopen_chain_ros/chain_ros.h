@@ -92,15 +92,17 @@ protected:
     
     void run(){
 
+        time_point abs_time = boost::chrono::high_resolution_clock::now();
         while(ros::ok()){
-            time_point abs_time = get_abs_time(update_duration_);
             LayerStatus s;
             try{
-                LayerStack::run(s);
+                read(s);
+                write(s);
             }
             catch(const ipa_canopen::Exception& e){
                 ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
             }
+            abs_time += update_duration_;
             boost::this_thread::sleep_until(abs_time);
         }
     }
