@@ -162,7 +162,7 @@ public:
                 jhw_->read();
             }else{
                 MotorNode::OperationMode m = motor_->getMode();
-                if(m != MotorNode::No_Mode) select(m);
+                if(m != MotorNode::No_Mode) return select(m);
             }
         }
         return okay;
@@ -172,7 +172,7 @@ public:
             jhw_->write();
             return true;
         }
-        return motor_->getMode() != MotorNode::No_Mode;
+        return motor_->getMode() == MotorNode::No_Mode;
     }
     virtual bool report() { return true; }
     virtual bool init() {
