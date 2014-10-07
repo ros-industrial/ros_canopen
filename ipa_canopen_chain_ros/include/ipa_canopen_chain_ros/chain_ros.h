@@ -195,20 +195,20 @@ protected:
             ROS_WARN("Sync interval was not specified, so sync is disabled per default");
         }
         
+        if(sync_ms < 0){
+            ROS_ERROR_STREAM("Sync interval  "<< sync_ms << " is invalid");
+            return false;
+        }
+        
         int update_ms = sync_ms;
-        nh_priv_.getParam("update_ms", update_ms);
-        if(update_ms == 0 || update_ms < sync_ms){
+        if(sync_ms == 0) nh_priv_.getParam("update_ms", update_ms);
+        if(update_ms == 0){
             ROS_ERROR_STREAM("Update interval  "<< sync_ms << " is invalid");
             return false;
         }else{
             update_duration_ = boost::chrono::milliseconds(update_ms);
         }
 
-        if(sync_ms < 0){
-            ROS_ERROR_STREAM("Sync interval  "<< sync_ms << " is invalid");
-            return false;
-        }
-        
         if(!sync_nh.getParam("overflow", sync_overflow)){
             ROS_WARN("Sync overflow was not specified, so overflow is disabled per default");
         }
