@@ -75,82 +75,161 @@ const double Node_402::getTargetVel()
   return target_vel_;
 }
 
+void Node_402::motorShutdown()
+{
+  control_word_bitset.reset(CW_Switch_On);
+  control_word_bitset.set(CW_Enable_Voltage);
+  control_word_bitset.set(CW_Quick_Stop);
+  control_word_bitset.reset(CW_Fault_Reset);
+  control_word_bitset.reset(CW_Enable_Operation);
+}
+
+void Node_402::motorSwitchOn()
+{
+  control_word_bitset.set(CW_Switch_On);
+  control_word_bitset.set(CW_Enable_Voltage);
+  control_word_bitset.set(CW_Quick_Stop);
+  control_word_bitset.reset(CW_Fault_Reset);
+  control_word_bitset.reset(CW_Enable_Operation);
+}
+
+void Node_402::motorSwitchOnandEnableOp()
+{
+  control_word_bitset.set(CW_Switch_On);
+  control_word_bitset.set(CW_Enable_Voltage);
+  control_word_bitset.set(CW_Quick_Stop);
+  control_word_bitset.reset(CW_Fault_Reset);
+  control_word_bitset.set(CW_Enable_Operation);
+}
+
+void Node_402::motorDisableVoltage()
+{
+    control_word_bitset.reset(CW_Switch_On);
+    control_word_bitset.reset(CW_Enable_Voltage);
+    control_word_bitset.reset(CW_Quick_Stop);
+    control_word_bitset.reset(CW_Fault_Reset);
+    control_word_bitset.reset(CW_Enable_Operation);
+}
+
+void Node_402::motorQuickStop()
+{
+  control_word_bitset.reset(CW_Switch_On);
+  control_word_bitset.set(CW_Enable_Voltage);
+  control_word_bitset.reset(CW_Quick_Stop);
+  control_word_bitset.reset(CW_Fault_Reset);
+  control_word_bitset.reset(CW_Enable_Operation);
+}
+
+void Node_402::motorDisableOp()
+{
+  control_word_bitset.set(CW_Switch_On);
+  control_word_bitset.set(CW_Enable_Voltage);
+  control_word_bitset.set(CW_Quick_Stop);
+  control_word_bitset.reset(CW_Fault_Reset);
+  control_word_bitset.reset(CW_Enable_Operation);
+}
+
+void Node_402::motorEnableOp()
+{
+  control_word_bitset.set(CW_Switch_On);
+  control_word_bitset.set(CW_Enable_Voltage);
+  control_word_bitset.set(CW_Quick_Stop);
+  control_word_bitset.reset(CW_Fault_Reset);
+  control_word_bitset.set(CW_Enable_Operation);
+}
+
+void Node_402::motorFaultReset()
+{
+  control_word_bitset.set(CW_Fault_Reset);
+  control_word_bitset.reset(CW_Switch_On);
+  control_word_bitset.reset(CW_Enable_Voltage);
+  control_word_bitset.reset(CW_Quick_Stop);
+  control_word_bitset.reset(CW_Enable_Operation);
+}
+
+
 void Node_402::write(LayerStatus &status)
 {
   if (state_ != target_state_)
   {
-    if (state_ == Fault)
+    switch(state_)
     {
-      control_word_bitset.set(CW_Fault_Reset);
-    }
-    else
-      control_word_bitset.reset(CW_Fault_Reset);
-
-    if (state_ == Not_Ready_To_Switch_On || state_ == Switch_On_Disabled)
-    {
-      // 0x06 Shutdown
-      control_word_bitset.reset(CW_Switch_On);
-      control_word_bitset.set(CW_Enable_Voltage);
-      control_word_bitset.set(CW_Quick_Stop);
-    }
-
-    else if(state_ == Ready_To_Switch_On)
-    {
-      if (target_state_ == Switch_On_Disabled)
+    case Fault:
+      motorFaultReset();
+      std::cout << "Fault" << std::endl;
+      break;
+    case Not_Ready_To_Switch_On:
+    case Switch_On_Disabled:
+      switch(target_state_)
       {
-        control_word_bitset.set(CW_Enable_Voltage);
+      case Ready_To_Switch_On:
+      case Switched_On:
+      case Operation_Enable:
+        std::cout << "Shutdown1" << std::endl;
+        motorShutdown();
+        break;
       }
-      else
+     break;
+    case Ready_To_Switch_On:
+      switch(target_state_)
       {
-        control_word_bitset.set(CW_Enable_Voltage);
-        control_word_bitset.set(CW_Switch_On);
-        control_word_bitset.set(CW_Quick_Stop);
+      case Switch_On_Disabled:
+        motorDisableVoltage();
+        break;
+      case Switched_On:
+      case Operation_Enable:
+        motorSwitchOn();
+        break;
       }
-    }
-
-    else if (state_ == Switched_On)
-    {
-      if (target_state_ == Switch_On_Disabled)
+      break;
+    case Switched_On:
+      switch(target_state_)
       {
-        control_word_bitset.reset(CW_Enable_Voltage);
+      case Switch_On_Disabled:
+        motorQuickStop();
+        break;
+      case Ready_To_Switch_On:
+        motorShutdown();
+        break;
+      case Operation_Enable:
+        motorEnableOp();
+        break;
       }
-      else if (target_state_ == Ready_To_Switch_On)
+      break;
+    case Operation_Enable:
+      switch(target_state_)
       {
-        // 0x06 Shutdown
-        control_word_bitset.reset(CW_Switch_On);
-        control_word_bitset.set(CW_Enable_Voltage);
-        control_word_bitset.set(CW_Quick_Stop);
+      case Switch_On_Disabled:
+        motorDisableVoltage();
+      case Ready_To_Switch_On:
+        motorShutdown();
+      case Quick_Stop_Active:
+        motorQuickStop();
+      case Switched_On:
+        motorDisableOp();
       }
-      else
+      break;
+    case Quick_Stop_Active:
+      switch(target_state_)
       {
-        // 0x07 Enable Operation
-        control_word_bitset.set(CW_Switch_On);
-        control_word_bitset.set(CW_Enable_Voltage);
-        control_word_bitset.set(CW_Enable_Operation);
-        control_word_bitset.set(CW_Quick_Stop);
+      case Switch_On_Disabled:
+        motorDisableVoltage();
+        break;
+      case Operation_Enable:
+        motorEnableOp();
+        break;
       }
-    }
-    else if (state_ == Operation_Enable)
-    {
-      if (target_state_ == Switch_On_Disabled)
-      {
-        control_word_bitset.reset(CW_Enable_Voltage);
-      }
-      else if (target_state_ == Ready_To_Switch_On)
-      {
-        // 0x06 Shutdown
-        control_word_bitset.reset(CW_Switch_On);
-        control_word_bitset.set(CW_Enable_Voltage);
-        control_word_bitset.set(CW_Quick_Stop);
-      }
-      //Disable operation ?
+      break;
     }
     status.warn();
   }
+
+
   else if(state_ == Operation_Enable)
   {
-    if(operation_mode_ == Profiled_Position)
+    switch(operation_mode_)
     {
+    case Profiled_Position:
       if(new_target_pos_)
       {
         control_word_bitset.reset(CW_Operation_mode_specific0);
@@ -167,27 +246,26 @@ void Node_402::write(LayerStatus &status)
         control_word_bitset.reset(CW_Operation_mode_specific1);
         control_word_bitset.reset(CW_Operation_mode_specific2);
       }
-    }
-    else if(operation_mode_ == Profiled_Velocity)
-    {
+      break;
+    case Profiled_Velocity:
       target_profiled_velocity.set(target_vel_);
       control_word_bitset.reset(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
-    }
-    else if(operation_mode_ == Interpolated_Position)
-    {
+      break;
+    case Interpolated_Position:
       target_interpolated_position.set(target_pos_);
       control_word_bitset.set(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
-    }
-    else if(operation_mode_ == Velocity)
-    {
+      break;
+    case Velocity:
       target_velocity.set(target_vel_);
       control_word_bitset.set(CW_Operation_mode_specific0);
       control_word_bitset.set(CW_Operation_mode_specific1);
       control_word_bitset.set(CW_Operation_mode_specific2);
+      break;
+
     }
   }
   int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
@@ -313,7 +391,6 @@ void Node_402::configureModeSpecificEntries()
 bool Node_402::turnOn()
 {
   target_state_ = Operation_Enable;
-
   return true;
 }
 

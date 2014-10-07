@@ -120,6 +120,15 @@ public:
   virtual void init(LayerStatusExtended &status);
   virtual void shutdown(LayerStatus &status);
 
+  void motorShutdown();
+  void motorSwitchOn();
+  void motorSwitchOnandEnableOp();
+  void motorDisableVoltage();
+  void motorQuickStop();
+  void motorDisableOp();
+  void motorEnableOp();
+  void motorFaultReset();
+
   virtual void halt(LayerStatus &status) {} // TODO
   virtual void recover(LayerStatusExtended &status);
 
