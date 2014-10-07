@@ -9,9 +9,16 @@
 #include "timer.h"
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
+#include <boost/chrono/system_clocks.hpp>
 
 namespace ipa_canopen{
 
+typedef boost::chrono::high_resolution_clock::time_point time_point;
+typedef boost::chrono::high_resolution_clock::duration time_duration;
+inline time_point get_abs_time(const time_duration& timeout) { return boost::chrono::high_resolution_clock::now() + timeout; }
+
+
+    
 template<typename T> struct FrameOverlay: public ipa_can::Frame{
     T &data;
     FrameOverlay(const Header &h) : ipa_can::Frame(h,sizeof(T)), data(*(T*) ipa_can::Frame::data.c_array()) {
