@@ -9,9 +9,16 @@
 #include "timer.h"
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
+#include <boost/chrono/system_clocks.hpp>
 
 namespace ipa_canopen{
 
+typedef boost::chrono::high_resolution_clock::time_point time_point;
+typedef boost::chrono::high_resolution_clock::duration time_duration;
+inline time_point get_abs_time(const time_duration& timeout) { return boost::chrono::high_resolution_clock::now() + timeout; }
+
+
+    
 template<typename T> struct FrameOverlay: public ipa_can::Frame{
     T &data;
     FrameOverlay(const Header &h) : ipa_can::Frame(h,sizeof(T)), data(*(T*) ipa_can::Frame::data.c_array()) {
@@ -35,6 +42,7 @@ class SDOClient{
     String buffer;
     size_t offset;
     size_t total;
+    bool done;
     ipa_can::Frame last_msg;
     const ipa_canopen::ObjectDict::Entry * current_entry;
     
@@ -183,7 +191,8 @@ public:
     virtual bool report() { return false; } //unused
     virtual void init(LayerStatusExtended &status);
     virtual bool init() { return false; } //unused
-    virtual bool recover();
+    virtual void recover(LayerStatusExtended &status);
+    virtual bool recover() { return false; } //unused
     virtual bool shutdown();
     
 private:

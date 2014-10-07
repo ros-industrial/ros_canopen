@@ -350,7 +350,7 @@ void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, String
         BOOST_THROW_EXCEPTION( std::bad_cast() );
     }
     while(empty){
-        if(!cond.wait_until(lock,abs_time))
+        if(cond.wait_until(lock,abs_time)  == boost::cv_status::timeout)
         {
             BOOST_THROW_EXCEPTION( TimeoutException() );
         }

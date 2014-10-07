@@ -366,6 +366,7 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
         notify = true;
     }
     if(notify){
+        done = true;
         cond_lock.unlock();
         cond.notify_one();
     }
@@ -398,17 +399,21 @@ void SDOClient::init(){
 }
 void SDOClient::wait_for_response(){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
-    if(!cond.timed_wait(cond_lock,boost::posix_time::seconds(1)))
-    {
-        abort(0x05040000); // SDO protocol timed out.
-        BOOST_THROW_EXCEPTION( TimeoutException() );
+    done = false;
+    time_point abs_time = get_abs_time(boost::chrono::seconds(1));
+    while(!done){
+        if(cond.wait_until(cond_lock,abs_time)  == boost::cv_status::timeout)
+        {
+            abort(0x05040000); // SDO protocol timed out.
+            break;
+        }
     }
     if(offset == 0 || offset != total){
         BOOST_THROW_EXCEPTION( TimeoutException() ); // TODO
     }
 }
 void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
-    boost::timed_mutex::scoped_lock lock(mutex, boost::posix_time::seconds(2));
+    boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
 
         buffer = data;
@@ -425,7 +430,7 @@ void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
     }
 }
 void SDOClient::write(const ipa_canopen::ObjectDict::Entry &entry, const String &data){
-    boost::timed_mutex::scoped_lock lock(mutex, boost::posix_time::seconds(2));
+    boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
         buffer = data;
         offset = 0;

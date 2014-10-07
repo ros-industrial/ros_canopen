@@ -80,6 +80,8 @@ protected:
     ros::ServiceServer srv_init_;
     ros::ServiceServer srv_recover_;
     ros::ServiceServer srv_shutdown_;
+
+    time_duration update_duration_;
     
     void logState(const ipa_can::State &s){
         boost::shared_ptr<InterfaceType> interface = interface_;
@@ -90,22 +92,18 @@ protected:
     
     void run(){
 
-        if(sync_){
-            LOG("SYNC");
-            LayerStatus r,w;
-            sync_->read(r);
-            sync_->write(w);
-        }
+        time_point abs_time = boost::chrono::high_resolution_clock::now();
         while(ros::ok()){
-            LayerStatus r,w;
+            LayerStatus s;
             try{
-                read(r);
-                write(w);
+                read(s);
+                write(s);
             }
             catch(const ipa_canopen::Exception& e){
-                ROS_ERROR_STREAM(boost::diagnostic_information(e));
+                ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
             }
-            boost::this_thread::interruption_point();
+            abs_time += update_duration_;
+            boost::this_thread::sleep_until(abs_time);
         }
     }
     
@@ -116,10 +114,11 @@ protected:
             res.error_message.data = "already initialized";
             return true;
         }
+        thread_.reset(new boost::thread(&RosChain::run, this));
         LayerStatusExtended s;
         try{
             init(s);
-            res.success.data = s.bounded<LayerStatus::Warn>();
+            res.success.data = s.bounded<LayerStatus::Ok>();
             res.error_message.data = s.reason();
         }
         catch( const ipa_canopen::Exception &e){
@@ -127,9 +126,12 @@ protected:
             ROS_ERROR_STREAM(info);
             res.success.data = false;
             res.error_message.data = info;
+            s.error(info);
         }
-        if(res.success.data){
-            thread_.reset(new boost::thread(&RosChain::run, this));
+        if(!s.bounded<LayerStatus::Warn>()){
+            thread_->interrupt();
+            thread_->join();
+            thread_.reset();
         }
         return true;
     }
@@ -144,10 +146,10 @@ protected:
     virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
+            LayerStatus s;
+            halt(s);
             thread_->interrupt();
             thread_->join();
-            
-            LayerStatus s;
             shutdown(s);
             res.success.data = s.bounded<LayerStatus::Warn>();
             thread_.reset();
@@ -186,8 +188,6 @@ protected:
     bool setup_sync(){
         ros::NodeHandle sync_nh(nh_priv_,"sync");
         
-        //TODO: fallback to update_interval
-        
         int sync_ms = 0;
         int sync_overflow = 0;
         
@@ -200,6 +200,15 @@ protected:
             return false;
         }
         
+        int update_ms = sync_ms;
+        if(sync_ms == 0) nh_priv_.getParam("update_ms", update_ms);
+        if(update_ms == 0){
+            ROS_ERROR_STREAM("Update interval  "<< sync_ms << " is invalid");
+            return false;
+        }else{
+            update_duration_ = boost::chrono::milliseconds(update_ms);
+        }
+
         if(!sync_nh.getParam("overflow", sync_overflow)){
             ROS_WARN("Sync overflow was not specified, so overflow is disabled per default");
         }
@@ -310,6 +319,11 @@ public:
     }
     virtual ~RosChain(){
         LayerStatus s;
+        halt(s);
+        if(thread_){
+            thread_->interrupt();
+            thread_->join();
+        }
         shutdown(s);
     }
 };

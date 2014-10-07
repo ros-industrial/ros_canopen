@@ -125,7 +125,7 @@ template<typename T> void Node::wait_for(const State &s, const T &timeout){
     
     while(s != state_)
     {
-        if(!cond.wait_until(cond_lock,abs_time))
+        if(cond.wait_until(cond_lock,abs_time) == boost::cv_status::timeout)
         {
             if(s != state_){
                 BOOST_THROW_EXCEPTION( TimeoutException() );
@@ -180,8 +180,11 @@ void Node::init(LayerStatusExtended &status){
         status.warn(boost::str(boost::format("cound not start node '%1%'") %  (int)node_id_));
     }
 }
-bool Node::recover(){
-    return true;
+void Node::recover(LayerStatusExtended &status){
+    if(getState() != Operational){
+        init(status);
+    }
+
 }
 bool Node::shutdown(){
     stop();
