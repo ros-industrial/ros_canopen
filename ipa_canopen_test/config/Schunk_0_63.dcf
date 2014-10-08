@@ -13,9 +13,6 @@ EDSVersion=4.0
 
 [DeviceInfo]
 VendorName=SCHUNK GmbH & Co. KG
-VendorNumber=0x00000332
-ProductNumber=0
-RevisionNumber=0
 OrderCode=0
 BaudRate_10=0
 BaudRate_20=0
@@ -1762,9 +1759,9 @@ ObjFlags=0x3
 [200B]
 ParameterName=error_details
 ObjectType=0x9
+SubNumber=4
 DataType=0x0008
 AccessType=ro
-SubNumber=4
 
 [200Bsub0]
 ParameterName=Number of entries
