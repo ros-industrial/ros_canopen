@@ -113,12 +113,16 @@ public:
 
 
   virtual void read(LayerStatus &status);
+  virtual void pending(LayerStatus &status);
   virtual void write(LayerStatus &status);
 
   virtual void report(LayerStatusExtended &status);
 
   virtual void init(LayerStatusExtended &status);
   virtual void shutdown(LayerStatus &status);
+
+  void getDeviceState();
+  void switchMode(LayerStatus &status);
 
   void motorShutdown();
   void motorSwitchOn();
@@ -159,6 +163,11 @@ private:
   State target_state_;
 
   bool new_target_pos_;
+
+  bool motor_ready_;
+
+  boost::mutex cond_mutex;
+  boost::condition_variable cond;
 
   ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  status_word;
   ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  control_word;
