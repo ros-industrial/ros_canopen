@@ -1394,6 +1394,7 @@ DataType=0x0005
 AccessType=rw
 DefaultValue=8
 PDOMapping=0
+ParameterValue=50
 
 [60C2sub2]
 ParameterName=interpolation_time_period_index
