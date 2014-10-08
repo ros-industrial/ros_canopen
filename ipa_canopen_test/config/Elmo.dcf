@@ -55,8 +55,6 @@ Line5=1. Added 100K baud to Device Information
 Line6=2. 6089,608A,608B,608D, 6093, 6094, 6095 were removed: not in use
 Line7=3. 6075, 6076, 603F  60C4 sub 6, 60FD default values were modified to 0.
 
-
-
 [MandatoryObjects]
 SupportedObjects=3
 1=0x1000
@@ -617,6 +615,7 @@ DefaultValue=$NODEID+0x200
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
+ParameterValue=$NODEID+0x200
 
 [1400sub2]
 ParameterName=Transmission Type
@@ -625,6 +624,7 @@ DataType=0x0005
 AccessType=rw
 DefaultValue=255
 PDOMapping=0
+ParameterValue=0x1
 
 [1401]
 ParameterName=Receive PDO Communication Parameter 1
@@ -683,6 +683,7 @@ DefaultValue=$NODEID+0x400
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
+ParameterValue=$NODEID+0x400
 
 [1402sub2]
 ParameterName=Transmission Type
@@ -691,6 +692,7 @@ DataType=0x0005
 AccessType=rw
 DefaultValue=255
 PDOMapping=0
+ParameterValue=0x1
 
 [1403]
 ParameterName=Receive PDO Communication Parameter 3
@@ -716,6 +718,7 @@ DefaultValue=$NODEID+0x500
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
+ParameterValue=$NODEID+0x500
 
 [1403sub2]
 ParameterName=Transmission Type
@@ -724,6 +727,7 @@ DataType=0x0005
 AccessType=rw
 DefaultValue=255
 PDOMapping=0
+ParameterValue=0x1
 
 [1600]
 ParameterName=Receive PDO Mapping Parameter 0
@@ -738,6 +742,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
+ParameterValue=2
 
 [1600sub1]
 ParameterName=PDO Mapping Entry
@@ -748,6 +753,7 @@ DefaultValue=0x60400010
 PDOMapping=0
 LowLimit=0
 HighLimit=0xFFFFFFFF
+ParameterValue=0x60400010
 
 [1600sub2]
 ParameterName=PDO Mapping Entry_2
@@ -755,6 +761,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
+ParameterValue=0x60ff0020
 
 [1600sub3]
 ParameterName=PDO Mapping Entry_3
@@ -884,6 +891,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
+ParameterValue=2
 
 [1602sub1]
 ParameterName=PDO Mapping Entry
@@ -891,6 +899,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
+ParameterValue=0x607a0020
 
 [1602sub2]
 ParameterName=PDO Mapping Entry_2
@@ -898,6 +907,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
+ParameterValue=0x60810020
 
 [1602sub3]
 ParameterName=PDO Mapping Entry_3
@@ -954,6 +964,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
+ParameterValue=2
 
 [1603sub1]
 ParameterName=PDO Mapping Entry
@@ -961,6 +972,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
+ParameterValue=0x60c10120
 
 [1603sub2]
 ParameterName=PDO Mapping Entry_2
@@ -968,6 +980,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
+ParameterValue=0x60c10220
 
 [1603sub3]
 ParameterName=PDO Mapping Entry_3
@@ -1035,6 +1048,7 @@ DefaultValue=$NODEID+0x180
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
+ParameterValue=$NODEID+0x180
 
 [1800sub2]
 ParameterName=Transmission Type
@@ -1045,6 +1059,7 @@ DefaultValue=255
 PDOMapping=0
 LowLimit=0
 HighLimit=255
+ParameterValue=0x1
 
 [1800sub3]
 ParameterName=Inhibit Time
@@ -1159,6 +1174,7 @@ DefaultValue=$NODEID+0x380
 PDOMapping=0
 LowLimit=0x00000001
 HighLimit=0xFFFFFFFF
+ParameterValue=$NODEID+0x380
 
 [1802sub2]
 ParameterName=Transmission Type
@@ -1169,6 +1185,7 @@ DefaultValue=255
 PDOMapping=0
 LowLimit=0
 HighLimit=255
+ParameterValue=0x1
 
 [1802sub3]
 ParameterName=Inhibit Time
@@ -1272,6 +1289,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
+ParameterValue=2
 
 [1A00sub1]
 ParameterName=Status Word
@@ -1282,6 +1300,7 @@ DefaultValue=0x60410010
 PDOMapping=0
 LowLimit=0
 HighLimit=0xFFFFFFFF
+ParameterValue=0x60410010
 
 [1A00sub2]
 ParameterName=PDO Mapping Entry_2
@@ -1289,6 +1308,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
+ParameterValue=0x60610008
 
 [1A00sub3]
 ParameterName=PDO Mapping Entry_3
@@ -1418,6 +1438,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
+ParameterValue=2
 
 [1A02sub1]
 ParameterName=PDO Mapping Entry
@@ -1425,6 +1446,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
+ParameterValue=0x60640020
 
 [1A02sub2]
 ParameterName=PDO Mapping Entry_2
@@ -1432,6 +1454,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
+ParameterValue=0x606c0020
 
 [1A02sub3]
 ParameterName=PDO Mapping Entry_3
@@ -4461,3 +4484,4 @@ pp=1
 pv=1
 tq=1
 vl=
+
