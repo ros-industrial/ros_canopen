@@ -79,6 +79,7 @@ protected:
     boost::mutex mutex_;
     ros::ServiceServer srv_init_;
     ros::ServiceServer srv_recover_;
+    ros::ServiceServer srv_halt_;
     ros::ServiceServer srv_shutdown_;
 
     time_duration update_duration_;
@@ -166,6 +167,19 @@ protected:
             res.success.data = false;
             res.error_message.data = "not running";
             
+        }
+        return true;
+    }
+    virtual bool handle_halt(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+        boost::mutex::scoped_lock lock(mutex_);
+        if(thread_){
+            LayerStatus s;
+            halt(s);
+            res.success.data = s.bounded<LayerStatus::Warn>();
+        }else{
+            res.success.data = false;
+            res.error_message.data = "not running";
+
         }
         return true;
     }
@@ -322,6 +336,7 @@ public:
         
         srv_init_ = nh_driver.advertiseService("init",&RosChain::handle_init, this);
         srv_recover_ = nh_driver.advertiseService("recover",&RosChain::handle_recover, this);
+        srv_halt_ = nh_driver.advertiseService("halt",&RosChain::handle_halt, this);
         srv_shutdown_ = nh_driver.advertiseService("shutdown",&RosChain::handle_shutdown, this);
         
         return setup_bus() && setup_sync() && setup_nodes();
