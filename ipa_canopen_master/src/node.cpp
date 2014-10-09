@@ -79,6 +79,7 @@ void Node::start(){
 }
 void Node::stop(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
+    if(sync_) sync_->removeNode(this);
     if(state_ == BootUp){
         // ERROR
     }
