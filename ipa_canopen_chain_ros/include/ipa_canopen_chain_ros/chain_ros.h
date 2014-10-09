@@ -135,10 +135,15 @@ protected:
     }
     virtual bool handle_recover(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
-        LayerStatusExtended s;
-        recover(s);
-        res.success.data = s.bounded<LayerStatus::Warn>();
-        res.error_message.data = s.reason();
+        if(thread_){
+            LayerStatusExtended s;
+            recover(s);
+            res.success.data = s.bounded<LayerStatus::Warn>();
+            res.error_message.data = s.reason();
+        }else{
+            res.success.data = false;
+            res.error_message.data = "not running";
+        }
         return true;
     }
     virtual void shutdown(LayerStatus &status){
