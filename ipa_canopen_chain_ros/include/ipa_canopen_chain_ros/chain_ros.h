@@ -129,9 +129,7 @@ protected:
             s.error(info);
         }
         if(!s.bounded<LayerStatus::Warn>()){
-            thread_->interrupt();
-            thread_->join();
-            thread_.reset();
+            shutdown(s);
         }
         return true;
     }
@@ -143,16 +141,22 @@ protected:
         res.error_message.data = s.reason();
         return true;
     }
+    virtual void shutdown(LayerStatus &status){
+        if(thread_){
+            halt(status);
+            thread_->interrupt();
+            thread_->join();
+            LayerStack::shutdown(status);
+            thread_.reset();
+        }
+    }
+
     virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
             LayerStatus s;
-            halt(s);
-            thread_->interrupt();
-            thread_->join();
             shutdown(s);
             res.success.data = s.bounded<LayerStatus::Warn>();
-            thread_.reset();
         }else{
             res.success.data = false;
             res.error_message.data = "not running";
@@ -318,13 +322,10 @@ public:
         return setup_bus() && setup_sync() && setup_nodes();
     }
     virtual ~RosChain(){
-        LayerStatus s;
-        halt(s);
-        if(thread_){
-            thread_->interrupt();
-            thread_->join();
-        }
-        shutdown(s);
+        try{
+            LayerStatus s;
+            shutdown(s);
+        }catch(...){ }
     }
 };
 
