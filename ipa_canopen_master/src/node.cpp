@@ -182,7 +182,12 @@ void Node::init(LayerStatusExtended &status){
 }
 void Node::recover(LayerStatusExtended &status){
     if(getState() != Operational){
-        init(status);
+        try{
+            start();
+        }
+        catch(const TimeoutException&){
+            status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
+        }
     }
 
 }
