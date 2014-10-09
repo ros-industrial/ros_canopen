@@ -177,7 +177,7 @@ void Node::init(LayerStatusExtended &status){
         start();
     }
     catch(const TimeoutException&){
-        status.warn(boost::str(boost::format("cound not start node '%1%'") %  (int)node_id_));
+        status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
     }
 }
 void Node::recover(LayerStatusExtended &status){
