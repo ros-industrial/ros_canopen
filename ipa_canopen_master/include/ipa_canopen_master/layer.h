@@ -226,10 +226,6 @@ public:
         call(&Layer::shutdown, status, layers.rbegin(), layers.rend());
     }
     virtual void halt(LayerStatus &status){
-        {
-            boost::mutex::scoped_lock lock(end_mutex_);
-            run_end_ = layers.begin();
-        }
         call(&Layer::halt, status, layers.rbegin(), layers.rend());
     }
 
