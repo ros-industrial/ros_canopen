@@ -165,8 +165,6 @@ void Node_402::report(LayerStatusExtended &status)
 
 void Node_402::recover(LayerStatusExtended &status)
 {
-  control_word_bitset.reset();
-
   motor_ready_ = false;
   time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
 
