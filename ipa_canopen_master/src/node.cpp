@@ -169,7 +169,7 @@ void Node::init(LayerStatusExtended &status){
         reset_com();
     }
     catch(const TimeoutException&){
-        status.error(boost::str(boost::format("cound not reset node '%1%'") % (int)node_id_));
+        status.error(boost::str(boost::format("could not reset node '%1%'") % (int)node_id_));
         return;
     }
 
