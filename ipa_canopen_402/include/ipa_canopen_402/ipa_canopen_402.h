@@ -18,6 +18,10 @@ public:
     status_word_mask.reset(SW_Voltage_enabled);
     status_word_mask.set(SW_Quick_stop);
     status_word_mask.set(Switch_On_Disabled);
+
+    homing_mask.set(SW_Target_reached);
+    homing_mask.set(SW_Operation_specific0);
+    homing_mask.set(SW_Operation_specific0);
   }
 
   enum StatusWord
@@ -134,7 +138,6 @@ public:
   void motorFaultReset();
 
   virtual void halt(LayerStatus &status);
-  virtual void halt(LayerStatus &status) {} // TODO
   virtual void recover(LayerStatusExtended &status);
 
   const double getActualPos();
@@ -166,6 +169,7 @@ private:
   bool new_target_pos_;
 
   bool motor_ready_;
+  bool homing_needed_;
 
   boost::mutex cond_mutex;
   boost::condition_variable cond;
@@ -174,7 +178,10 @@ private:
   ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  control_word;
   ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode_display;
   ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode;
+  ipa_canopen::ObjectStorage::Entry<int16_t>  ip_mode_sub_mode;
   ipa_canopen::ObjectStorage::Entry<uint32_t>  supported_drive_modes;
+
+  ipa_canopen::ObjectStorage::Entry<int8_t>  homing_method;
 
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_vel;
   ipa_canopen::ObjectStorage::Entry<int16_t> target_velocity;
@@ -183,6 +190,7 @@ private:
   ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_position;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_interpolated_position;
+  ipa_canopen::ObjectStorage::Entry<int32_t> target_interpolated_velocity;
   ipa_canopen::ObjectStorage::Entry<int32_t> target_profiled_velocity;
 
 
@@ -200,6 +208,7 @@ private:
   std::bitset<16> status_word_bitset;
   std::bitset<16> control_word_bitset;
   std::bitset<16> status_word_mask;
+  std::bitset<16> homing_mask;
 
   double target_vel_;
   double target_pos_;

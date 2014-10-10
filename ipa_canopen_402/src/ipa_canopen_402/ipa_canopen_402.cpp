@@ -89,8 +89,42 @@ void Node_402::pending(LayerStatus &status)
       break;
     }
     status.warn();
-    int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
-    control_word.set(cw_set);
+  }
+  else if(homing_needed_)
+  {
+    op_mode.set(Homing);
+
+    if(operation_mode_ == Homing)
+    {
+      control_word_bitset.set(CW_Operation_mode_specific0);
+
+      switch((status_word_bitset & homing_mask).to_ulong())
+      {
+      case 0b0000000000000000:
+        LOG("Homing in Progress");
+        break;
+      case 0b0000010000000000:
+        LOG("Homing not started");
+        break;
+      case 0b0001000000000000:
+        LOG("Homing attained, target not reached");
+        break;
+      case 0b0001010000000000:
+        homing_needed_ = false;
+        LOG("Homing succesful");
+        break;
+      case 0b0010000000000000:
+        LOG("Homing error , vel!=0");
+        break;
+      case 0b0010010000000000:
+        LOG("Homing error, vel!=0");
+        break;
+      case 0b0011000000000000:
+      case 0b0011010000000000:
+        LOG("Homing reserved");
+        break;
+      }
+    }
   }
   else
   {
@@ -98,6 +132,8 @@ void Node_402::pending(LayerStatus &status)
     cond_lock.unlock();
     cond.notify_one();
   }
+  int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
+  control_word.set(cw_set);
 }
 
 void Node_402::getDeviceState()
@@ -140,6 +176,17 @@ void Node_402::switchMode(LayerStatus &status)
   }
 }
 
+bool Node_402::enterMode(const OperationMode &op_mode_var)
+{
+  op_mode.set(op_mode_var);
+
+  operation_mode_to_set_ = op_mode_var;
+
+  check_mode = true;
+
+  return true;
+}
+
 void Node_402::read(LayerStatus &status)
 {
 
@@ -165,6 +212,12 @@ void Node_402::report(LayerStatusExtended &status)
 {
 
 }
+
+void Node_402::halt(LayerStatus &status)
+{
+  control_word_bitset.set(CW_Halt);
+}
+
 
 void Node_402::recover(LayerStatusExtended &status)
 {
@@ -413,17 +466,6 @@ void Node_402::setTargetPos(const double &target_pos)
   }
 }
 
-bool Node_402::enterMode(const OperationMode &op_mode_var)
-{
-  op_mode.set(op_mode_var);
-
-  operation_mode_to_set_ = op_mode_var;
-
-  check_mode = true;
-
-  return true;
-}
-
 void Node_402::configureEntries()
 {
   n_->getStorage()->entry(status_word, 0x6041);
@@ -432,6 +474,8 @@ void Node_402::configureEntries()
   n_->getStorage()->entry(op_mode,0x6060);
   n_->getStorage()->entry(op_mode_display,0x6061);
   n_->getStorage()->entry(supported_drive_modes,0x6502);
+
+  n_->getStorage()->entry(ip_mode_sub_mode,0x0C0);
 
   n_->getStorage()->entry(actual_vel,0x606C);
 
@@ -452,10 +496,17 @@ void Node_402::configureModeSpecificEntries()
   if(isModeSupported(Interpolated_Position))
   {
     n_->getStorage()->entry(target_interpolated_position,0x60C1,0x01);
+    if(ip_mode_sub_mode.get_cached() == -1)
+      n_->getStorage()->entry(target_interpolated_velocity,0x60C1,0x02);
   }
   if(isModeSupported(Velocity))
   {
     n_->getStorage()->entry(target_velocity,0x6042);
+  }
+
+  if(isModeSupported(Homing))
+  {
+    n_->getStorage()->entry(homing_method,0x6098);
   }
 }
 
@@ -474,11 +525,15 @@ bool Node_402::turnOff()
 void Node_402::init(LayerStatusExtended &s)
 {
   motor_ready_ = false;
+
   time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
 
   boost::mutex::scoped_lock cond_lock(cond_mutex);
 
   Node_402::configureModeSpecificEntries();
+
+  if(homing_method.get() != 0)
+    homing_needed_ = true;
 
   if(Node_402::turnOn())
   {

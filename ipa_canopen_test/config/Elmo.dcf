@@ -2330,6 +2330,7 @@ DefaultValue=0
 PDOMapping=0
 LowLimit=-128
 HighLimit=35
+ParameterValue=35
 
 [6099]
 ParameterName=homing_speeds
