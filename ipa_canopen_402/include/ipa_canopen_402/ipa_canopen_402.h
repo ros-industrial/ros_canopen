@@ -133,6 +133,7 @@ public:
   void motorEnableOp();
   void motorFaultReset();
 
+  virtual void halt(LayerStatus &status);
   virtual void halt(LayerStatus &status) {} // TODO
   virtual void recover(LayerStatusExtended &status);
 

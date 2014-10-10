@@ -1,15 +1,18 @@
 #include <ipa_canopen_402/ipa_canopen_402.h>
 
 using namespace ipa_canopen;
-int count=0;
 
 void Node_402::pending(LayerStatus &status)
 {
+  control_word_bitset.reset(CW_Halt);
+
   boost::mutex::scoped_lock cond_lock(cond_mutex);
   ac_pos_ = actual_pos.get();
   ac_vel_ = 0;
 
   getDeviceState();
+
+  operation_mode_ = (OperationMode) op_mode_display.get();
 
   if(check_mode)
   {
@@ -305,7 +308,6 @@ void Node_402::write(LayerStatus &status)
       }
       else if(oldpos_ != target_pos_)
       {
-        profile_velocity.set(10000);
         target_position.set(target_pos_);
         new_target_pos_ = true;
         control_word_bitset.set(CW_Operation_mode_specific0);
