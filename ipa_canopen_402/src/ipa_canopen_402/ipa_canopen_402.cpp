@@ -477,7 +477,7 @@ void Node_402::configureEntries()
   n_->getStorage()->entry(op_mode_display,0x6061);
   n_->getStorage()->entry(supported_drive_modes,0x6502);
 
-  n_->getStorage()->entry(ip_mode_sub_mode,0x0C0);
+  n_->getStorage()->entry(ip_mode_sub_mode,0x60C0);
 
   n_->getStorage()->entry(actual_vel,0x606C);
 
