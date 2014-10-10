@@ -423,9 +423,9 @@ uint32_t Node_402::getModeMask(const OperationMode &op_mode)
   case Sup_Cyclic_Synchronous_Position:
   case Sup_Cyclic_Synchronous_Velocity:
   case Sup_Cyclic_Synchronous_Torque:
+  case Sup_Homing:
     return (1<<(op_mode-1));
   case Sup_Reserved:
-  case Sup_Homing:
     return 0;
   }
   return 0;

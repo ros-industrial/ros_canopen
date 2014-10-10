@@ -22,6 +22,9 @@ public:
     homing_mask.set(SW_Target_reached);
     homing_mask.set(SW_Operation_specific0);
     homing_mask.set(SW_Operation_specific0);
+
+    homing_needed_ = false;
+    motor_ready_ = false;
   }
 
   enum StatusWord

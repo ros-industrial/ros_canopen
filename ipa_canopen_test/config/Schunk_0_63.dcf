@@ -116,7 +116,7 @@ PDOMapping=0
 ObjFlags=0
 
 [OptionalObjects]
-SupportedObjects=58
+SupportedObjects=60
 1=0x1002
 2=0x1003
 3=0x1005
@@ -166,15 +166,17 @@ SupportedObjects=58
 47=0x6081
 48=0x6083
 49=0x6086
-50=0x60B2
-51=0x60C1
-52=0x60C2
-53=0x60C3
-54=0x60C4
-55=0x60F4
-56=0x60FD
-57=0x60FE
-58=0x6502
+50=0x6098
+51=0x60B2
+52=0x60C0
+53=0x60C1
+54=0x60C2
+55=0x60C3
+56=0x60C4
+57=0x60F4
+58=0x60FD
+59=0x60FE
+60=0x6502
 
 [1002]
 ParameterName=Manufacturer Status Register
@@ -1368,12 +1370,34 @@ DataType=0x0003
 AccessType=rw
 PDOMapping=0
 
+[6098]
+ParameterName=homing_method
+ObjectType=0x7
+DataType=0x0002
+AccessType=const
+DefaultValue=0
+PDOMapping=0
+LowLimit=-128
+HighLimit=35
+ParameterValue=0
+
 [60B2]
 ParameterName=torque_offset
 ObjectType=0x7
 DataType=0x0003
 AccessType=rww
 PDOMapping=1
+
+[60C0]
+ParameterName=interpolation_sub_mode_select
+ObjectType=0x7
+DataType=0x0003
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+LowLimit=-1
+HighLimit=0
+ParameterValue=0
 
 [60C1]
 ParameterName=interpolation_data_record
