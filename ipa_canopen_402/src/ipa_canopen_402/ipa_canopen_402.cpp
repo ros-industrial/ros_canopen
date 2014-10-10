@@ -376,6 +376,8 @@ void Node_402::write(LayerStatus &status)
       break;
     case Interpolated_Position:
       target_interpolated_position.set(target_pos_);
+      if(ip_mode_sub_mode.get_cached() == -1)
+        target_interpolated_velocity.set(target_vel_);
       control_word_bitset.set(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
@@ -551,7 +553,5 @@ void Node_402::init(LayerStatusExtended &s)
       }
     }
   }
-
-
 
 }
