@@ -97,10 +97,9 @@ public:
         return lock_sync && start_sync(abs_time) && wait_done(abs_time);
     }
     scoped_mutex_lock get_lock(){
-        scoped_mutex_lock lock(master_mutex);
-        return boost::move(lock);
+        return scoped_mutex_lock(master_mutex); // well-behaved compilers won't copy (RVO)
     }
-    IPCSyncWaiter() : sync_started(false), number(0) {}
+    IPCSyncWaiter() : sync_started(0), number(0) {}
 };
 
 
@@ -139,21 +138,20 @@ public:
     : interface_(interface), sync_obj_(0)
     {
     }
-    void start(LayerStatusExtended &status){
+    void start(LayerStatus &status){
         if(thread_){
-            status.set(status.WARN);
-            status.reason("Sync thread already running");
+            status.warn("Sync thread already running");
             return;
         }
         sync_obj_ = getSyncObject(status);
         if(sync_obj_){
             thread_.reset(new boost::thread(&IPCSyncMaster::run, this));
-        }
+        }else status.error("Sync object not found");
         
     }
     void stop(LayerStatus &status){
         if(!thread_){
-            status.set(status.ERROR);
+            status.error();
             return;
         }
         thread_->interrupt();
@@ -173,18 +171,18 @@ public:
     void wait(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.wait(sync_obj_->properties.period_);
-            status.set(ok?status.OK:status.ERROR);
-        }
+            if(!ok) status.warn();
+        }else status.error();
     }
     void notify(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.done(sync_obj_->properties.period_);
-            status.set(ok?status.OK:status.ERROR);
-        }
+            if(!ok) status.warn();
+        }else status.error();
     }
 
 private:
-    virtual SyncObject * getSyncObject(LayerStatusExtended &status) = 0;
+    virtual SyncObject * getSyncObject(LayerStatus &status) = 0;
     
     boost::shared_ptr<boost::thread> thread_;
     boost::shared_ptr<ipa_can::CommInterface> interface_;
@@ -233,7 +231,7 @@ public:
         boost::mutex::scoped_lock lock(mutex_);
         if(!nodes_.empty()){
             if(!waitSync()){
-                status.set(status.WARN);
+                status.warn();
             }
         }
         sync_master_->wait(status);
@@ -248,20 +246,21 @@ public:
         sync_master_->notify(status);
     }
     
-    virtual void report(LayerStatusExtended &status) {}
-    virtual void init(LayerStatusExtended &status);
+    virtual void diag(LayerReport &report) {}
+    virtual void init(LayerStatus &status);
     virtual void shutdown(LayerStatus &status) {
         boost::mutex::scoped_lock lock(mutex_);
         
         if(!nodes_.empty()){
             sync_master_->disableSync();
         }
+        sync_listener_.reset();
         nodes_.clear();
         sync_master_->stop(status);
     }
     
     virtual void halt(LayerStatus &status) {}
-    virtual void recover(LayerStatusExtended &status) {}
+    virtual void recover(LayerStatus &status) {}
     
     virtual void addNode(void * const ptr) {
         boost::mutex::scoped_lock lock(mutex_);
@@ -284,7 +283,7 @@ public:
 
 class LocalIPCSyncMaster : public IPCSyncMaster{
     SyncObject sync_obj_;
-    virtual SyncObject * getSyncObject(LayerStatusExtended &status) { return &sync_obj_; }
+    virtual SyncObject * getSyncObject(LayerStatus &status) { return &sync_obj_; }
 public:
     bool matches(const SyncProperties &p) const { return p == sync_obj_.properties; }
     LocalIPCSyncMaster(const SyncProperties &properties, boost::shared_ptr<ipa_can::CommInterface> interface)
@@ -303,7 +302,7 @@ public:
 class SharedIPCSyncMaster : public IPCSyncMaster{
     boost::interprocess::managed_shared_memory &managed_shm_;
     const SyncProperties properties_;
-    virtual SyncObject * getSyncObject(LayerStatusExtended &status);
+    virtual SyncObject * getSyncObject(LayerStatus &status);
 public:
     bool matches(const SyncProperties &p) const { return p == properties_; }
     SharedIPCSyncMaster(boost::interprocess::managed_shared_memory &managed_shm, const SyncProperties &properties, boost::shared_ptr<ipa_can::CommInterface> interface)

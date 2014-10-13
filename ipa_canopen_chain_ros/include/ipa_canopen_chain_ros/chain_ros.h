@@ -3,6 +3,7 @@
 
 #include <ipa_canopen_master/canopen.h>
 #include <ipa_canopen_master/master.h>
+#include <ipa_canopen_master/can_layer.h>
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <cob_srvs/Trigger.h>
@@ -78,60 +79,114 @@ protected:
     boost::mutex mutex_;
     ros::ServiceServer srv_init_;
     ros::ServiceServer srv_recover_;
+    ros::ServiceServer srv_halt_;
     ros::ServiceServer srv_shutdown_;
+
+    time_duration update_duration_;
+
+    boost::weak_ptr<LayerStatus> pending_status_;
     
     void logState(const ipa_can::State &s){
         boost::shared_ptr<InterfaceType> interface = interface_;
-        std::string msg =  "Undefined";
-        if(interface) interface->translateError(s.internal_error, msg);
+        std::string msg;
+        if(interface && !interface->translateError(s.internal_error, msg)) msg  =  "Undefined"; ;
         ROS_INFO_STREAM("Current state: " << s.driver_state << " device error: " << s.error_code << " internal_error: " << s.internal_error << " (" << msg << ")");
     }
     
     void run(){
 
-        LayerStatus s;
-        if(sync_){
-            sync_->read(s);
-            s.reset();
-            sync_->write(s);
-        }
+        time_point abs_time = boost::chrono::high_resolution_clock::now();
         while(ros::ok()){
-            s.reset();
-            read(s);
-            s.reset();
-            write(s);
-            boost::this_thread::interruption_point();
+            LayerStatus s;
+            try{
+                read(s);
+                boost::shared_ptr<LayerStatus> pending_status = pending_status_.lock();
+                if(pending_status) pending(*pending_status);
+                write(s);
+            }
+            catch(const ipa_canopen::Exception& e){
+                ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
+            }
+            abs_time += update_duration_;
+            boost::this_thread::sleep_until(abs_time);
         }
     }
     
     virtual bool handle_init(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
-        LayerStatusExtended s;
-        init(s);
-        res.success.data = s.bounded(LayerStatus::WARN);
-        res.error_message.data = s.reason();
-        if(res.success.data){
-            thread_.reset(new boost::thread(&RosChain::run, this));
+        if(thread_){
+            res.success.data = true;
+            res.error_message.data = "already initialized";
+            return true;
+        }
+        thread_.reset(new boost::thread(&RosChain::run, this));
+        boost::shared_ptr<LayerStatus> pending_status(new LayerStatus);
+        pending_status_ = pending_status;
+        try{
+            init(*pending_status);
+            res.success.data = pending_status->bounded<LayerStatus::Ok>();
+            res.error_message.data = pending_status->reason();
+        }
+        catch( const ipa_canopen::Exception &e){
+            std::string info = boost::diagnostic_information(e);
+            ROS_ERROR_STREAM(info);
+            res.success.data = false;
+            res.error_message.data = info;
+            pending_status->error(info);
+        }
+        if(!pending_status->bounded<LayerStatus::Warn>()){
+            shutdown(*pending_status);
         }
         return true;
     }
     virtual bool handle_recover(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
-        LayerStatusExtended s;
-        recover(s);
-        res.success.data = s.bounded(LayerStatus::WARN);
+        if(thread_){
+            boost::shared_ptr<LayerStatus> pending_status(new LayerStatus);
+            pending_status_ = pending_status;
+            recover(*pending_status);
+            res.success.data = pending_status->bounded<LayerStatus::Warn>();
+            res.error_message.data = pending_status->reason();
+        }else{
+            res.success.data = false;
+            res.error_message.data = "not running";
+        }
         return true;
     }
+    virtual void shutdown(LayerStatus &status){
+        if(thread_){
+            halt(status);
+            thread_->interrupt();
+            thread_->join();
+            LayerStack::shutdown(status);
+            thread_.reset();
+        }
+    }
+
     virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
-            thread_->interrupt();
-            thread_->join();
+            LayerStatus s;
+            shutdown(s);
+            res.success.data = s.bounded<LayerStatus::Warn>();
+        }else{
+            res.success.data = false;
+            res.error_message.data = "not running";
+            
         }
-        thread_.reset();
-        LayerStatus s;
-        shutdown(s);
-        res.success.data = s.bounded(LayerStatus::WARN);
+        return true;
+    }
+    virtual bool handle_halt(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+        boost::mutex::scoped_lock lock(mutex_);
+        if(thread_){
+            LayerStatus s;
+            halt(s);
+            res.success.data = s.bounded<LayerStatus::Warn>();
+        }else{
+            res.success.data = false;
+            res.error_message.data = "not running";
+
+        }
         return true;
     }
     bool setup_bus(){
@@ -162,8 +217,6 @@ protected:
     bool setup_sync(){
         ros::NodeHandle sync_nh(nh_priv_,"sync");
         
-        //TODO: fallback to update_interval
-        
         int sync_ms = 0;
         int sync_overflow = 0;
         
@@ -176,6 +229,15 @@ protected:
             return false;
         }
         
+        int update_ms = sync_ms;
+        if(sync_ms == 0) nh_priv_.getParam("update_ms", update_ms);
+        if(update_ms == 0){
+            ROS_ERROR_STREAM("Update interval  "<< sync_ms << " is invalid");
+            return false;
+        }else{
+            update_duration_ = boost::chrono::milliseconds(update_ms);
+        }
+
         if(!sync_nh.getParam("overflow", sync_overflow)){
             ROS_WARN("Sync overflow was not specified, so overflow is disabled per default");
         }
@@ -186,7 +248,7 @@ protected:
 
         if(sync_ms){
             // TODO: parse header
-            sync_ = master_->getSync(SyncProperties(ipa_can::Header(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
+            sync_ = master_->getSync(SyncProperties(ipa_can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
             
             if(!sync_ && sync_ms){
                 ROS_ERROR_STREAM("Initializing sync master failed");
@@ -250,11 +312,11 @@ protected:
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         boost::mutex::scoped_lock lock(mutex_);
-        LayerStatusExtended s;
-        report(s);
-        if(s.bounded(LayerStatus::UNBOUNDED)){ // valid
-            stat.summary(s.get(), s.reason());
-            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = s.values().begin(); it != s.values().end(); ++it){
+        LayerReport r;
+        diag(r);
+        if(r.bounded<LayerStatus::Unbounded>()){ // valid
+            stat.summary(r.get(), r.reason());
+            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
                 stat.add(it->first, it->second);
             }
         }
@@ -276,17 +338,20 @@ public:
         
         diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),boost::bind(&diagnostic_updater::Updater::update, &diag_updater_));
         
-        ros::NodeHandle nh_chain(nh_, chain_name_);
+        ros::NodeHandle nh_driver(nh_, "driver");
         
-        srv_init_ = nh_chain.advertiseService("init",&RosChain::handle_init, this);
-        srv_recover_ = nh_chain.advertiseService("recover",&RosChain::handle_recover, this);
-        srv_shutdown_ = nh_chain.advertiseService("shutdown",&RosChain::handle_shutdown, this);
+        srv_init_ = nh_driver.advertiseService("init",&RosChain::handle_init, this);
+        srv_recover_ = nh_driver.advertiseService("recover",&RosChain::handle_recover, this);
+        srv_halt_ = nh_driver.advertiseService("halt",&RosChain::handle_halt, this);
+        srv_shutdown_ = nh_driver.advertiseService("shutdown",&RosChain::handle_shutdown, this);
         
         return setup_bus() && setup_sync() && setup_nodes();
     }
     virtual ~RosChain(){
-        LayerStatus s;
-        shutdown(s);
+        try{
+            LayerStatus s;
+            shutdown(s);
+        }catch(...){ }
     }
 };
 

@@ -26,15 +26,15 @@ void IPCSyncMaster::run() {
 }
 
 
-void IPCSyncLayer::init(LayerStatusExtended &status) {
+void IPCSyncLayer::init(LayerStatus &status) {
     boost::mutex::scoped_lock lock(mutex_);
     if(!nodes_.empty()){
-        status.set(LayerStatus::WARN);
-        status.reason("Nodes list was not empty");
+        status.warn("Nodes list was not empty");
         nodes_.clear();
     }
-    
+    last_sync_ = 0;
     sync_master_->start(status);
+    sync_listener_ = interface_->createMsgListener( properties.header_, ipa_can::CommInterface::FrameDelegate(this, &IPCSyncLayer::handleFrame));
 }
 
 // TODO: unify/combine
@@ -60,23 +60,21 @@ boost::shared_ptr<SyncLayer> SharedMaster::getSync(const SyncProperties &p){
     }else if(!it->second->matches(p)) return boost::shared_ptr<SyncLayer>();
     return boost::make_shared<IPCSyncLayer>(p, interface_, it->second);
 }
-IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatusExtended &status){
+IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatus &status){
     typedef boost::interprocess::allocator<SyncObject, boost::interprocess::managed_shared_memory::segment_manager>  SyncAllocator;
     typedef boost::interprocess::list<SyncObject, SyncAllocator> SyncList;
     
     boost::interprocess::interprocess_mutex  *list_mutex = managed_shm_.find_or_construct<boost::interprocess::interprocess_mutex>("SyncListMutex")();
     
     if(!list_mutex){
-        status.set(status.ERROR);
-        status.reason("Could not find/construct SyncListMutex");
+        status.error("Could not find/construct SyncListMutex");
         return 0;
     }
     
     SyncList *synclist = managed_shm_.find_or_construct<SyncList>("SyncList")(managed_shm_.get_allocator<SyncAllocator>());
     
     if(!synclist){
-        status.set(status.ERROR);
-        status.reason("Could not find/construct SyncList");
+        status.error("Could not find/construct SyncList");
         return 0;
     }
     
@@ -87,17 +85,15 @@ IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatusExtend
         
     boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(*list_mutex, abs_time);
     if(!lock){
-        status.set(LayerStatus::ERROR);
-        status.reason("Could not lock master mutex");
+        status.error("Could not lock master mutex");
         return 0;
     }
     
     for(SyncList::iterator it = synclist->begin(); it != synclist->end(); ++it){
         if( it->properties.header_ == properties_.header_){
             
-            if(it->properties.overflow_ != properties_.overflow_ || sync_obj->properties.period_ != properties_.period_){
-                status.set(LayerStatus::ERROR);
-                status.reason("sync properties mismatch");
+            if(it->properties.overflow_ != properties_.overflow_ || it->properties.period_ != properties_.period_){
+                status.error("sync properties mismatch");
                 return 0;
             }
             

@@ -29,7 +29,7 @@ template<> String & ObjectStorage::Data::allocate(){
 
 void ObjectStorage::Data::init(){
     boost::mutex::scoped_lock lock(mutex);
-    if(!valid || (entry->init_val.is_empty() && buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
+    if(!valid || (!entry->init_val.is_empty() && buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
         buffer = entry->init_val.data();
         valid = true;
         if(entry->writable)
@@ -39,11 +39,11 @@ void ObjectStorage::Data::init(){
 
 void ObjectStorage::Data::reset(){
     boost::mutex::scoped_lock lock(mutex);
-    if(entry->def_val.is_empty()){
-        valid = false;
-    }else{
+    if(!entry->def_val.is_empty() && entry->def_val.type() == type_guard){
         buffer = entry->def_val.data();
         valid = true;
+    }else{
+        valid = false;
     }
 }
 
@@ -212,13 +212,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptre
                        ReadAnyValue::read_value(pt, entry->data_type, name.substr(2)+"Value." + boost::lexical_cast<std::string>((int)i))));
                 }
             }else{
-                //subs = object->get<uint8_t>("SubNumber");
-                try{
-                    subs = pt.get<uint8_t>(name.substr(2) + "sub0.DefaultValue") + 1;
-                }
-                catch(...){
-                    subs = object->get<uint8_t>("SubNumber");
-                }
+                subs = object->get<uint8_t>("SubNumber");
                 for(uint8_t i=0; i< subs; ++i){
                    
                    parse_object(dict, pt, name + "sub" + boost::lexical_cast<std::string>((int)i), &i);
@@ -307,7 +301,7 @@ size_t ObjectStorage::map(const boost::shared_ptr<const ObjectDict::Entry> &e, c
             throw std::bad_cast();
         }
         
-        data = boost::make_shared<Data>(e,e->def_val.type(),read_delegate_, write_delegate_);
+        data = boost::make_shared<Data>(key, e,e->def_val.type(),read_delegate_, write_delegate_);
         
         std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
         it = ok.first;
@@ -347,7 +341,7 @@ void ObjectStorage::init_nolock(const ObjectDict::Key &key, const boost::shared_
         boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(key);
         
         if(it == storage_.end()){
-            boost::shared_ptr<Data> data = boost::make_shared<Data>(entry, entry->init_val.type(), read_delegate_, write_delegate_);
+            boost::shared_ptr<Data> data = boost::make_shared<Data>(key,entry, entry->init_val.type(), read_delegate_, write_delegate_);
             std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
             it = ok.first;
             if(!ok.second){

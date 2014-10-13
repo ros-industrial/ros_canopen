@@ -48,8 +48,17 @@ public:
                 close(sc);
                 return false;
             }
-
-            can_err_mask_t err_mask = ( CAN_ERR_TX_TIMEOUT | CAN_ERR_BUSOFF ); //TODO select errors to track
+            can_err_mask_t err_mask =
+                ( CAN_ERR_TX_TIMEOUT   /* TX timeout (by netdevice driver) */
+                | CAN_ERR_LOSTARB      /* lost arbitration    / data[0]    */
+                | CAN_ERR_CRTL         /* controller problems / data[1]    */
+                | CAN_ERR_PROT         /* protocol violations / data[2..3] */
+                | CAN_ERR_TRX          /* transceiver status  / data[4]    */
+                | CAN_ERR_ACK           /* received no ACK on transmission */
+                | CAN_ERR_BUSOFF        /* bus off */
+                //CAN_ERR_BUSERROR      /* bus error (may flood!) */
+                | CAN_ERR_RESTARTED     /* controller restarted */
+            ); 
 
             ret = setsockopt(sc, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
                &err_mask, sizeof(err_mask));
@@ -91,21 +100,55 @@ public:
                 close(sc);
                 return false;
             }
+            BaseClass::setInternalError(0);
             BaseClass::setDriverState(State::open);
             return true;
         }
-        return false;
+        return BaseClass::getState().isReady();
     }
     bool recover(){
-        State s = BaseClass::getState();
-        if(s.driver_state == State::open){
+        if(!BaseClass::getState().isReady()){
             BaseClass::shutdown();
             return init(device_, 0);
         }
-        return false;
+        return BaseClass::getState().isReady();
     }
     bool translateError(unsigned int internal_error, std::string & str){
-        return false; // TODO
+
+        bool ret = false;
+        if(!internal_error){
+            str = "OK";
+            ret = true;
+        }
+        if( internal_error & CAN_ERR_TX_TIMEOUT){
+            str += "TX timeout (by netdevice driver);";
+            ret = true;
+        }
+        if( internal_error & CAN_ERR_LOSTARB){
+            str += "lost arbitration;";
+            ret = true;
+        }
+        if( internal_error & CAN_ERR_CRTL){
+            str += "controller problems;";
+            ret = true;
+        }
+        if( internal_error & CAN_ERR_PROT){
+            str += "protocol violations;";
+            ret = true;
+        }
+        if( internal_error & CAN_ERR_TRX){
+            str += "transceiver status;";
+            ret = true;
+        }
+        if( internal_error & CAN_ERR_BUSOFF){
+            str += "bus off;";
+            ret = true;
+        }
+        if( internal_error & CAN_ERR_RESTARTED){
+            str += "ontroller restarted;";
+            ret = true;
+        }
+        return ret;
     }
 protected:
     std::string device_;
@@ -141,19 +184,26 @@ protected:
     
     void readFrame(const boost::system::error_code& error){
         if(!error){
-            if(frame_.can_id & CAN_ERR_FLAG){ // error message
-                // TODO
-                LOG("error");
-            }
-
-            BaseClass::input_.is_extended = frame_.can_id & CAN_EFF_FLAG;
-            BaseClass::input_.id = frame_.can_id & (BaseClass::input_.is_extended ? CAN_EFF_MASK : CAN_SFF_MASK);
-            BaseClass::input_.is_error = frame_.can_id & CAN_ERR_FLAG;
-            BaseClass::input_.is_rtr = frame_.can_id & CAN_RTR_FLAG;
             BaseClass::input_.dlc = frame_.can_dlc;
             for(int i=0;i<frame_.can_dlc && i < 8; ++i){
                 BaseClass::input_.data[i] = frame_.data[i];
             }
+            
+            if(frame_.can_id & CAN_ERR_FLAG){ // error message
+                BaseClass::input_.id = frame_.can_id & CAN_EFF_MASK;
+                BaseClass::input_.is_error = 1;
+
+                LOG("error: " << BaseClass::input_.id);
+                BaseClass::setInternalError(BaseClass::input_.id);
+                BaseClass::setDriverState(State::open); // TODO: error reset?
+
+            }else{
+                BaseClass::input_.is_extended = (frame_.can_id & CAN_EFF_FLAG) ? 1 :0;
+                BaseClass::input_.id = frame_.can_id & (BaseClass::input_.is_extended ? CAN_EFF_MASK : CAN_SFF_MASK);
+                BaseClass::input_.is_error = 0;
+                BaseClass::input_.is_rtr = (frame_.can_id & CAN_RTR_FLAG) ? 1 : 0;
+            }
+
         }
         BaseClass::frameReceived(error);
     }

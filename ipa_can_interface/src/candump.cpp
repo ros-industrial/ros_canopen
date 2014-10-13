@@ -11,7 +11,9 @@ void print_error(const State & s);
 
 void print_frame(const Frame &f){
     
-    if(f.is_extended){
+    if(f.is_error){
+        std::cout << "E " << std::hex << f.id << std::dec;
+    }else if(f.is_extended){
         std::cout << "e " << std::hex << f.id << std::dec;
     }else{
         std::cout << "s " << std::hex << f.id << std::dec;
@@ -37,7 +39,7 @@ SocketCANDriver<CommInterface::FrameDelegate, StateInterface::StateDelegate> dri
 void print_error(const State & s){
     std::string err;
     driver.translateError(s.internal_error,err);
-    std::cout << "ERROR: state=" << s.driver_state << " internal_error='" << err << "' asio: " << s.error_code << std::endl;
+    std::cout << "ERROR: state=" << s.driver_state << " internal_error=" << s.internal_error << "('" << err << "') asio: " << s.error_code << std::endl;
 }
 
 

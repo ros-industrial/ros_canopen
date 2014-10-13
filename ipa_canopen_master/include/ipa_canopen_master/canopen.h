@@ -3,14 +3,22 @@
 
 #include <ipa_can_interface/interface.h>
 #include <ipa_can_interface/dispatcher.h>
+#include "exceptions.h"
 #include "layer.h"
 #include "objdict.h"
 #include "timer.h"
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
+#include <boost/chrono/system_clocks.hpp>
 
 namespace ipa_canopen{
 
+typedef boost::chrono::high_resolution_clock::time_point time_point;
+typedef boost::chrono::high_resolution_clock::duration time_duration;
+inline time_point get_abs_time(const time_duration& timeout) { return boost::chrono::high_resolution_clock::now() + timeout; }
+
+
+    
 template<typename T> struct FrameOverlay: public ipa_can::Frame{
     T &data;
     FrameOverlay(const Header &h) : ipa_can::Frame(h,sizeof(T)), data(*(T*) ipa_can::Frame::data.c_array()) {
@@ -34,6 +42,7 @@ class SDOClient{
     String buffer;
     size_t offset;
     size_t total;
+    bool done;
     ipa_can::Frame last_msg;
     const ipa_canopen::ObjectDict::Entry * current_entry;
     
@@ -154,7 +163,7 @@ public:
     const uint8_t node_id_;
     Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync = boost::shared_ptr<SyncCounter>());
     
-    const State& getState();
+    const State getState();
     void enterState(const State &s);
     
     const boost::shared_ptr<ObjectStorage> getStorage() { return sdo_.storage_; }
@@ -178,9 +187,12 @@ public:
 
     virtual bool read();
     virtual bool write();
-    virtual bool report();
-    virtual bool init();
-    virtual bool recover();
+    virtual void diag(LayerReport &report);
+    virtual bool report() { return false; } //unused
+    virtual void init(LayerStatus &status);
+    virtual bool init() { return false; } //unused
+    virtual void recover(LayerStatus &status);
+    virtual bool recover() { return false; } //unused
     virtual bool shutdown();
     
 private:
@@ -205,6 +217,9 @@ private:
     SDOClient sdo_;
     //EMCYHandler emcy;
     PDOMapper pdo_;
+
+    boost::chrono::high_resolution_clock::time_point heartbeat_timeout_;
+    bool checkHeartbeat();
 };
 
 template<typename T> class Chain{

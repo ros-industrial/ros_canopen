@@ -1,8 +1,8 @@
-name: rig2_plate_controller
+name: rig2_controller
 
 defaults:
   eds_pkg: ipa_canopen_test
-  eds_file: "config/Whistle Gold V002.dcf"
+  eds_file: "config/Elmo.dcf"
 
 modules:
   - name: rig2_plate_joint
