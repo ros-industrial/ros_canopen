@@ -123,9 +123,9 @@ public:
   virtual void pending(LayerStatus &status);
   virtual void write(LayerStatus &status);
 
-  virtual void report(LayerStatusExtended &status);
+  virtual void report(LayerStatus &status);
 
-  virtual void init(LayerStatusExtended &status);
+  virtual void init(LayerStatus &status);
   virtual void shutdown(LayerStatus &status);
 
   void getDeviceState();
@@ -141,7 +141,7 @@ public:
   void motorFaultReset();
 
   virtual void halt(LayerStatus &status);
-  virtual void recover(LayerStatusExtended &status);
+  virtual void recover(LayerStatus &status);
 
   const double getActualPos();
   const double getActualInternalPos();

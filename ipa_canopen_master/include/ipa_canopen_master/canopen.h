@@ -187,11 +187,11 @@ public:
 
     virtual bool read();
     virtual bool write();
-    virtual void report(LayerStatusExtended &status);
+    virtual void report(LayerStatus &status);
     virtual bool report() { return false; } //unused
-    virtual void init(LayerStatusExtended &status);
+    virtual void init(LayerStatus &status);
     virtual bool init() { return false; } //unused
-    virtual void recover(LayerStatusExtended &status);
+    virtual void recover(LayerStatus &status);
     virtual bool recover() { return false; } //unused
     virtual bool shutdown();
     

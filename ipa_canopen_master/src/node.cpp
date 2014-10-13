@@ -152,7 +152,7 @@ bool Node::write(){
 }
 
 
-void Node::report(LayerStatusExtended &status){
+void Node::report(LayerStatus &status){
     State state = getState();
     if(state != Operational){
         status.error("Mode not operational");
@@ -161,7 +161,7 @@ void Node::report(LayerStatusExtended &status){
         status.error("Heartbeat timeout");
     }
 }
-void Node::init(LayerStatusExtended &status){
+void Node::init(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
 
     getStorage()->entry(heartbeat_, 0x1017);
@@ -181,7 +181,7 @@ void Node::init(LayerStatusExtended &status){
         status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
     }
 }
-void Node::recover(LayerStatusExtended &status){
+void Node::recover(LayerStatus &status){
     if(getState() != Operational){
         try{
             start();

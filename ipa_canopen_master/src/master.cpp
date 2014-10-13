@@ -26,7 +26,7 @@ void IPCSyncMaster::run() {
 }
 
 
-void IPCSyncLayer::init(LayerStatusExtended &status) {
+void IPCSyncLayer::init(LayerStatus &status) {
     boost::mutex::scoped_lock lock(mutex_);
     if(!nodes_.empty()){
         status.warn("Nodes list was not empty");
@@ -60,7 +60,7 @@ boost::shared_ptr<SyncLayer> SharedMaster::getSync(const SyncProperties &p){
     }else if(!it->second->matches(p)) return boost::shared_ptr<SyncLayer>();
     return boost::make_shared<IPCSyncLayer>(p, interface_, it->second);
 }
-IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatusExtended &status){
+IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatus &status){
     typedef boost::interprocess::allocator<SyncObject, boost::interprocess::managed_shared_memory::segment_manager>  SyncAllocator;
     typedef boost::interprocess::list<SyncObject, SyncAllocator> SyncList;
     

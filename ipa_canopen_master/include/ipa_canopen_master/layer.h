@@ -14,29 +14,6 @@ class LayerStatus{
 	void set(const State &s){
         if(s > state) state = s;
     }
-public:
-    struct Ok { static const State state = OK; private: Ok();};
-    struct Warn { static const State state = WARN; private: Warn(); };
-    struct Error { static const State state = ERROR; private: Error(); };
-    struct Stale { static const State state = STALE; private: Stale(); };
-    struct Unbounded { static const State state = UNBOUNDED; private: Unbounded(); };
-    
-    template<typename T> bool bounded() const{
-        return state <= T::state;
-    }
-    
-    LayerStatus() : state(OK) {}
-    
-    int get() const { return state; }
-    
-    const void warn() { set(WARN); }
-    const void error() { set(ERROR); }
-    const void stale() { set(STALE); }
-
-
-};
-
-class LayerStatusExtended : public LayerStatus{
     std::string reason_;
     std::vector<std::pair<std::string, std::string> > values_;
     void reason(const std::string &r){
@@ -46,13 +23,27 @@ class LayerStatusExtended : public LayerStatus{
         }
     }
 public:
+    struct Ok { static const State state = OK; private: Ok();};
+    struct Warn { static const State state = WARN; private: Warn(); };
+    struct Error { static const State state = ERROR; private: Error(); };
+    struct Stale { static const State state = STALE; private: Stale(); };
+    struct Unbounded { static const State state = UNBOUNDED; private: Unbounded(); };
+
+    template<typename T> bool bounded() const{
+        return state <= T::state;
+    }
+    
+    LayerStatus() : state(OK) {}
+    
+    int get() const { return state; }
+    
     const std::string &reason() const { return reason_; }
     const std::vector<std::pair<std::string, std::string> > &values() const { return values_; }
-    
-    const void warn(const std::string & r = "") { reason(r); LayerStatus::warn(); }
-    const void error(const std::string & r = "") { reason(r); LayerStatus::error(); }
-    const void stale(const std::string & r = "") { reason(r); LayerStatus::stale(); }
-    
+
+    const void warn(const std::string & r = "") { reason(r); set(WARN); }
+    const void error(const std::string & r = "") { reason(r); set(ERROR); }
+    const void stale(const std::string & r = "") { reason(r); set(STALE); }
+
     template<typename T> void add(const std::string &key, const T &value) {
         std::stringstream str;
         str << value;
@@ -67,13 +58,13 @@ public:
     virtual void read(LayerStatus &status) = 0;
     virtual void write(LayerStatus &status) = 0;
     
-    virtual void report(LayerStatusExtended &status) = 0;
+    virtual void report(LayerStatus &status) = 0;
     
-    virtual void init(LayerStatusExtended &status) = 0;
+    virtual void init(LayerStatus &status) = 0;
     virtual void shutdown(LayerStatus &status) = 0;
     
     virtual void halt(LayerStatus &status) {} // TODO
-    virtual void recover(LayerStatusExtended &status) = 0;
+    virtual void recover(LayerStatus &status) = 0;
     
     Layer(const std::string &n) : name(n) {}
     
@@ -88,9 +79,9 @@ public:
         
     virtual void read(LayerStatus &status) { adapt(&SimpleLayer::read, status); }
     virtual void write(LayerStatus &status) { adapt(&SimpleLayer::write, status); }
-    virtual void report(LayerStatusExtended &status) { adapt(&SimpleLayer::report, status); }
-    virtual void init(LayerStatusExtended &status) { adapt(&SimpleLayer::init, status); }
-    virtual void recover(LayerStatusExtended &status) { adapt(&SimpleLayer::recover, status); }
+    virtual void report(LayerStatus &status) { adapt(&SimpleLayer::report, status); }
+    virtual void init(LayerStatus &status) { adapt(&SimpleLayer::init, status); }
+    virtual void recover(LayerStatus &status) { adapt(&SimpleLayer::recover, status); }
     virtual void shutdown(LayerStatus &status) {  adapt(&SimpleLayer::shutdown, status); }
     
     virtual bool read()  = 0;
@@ -167,7 +158,7 @@ public:
         LayerStatus omit(status);
         if(it != layers.rend()) call(&Layer::halt, omit, begin, vector_type::reverse_iterator(it));
     }
-    virtual void report(LayerStatusExtended &status){
+    virtual void report(LayerStatus &status){
         vector_type::iterator end;
         {
             boost::mutex::scoped_lock lock(end_mutex_);
@@ -176,7 +167,7 @@ public:
         }
         vector_type::iterator it = call(&Layer::report, status, layers.begin(), end);
     }
-    virtual void init(LayerStatusExtended &status) {
+    virtual void init(LayerStatus &status) {
         vector_type::iterator it = layers.begin();
         for(; it != layers.end(); ++it){
             {
@@ -197,7 +188,7 @@ public:
             run_end_ = layers.end();
         }
     }
-    virtual void recover(LayerStatusExtended &status) {
+    virtual void recover(LayerStatus &status) {
         vector_type::iterator it = layers.begin();
         for(; it != layers.end(); ++it){
             {
@@ -248,15 +239,15 @@ public:
         LayerStatus omit(status);
         if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
     }
-    virtual void report(LayerStatusExtended &status){
+    virtual void report(LayerStatus &status){
         this->template call(&Layer::report, status, this->layers.begin(), this->layers.end());
     }
-    virtual void init(LayerStatusExtended &status) {
+    virtual void init(LayerStatus &status) {
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::init, status, this->layers.begin(), this->layers.end());
         LayerStatus omit(status);
         if(it != this->layers.end()) this->template call(&Layer::shutdown, omit, this->layers.begin(), this->layers.end());
     }
-    virtual void recover(LayerStatusExtended &status){
+    virtual void recover(LayerStatus &status){
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::recover, status, this->layers.begin(), this->layers.end());
         LayerStatus omit(status);
         if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());

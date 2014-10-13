@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   stack.add(sync);
   stack.add(node);
   stack.add(motor);
-  LayerStatusExtended es;
+  LayerStatus es;
 
   stack.init(es);
   LayerStatus s;

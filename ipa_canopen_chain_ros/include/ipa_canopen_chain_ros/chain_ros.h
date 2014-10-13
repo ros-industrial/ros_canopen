@@ -116,7 +116,7 @@ protected:
             return true;
         }
         thread_.reset(new boost::thread(&RosChain::run, this));
-        LayerStatusExtended s;
+        LayerStatus s;
         try{
             init(s);
             res.success.data = s.bounded<LayerStatus::Ok>();
@@ -137,7 +137,7 @@ protected:
     virtual bool handle_recover(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
-            LayerStatusExtended s;
+            LayerStatus s;
             recover(s);
             res.success.data = s.bounded<LayerStatus::Warn>();
             res.error_message.data = s.reason();
@@ -306,7 +306,7 @@ protected:
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         boost::mutex::scoped_lock lock(mutex_);
-        LayerStatusExtended s;
+        LayerStatus s;
         report(s);
         if(s.bounded<LayerStatus::Unbounded>()){ // valid
             stat.summary(s.get(), s.reason());

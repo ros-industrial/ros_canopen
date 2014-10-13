@@ -138,7 +138,7 @@ public:
     : interface_(interface), sync_obj_(0)
     {
     }
-    void start(LayerStatusExtended &status){
+    void start(LayerStatus &status){
         if(thread_){
             status.warn("Sync thread already running");
             return;
@@ -182,7 +182,7 @@ public:
     }
 
 private:
-    virtual SyncObject * getSyncObject(LayerStatusExtended &status) = 0;
+    virtual SyncObject * getSyncObject(LayerStatus &status) = 0;
     
     boost::shared_ptr<boost::thread> thread_;
     boost::shared_ptr<ipa_can::CommInterface> interface_;
@@ -246,8 +246,8 @@ public:
         sync_master_->notify(status);
     }
     
-    virtual void report(LayerStatusExtended &status) {}
-    virtual void init(LayerStatusExtended &status);
+    virtual void report(LayerStatus &status) {}
+    virtual void init(LayerStatus &status);
     virtual void shutdown(LayerStatus &status) {
         boost::mutex::scoped_lock lock(mutex_);
         
@@ -260,7 +260,7 @@ public:
     }
     
     virtual void halt(LayerStatus &status) {}
-    virtual void recover(LayerStatusExtended &status) {}
+    virtual void recover(LayerStatus &status) {}
     
     virtual void addNode(void * const ptr) {
         boost::mutex::scoped_lock lock(mutex_);
@@ -283,7 +283,7 @@ public:
 
 class LocalIPCSyncMaster : public IPCSyncMaster{
     SyncObject sync_obj_;
-    virtual SyncObject * getSyncObject(LayerStatusExtended &status) { return &sync_obj_; }
+    virtual SyncObject * getSyncObject(LayerStatus &status) { return &sync_obj_; }
 public:
     bool matches(const SyncProperties &p) const { return p == sync_obj_.properties; }
     LocalIPCSyncMaster(const SyncProperties &properties, boost::shared_ptr<ipa_can::CommInterface> interface)
@@ -302,7 +302,7 @@ public:
 class SharedIPCSyncMaster : public IPCSyncMaster{
     boost::interprocess::managed_shared_memory &managed_shm_;
     const SyncProperties properties_;
-    virtual SyncObject * getSyncObject(LayerStatusExtended &status);
+    virtual SyncObject * getSyncObject(LayerStatus &status);
 public:
     bool matches(const SyncProperties &p) const { return p == properties_; }
     SharedIPCSyncMaster(boost::interprocess::managed_shared_memory &managed_shm, const SyncProperties &properties, boost::shared_ptr<ipa_can::CommInterface> interface)

@@ -208,7 +208,7 @@ void Node_402::shutdown(LayerStatus &status)
 
 }
 
-void Node_402::report(LayerStatusExtended &status)
+void Node_402::report(LayerStatus &status)
 {
 
 }
@@ -219,7 +219,7 @@ void Node_402::halt(LayerStatus &status)
 }
 
 
-void Node_402::recover(LayerStatusExtended &status)
+void Node_402::recover(LayerStatus &status)
 {
   motor_ready_ = false;
   time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
@@ -524,7 +524,7 @@ bool Node_402::turnOff()
   return true;
 }
 
-void Node_402::init(LayerStatusExtended &s)
+void Node_402::init(LayerStatus &s)
 {
   motor_ready_ = false;
 

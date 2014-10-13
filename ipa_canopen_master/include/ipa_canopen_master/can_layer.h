@@ -28,7 +28,7 @@ public:
         if(!driver_->getState().isReady()) status.error();
     }
 
-    virtual void report(LayerStatusExtended &status){
+    virtual void report(LayerStatus &status){
         ipa_can::State s = driver_->getState();
         if(!s.isReady()){
             status.error("CAN layer not ready");
@@ -55,7 +55,7 @@ public:
 
     }
     
-    virtual void init(LayerStatusExtended &status){
+    virtual void init(LayerStatus &status){
         if(!driver_->init(device_, bitrate_)){
             status.error("CAN init failed");
         }else{
@@ -69,7 +69,7 @@ public:
 
     virtual void halt(LayerStatus &status) { /* nothing to do */ }
     
-    virtual void recover(LayerStatusExtended &status){
+    virtual void recover(LayerStatus &status){
         if(!driver_->recover()) status.error("driver recover failed"); // TODO: implement logging for driver
     }
 
