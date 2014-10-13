@@ -18,7 +18,6 @@ class LayerStatus{
         if(s > state) state = s;
     }
     std::string reason_;
-    std::vector<std::pair<std::string, std::string> > values_;
     void reason(const std::string &r){
         if(!r.empty()){
             boost::mutex::scoped_lock lock(write_mutex_);
@@ -40,12 +39,15 @@ public:
     int get() const { return state; }
     
     const std::string reason() const { boost::mutex::scoped_lock lock(write_mutex_); return reason_; }
-    const std::vector<std::pair<std::string, std::string> > &values() const { return values_; }
 
     const void warn(const std::string & r = "") { reason(r); set(WARN); }
     const void error(const std::string & r = "") { reason(r); set(ERROR); }
     const void stale(const std::string & r = "") { reason(r); set(STALE); }
-
+};
+class LayerReport : public LayerStatus {
+    std::vector<std::pair<std::string, std::string> > values_;
+public:
+    const std::vector<std::pair<std::string, std::string> > &values() const { return values_; }
     template<typename T> void add(const std::string &key, const T &value) {
         std::stringstream str;
         str << value;
@@ -59,7 +61,7 @@ public:
     virtual void read(LayerStatus &status) = 0;
     virtual void write(LayerStatus &status) = 0;
     
-    virtual void report(LayerStatus &status) = 0;
+    virtual void diag(LayerReport &report) = 0;
     
     virtual void init(LayerStatus &status) = 0;
     virtual void shutdown(LayerStatus &status) = 0;
@@ -80,7 +82,7 @@ public:
         
     virtual void read(LayerStatus &status) { adapt(&SimpleLayer::read, status); }
     virtual void write(LayerStatus &status) { adapt(&SimpleLayer::write, status); }
-    virtual void report(LayerStatus &status) { adapt(&SimpleLayer::report, status); }
+    virtual void diag(LayerReport &report) { adapt(&SimpleLayer::report, report); }
     virtual void init(LayerStatus &status) { adapt(&SimpleLayer::init, status); }
     virtual void recover(LayerStatus &status) { adapt(&SimpleLayer::recover, status); }
     virtual void shutdown(LayerStatus &status) {  adapt(&SimpleLayer::shutdown, status); }
@@ -184,14 +186,14 @@ public:
             call(&Layer::halt, omit, begin, vector_type::reverse_iterator(it));
         }
     }
-    virtual void report(LayerStatus &status){
+    virtual void diag(LayerReport &report){
         vector_type::iterator end;
         {
             boost::mutex::scoped_lock lock(end_mutex_);
             if(end == run_end_) return;
             end = run_end_;
         }
-        vector_type::iterator it = call(&Layer::report, status, layers.begin(), end);
+        vector_type::iterator it = call(&Layer::diag, report, layers.begin(), end);
     }
     virtual void init(LayerStatus &status) {
         bringup(&Layer::init, &Layer::shutdown, status);
@@ -233,8 +235,8 @@ public:
             this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
         }
     }
-    virtual void report(LayerStatus &status){
-        this->template call(&Layer::report, status, this->layers.begin(), this->layers.end());
+    virtual void diag(LayerReport &report){
+        this->template call(&Layer::diag, report, this->layers.begin(), this->layers.end());
     }
     virtual void init(LayerStatus &status) {
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::init, status, this->layers.begin(), this->layers.end());

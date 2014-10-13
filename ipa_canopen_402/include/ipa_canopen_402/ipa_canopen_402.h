@@ -123,7 +123,7 @@ public:
   virtual void pending(LayerStatus &status);
   virtual void write(LayerStatus &status);
 
-  virtual void report(LayerStatus &status);
+  virtual void diag(LayerReport &report);
 
   virtual void init(LayerStatus &status);
   virtual void shutdown(LayerStatus &status);

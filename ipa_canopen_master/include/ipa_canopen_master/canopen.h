@@ -187,7 +187,7 @@ public:
 
     virtual bool read();
     virtual bool write();
-    virtual void report(LayerStatus &status);
+    virtual void diag(LayerReport &report);
     virtual bool report() { return false; } //unused
     virtual void init(LayerStatus &status);
     virtual bool init() { return false; } //unused

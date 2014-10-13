@@ -208,7 +208,7 @@ void Node_402::shutdown(LayerStatus &status)
 
 }
 
-void Node_402::report(LayerStatus &status)
+void Node_402::diag(LayerReport &report)
 {
 
 }

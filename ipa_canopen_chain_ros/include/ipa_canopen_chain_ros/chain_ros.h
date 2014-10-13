@@ -312,11 +312,11 @@ protected:
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         boost::mutex::scoped_lock lock(mutex_);
-        LayerStatus s;
-        report(s);
-        if(s.bounded<LayerStatus::Unbounded>()){ // valid
-            stat.summary(s.get(), s.reason());
-            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = s.values().begin(); it != s.values().end(); ++it){
+        LayerReport r;
+        diag(r);
+        if(r.bounded<LayerStatus::Unbounded>()){ // valid
+            stat.summary(r.get(), r.reason());
+            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
                 stat.add(it->first, it->second);
             }
         }

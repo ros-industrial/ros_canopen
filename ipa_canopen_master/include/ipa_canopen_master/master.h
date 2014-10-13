@@ -246,7 +246,7 @@ public:
         sync_master_->notify(status);
     }
     
-    virtual void report(LayerStatus &status) {}
+    virtual void diag(LayerReport &report) {}
     virtual void init(LayerStatus &status);
     virtual void shutdown(LayerStatus &status) {
         boost::mutex::scoped_lock lock(mutex_);

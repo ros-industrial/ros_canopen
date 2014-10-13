@@ -28,19 +28,19 @@ public:
         if(!driver_->getState().isReady()) status.error();
     }
 
-    virtual void report(LayerStatus &status){
+    virtual void diag(LayerReport &report){
         ipa_can::State s = driver_->getState();
         if(!s.isReady()){
-            status.error("CAN layer not ready");
-            status.add("driver_state", int(s.driver_state));
+            report.error("CAN layer not ready");
+            report.add("driver_state", int(s.driver_state));
         }
         if(s.error_code){
-            status.add("socket_error", s.error_code);
+            report.add("socket_error", s.error_code);
         }
         if(s.internal_error != 0){
-            status.add("internal_error", int(s.internal_error));
+            report.add("internal_error", int(s.internal_error));
             std::string desc;
-            if(driver_->translateError(s.internal_error, desc)) status.add("internal_error_desc", desc);
+            if(driver_->translateError(s.internal_error, desc)) report.add("internal_error_desc", desc);
             std::stringstream sstr;
             sstr << std::hex;
             {
@@ -49,7 +49,7 @@ public:
                     sstr << (unsigned int) last_error_.data[i] << " ";
                 }
             }
-            status.add("can_error_frame", sstr.str());
+            report.add("can_error_frame", sstr.str());
 
         }
 

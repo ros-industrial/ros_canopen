@@ -152,13 +152,13 @@ bool Node::write(){
 }
 
 
-void Node::report(LayerStatus &status){
+void Node::diag(LayerReport &report){
     State state = getState();
     if(state != Operational){
-        status.error("Mode not operational");
-        status.add("Node state", (int)state);
+        report.error("Mode not operational");
+        report.add("Node state", (int)state);
     }else if(!checkHeartbeat()){
-        status.error("Heartbeat timeout");
+        report.error("Heartbeat timeout");
     }
 }
 void Node::init(LayerStatus &status){
