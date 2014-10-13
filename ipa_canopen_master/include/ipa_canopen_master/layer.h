@@ -52,7 +52,6 @@ public:
         values_.push_back(std::make_pair(key,str.str()));
     }
 };
-
 class Layer{
 public:
     const std::string name;
@@ -161,9 +160,6 @@ public:
         if(it != end){
             LayerStatus omit;
             call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it));
-        }
-        if(end != layers.end()){
-            (**end).pending(status);
         }
     }
     virtual void pending(LayerStatus &status){

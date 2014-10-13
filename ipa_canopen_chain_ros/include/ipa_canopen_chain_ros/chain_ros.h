@@ -83,6 +83,8 @@ protected:
     ros::ServiceServer srv_shutdown_;
 
     time_duration update_duration_;
+
+    boost::weak_ptr<LayerStatus> pending_status_;
     
     void logState(const ipa_can::State &s){
         boost::shared_ptr<InterfaceType> interface = interface_;
@@ -98,6 +100,8 @@ protected:
             LayerStatus s;
             try{
                 read(s);
+                boost::shared_ptr<LayerStatus> pending_status = pending_status_.lock();
+                if(pending_status) pending(*pending_status);
                 write(s);
             }
             catch(const ipa_canopen::Exception& e){
@@ -116,31 +120,33 @@ protected:
             return true;
         }
         thread_.reset(new boost::thread(&RosChain::run, this));
-        LayerStatus s;
+        boost::shared_ptr<LayerStatus> pending_status(new LayerStatus);
+        pending_status_ = pending_status;
         try{
-            init(s);
-            res.success.data = s.bounded<LayerStatus::Ok>();
-            res.error_message.data = s.reason();
+            init(*pending_status);
+            res.success.data = pending_status->bounded<LayerStatus::Ok>();
+            res.error_message.data = pending_status->reason();
         }
         catch( const ipa_canopen::Exception &e){
             std::string info = boost::diagnostic_information(e);
             ROS_ERROR_STREAM(info);
             res.success.data = false;
             res.error_message.data = info;
-            s.error(info);
+            pending_status->error(info);
         }
-        if(!s.bounded<LayerStatus::Warn>()){
-            shutdown(s);
+        if(!pending_status->bounded<LayerStatus::Warn>()){
+            shutdown(*pending_status);
         }
         return true;
     }
     virtual bool handle_recover(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
-            LayerStatus s;
-            recover(s);
-            res.success.data = s.bounded<LayerStatus::Warn>();
-            res.error_message.data = s.reason();
+            boost::shared_ptr<LayerStatus> pending_status(new LayerStatus);
+            pending_status_ = pending_status;
+            recover(*pending_status);
+            res.success.data = pending_status->bounded<LayerStatus::Warn>();
+            res.error_message.data = pending_status->reason();
         }else{
             res.success.data = false;
             res.error_message.data = "not running";
