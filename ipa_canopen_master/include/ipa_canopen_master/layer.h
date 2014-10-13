@@ -3,21 +3,25 @@
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include <boost/atomic.hpp>
 
 namespace ipa_canopen{
 
 class LayerStatus{
+    mutable boost::mutex write_mutex_;
     enum State{
         OK = 0, WARN = 1, ERROR= 2, STALE = 3, UNBOUNDED = 3
     };
-    State state;
-	void set(const State &s){
+    boost::atomic<State> state;
+    void set(const State &s){
+        boost::mutex::scoped_lock lock(write_mutex_);
         if(s > state) state = s;
     }
     std::string reason_;
     std::vector<std::pair<std::string, std::string> > values_;
     void reason(const std::string &r){
         if(!r.empty()){
+            boost::mutex::scoped_lock lock(write_mutex_);
             if(reason_.empty())  reason_ = r;
             else reason_ += "; " + r;
         }
@@ -29,15 +33,13 @@ public:
     struct Stale { static const State state = STALE; private: Stale(); };
     struct Unbounded { static const State state = UNBOUNDED; private: Unbounded(); };
 
-    template<typename T> bool bounded() const{
-        return state <= T::state;
-    }
+    template<typename T> bool bounded() const{ return state <= T::state; }
     
     LayerStatus() : state(OK) {}
     
     int get() const { return state; }
     
-    const std::string &reason() const { return reason_; }
+    const std::string reason() const { boost::mutex::scoped_lock lock(write_mutex_); return reason_; }
     const std::vector<std::pair<std::string, std::string> > &values() const { return values_; }
 
     const void warn(const std::string & r = "") { reason(r); set(WARN); }
