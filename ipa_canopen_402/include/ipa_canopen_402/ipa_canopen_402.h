@@ -1,7 +1,64 @@
-#ifndef H_IPA_CANOPEN_402
-#define H_IPA_CANOPEN_402
+/****************************************************************
+ *
+ * Copyright (c) 2014
+ *
+ * Fraunhofer Institute for Manufacturing Engineering
+ * and Automation (IPA)
+ *
+ * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ *
+ * Project name: ipa_canopen_402
+ * ROS stack name: ipa_canopen_402
+ * ROS package name: ipa_canopen_402
+ * Description: This class implements the CANopen device profile for
+ * drives and motion control
+ * CiA (r) 402
+ * Standardized in IEC 61800-7-201 and IEC 61800-7-301
+ *
+ * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ *
+ * Author: Thiago de Freitas, email:tdf@ipa.fhg.de
+ * Supervised by: Thiago de Freitas, email:tdf@ipa.fhg.de
+ *
+ * Date of creation: July 2014
+ *
+ * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Fraunhofer Institute for Manufacturing
+ *       Engineering and Automation (IPA) nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License LGPL as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License LGPL for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License LGPL along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ *
+ ****************************************************************/
+
+#ifndef IPA_CANOPEN_402_IPA_CANOPEN_402_H
+#define IPA_CANOPEN_402_IPA_CANOPEN_402_H
 
 #include <ipa_canopen_master/canopen.h>
+#include <string>
+#include <vector>
 
 namespace ipa_canopen
 {
@@ -21,7 +78,7 @@ public:
 
     homing_mask.set(SW_Target_reached);
     homing_mask.set(SW_Operation_specific0);
-    homing_mask.set(SW_Operation_specific0);
+    homing_mask.set(SW_Operation_specific1);
 
     homing_needed_ = false;
     motor_ready_ = false;
@@ -29,42 +86,42 @@ public:
 
   enum StatusWord
   {
-    SW_Ready_To_Switch_On,
-    SW_Switched_On,
-    SW_Operation_enabled,
-    SW_Fault,
-    SW_Voltage_enabled,
-    SW_Quick_stop,
-    SW_Switch_on_disabled,
-    SW_Warning,
-    SW_Manufacturer_specific0,
-    SW_Remote,
-    SW_Target_reached,
-    SW_Internal_limit,
-    SW_Operation_specific0,
-    SW_Operation_specific1,
-    SW_Manufacturer_specific1,
-    SW_Manufacturer_specific2
+    SW_Ready_To_Switch_On=0,
+    SW_Switched_On=1,
+    SW_Operation_enabled=2,
+    SW_Fault=3,
+    SW_Voltage_enabled=4,
+    SW_Quick_stop=5,
+    SW_Switch_on_disabled=6,
+    SW_Warning=7,
+    SW_Manufacturer_specific0=8,
+    SW_Remote=9,
+    SW_Target_reached=10,
+    SW_Internal_limit=11,
+    SW_Operation_specific0=12,
+    SW_Operation_specific1=13,
+    SW_Manufacturer_specific1=14,
+    SW_Manufacturer_specific2=15
   };
 
   enum ControlWord
   {
-    CW_Switch_On,
-    CW_Enable_Voltage,
-    CW_Quick_Stop,
-    CW_Enable_Operation,
-    CW_Operation_mode_specific0,
-    CW_Operation_mode_specific1,
-    CW_Operation_mode_specific2,
-    CW_Fault_Reset,
-    CW_Halt,
-    CW_Reserved0,
-    CW_Reserved1,
-    CW_Manufacturer_specific0,
-    CW_Manufacturer_specific1,
-    CW_Manufacturer_specific2,
-    CW_Manufacturer_specific3,
-    CW_Manufacturer_specific4,
+    CW_Switch_On=0,
+    CW_Enable_Voltage=1,
+    CW_Quick_Stop=2,
+    CW_Enable_Operation=3,
+    CW_Operation_mode_specific0=4,
+    CW_Operation_mode_specific1=5,
+    CW_Operation_mode_specific2=6,
+    CW_Fault_Reset=7,
+    CW_Halt=8,
+    CW_Reserved0=9,
+    CW_Reserved1=10,
+    CW_Manufacturer_specific0=11,
+    CW_Manufacturer_specific1=12,
+    CW_Manufacturer_specific2=13,
+    CW_Manufacturer_specific3=14,
+    CW_Manufacturer_specific4=15,
   };
 
   enum OperationMode
@@ -74,7 +131,7 @@ public:
     Velocity = 2,
     Profiled_Velocity = 3,
     Profiled_Torque = 4,
-    Reserved=5,
+    Reserved = 5,
     Homing = 6,
     Interpolated_Position = 7,
     Cyclic_Synchronous_Position = 8,
@@ -98,15 +155,15 @@ public:
 
   enum State
   {
-    Start=0,
-    Not_Ready_To_Switch_On=1,
-    Switch_On_Disabled=2,
-    Ready_To_Switch_On=3,
-    Switched_On=4,
-    Operation_Enable=5,
-    Quick_Stop_Active=6,
-    Fault_Reaction_Active=7,
-    Fault=8,
+    Start = 0,
+    Not_Ready_To_Switch_On = 1,
+    Switch_On_Disabled = 2,
+    Ready_To_Switch_On = 3,
+    Switched_On = 4,
+    Operation_Enable = 5,
+    Quick_Stop_Active = 6,
+    Fault_Reaction_Active = 7,
+    Fault = 8,
   };
 
   const OperationMode getMode();
@@ -128,7 +185,7 @@ public:
   virtual void init(LayerStatus &status);
   virtual void shutdown(LayerStatus &status);
 
-  void getDeviceState();
+  void getDeviceState(LayerStatus &status);
   void switchMode(LayerStatus &status);
 
   void motorShutdown();
@@ -151,11 +208,14 @@ public:
 
   void setTargetPos(const double &target_pos);
   void setTargetVel(const double &target_vel);
-  void setTargetEff(const double &v) {} //TODO
+  void setTargetEff(const double &v) {}  // TODO(thiagodefreitas)
 
   const double getTargetPos();
   const double getTargetVel();
-  const double getTargetEff()  { return 0; } // TODO
+  const double getTargetEff()
+  {
+    return 0;  // TODO(thiagodefreitas)
+  }
 
   bool turnOn();
   bool turnOff();
@@ -217,7 +277,6 @@ private:
   double target_pos_;
 
   std::vector<int> control_word_buffer;
-
 };
 }  //  namespace ipa_canopen
-#endif  // H_IPA_CANOPEN_402
+#endif  // IPA_CANOPEN_402_IPA_CANOPEN_402_H
