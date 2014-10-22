@@ -133,8 +133,6 @@ protected:
             res.success.data = false;
             res.error_message.data = info;
             pending_status->error(info);
-        }
-        if(!pending_status->bounded<LayerStatus::Warn>()){
             shutdown(*pending_status);
         }
         return true;
