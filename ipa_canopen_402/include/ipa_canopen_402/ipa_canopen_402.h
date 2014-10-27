@@ -82,6 +82,7 @@ public:
 
     homing_needed_ = false;
     motor_ready_ = false;
+    configure_drive_ = false;
   }
 
   enum StatusWord
@@ -277,6 +278,10 @@ private:
   double target_pos_;
 
   std::vector<int> control_word_buffer;
+
+  void driveSettings();
+
+  bool configure_drive_;
 };
 }  //  namespace ipa_canopen
 #endif  // IPA_CANOPEN_402_IPA_CANOPEN_402_H

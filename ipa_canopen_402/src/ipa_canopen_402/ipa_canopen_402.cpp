@@ -65,6 +65,10 @@ void Node_402::pending(LayerStatus &status)
   ac_pos_ = actual_pos.get();
   ac_vel_ = 0;
 
+  target_pos_ = ac_pos_;
+  target_vel_ = ac_vel_;
+
+
   getDeviceState(status);
 
   operation_mode_ = (OperationMode) op_mode_display.get();
@@ -143,19 +147,18 @@ void Node_402::pending(LayerStatus &status)
       }
       break;
     }
-    status.warn();
   }
   else if (homing_needed_)
   {
-    op_mode.set(Homing);
-
-    if (operation_mode_ == Homing)
+    if (operation_mode_ != Homing)
+      op_mode.set(Homing);
+    else
     {
       control_word_bitset.set(CW_Operation_mode_specific0);
 
       switch ((status_word_bitset & homing_mask).to_ulong())
       {
-      //-------------------------------------------------------------
+      //-------------------------------------------------------------//
       // Op_specific1 | Op_specific0 | Target_reached | Description |
       // ------------ | ------------ | -------------- | ----------- |
       //       0      |       0      |         0      | In Progress |
@@ -166,7 +169,7 @@ void Node_402::pending(LayerStatus &status)
       //       1      |       0      |         1      | Hom.Error, vel=0 |
       //       1      |       1      |         0      | Hom.Reserved |
       //       1      |       1      |         1      | Hom.Reserved |
-      //-------------------------------------------------------------
+      //-------------------------------------------------------------//
       case 0:
         LOG("Homing in Progress");
         break;
@@ -195,11 +198,21 @@ void Node_402::pending(LayerStatus &status)
       }
     }
   }
-  else
+  else if(state_ == Operation_Enable)
   {
-    motor_ready_ = true;
-    cond_lock.unlock();
-    cond.notify_one();
+    if(configure_drive_)
+    {
+      //boost::this_thread::sleep_for( boost::chrono::milliseconds(100) );
+
+      //driveSettings();
+      configure_drive_ = false;
+    }
+    else
+    {
+      motor_ready_ = true;
+      cond_lock.unlock();
+      cond.notify_one();
+    }
   }
   int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
   control_word.set(cw_set);
@@ -362,6 +375,8 @@ void Node_402::motorSwitchOnandEnableOp()
   control_word_bitset.reset(CW_Operation_mode_specific0);
   control_word_bitset.reset(CW_Operation_mode_specific1);
   control_word_bitset.reset(CW_Operation_mode_specific2);
+
+  configure_drive_ = true;
 }
 
 void Node_402::motorDisableVoltage()
@@ -410,6 +425,8 @@ void Node_402::motorEnableOp()
   control_word_bitset.reset(CW_Operation_mode_specific0);
   control_word_bitset.reset(CW_Operation_mode_specific1);
   control_word_bitset.reset(CW_Operation_mode_specific2);
+
+  configure_drive_ = true;
 }
 
 void Node_402::motorFaultReset()
@@ -424,8 +441,7 @@ void Node_402::motorFaultReset()
   control_word_bitset.reset(CW_Operation_mode_specific2);
 }
 
-
-void Node_402::write(LayerStatus &status)
+void Node_402::driveSettings()
 {
   if (state_ == Operation_Enable)
   {
@@ -470,6 +486,11 @@ void Node_402::write(LayerStatus &status)
       break;
     }
   }
+}
+void Node_402::write(LayerStatus &status)
+{
+  driveSettings();
+
   int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
   control_word.set(cw_set);
 }
