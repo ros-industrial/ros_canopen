@@ -113,6 +113,7 @@ protected:
     }
     
     virtual bool handle_init(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+	ROS_INFO("Initializing XXX");
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
             res.success.data = true;
@@ -138,6 +139,7 @@ protected:
         return true;
     }
     virtual bool handle_recover(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+	ROS_INFO("Recovering XXX");
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
             boost::shared_ptr<LayerStatus> pending_status(new LayerStatus);
@@ -162,6 +164,7 @@ protected:
     }
 
     virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+	ROS_INFO("Shuting down XXX");
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
             LayerStatus s;
@@ -175,6 +178,7 @@ protected:
         return true;
     }
     virtual bool handle_halt(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+	ROS_INFO("Halting down XXX");
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
             LayerStatus s;

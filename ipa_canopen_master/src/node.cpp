@@ -29,6 +29,7 @@ struct NMTcommand{
 
 Node::Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync)
 : SimpleLayer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
+    getStorage()->entry(heartbeat_, 0x1017);
 }
     
 const Node::State Node::getState(){
@@ -164,7 +165,6 @@ void Node::diag(LayerReport &report){
 void Node::init(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
 
-    getStorage()->entry(heartbeat_, 0x1017);
     sdo_.init();
     try{
         reset_com();
