@@ -59,22 +59,17 @@ using ipa_canopen::Node_402;
 
 void Node_402::pending(LayerStatus &status)
 {
+  boost::mutex::scoped_lock cond_lock(cond_mutex);
+
   if(configuring_node_)
   {
-    default_operation_mode_ = OperationMode(op_mode.get());
+    default_operation_mode_ = OperationMode(op_mode.get_cached());
+    enterMode(default_operation_mode_);
     configuring_node_ = false;
   }
   else
   {
     control_word_bitset.reset(CW_Halt);
-
-    boost::mutex::scoped_lock cond_lock(cond_mutex);
-    ac_pos_ = actual_pos.get();
-    ac_vel_ = 0;
-
-    target_pos_ = ac_pos_;
-    target_vel_ = ac_vel_;
-
 
     getDeviceState(status);
 
@@ -214,11 +209,17 @@ void Node_402::pending(LayerStatus &status)
     {
       if(configure_drive_)
       {
-        //driveSettings();
+        ac_pos_ = actual_pos.get();
+        ac_vel_ = 0;
+
+        target_pos_ = ac_pos_;
+        LOG("Target pos from pending" << target_pos_);
+        target_vel_ = ac_vel_;
         configure_drive_ = false;
       }
       else
       {
+        driveSettings();
         motor_ready_ = true;
         cond_lock.unlock();
         cond.notify_one();
@@ -529,6 +530,7 @@ void Node_402::driveSettings()
     break;
   case Interpolated_Position:
     target_interpolated_position.set(target_pos_);
+    // LOG("Target Pos" << target_pos_ << "Actual Pos:" << ac_pos_);
     if (ip_mode_sub_mode.get_cached() == -1)
       target_interpolated_velocity.set(target_vel_);
     control_word_bitset.set(CW_Operation_mode_specific0);
@@ -713,4 +715,33 @@ void Node_402::init(LayerStatus &s)
       }
     }
   }
+  motorEnableOp();
+  driveSettingsOnlyBits();
+  boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+
+
+  if(state_!=Operation_Enable)
+    if(status_word_bitset.test(SW_Quick_stop))
+    {
+      motor_ready_ = false;
+
+      time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
+
+      while (!motor_ready_)
+      {
+        if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
+        {
+          if (!motor_ready_)
+          {
+            BOOST_THROW_EXCEPTION(TimeoutException());
+          }
+        }
+      }
+    }
+
+    else
+      s.error("Could not properly initialize the chain");
+
+  else
+    LOG("Propertly initialized module");
 }
