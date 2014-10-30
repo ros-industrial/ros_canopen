@@ -280,10 +280,6 @@ void Node_402::switchMode(LayerStatus &status)
   {
     check_mode = false;
   }
-  else
-  {
-    status.warn();
-  }
 }
 
 bool Node_402::enterMode(const OperationMode &op_mode_var)
