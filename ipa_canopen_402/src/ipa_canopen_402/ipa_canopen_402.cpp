@@ -213,7 +213,6 @@ void Node_402::pending(LayerStatus &status)
         ac_vel_ = 0;
 
         target_pos_ = ac_pos_;
-        LOG("Target pos from pending" << target_pos_);
         target_vel_ = ac_vel_;
         configure_drive_ = false;
       }
