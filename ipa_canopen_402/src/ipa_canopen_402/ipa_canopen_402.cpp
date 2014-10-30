@@ -59,163 +59,174 @@ using ipa_canopen::Node_402;
 
 void Node_402::pending(LayerStatus &status)
 {
-  control_word_bitset.reset(CW_Halt);
-
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
-  ac_pos_ = actual_pos.get();
-  ac_vel_ = 0;
-
-  target_pos_ = ac_pos_;
-  target_vel_ = ac_vel_;
-
-
-  getDeviceState(status);
-
-  operation_mode_ = (OperationMode) op_mode_display.get();
-
-  if (check_mode)
+  if(configuring_node_)
   {
-    switchMode(status);
+    default_operation_mode_ = OperationMode(op_mode.get());
+    configuring_node_ = false;
   }
-
-  if (state_ != target_state_)
+  else
   {
-    switch (state_)
+    control_word_bitset.reset(CW_Halt);
+
+    boost::mutex::scoped_lock cond_lock(cond_mutex);
+    ac_pos_ = actual_pos.get();
+    ac_vel_ = 0;
+
+    target_pos_ = ac_pos_;
+    target_vel_ = ac_vel_;
+
+
+    getDeviceState(status);
+
+    operation_mode_ = (OperationMode) op_mode_display.get();
+
+    if (check_mode)
     {
-    case Fault:
-      motorFaultReset();
-      break;
-    case Not_Ready_To_Switch_On:
-    case Switch_On_Disabled:
-      switch (target_state_)
+      switchMode(status);
+    }
+
+    if (state_ != target_state_)
+    {
+      switch (state_)
       {
+      case Fault:
+        motorFaultReset();
+        break;
+      case Not_Ready_To_Switch_On:
+      case Switch_On_Disabled:
+        switch (target_state_)
+        {
+        case Ready_To_Switch_On:
+        case Switched_On:
+        case Operation_Enable:
+          motorShutdown();
+          driveSettingsOnlyPos();
+          break;
+        }
+        break;
       case Ready_To_Switch_On:
+        switch (target_state_)
+        {
+        case Switch_On_Disabled:
+          motorDisableVoltage();
+          break;
+        case Switched_On:
+        case Operation_Enable:
+          motorSwitchOn();
+          driveSettingsOnlyPos();
+          break;
+        }
+        break;
       case Switched_On:
-      case Operation_Enable:
-        motorShutdown();
-        break;
-      }
-      break;
-    case Ready_To_Switch_On:
-      switch (target_state_)
-      {
-      case Switch_On_Disabled:
-        motorDisableVoltage();
-        break;
-      case Switched_On:
-      case Operation_Enable:
-        motorSwitchOn();
-        break;
-      }
-      break;
-    case Switched_On:
-      switch (target_state_)
-      {
-      case Switch_On_Disabled:
-        motorQuickStop();
-        break;
-      case Ready_To_Switch_On:
-        motorShutdown();
+        switch (target_state_)
+        {
+        case Switch_On_Disabled:
+          motorQuickStop();
+          break;
+        case Ready_To_Switch_On:
+          motorShutdown();
+          break;
+        case Operation_Enable:
+          motorEnableOp();
+          driveSettingsOnlyPos();
+          break;
+        }
         break;
       case Operation_Enable:
-        motorEnableOp();
+        switch (target_state_)
+        {
+        case Switch_On_Disabled:
+          motorDisableVoltage();
+        case Ready_To_Switch_On:
+          motorShutdown();
+        case Quick_Stop_Active:
+          motorQuickStop();
+        case Switched_On:
+          motorDisableOp();
+        }
         break;
-      }
-      break;
-    case Operation_Enable:
-      switch (target_state_)
-      {
-      case Switch_On_Disabled:
-        motorDisableVoltage();
-      case Ready_To_Switch_On:
-        motorShutdown();
       case Quick_Stop_Active:
-        motorQuickStop();
-      case Switched_On:
-        motorDisableOp();
+        switch (target_state_)
+        {
+        case Switch_On_Disabled:
+          motorDisableVoltage();
+          break;
+        case Operation_Enable:
+          motorEnableOp();
+          driveSettingsOnlyPos();
+          break;
+        }
+        break;
       }
-      break;
-    case Quick_Stop_Active:
-      switch (target_state_)
+    }
+    else if (homing_needed_)
+    {
+      if (operation_mode_ != Homing)
+        op_mode.set(Homing);
+      else
       {
-      case Switch_On_Disabled:
-        motorDisableVoltage();
-        break;
-      case Operation_Enable:
-        motorEnableOp();
-        break;
-      }
-      break;
-    }
-  }
-  else if (homing_needed_)
-  {
-    if (operation_mode_ != Homing)
-      op_mode.set(Homing);
-    else
-    {
-      control_word_bitset.set(CW_Operation_mode_specific0);
+        control_word_bitset.set(CW_Operation_mode_specific0);
 
-      switch ((status_word_bitset & homing_mask).to_ulong())
+        switch ((status_word_bitset & homing_mask).to_ulong())
+        {
+        //-------------------------------------------------------------//
+        // Op_specific1 | Op_specific0 | Target_reached | Description |
+        // ------------ | ------------ | -------------- | ----------- |
+        //       0      |       0      |         0      | In Progress |
+        //       0      |       0      |         1      | Hom.Started |
+        //       0      |       1      |         0      | Hom.Attained, target not reached|
+        //       0      |       1      |         1      | Hom.Succesful |
+        //       1      |       0      |         0      | Hom.Error, vel!=0 |
+        //       1      |       0      |         1      | Hom.Error, vel=0 |
+        //       1      |       1      |         0      | Hom.Reserved |
+        //       1      |       1      |         1      | Hom.Reserved |
+        //-------------------------------------------------------------//
+        case 0:
+          LOG("Homing in Progress");
+          break;
+        case (1<<SW_Target_reached):
+          LOG("Homing not started");
+          break;
+        case (1<<SW_Operation_specific0):
+          LOG("Homing attained, target not reached");
+          break;
+        case ((1<<SW_Operation_specific0) | (1<<SW_Target_reached)):
+          homing_needed_ = false;
+          enterMode(default_operation_mode_);
+          LOG("Homing succesful");
+          break;
+        case (1<<SW_Operation_specific1):
+          LOG("Homing error , vel!=0");
+          status.error("Homing error, vel!=0");
+          break;
+        case ((1<<SW_Operation_specific1) | (1<<SW_Target_reached)):
+          LOG("Homing error, vel=0");
+          status.error("Homing error, vel=0");
+          break;
+        case (1<<SW_Operation_specific1 | 1<<SW_Operation_specific0):
+        case (1<<SW_Operation_specific1 | 1<<SW_Operation_specific0 | 1<<SW_Target_reached):
+          LOG("Homing reserved");
+          break;
+        }
+      }
+    }
+    else if(state_ == Operation_Enable)
+    {
+      if(configure_drive_)
       {
-      //-------------------------------------------------------------//
-      // Op_specific1 | Op_specific0 | Target_reached | Description |
-      // ------------ | ------------ | -------------- | ----------- |
-      //       0      |       0      |         0      | In Progress |
-      //       0      |       0      |         1      | Hom.Started |
-      //       0      |       1      |         0      | Hom.Attained, target not reached|
-      //       0      |       1      |         1      | Hom.Succesful |
-      //       1      |       0      |         0      | Hom.Error, vel!=0 |
-      //       1      |       0      |         1      | Hom.Error, vel=0 |
-      //       1      |       1      |         0      | Hom.Reserved |
-      //       1      |       1      |         1      | Hom.Reserved |
-      //-------------------------------------------------------------//
-      case 0:
-        LOG("Homing in Progress");
-        break;
-      case (1<<SW_Target_reached):
-        LOG("Homing not started");
-        break;
-      case (1<<SW_Operation_specific0):
-        LOG("Homing attained, target not reached");
-        break;
-      case ((1<<SW_Operation_specific0) | (1<<SW_Target_reached)):
-        homing_needed_ = false;
-        LOG("Homing succesful");
-        break;
-      case (1<<SW_Operation_specific1):
-        LOG("Homing error , vel!=0");
-        status.error("Homing error, vel!=0");
-        break;
-      case ((1<<SW_Operation_specific1) | (1<<SW_Target_reached)):
-        LOG("Homing error, vel=0");
-        status.error("Homing error, vel=0");
-        break;
-      case (1<<SW_Operation_specific1 | 1<<SW_Operation_specific0):
-      case (1<<SW_Operation_specific1 | 1<<SW_Operation_specific0 | 1<<SW_Target_reached):
-        LOG("Homing reserved");
-        break;
+        //driveSettings();
+        configure_drive_ = false;
+      }
+      else
+      {
+        motor_ready_ = true;
+        cond_lock.unlock();
+        cond.notify_one();
       }
     }
+    int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
+    control_word.set(cw_set);
   }
-  else if(state_ == Operation_Enable)
-  {
-    if(configure_drive_)
-    {
-      //boost::this_thread::sleep_for( boost::chrono::milliseconds(100) );
-
-      //driveSettings();
-      configure_drive_ = false;
-    }
-    else
-    {
-      motor_ready_ = true;
-      cond_lock.unlock();
-      cond.notify_one();
-    }
-  }
-  int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
-  control_word.set(cw_set);
 }
 
 void Node_402::getDeviceState(LayerStatus &status)
@@ -441,55 +452,103 @@ void Node_402::motorFaultReset()
   control_word_bitset.reset(CW_Operation_mode_specific2);
 }
 
+void Node_402::driveSettingsOnlyBits()
+{
+  switch (operation_mode_)
+  {
+  case Profiled_Position:
+    control_word_bitset.reset(CW_Operation_mode_specific0);
+    control_word_bitset.reset(CW_Operation_mode_specific1);
+    control_word_bitset.reset(CW_Operation_mode_specific2);
+    break;
+  case Profiled_Velocity:
+    control_word_bitset.reset(CW_Operation_mode_specific0);
+    control_word_bitset.reset(CW_Operation_mode_specific1);
+    control_word_bitset.reset(CW_Operation_mode_specific2);
+    break;
+  case Interpolated_Position:
+    control_word_bitset.set(CW_Operation_mode_specific0);
+    control_word_bitset.reset(CW_Operation_mode_specific1);
+    control_word_bitset.reset(CW_Operation_mode_specific2);
+    break;
+  case Velocity:
+    control_word_bitset.set(CW_Operation_mode_specific0);
+    control_word_bitset.set(CW_Operation_mode_specific1);
+    control_word_bitset.set(CW_Operation_mode_specific2);
+    break;
+  }
+}
+
+void Node_402::driveSettingsOnlyPos()
+{
+  switch (operation_mode_)
+  {
+  case Profiled_Position:
+    target_position.set(target_pos_);
+    break;
+  case Profiled_Velocity:
+    target_profiled_velocity.set(target_vel_);
+    break;
+  case Interpolated_Position:
+    target_interpolated_position.set(target_pos_);
+    if (ip_mode_sub_mode.get_cached() == -1)
+      target_interpolated_velocity.set(target_vel_);
+    break;
+  case Velocity:
+    target_velocity.set(target_vel_);
+    break;
+  }
+}
+
 void Node_402::driveSettings()
 {
-  if (state_ == Operation_Enable)
+  switch (operation_mode_)
   {
-    switch (operation_mode_)
+  case Profiled_Position:
+    if (new_target_pos_)
     {
-    case Profiled_Position:
-      if (new_target_pos_)
-      {
-        control_word_bitset.reset(CW_Operation_mode_specific0);
-        control_word_bitset.reset(CW_Operation_mode_specific1);
-        control_word_bitset.reset(CW_Operation_mode_specific2);
-        new_target_pos_ = false;
-      }
-      else if (oldpos_ != target_pos_)
-      {
-        target_position.set(target_pos_);
-        new_target_pos_ = true;
-        control_word_bitset.set(CW_Operation_mode_specific0);
-        control_word_bitset.reset(CW_Operation_mode_specific1);
-        control_word_bitset.reset(CW_Operation_mode_specific2);
-      }
-      break;
-    case Profiled_Velocity:
-      target_profiled_velocity.set(target_vel_);
       control_word_bitset.reset(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
-      break;
-    case Interpolated_Position:
-      target_interpolated_position.set(target_pos_);
-      if (ip_mode_sub_mode.get_cached() == -1)
-        target_interpolated_velocity.set(target_vel_);
+      new_target_pos_ = false;
+    }
+    else if (oldpos_ != target_pos_)
+    {
+      target_position.set(target_pos_);
+      new_target_pos_ = true;
       control_word_bitset.set(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
-      break;
-    case Velocity:
-      target_velocity.set(target_vel_);
-      control_word_bitset.set(CW_Operation_mode_specific0);
-      control_word_bitset.set(CW_Operation_mode_specific1);
-      control_word_bitset.set(CW_Operation_mode_specific2);
-      break;
     }
+    break;
+  case Profiled_Velocity:
+    target_profiled_velocity.set(target_vel_);
+    control_word_bitset.reset(CW_Operation_mode_specific0);
+    control_word_bitset.reset(CW_Operation_mode_specific1);
+    control_word_bitset.reset(CW_Operation_mode_specific2);
+    break;
+  case Interpolated_Position:
+    target_interpolated_position.set(target_pos_);
+    if (ip_mode_sub_mode.get_cached() == -1)
+      target_interpolated_velocity.set(target_vel_);
+    control_word_bitset.set(CW_Operation_mode_specific0);
+    control_word_bitset.reset(CW_Operation_mode_specific1);
+    control_word_bitset.reset(CW_Operation_mode_specific2);
+    break;
+  case Velocity:
+    target_velocity.set(target_vel_);
+    control_word_bitset.set(CW_Operation_mode_specific0);
+    control_word_bitset.set(CW_Operation_mode_specific1);
+    control_word_bitset.set(CW_Operation_mode_specific2);
+    break;
   }
 }
 void Node_402::write(LayerStatus &status)
 {
-  driveSettings();
+  if (state_ == Operation_Enable)
+    driveSettings();
+  else
+    status.warn("Motor not in operation enabled state");
 
   int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
   control_word.set(cw_set);
