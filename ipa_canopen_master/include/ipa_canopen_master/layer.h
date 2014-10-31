@@ -3,15 +3,27 @@
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include <boost/atomic.hpp>
+
 namespace ipa_canopen{
 
 class LayerStatus{
+    mutable boost::mutex write_mutex_;
     enum State{
         OK = 0, WARN = 1, ERROR= 2, STALE = 3, UNBOUNDED = 3
     };
-    State state;
-	void set(const State &s){
+    boost::atomic<State> state;
+    void set(const State &s){
+        boost::mutex::scoped_lock lock(write_mutex_);
         if(s > state) state = s;
+    }
+    std::string reason_;
+    void reason(const std::string &r){
+        if(!r.empty()){
+            boost::mutex::scoped_lock lock(write_mutex_);
+            if(reason_.empty())  reason_ = r;
+            else reason_ += "; " + r;
+        }
     }
 public:
     struct Ok { static const State state = OK; private: Ok();};
@@ -19,59 +31,43 @@ public:
     struct Error { static const State state = ERROR; private: Error(); };
     struct Stale { static const State state = STALE; private: Stale(); };
     struct Unbounded { static const State state = UNBOUNDED; private: Unbounded(); };
-    
-    template<typename T> bool bounded() const{
-        return state <= T::state;
-    }
+
+    template<typename T> bool bounded() const{ return state <= T::state; }
     
     LayerStatus() : state(OK) {}
     
     int get() const { return state; }
     
-    const void warn() { set(WARN); }
-    const void error() { set(ERROR); }
-    const void stale() { set(STALE); }
+    const std::string reason() const { boost::mutex::scoped_lock lock(write_mutex_); return reason_; }
 
-
+    const void warn(const std::string & r = "") { reason(r); set(WARN); }
+    const void error(const std::string & r = "") { reason(r); set(ERROR); }
+    const void stale(const std::string & r = "") { reason(r); set(STALE); }
 };
-
-class LayerStatusExtended : public LayerStatus{
-    std::string reason_;
+class LayerReport : public LayerStatus {
     std::vector<std::pair<std::string, std::string> > values_;
-    void reason(const std::string &r){
-        if(!r.empty()){
-            if(reason_.empty())  reason_ = r;
-            else reason_ += "; " + r;
-        }
-    }
 public:
-    const std::string &reason() const { return reason_; }
     const std::vector<std::pair<std::string, std::string> > &values() const { return values_; }
-    
-    const void warn(const std::string & r = "") { reason(r); LayerStatus::warn(); }
-    const void error(const std::string & r = "") { reason(r); LayerStatus::error(); }
-    const void stale(const std::string & r = "") { reason(r); LayerStatus::stale(); }
-    
     template<typename T> void add(const std::string &key, const T &value) {
         std::stringstream str;
         str << value;
         values_.push_back(std::make_pair(key,str.str()));
     }
 };
-
 class Layer{
 public:
     const std::string name;
+    virtual void pending(LayerStatus &status) {}
     virtual void read(LayerStatus &status) = 0;
     virtual void write(LayerStatus &status) = 0;
     
-    virtual void report(LayerStatusExtended &status) = 0;
+    virtual void diag(LayerReport &report) = 0;
     
-    virtual void init(LayerStatusExtended &status) = 0;
+    virtual void init(LayerStatus &status) = 0;
     virtual void shutdown(LayerStatus &status) = 0;
     
     virtual void halt(LayerStatus &status) {} // TODO
-    virtual void recover(LayerStatusExtended &status) = 0;
+    virtual void recover(LayerStatus &status) = 0;
     
     Layer(const std::string &n) : name(n) {}
     
@@ -83,11 +79,12 @@ class SimpleLayer: public Layer {
         if(!(this->*func)()) status.error();
     }
 public:
+        
     virtual void read(LayerStatus &status) { adapt(&SimpleLayer::read, status); }
     virtual void write(LayerStatus &status) { adapt(&SimpleLayer::write, status); }
-    virtual void report(LayerStatusExtended &status) { adapt(&SimpleLayer::report, status); }
-    virtual void init(LayerStatusExtended &status) { adapt(&SimpleLayer::init, status); }
-    virtual void recover(LayerStatusExtended &status) { adapt(&SimpleLayer::recover, status); }
+    virtual void diag(LayerReport &report) { adapt(&SimpleLayer::report, report); }
+    virtual void init(LayerStatus &status) { adapt(&SimpleLayer::init, status); }
+    virtual void recover(LayerStatus &status) { adapt(&SimpleLayer::recover, status); }
     virtual void shutdown(LayerStatus &status) {  adapt(&SimpleLayer::shutdown, status); }
     
     virtual bool read()  = 0;
@@ -123,31 +120,92 @@ public:
 };
     
 class LayerStack : public Layer, public VectorHelper<Layer>{
+    boost::mutex end_mutex_;
+    vector_type::iterator run_end_;
+    
+    void bringup(void(Layer::*func)(LayerStatus&), void(Layer::*func_fail)(LayerStatus&), LayerStatus &status){
+        vector_type::iterator it = layers.begin();
+        {
+            boost::mutex::scoped_lock lock(end_mutex_);
+            run_end_ = it;
+        }
+        for(; it != layers.end(); ++it){
+            {
+                boost::mutex::scoped_lock lock(end_mutex_);
+                run_end_ = it;
+            }
+            ((**it).*func)(status);
+            if(!status.bounded<LayerStatus::Warn>()) break;
+        }
+        if(it != layers.end()){
+            LayerStatus omit;
+            call(func_fail, omit, vector_type::reverse_iterator(it), layers.rend());
+            boost::mutex::scoped_lock lock(end_mutex_);
+            run_end_ = layers.begin();
+        }
+        else{
+            boost::mutex::scoped_lock lock(end_mutex_);
+            run_end_ = layers.end();
+        }
+    }
 public:
     virtual void read(LayerStatus &status){
-        vector_type::iterator it = call<LayerStatus::Warn>(&Layer::read, status, layers.begin(), layers.end());
-        LayerStatus omit(status);
-        if(it != layers.end()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it) +1);
+        vector_type::iterator end;
+        {
+            boost::mutex::scoped_lock lock(end_mutex_);
+            if(end == run_end_){
+                run_end_ = layers.begin(); // reset
+            }
+            end = run_end_;
+        }
+        vector_type::iterator it = call<LayerStatus::Warn>(&Layer::read, status, layers.begin(), end);
+        if(it != end){
+            LayerStatus omit;
+            call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it));
+        }
+    }
+    virtual void pending(LayerStatus &status){
+        vector_type::iterator end;
+        {
+            boost::mutex::scoped_lock lock(end_mutex_);
+            end = run_end_;
+        }
+        if(end != layers.end()){
+            (**end).pending(status);
+        }
     }
     virtual void write(LayerStatus &status){
-        vector_type::reverse_iterator it = call(&Layer::write, status, layers.rbegin(), layers.rend());
-        LayerStatus omit(status);
-        if(it != layers.rend()) call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it) +1);
+        vector_type::reverse_iterator begin;
+        {
+            boost::mutex::scoped_lock lock(end_mutex_);
+            begin = vector_type::reverse_iterator(run_end_);
+        }
+        vector_type::reverse_iterator it = call(&Layer::write, status, begin, layers.rend());
+        if(it != layers.rend()){
+            LayerStatus omit;
+            call(&Layer::halt, omit, begin, vector_type::reverse_iterator(it));
+        }
     }
-    virtual void report(LayerStatusExtended &status){
-        vector_type::iterator it = call(&Layer::report, status, layers.begin(), layers.end());
+    virtual void diag(LayerReport &report){
+        vector_type::iterator end;
+        {
+            boost::mutex::scoped_lock lock(end_mutex_);
+            if(end == run_end_) return;
+            end = run_end_;
+        }
+        vector_type::iterator it = call(&Layer::diag, report, layers.begin(), end);
     }
-    virtual void init(LayerStatusExtended &status) {
-        vector_type::iterator it = call<LayerStatus::Warn>(&Layer::init, status, layers.begin(), layers.end());
-        LayerStatus omit(status);
-        if(it != layers.end()) call(&Layer::shutdown, omit, vector_type::reverse_iterator(it), layers.rend());
+    virtual void init(LayerStatus &status) {
+        bringup(&Layer::init, &Layer::shutdown, status);
     }
-    virtual void recover(LayerStatusExtended &status){
-        vector_type::iterator it = call<LayerStatus::Warn>(&Layer::recover, status, layers.begin(), layers.end());
-        LayerStatus omit(status);
-        if(it != layers.end()) call(&Layer::halt, omit, vector_type::reverse_iterator(it), layers.rend());
+    virtual void recover(LayerStatus &status) {
+        bringup(&Layer::recover, &Layer::halt, status);
     }
     virtual void shutdown(LayerStatus &status){
+        {
+            boost::mutex::scoped_lock lock(end_mutex_);
+            run_end_ = layers.begin();
+        }
         call(&Layer::shutdown, status, layers.rbegin(), layers.rend());
     }
     virtual void halt(LayerStatus &status){
@@ -160,28 +218,39 @@ public:
 template<typename T> class LayerGroup : public Layer, public VectorHelper<T>{
     typedef VectorHelper<T> V;
 public:
+    virtual void pending(LayerStatus &status){
+        this->template call<LayerStatus::Warn>(&Layer::pending, status, this->layers.begin(), this->layers.end());
+    }
     virtual void read(LayerStatus &status){
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::read, status, this->layers.begin(), this->layers.end());
-        LayerStatus omit(status);
-        if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+        if(it != this->layers.end()){
+            LayerStatus omit;
+            this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+        }
     }
     virtual void write(LayerStatus &status){
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::write, status, this->layers.begin(), this->layers.end());
-        LayerStatus omit(status);
-        if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+        if(it != this->layers.end()){
+            LayerStatus omit;
+            this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+        }
     }
-    virtual void report(LayerStatusExtended &status){
-        this->template call(&Layer::report, status, this->layers.begin(), this->layers.end());
+    virtual void diag(LayerReport &report){
+        this->template call(&Layer::diag, report, this->layers.begin(), this->layers.end());
     }
-    virtual void init(LayerStatusExtended &status) {
+    virtual void init(LayerStatus &status) {
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::init, status, this->layers.begin(), this->layers.end());
-        LayerStatus omit(status);
-        if(it != this->layers.end()) this->template call(&Layer::shutdown, omit, this->layers.begin(), this->layers.end());
+        if(it != this->layers.end()){
+            LayerStatus omit;
+            this->template call(&Layer::shutdown, omit, this->layers.begin(), this->layers.end());
+        }
     }
-    virtual void recover(LayerStatusExtended &status){
+    virtual void recover(LayerStatus &status){
         typename V::vector_type::iterator it = this->template call<LayerStatus::Warn>(&Layer::recover, status, this->layers.begin(), this->layers.end());
-        LayerStatus omit(status);
-        if(it != this->layers.end()) this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+        if(it != this->layers.end()){
+            LayerStatus omit;
+            this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+        }
     }
     virtual void shutdown(LayerStatus &status){
         this->template call(&Layer::shutdown, status, this->layers.begin(), this->layers.end());
@@ -192,20 +261,6 @@ public:
     LayerGroup(const std::string &n) : Layer(n) {}
 };
 
-template<typename Driver> class CANLayer: public SimpleLayer{ // TODO: implement Layer
-    boost::shared_ptr<Driver> driver_;
-    const std::string device_;
-    const unsigned int bitrate_;
-public:
-    CANLayer(const boost::shared_ptr<Driver> &driver, const std::string &device, const unsigned int bitrate)
-    : SimpleLayer(device + " Layer"), driver_(driver), device_(device), bitrate_(bitrate) { assert(driver_); }
-    virtual bool read() { return driver_->getState().isReady(); }
-    virtual bool write() { return driver_->getState().isReady(); }
-    virtual bool report() { return driver_->getState().isReady(); }
-    virtual bool init() { return driver_->init(device_, bitrate_); }
-    virtual bool recover() { return driver_->recover(); }
-    virtual bool shutdown() { driver_->shutdown(); return true;}
-};
 } // namespace ipa_canopen
 
 #endif

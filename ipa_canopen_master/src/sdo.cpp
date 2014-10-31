@@ -26,7 +26,7 @@ struct SDOid{
         *(uint32_t*) this = val;
     }
     ipa_can::Header header() {
-        return ipa_can::Header(id, extended);
+        return ipa_can::Header(id, extended, false, false);
     }
 };
 
@@ -366,6 +366,7 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
         notify = true;
     }
     if(notify){
+        done = true;
         cond_lock.unlock();
         cond.notify_one();
     }
@@ -381,7 +382,7 @@ void SDOClient::init(){
         client_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 1).value(), storage_->node_id_)).header();
     }
     catch(...){
-        client_id = ipa_can::Header(0x600+ storage_->node_id_);
+        client_id = ipa_can::MsgHeader(0x600+ storage_->node_id_);
     }
     
     last_msg = AbortTranserRequest(client_id, 0,0,0);
@@ -392,23 +393,27 @@ void SDOClient::init(){
         server_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 2).value(), storage_->node_id_)).header();
     }
     catch(...){
-        server_id = ipa_can::Header(0x580+ storage_->node_id_);
+        server_id = ipa_can::MsgHeader(0x580+ storage_->node_id_);
     }
     listener_ = interface_->createMsgListener(server_id, ipa_can::CommInterface::FrameDelegate(this, &SDOClient::handleFrame));
 }
 void SDOClient::wait_for_response(){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
-    if(!cond.timed_wait(cond_lock,boost::posix_time::seconds(1)))
-    {
-        abort(0x05040000); // SDO protocol timed out.
-        throw TimeoutException();
+    done = false;
+    time_point abs_time = get_abs_time(boost::chrono::seconds(1));
+    while(!done){
+        if(cond.wait_until(cond_lock,abs_time)  == boost::cv_status::timeout)
+        {
+            abort(0x05040000); // SDO protocol timed out.
+            break;
+        }
     }
     if(offset == 0 || offset != total){
-        throw TimeoutException(); // TODO
+        BOOST_THROW_EXCEPTION( TimeoutException() ); // TODO
     }
 }
 void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
-    boost::timed_mutex::scoped_lock lock(mutex, boost::posix_time::seconds(2));
+    boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
 
         buffer = data;
@@ -421,11 +426,11 @@ void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
         wait_for_response();
         data = buffer;
     }else{
-        throw TimeoutException();
+        BOOST_THROW_EXCEPTION( TimeoutException() );
     }
 }
 void SDOClient::write(const ipa_canopen::ObjectDict::Entry &entry, const String &data){
-    boost::timed_mutex::scoped_lock lock(mutex, boost::posix_time::seconds(2));
+    boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
         buffer = data;
         offset = 0;
@@ -436,6 +441,6 @@ void SDOClient::write(const ipa_canopen::ObjectDict::Entry &entry, const String 
 
         wait_for_response();
     }else{
-        throw TimeoutException();
+        BOOST_THROW_EXCEPTION( TimeoutException() );
     }
 }

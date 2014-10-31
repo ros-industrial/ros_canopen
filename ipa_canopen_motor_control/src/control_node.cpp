@@ -110,6 +110,7 @@ class HandleLayer: public SimpleLayer{
         if(it == commands_.end()) return false;
 
         jhw_ = it->second;
+        jhw_->read();
         return true;
     }
 public:
@@ -158,11 +159,12 @@ public:
             pos = motor_->getActualPos();
             vel = motor_->getActualVel();
             eff = motor_->getActualEff();
+            if(!jhw_){
+                MotorNode::OperationMode m = motor_->getMode();
+                if(m != MotorNode::No_Mode) return select(m);
+            }
             if(jhw_){
                 jhw_->read();
-            }else{
-                MotorNode::OperationMode m = motor_->getMode();
-                if(m != MotorNode::No_Mode) select(m);
             }
         }
         return okay;
@@ -172,7 +174,7 @@ public:
             jhw_->write();
             return true;
         }
-        return motor_->getMode() != MotorNode::No_Mode;
+        return motor_->getMode() == MotorNode::No_Mode;
     }
     virtual bool report() { return true; }
     virtual bool init() {

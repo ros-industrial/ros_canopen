@@ -21,6 +21,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>ipa_can_interface</depend>
+  <depend>boost</depend>
 
   <export>
     <!-- You can specify that this package is a metapackage here: -->

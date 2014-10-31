@@ -3,8 +3,8 @@
 
 #include <ipa_can_interface/FastDelegate.h>
 #include <boost/asio.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/asio/high_resolution_timer.hpp>
 
 namespace ipa_canopen{
 
@@ -18,7 +18,7 @@ public:
         boost::mutex::scoped_lock lock(mutex);
         timer.cancel();
     }
-    void start(const TimerDelegate &del, const boost::posix_time::time_duration &dur){
+    void start(const TimerDelegate &del, const  boost::chrono::high_resolution_clock::duration &dur){
         boost::mutex::scoped_lock lock(mutex);
         delegate = del;
         period = dur;
@@ -30,7 +30,7 @@ public:
         timer.expires_from_now(period);
         timer.async_wait(fastdelegate::FastDelegate1<const boost::system::error_code&>(this, &Timer::handler));
     }
-    const boost::posix_time::time_duration & getPeriod(){
+    const  boost::chrono::high_resolution_clock::duration & getPeriod(){
         boost::mutex::scoped_lock lock(mutex);
         return period;
     }
@@ -38,8 +38,8 @@ public:
 private:
     boost::asio::io_service io;
     boost::asio::io_service::work work;
-    boost::asio::deadline_timer timer;
-    boost::posix_time::time_duration period;
+    boost::asio::high_resolution_timer timer;
+     boost::chrono::high_resolution_clock::duration period;
     boost::mutex mutex;
     boost::thread thread;
     

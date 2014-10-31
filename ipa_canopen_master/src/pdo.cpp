@@ -14,7 +14,7 @@ struct PDOid{
         *(uint32_t*) this = val;
     }
     ipa_can::Header header() {
-        return ipa_can::Header(id, extended);
+        return ipa_can::Header(id, extended, false, false);
     }
     const uint32_t get() const { return *(uint32_t*) this; }
 };
@@ -101,7 +101,8 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
     
     bool com_changed = check_com_changed(dict, map_index);
     if(map_changed || com_changed){
-        PDOid cur(cob_id.get_cached());
+        
+        PDOid cur(cob_id.get());
         cur.invalid = 1;
         cob_id.set(cur.get());
     }
@@ -266,7 +267,7 @@ void PDOMapper::RPDO::sync(){
         if(timeout > 0){
             --timeout;
         }else if(timeout == 0) {
-            throw TimeoutException();
+            BOOST_THROW_EXCEPTION( TimeoutException() );
         }
     }
     if(transmission_type == 0xFC || transmission_type == 0xFD){
@@ -322,7 +323,7 @@ bool PDOMapper::write(){
 bool PDOMapper::Buffer::read(uint8_t* b, const size_t len){
     boost::mutex::scoped_lock lock(mutex);
     if(size > len){
-        throw std::bad_cast();
+        BOOST_THROW_EXCEPTION( std::bad_cast() );
     }
     if(empty) return false;
     
@@ -334,7 +335,7 @@ bool PDOMapper::Buffer::read(uint8_t* b, const size_t len){
 void PDOMapper::Buffer::write(const uint8_t* b, const size_t len){
     boost::mutex::scoped_lock lock(mutex);
     if(size > len){
-        throw std::bad_cast();
+        BOOST_THROW_EXCEPTION( std::bad_cast() );
     }
     empty = false;
     dirty = true;
@@ -344,14 +345,14 @@ void PDOMapper::Buffer::write(const uint8_t* b, const size_t len){
 }
 void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
     boost::mutex::scoped_lock lock(mutex);
-    boost::system_time abs_time = boost::get_system_time() + boost::posix_time::seconds(1);
+    time_point abs_time = get_abs_time(boost::chrono::seconds(1));
     if(size != data.size()){
-        throw std::bad_cast();
+        BOOST_THROW_EXCEPTION( std::bad_cast() );
     }
     while(empty){
-        if(!cond.timed_wait(lock,abs_time))
+        if(cond.wait_until(lock,abs_time)  == boost::cv_status::timeout)
         {
-            throw TimeoutException();
+            BOOST_THROW_EXCEPTION( TimeoutException() );
         }
     }
     if(dirty){
@@ -362,7 +363,7 @@ void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, String
 void PDOMapper::Buffer::write(const ipa_canopen::ObjectDict::Entry &, const String &data){
     boost::mutex::scoped_lock lock(mutex);
     if(size != data.size()){
-        throw std::bad_cast();
+        BOOST_THROW_EXCEPTION( std::bad_cast() );
     }
     empty = false;
     dirty = true;
