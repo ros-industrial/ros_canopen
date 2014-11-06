@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   hardware_interface
   controller_manager
   ipa_canopen_402
+  joint_limits_interface
   urdf
 )
 
