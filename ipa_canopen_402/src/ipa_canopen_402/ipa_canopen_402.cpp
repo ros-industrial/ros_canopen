@@ -739,9 +739,10 @@ void Node_402::init(LayerStatus &s)
       }
     }
 
+
     else
       s.error("Could not properly initialize the chain");
-
+  }
   else
     LOG("Propertly initialized module");
 }
