@@ -506,7 +506,7 @@ void Node_402::driveSettings()
       control_word_bitset.set(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
-      old_pos_ = target_pos;
+      oldpos_ = target_pos_;
     }
     else
     {
@@ -531,7 +531,7 @@ void Node_402::driveSettings()
       control_word_bitset.set(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
-      old_pos_ = target_pos;
+      oldpos_ = target_pos_;
     }
     else
     {
