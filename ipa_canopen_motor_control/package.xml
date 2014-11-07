@@ -23,6 +23,7 @@
   <depend>ipa_canopen_chain_ros</depend>
   <depend>hardware_interface</depend>
   <depend>controller_manager</depend>
+  <depend>joint_limits_interface</depend>
   <depend>ipa_canopen_402</depend>
   <depend>urdf</depend>
 
