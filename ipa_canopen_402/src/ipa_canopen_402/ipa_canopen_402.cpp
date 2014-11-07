@@ -441,7 +441,7 @@ void Node_402::motorFaultReset()
   control_word_bitset.set(CW_Fault_Reset);
   control_word_bitset.reset(CW_Switch_On);
   control_word_bitset.reset(CW_Enable_Voltage);
-  control_word_bitset.reset(CW_Quick_Stop);
+  control_word_bitset.set(CW_Quick_Stop);
   control_word_bitset.reset(CW_Enable_Operation);
   control_word_bitset.reset(CW_Operation_mode_specific0);
   control_word_bitset.reset(CW_Operation_mode_specific1);
@@ -501,18 +501,16 @@ void Node_402::driveSettings()
   switch (operation_mode_)
   {
   case Profiled_Position:
-    if (new_target_pos_)
-    {
-      control_word_bitset.reset(CW_Operation_mode_specific0);
-      control_word_bitset.reset(CW_Operation_mode_specific1);
-      control_word_bitset.reset(CW_Operation_mode_specific2);
-      new_target_pos_ = false;
-    }
-    else if (oldpos_ != target_pos_)
+    if (oldpos_ != target_pos_)
     {
       target_position.set(target_pos_);
-      new_target_pos_ = true;
       control_word_bitset.set(CW_Operation_mode_specific0);
+      control_word_bitset.reset(CW_Operation_mode_specific1);
+      control_word_bitset.reset(CW_Operation_mode_specific2);
+    }
+    else
+    {
+      control_word_bitset.reset(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
     }
@@ -524,13 +522,22 @@ void Node_402::driveSettings()
     control_word_bitset.reset(CW_Operation_mode_specific2);
     break;
   case Interpolated_Position:
-    target_interpolated_position.set(target_pos_);
-    // LOG("Target Pos" << target_pos_ << "Actual Pos:" << ac_pos_);
-    if (ip_mode_sub_mode.get_cached() == -1)
-      target_interpolated_velocity.set(target_vel_);
-    control_word_bitset.set(CW_Operation_mode_specific0);
-    control_word_bitset.reset(CW_Operation_mode_specific1);
-    control_word_bitset.reset(CW_Operation_mode_specific2);
+    if (oldpos_ != target_pos_)
+    {
+      target_interpolated_position.set(target_pos_);
+      // LOG("Target Pos" << target_pos_ << "Actual Pos:" << ac_pos_);
+      if (ip_mode_sub_mode.get_cached() == -1)
+        target_interpolated_velocity.set(target_vel_);
+      control_word_bitset.set(CW_Operation_mode_specific0);
+      control_word_bitset.reset(CW_Operation_mode_specific1);
+      control_word_bitset.reset(CW_Operation_mode_specific2);
+    }
+    else
+    {
+      control_word_bitset.reset(CW_Operation_mode_specific0);
+      control_word_bitset.reset(CW_Operation_mode_specific1);
+      control_word_bitset.reset(CW_Operation_mode_specific2);
+    }
     break;
   case Velocity:
     target_velocity.set(target_vel_);
@@ -710,12 +717,10 @@ void Node_402::init(LayerStatus &s)
       }
     }
   }
-  motorEnableOp();
-  driveSettingsOnlyBits();
-  boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
-
+  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
 
   if(state_!=Operation_Enable)
+  {
     if(status_word_bitset.test(SW_Quick_stop))
     {
       motor_ready_ = false;
