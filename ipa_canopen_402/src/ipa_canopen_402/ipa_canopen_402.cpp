@@ -299,7 +299,6 @@ void Node_402::read(LayerStatus &status)
   operation_mode_ = (OperationMode) op_mode_display.get();  // TODO(thiagodefreitas): check validity
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
-  oldpos_ = ac_pos_;
   if (check_mode)
   {
     switchMode(status);
@@ -507,6 +506,7 @@ void Node_402::driveSettings()
       control_word_bitset.set(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
+      old_pos_ = target_pos;
     }
     else
     {
@@ -531,6 +531,7 @@ void Node_402::driveSettings()
       control_word_bitset.set(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
+      old_pos_ = target_pos;
     }
     else
     {
