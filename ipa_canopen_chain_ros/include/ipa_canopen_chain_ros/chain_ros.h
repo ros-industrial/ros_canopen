@@ -127,6 +127,10 @@ protected:
             init(*pending_status);
             res.success.data = pending_status->bounded<LayerStatus::Ok>();
             res.error_message.data = pending_status->reason();
+            if(!pending_status->bounded<LayerStatus::Warn>()){
+                shutdown(*pending_status);
+                thread_.reset();
+            }
         }
         catch( const ipa_canopen::Exception &e){
             std::string info = boost::diagnostic_information(e);
@@ -135,6 +139,7 @@ protected:
             res.error_message.data = info;
             pending_status->error(info);
             shutdown(*pending_status);
+            thread_.reset();
         }
         return true;
     }
