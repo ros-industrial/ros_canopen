@@ -193,11 +193,15 @@ void Node_402::pending(LayerStatus &status)
         case (1<<SW_Operation_specific1):
           LOG("Homing error , vel!=0");
           status.error("Homing error, vel!=0");
-          break;
+          cond_lock.unlock();
+          cond.notify_one();
+          return;
         case ((1<<SW_Operation_specific1) | (1<<SW_Target_reached)):
           LOG("Homing error, vel=0");
           status.error("Homing error, vel=0");
-          break;
+          cond_lock.unlock();
+          cond.notify_one();
+          return;
         case (1<<SW_Operation_specific1 | 1<<SW_Operation_specific0):
         case (1<<SW_Operation_specific1 | 1<<SW_Operation_specific0 | 1<<SW_Target_reached):
           LOG("Homing reserved");
@@ -332,7 +336,8 @@ void Node_402::recover(LayerStatus &status)
     {
       if (!motor_ready_)
       {
-        BOOST_THROW_EXCEPTION(TimeoutException());
+        status.error("Could not recover at an appropriate time.");
+        return;
       }
     }
   }
@@ -525,7 +530,6 @@ void Node_402::driveSettings()
     if (oldpos_ != target_pos_)
     {
       target_interpolated_position.set(target_pos_);
-      // LOG("Target Pos" << target_pos_ << "Actual Pos:" << ac_pos_);
       if (ip_mode_sub_mode.get_cached() == -1)
         target_interpolated_velocity.set(target_vel_);
       control_word_bitset.set(CW_Operation_mode_specific0);
@@ -551,9 +555,14 @@ void Node_402::driveSettings()
 void Node_402::write(LayerStatus &status)
 {
   if (state_ == Operation_Enable)
+  {
     driveSettings();
+  }
   else
+  {
+    motorShutdown();
     status.warn("Motor not in operation enabled state");
+  }
 
   int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
   control_word.set(cw_set);
@@ -726,7 +735,7 @@ void Node_402::init(LayerStatus &s)
     {
       motor_ready_ = false;
 
-      time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
+      time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(1);
 
       while (!motor_ready_)
       {
@@ -734,15 +743,17 @@ void Node_402::init(LayerStatus &s)
         {
           if (!motor_ready_)
           {
-            BOOST_THROW_EXCEPTION(TimeoutException());
+            s.error("Could not properly initialize the chain");
+            return;
           }
         }
       }
     }
-
-
     else
+    {
       s.error("Could not properly initialize the chain");
+      return;
+    }
   }
   else
     LOG("Propertly initialized module");
