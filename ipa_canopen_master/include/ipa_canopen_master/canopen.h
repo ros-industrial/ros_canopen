@@ -205,12 +205,14 @@ private:
     const boost::shared_ptr<ipa_can::CommInterface> interface_;
     const boost::shared_ptr<SyncCounter> sync_;
     ipa_can::CommInterface::FrameListener::Ptr nmt_listener_;
+    ipa_can::CommInterface::FrameListener::Ptr emcy_listener_;
     
     ObjectStorage::Entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16>::type> heartbeat_;
     
     ipa_can::SimpleDispatcher<StateListener> state_dispatcher_;
     
     void handleNMT(const ipa_can::Frame & msg);
+    void handleEMCY(const ipa_can::Frame & msg);
     void switchState(const uint8_t &s);
 
     State state_;

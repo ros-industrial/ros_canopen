@@ -114,6 +114,8 @@ void Node::handleNMT(const ipa_can::Frame & msg){
     cond.notify_one();
     
 }
+void Node::handleEMCY(const ipa_can::Frame & msg){
+}
 
 template<typename T> void Node::wait_for(const State &s, const T &timeout){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
@@ -164,6 +166,7 @@ void Node::diag(LayerReport &report){
 }
 void Node::init(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
+    emcy_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x080 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleEMCY));
 
     sdo_.init();
     try{
@@ -195,5 +198,6 @@ void Node::recover(LayerStatus &status){
 bool Node::shutdown(){
     stop();
     nmt_listener_.reset();
+    emcy_listener_.reset();
     return true;
 }
