@@ -274,20 +274,29 @@ void Node_402::getDeviceState(LayerStatus &status)
 void Node_402::switchMode(LayerStatus &status)
 {
   target_pos_ = ac_pos_;
-  target_vel_ = ac_vel_;
+  target_vel_ = 0;
+
   if (operation_mode_ == operation_mode_to_set_)
   {
     check_mode = false;
+    motorEnableOp();
+  }
+  else
+  {
+    op_mode.set(operation_mode_to_set_);
   }
 }
 
 bool Node_402::enterMode(const OperationMode &op_mode_var)
 {
-  op_mode.set(op_mode_var);
+  target_pos_ = ac_pos_;
+  target_vel_ = 0;
 
   operation_mode_to_set_ = op_mode_var;
 
   check_mode = true;
+
+  control_word_bitset.set(CW_Halt);
 
   return true;
 }
@@ -296,13 +305,9 @@ void Node_402::read(LayerStatus &status)
 {
   getDeviceState(status);
 
-  operation_mode_ = (OperationMode) op_mode_display.get();  // TODO(thiagodefreitas): check validity
+  operation_mode_ = (OperationMode) op_mode_display.get();
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
-  if (check_mode)
-  {
-    switchMode(status);
-  }
 }
 
 void Node_402::shutdown(LayerStatus &status)
@@ -321,6 +326,7 @@ void Node_402::halt(LayerStatus &status)
 
 void Node_402::recover(LayerStatus &status)
 {
+  configure_drive_ = true;
   motor_ready_ = false;
   time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
 
@@ -381,8 +387,6 @@ void Node_402::motorSwitchOnandEnableOp()
   control_word_bitset.reset(CW_Operation_mode_specific0);
   control_word_bitset.reset(CW_Operation_mode_specific1);
   control_word_bitset.reset(CW_Operation_mode_specific2);
-
-  configure_drive_ = true;
 }
 
 void Node_402::motorDisableVoltage()
@@ -431,8 +435,7 @@ void Node_402::motorEnableOp()
   control_word_bitset.reset(CW_Operation_mode_specific0);
   control_word_bitset.reset(CW_Operation_mode_specific1);
   control_word_bitset.reset(CW_Operation_mode_specific2);
-
-  configure_drive_ = true;
+  control_word_bitset.reset(CW_Halt);
 }
 
 void Node_402::motorFaultReset()
@@ -525,7 +528,6 @@ void Node_402::driveSettings()
     if (oldpos_ != target_pos_)
     {
       target_interpolated_position.set(target_pos_);
-      // LOG("Target Pos" << target_pos_ << "Actual Pos:" << ac_pos_);
       if (ip_mode_sub_mode.get_cached() == -1)
         target_interpolated_velocity.set(target_vel_);
       control_word_bitset.set(CW_Operation_mode_specific0);
@@ -535,7 +537,7 @@ void Node_402::driveSettings()
     }
     else
     {
-      control_word_bitset.reset(CW_Operation_mode_specific0);
+    //  control_word_bitset.reset(CW_Operation_mode_specific0);
       control_word_bitset.reset(CW_Operation_mode_specific1);
       control_word_bitset.reset(CW_Operation_mode_specific2);
     }
@@ -550,6 +552,11 @@ void Node_402::driveSettings()
 }
 void Node_402::write(LayerStatus &status)
 {
+  if (check_mode)
+  {
+    switchMode(status);
+  }
+
   if (state_ == Operation_Enable)
     driveSettings();
   else
@@ -621,12 +628,15 @@ const double Node_402::getActualInternalPos()
 
 void Node_402::setTargetVel(const double &target_vel)
 {
-  target_vel_ = target_vel;
+  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
+  {
+    target_vel_ = target_vel;
+  }
 }
 
 void Node_402::setTargetPos(const double &target_pos)
 {
-  if (state_ == target_state_)
+  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
   {
     target_pos_ = target_pos;
   }
@@ -691,6 +701,7 @@ bool Node_402::turnOff()
 void Node_402::init(LayerStatus &s)
 {
   motor_ready_ = false;
+  configure_drive_ = true;
 
   time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
 
