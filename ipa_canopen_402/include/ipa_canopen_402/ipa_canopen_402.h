@@ -289,6 +289,8 @@ private:
   OperationMode default_operation_mode_;
 
   bool configuring_node_;
+
+  bool recover_active_;
 };
 }  //  namespace ipa_canopen
 #endif  // IPA_CANOPEN_402_IPA_CANOPEN_402_H
