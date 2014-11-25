@@ -75,7 +75,7 @@ template <typename T> class JointHandleWriter : public hardware_interface::Joint
 public:
     const uint32_t mode_mask_;
     JointHandleWriter(const hardware_interface::JointStateHandle &jsh, T&  obj, void (T::*writer)(const double &), const double (T::*reader)(void), const uint32_t mode_mask)
-    : JointHandle(jsh, &value), obj_(obj), writer_(writer), reader_(reader), mode_mask_(mode_mask) {}
+    : JointHandle(jsh, &value), obj_(obj), writer_(writer), reader_(reader), mode_mask_(mode_mask) { read(); }
     void write() { (obj_.*writer_)(value); }
     void read() { value = (obj_.*reader_)(); }
 };
@@ -126,7 +126,7 @@ public:
         CommandMap::iterator it = commands_.find(m);
         if(it == commands_.end()) return false;
 
-        return motor_->enterMode(m) && select(m);
+        return motor_->enterModeAndWait(m) && select(m);
     }
 
     void registerHandle(hardware_interface::JointStateInterface &iface){
@@ -275,8 +275,33 @@ public:
         if(!to_switch.empty()){
             this_non_const->pause();
             for(SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-                it->first->switchMode(it->second);
+                // TODO: rollback
+                if(!it->first->switchMode(it->second)) return true;
             }
+            
+            ///call enforceLimits with large period in order to reset their internal prev_cmd_ value!
+            ros::Duration period(1000000000.0);
+            this_non_const->pos_saturation_interface_.enforceLimits(period);
+            this_non_const->pos_soft_limits_interface_.enforceLimits(period);
+            this_non_const->vel_saturation_interface_.enforceLimits(period);
+            this_non_const->vel_soft_limits_interface_.enforceLimits(period);
+            this_non_const->eff_saturation_interface_.enforceLimits(period);
+            this_non_const->eff_soft_limits_interface_.enforceLimits(period);
+
+            /*try{  ej_sat_interface_.enforceLimits(period);  }
+            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
+            try{  ej_limits_interface_.enforceLimits(period);  }
+            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
+            try{  pj_sat_interface_.enforceLimits(period);  }
+            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
+            try{  pj_limits_interface_.enforceLimits(period);  }
+            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
+            try{  vj_sat_interface_.enforceLimits(period);  }
+            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
+            try{  vj_limits_interface_.enforceLimits(period);  }
+            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
+            */
+
             this_non_const->resume();
         }
 
