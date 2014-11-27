@@ -278,8 +278,17 @@ void Node_402::switchMode(LayerStatus &status)
 
   if (operation_mode_ == operation_mode_to_set_)
   {
-    check_mode = false;
-    motorEnableOp();
+    if(state_ == Operation_Enable)
+    {
+        control_word_bitset.reset(CW_Halt);
+        check_mode = false;
+        motor_ready_ = true;
+        cond.notify_all();
+    }
+    else
+    { 
+        motorEnableOp();
+    }
   }
   else
   {
@@ -289,16 +298,40 @@ void Node_402::switchMode(LayerStatus &status)
 
 bool Node_402::enterMode(const OperationMode &op_mode_var)
 {
+  control_word_bitset.set(CW_Halt);
+  operation_mode_to_set_ = op_mode_var;
+  check_mode = true;
+  
   target_pos_ = ac_pos_;
   target_vel_ = 0;
 
-  operation_mode_to_set_ = op_mode_var;
-
-  check_mode = true;
-
-  control_word_bitset.set(CW_Halt);
-
   return true;
+}
+
+bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
+{
+    boost::mutex::scoped_lock cond_lock(cond_mutex);
+    
+    if(!isModeSupported(op_mode_var)){
+      LOG( "Mode " << (int)op_mode_var << " not supported");
+      return false;
+    }
+    
+    motor_ready_ = false;
+    
+    LOG( "Enter mode" << (int)op_mode_var);
+    enterMode(op_mode_var);
+    time_point t0 = get_abs_time(boost::chrono::seconds(10));
+  
+    while (!motor_ready_)
+    {
+      if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
+      {
+          LOG("Mode Timeout");
+          break;
+      }
+    }
+    return motor_ready_;
 }
 
 void Node_402::read(LayerStatus &status)
@@ -320,17 +353,17 @@ void Node_402::diag(LayerReport &report)
 
 void Node_402::halt(LayerStatus &status)
 {
-  control_word_bitset.set(CW_Halt);
+  //control_word_bitset.set(CW_Halt);
 }
 
 
 void Node_402::recover(LayerStatus &status)
 {
+  boost::mutex::scoped_lock cond_lock(cond_mutex);
+
   configure_drive_ = true;
   motor_ready_ = false;
   time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
-
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
 
   while (!motor_ready_)
   {
@@ -557,10 +590,12 @@ void Node_402::write(LayerStatus &status)
     switchMode(status);
   }
 
-  if (state_ == Operation_Enable)
+  else if (state_ == Operation_Enable)
+  {
     driveSettings();
+  }
   else
-    status.warn("Motor not in operation enabled state");
+    status.error("Motor not in operation enabled state");
 
   int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
   control_word.set(cw_set);
@@ -582,24 +617,21 @@ bool Node_402::isModeSupported(const OperationMode &op_mode)
 }
 uint32_t Node_402::getModeMask(const OperationMode &op_mode)
 {
-  SupportedOperationMode sup_mode = static_cast<SupportedOperationMode>((op_mode) - 1);
-
-  switch (op_mode)
-  {
-  case Sup_Profiled_Position:
-  case Sup_Velocity:
-  case Sup_Profiled_Velocity:
-  case Sup_Profiled_Torque:
-  case Sup_Interpolated_Position:
-  case Sup_Cyclic_Synchronous_Position:
-  case Sup_Cyclic_Synchronous_Velocity:
-  case Sup_Cyclic_Synchronous_Torque:
-  case Sup_Homing:
-    return (1 << (op_mode - 1));
-  case Sup_Reserved:
+    switch(op_mode){
+        case Profiled_Position:
+        case Velocity:
+        case Profiled_Velocity:
+        case Profiled_Torque:
+        case Interpolated_Position:
+        case Cyclic_Synchronous_Position:
+        case Cyclic_Synchronous_Velocity:
+        case Cyclic_Synchronous_Torque:
+        case Homing:
+            return (1<<(op_mode-1));
+        case No_Mode:       
+            return 0;
+    }
     return 0;
-  }
-  return 0;
 }
 bool Node_402::isModeMaskRunning(const uint32_t &mask)
 {
@@ -700,12 +732,12 @@ bool Node_402::turnOff()
 
 void Node_402::init(LayerStatus &s)
 {
+  boost::mutex::scoped_lock cond_lock(cond_mutex);
+
   motor_ready_ = false;
   configure_drive_ = true;
 
   time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
-
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
 
   Node_402::configureModeSpecificEntries();
 
