@@ -170,6 +170,7 @@ public:
 
   const OperationMode getMode();
   bool enterMode(const OperationMode &op_mode);
+  bool enterModeAndWait(const OperationMode &op_mode);
   bool isModeSupported(const OperationMode &op_mode);
   static uint32_t getModeMask(const OperationMode &op_mode);
   bool isModeMaskRunning(const uint32_t &mask);
