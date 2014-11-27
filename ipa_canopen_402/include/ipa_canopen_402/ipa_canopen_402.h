@@ -292,6 +292,22 @@ private:
   bool configuring_node_;
 
   bool recover_active_;
+  
+  /*template<typename Duration> bool waitMotorReady(const Duration &d){
+    time_point t0 = boost::chrono::high_resolution_clock::now() + d;
+  
+    boost::mutex::scoped_lock cond_lock(cond_mutex);
+    motor_ready_ = false;
+    while (!motor_ready_)
+    {
+      if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
+      {
+          break;
+      }
+    }
+    return motor_ready_;
+  }*/
+  
 };
 }  //  namespace ipa_canopen
 #endif  // IPA_CANOPEN_402_IPA_CANOPEN_402_H
