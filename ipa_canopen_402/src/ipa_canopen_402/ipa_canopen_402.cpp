@@ -371,7 +371,8 @@ void Node_402::recover(LayerStatus &status)
     {
       if (!motor_ready_)
       {
-        BOOST_THROW_EXCEPTION(TimeoutException());
+       status.error("Could not properly recover the chain");
+       return;
       }
     }
   }
@@ -757,7 +758,8 @@ void Node_402::init(LayerStatus &s)
     {
       if (!motor_ready_)
       {
-        BOOST_THROW_EXCEPTION(TimeoutException());
+        s.error("Could not properly initialize the chain");
+        return;
       }
     }
   }
@@ -777,7 +779,8 @@ void Node_402::init(LayerStatus &s)
         {
           if (!motor_ready_)
           {
-            BOOST_THROW_EXCEPTION(TimeoutException());
+              s.error("Could not properly initialize the chain");
+              return;
           }
         }
       }
@@ -785,7 +788,10 @@ void Node_402::init(LayerStatus &s)
 
 
     else
+    {
       s.error("Could not properly initialize the chain");
+      return;
+      }
   }
   else
     LOG("Propertly initialized module");
