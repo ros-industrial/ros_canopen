@@ -336,13 +336,10 @@ public:
         return cm_;
     }
     virtual bool report() { return true; }
-    virtual bool init() {
-        boost::mutex::scoped_lock lock(mutex_);
-        if(cm_) return false;
-
+    bool register_handles(){
         urdf::Model urdf;
         urdf.initParam("robot_description");
-        
+
         for(HandleMap::iterator it = handles_.begin(); it != handles_.end(); ++it){
             joint_limits_interface::JointLimits limits;
             joint_limits_interface::SoftJointLimits soft_limits;
@@ -393,7 +390,14 @@ public:
                 }
             }
         }
-        cm_.reset(new controller_manager::ControllerManager(this, nh_));
+		return true;
+    }
+		
+    virtual bool init() {
+        boost::mutex::scoped_lock lock(mutex_);
+        if(cm_) return false;
+
+		cm_.reset(new controller_manager::ControllerManager(this, nh_));
         recover_ = true;
         return true;
     }
@@ -448,7 +452,7 @@ public:
 
             add(cm_);
 
-            return true;
+            return cm_->register_handles();
         }
 
         return false;

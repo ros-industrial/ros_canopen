@@ -353,7 +353,7 @@ void Node_402::diag(LayerReport &report)
 
 void Node_402::halt(LayerStatus &status)
 {
-  //control_word_bitset.set(CW_Halt);
+  control_word_bitset.set(CW_Halt);
 }
 
 
