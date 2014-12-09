@@ -39,6 +39,7 @@ add_library(ipa_canopen_master
   src/objdict.cpp
   src/sdo.cpp
   src/pdo.cpp
+  src/emcy.cpp
   src/node.cpp
   src/master.cpp
 )

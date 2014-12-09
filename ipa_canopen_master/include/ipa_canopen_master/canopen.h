@@ -138,6 +138,20 @@ public:
     void init(const boost::shared_ptr<ObjectStorage> storage);
 };
 
+class EMCYHandler{
+    uint8_t error_register_;
+    ObjectStorage::Entry<uint8_t> error_register_obj_;
+    ObjectStorage::Entry<uint8_t> num_errors_;
+    ipa_can::CommInterface::FrameListener::Ptr emcy_listener_;
+    void handleEMCY(const ipa_can::Frame & msg);
+    const boost::shared_ptr<ObjectStorage> storage_;
+public:
+    virtual void diag(LayerReport &report);
+    virtual void read(LayerReport &report);
+    const uint8_t error_register();
+    EMCYHandler(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage);
+};
+
 struct SyncProperties{
     const ipa_can::Header header_;
     const boost::posix_time::time_duration period_;
@@ -205,19 +219,17 @@ private:
     const boost::shared_ptr<ipa_can::CommInterface> interface_;
     const boost::shared_ptr<SyncCounter> sync_;
     ipa_can::CommInterface::FrameListener::Ptr nmt_listener_;
-    ipa_can::CommInterface::FrameListener::Ptr emcy_listener_;
     
     ObjectStorage::Entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16>::type> heartbeat_;
     
     ipa_can::SimpleDispatcher<StateListener> state_dispatcher_;
     
     void handleNMT(const ipa_can::Frame & msg);
-    void handleEMCY(const ipa_can::Frame & msg);
     void switchState(const uint8_t &s);
 
     State state_;
     SDOClient sdo_;
-    //EMCYHandler emcy;
+    EMCYHandler emcy_;
     PDOMapper pdo_;
 
     boost::chrono::high_resolution_clock::time_point heartbeat_timeout_;

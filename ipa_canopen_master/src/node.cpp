@@ -28,7 +28,7 @@ struct NMTcommand{
 #pragma pack(pop) /* pop previous alignment from stack */
 
 Node::Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync)
-: SimpleLayer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
+: SimpleLayer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), emcy_(interface, getStorage()), pdo_(interface){
     getStorage()->entry(heartbeat_, 0x1017);
 }
     
@@ -114,9 +114,6 @@ void Node::handleNMT(const ipa_can::Frame & msg){
     cond.notify_one();
     
 }
-void Node::handleEMCY(const ipa_can::Frame & msg){
-}
-
 template<typename T> void Node::wait_for(const State &s, const T &timeout){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     time_point abs_time = get_abs_time(timeout);
@@ -166,7 +163,6 @@ void Node::diag(LayerReport &report){
 }
 void Node::init(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
-    emcy_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x080 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleEMCY));
 
     sdo_.init();
     try{
@@ -198,6 +194,5 @@ void Node::recover(LayerStatus &status){
 bool Node::shutdown(){
     stop();
     nmt_listener_.reset();
-    emcy_listener_.reset();
     return true;
 }
