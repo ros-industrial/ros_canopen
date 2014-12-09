@@ -13,14 +13,12 @@ class LayerStatus{
         OK = 0, WARN = 1, ERROR= 2, STALE = 3, UNBOUNDED = 3
     };
     boost::atomic<State> state;
-    void set(const State &s){
+    std::string reason_;
+
+    virtual void set(const State &s, const std::string &r){
         boost::mutex::scoped_lock lock(write_mutex_);
         if(s > state) state = s;
-    }
-    std::string reason_;
-    void reason(const std::string &r){
         if(!r.empty()){
-            boost::mutex::scoped_lock lock(write_mutex_);
             if(reason_.empty())  reason_ = r;
             else reason_ += "; " + r;
         }
@@ -40,9 +38,9 @@ public:
     
     const std::string reason() const { boost::mutex::scoped_lock lock(write_mutex_); return reason_; }
 
-    const void warn(const std::string & r = "") { reason(r); set(WARN); }
-    const void error(const std::string & r = "") { reason(r); set(ERROR); }
-    const void stale(const std::string & r = "") { reason(r); set(STALE); }
+    const void warn(const std::string & r = "") { set(WARN, r); }
+    const void error(const std::string & r = "") { set(ERROR, r); }
+    const void stale(const std::string & r = "") { set(STALE, r); }
 };
 class LayerReport : public LayerStatus {
     std::vector<std::pair<std::string, std::string> > values_;
