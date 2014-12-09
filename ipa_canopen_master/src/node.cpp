@@ -28,7 +28,7 @@ struct NMTcommand{
 #pragma pack(pop) /* pop previous alignment from stack */
 
 Node::Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync)
-: SimpleLayer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), emcy_(interface, getStorage()), pdo_(interface){
+: Layer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), emcy_(interface, getStorage()), pdo_(interface){
     getStorage()->entry(heartbeat_, 0x1017);
 }
     
@@ -141,14 +141,14 @@ bool Node::checkHeartbeat(){
 }
 
 
-bool Node::read(){
-    if(!checkHeartbeat()) return false;
-    if(getState() != Operational) return false;
-    return pdo_.read();
+void Node::read(LayerStatus &status){
+    if(!checkHeartbeat()) status.error("heartbeat problem");
+    else if(getState() != Operational)  status.error("not operational");
+    else if(! pdo_.read())  status.error("PDO read problem");
 }
-bool Node::write(){
-    if(getState() != Operational) return false;
-    return pdo_.write();
+void Node::write(LayerStatus &status){
+    if(getState() != Operational)  status.error("not operational");
+    else if(! pdo_.write())  status.error("PDO write problem");
 }
 
 
@@ -191,8 +191,10 @@ void Node::recover(LayerStatus &status){
     }
 
 }
-bool Node::shutdown(){
+void Node::shutdown(LayerStatus &status){
     stop();
     nmt_listener_.reset();
-    return true;
+}
+void Node::halt(LayerStatus &status){
+    // do nothing
 }

@@ -169,7 +169,7 @@ public:
     virtual  void removeNode(void * const ptr) = 0;
 };
 
-class Node : public SimpleLayer{
+class Node : public Layer{
 public:
     enum State{
         Unknown = 255, BootUp = 0, Stopped = 4, Operational = 5 , PreOperational = 127
@@ -199,15 +199,15 @@ public:
         return getStorage()->entry<T>(k).get();
     }
 
-    virtual bool read();
-    virtual bool write();
+    
     virtual void diag(LayerReport &report);
-    virtual bool report() { return false; } //unused
+    
     virtual void init(LayerStatus &status);
-    virtual bool init() { return false; } //unused
     virtual void recover(LayerStatus &status);
-    virtual bool recover() { return false; } //unused
-    virtual bool shutdown();
+    virtual void read(LayerStatus &status);
+    virtual void write(LayerStatus &status);
+    virtual void halt(LayerStatus &status);
+    virtual void shutdown(LayerStatus &status);
     
 private:
     template<typename T> void wait_for(const State &s, const T &timeout);
