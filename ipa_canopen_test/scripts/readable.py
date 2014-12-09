@@ -11,6 +11,10 @@ PDOs={
 "TPDO3": [("actual_position",4),("actual_velocity",4)],
 
 }
+
+def hex_reverse(data):
+    return ''.join(reversed([data[i:i+2] for i in xrange(0, len(data), 2)]))
+    
 def decode_state(id,data):
     state = int(data[0],16)
 
@@ -62,7 +66,7 @@ def decode_pdo(id,data, name, start_id):
 
     i = 0
     for d in PDOs[name]:
-        out += [d[0],data[i:i+2*d[1] ]]
+        out += [d[0],hex_reverse(data[i:i+2*d[1] ])]
         i +=2*d[1]
     return [name, id-start_id]+out
     
@@ -70,11 +74,11 @@ def decode_sdo(id,data, name, start_id):
     command = int(data[0:2],16) >> 5
     out = [name, id-start_id]
     if command == 1 or command == 2 or command == 3:
-        out += [data[2:6], data[6:8]]
+        out += [hex_reverse(data[2:6]), data[6:8]]
     return out
 
 def decode_emcy(id,data):
-    return [ "EMCY", id - 0x80,  "EEC:", data[0:4], "Reg:", data[4:6],"Msef: ",data[6:16]]
+    return [ "EMCY", id - 0x80,  "EEC:", hex_reverse(data[0:4]), "Reg:", data[4:6],"Msef: ",data[6:16]]
     pass
     
 def decode_canopen(id,data):
