@@ -38,30 +38,20 @@ public:
    const double getTargetEff() { return Node_402::getTargetEff() / scale_factor; }
 };
 
-
-
-template <typename T> class JointHandleWriter : public hardware_interface::JointHandle {
-    double value;
-    T & obj_;
-    void (T::*writer_)(const double &);
-    const double (T::*reader_)(void);
-public:
-    const uint32_t mode_mask_;
-    JointHandleWriter(const hardware_interface::JointStateHandle &jsh, T&  obj, void (T::*writer)(const double &), const double (T::*reader)(void), const uint32_t mode_mask)
-    : JointHandle(jsh, &value), obj_(obj), writer_(writer), reader_(reader), mode_mask_(mode_mask) { read(); }
-    void write() { (obj_.*writer_)(value); }
-    void read() { value = (obj_.*reader_)(); }
-};
-
 class HandleLayer: public SimpleLayer{
     boost::shared_ptr<MotorNode> motor_;
-    double pos, vel, eff;
-    hardware_interface::JointStateHandle jsh;
-    typedef JointHandleWriter<MotorNode> CommandWriter;
-    typedef boost::unordered_map< MotorNode::OperationMode, boost::shared_ptr<CommandWriter> > CommandMap;
+    double pos_, vel_, eff_;
+    double cmd_pos_, cmd_vel_, cmd_eff_;
+
+    
+    hardware_interface::JointStateHandle jsh_;
+    hardware_interface::JointHandle jph_, jvh_, jeh_, *jh_;
+    
+    typedef boost::unordered_map< MotorNode::OperationMode,hardware_interface::JointHandle* > CommandMap;
     CommandMap commands_;
 
-    template <typename T> hardware_interface::JointHandle* addHandle( T &iface, void (MotorNode::*writer)(const double &), const double (MotorNode::*reader)(void), const std::vector<MotorNode::OperationMode> & modes){
+    template <typename T> hardware_interface::JointHandle* addHandle( T &iface, hardware_interface::JointHandle *jh,  const std::vector<MotorNode::OperationMode> & modes){
+
         uint32_t mode_mask = 0;
         for(size_t i=0; i < modes.size(); ++i){
             if(motor_->isModeSupported(modes[i]))
@@ -69,26 +59,22 @@ class HandleLayer: public SimpleLayer{
         }
         if(mode_mask == 0) return 0;
 
-        boost::shared_ptr<CommandWriter> jhw (new CommandWriter(jsh, *motor_, writer, reader, mode_mask));
-
-        iface.registerHandle(*jhw);
+        iface.registerHandle(*jh);
+        
         for(size_t i=0; i < modes.size(); ++i){
-            commands_[modes[i]] = jhw;
+            commands_[modes[i]] = jh;
         }
-        return jhw.get();
+        return jh;
     }
-    boost::shared_ptr<CommandWriter> jhw_;
     bool select(const MotorNode::OperationMode &m){
         CommandMap::iterator it = commands_.find(m);
         if(it == commands_.end()) return false;
-
-        jhw_ = it->second;
-        jhw_->read();
+        jh_ = it->second;
         return true;
     }
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor)
-    : SimpleLayer(name + " Handle"), motor_(motor), jsh(name, &pos, &vel, &eff) {}
+    : SimpleLayer(name + " Handle"), motor_(motor), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {}
 
     int canSwitch(const MotorNode::OperationMode &m){
        if(motor_->getMode() == m) return -1;
@@ -103,57 +89,65 @@ public:
     }
 
     void registerHandle(hardware_interface::JointStateInterface &iface){
-        iface.registerHandle(jsh);
+        iface.registerHandle(jsh_);
     }
     hardware_interface::JointHandle* registerHandle(hardware_interface::PositionJointInterface &iface){
         std::vector<MotorNode::OperationMode> modes;
         modes.push_back(MotorNode::Profiled_Position);
         modes.push_back(MotorNode::Interpolated_Position);
         modes.push_back(MotorNode::Cyclic_Synchronous_Position);
-        return addHandle(iface, &MotorNode::setTargetPos, &MotorNode::getTargetPos, modes);
+        return addHandle(iface, &jph_, modes);
     }
     hardware_interface::JointHandle* registerHandle(hardware_interface::VelocityJointInterface &iface){
         std::vector<MotorNode::OperationMode> modes;
         modes.push_back(MotorNode::Velocity);
         modes.push_back(MotorNode::Profiled_Velocity);
         modes.push_back(MotorNode::Cyclic_Synchronous_Velocity);
-        return addHandle(iface,&MotorNode::setTargetVel, &MotorNode::getTargetVel, modes);
+        return addHandle(iface, &jvh_, modes);
     }
     hardware_interface::JointHandle* registerHandle(hardware_interface::EffortJointInterface &iface){
         std::vector<MotorNode::OperationMode> modes;
         modes.push_back(MotorNode::Profiled_Torque);
         modes.push_back(MotorNode::Cyclic_Synchronous_Torque);
-        return addHandle(iface,&MotorNode::setTargetEff, &MotorNode::getTargetEff, modes);
+        return addHandle(iface, &jeh_, modes);
     }
     virtual bool read() {
         bool okay = true;
         // okay = motor.okay();
         if(okay){
-            pos = motor_->getActualPos();
-            vel = motor_->getActualVel();
-            eff = motor_->getActualEff();
-            if(!jhw_){
+            cmd_pos_ = pos_ = motor_->getActualPos();
+            cmd_vel_ = vel_ = motor_->getActualVel();
+            cmd_eff_ = eff_ = motor_->getActualEff();
+            if(!jh_){
                 MotorNode::OperationMode m = motor_->getMode();
                 if(m != MotorNode::No_Mode) return select(m);
             }
-            if(jhw_){
-                jhw_->read();
+            if(jh_ == &jph_){
+                cmd_pos_ = motor_->getTargetPos();
+            }else if(jh_ == &jvh_){
+                cmd_vel_ = motor_->getTargetVel();
+            }else if(jh_ == &jeh_){
+                cmd_eff_ = motor_->getTargetEff();
             }
         }
         return okay;
     }
     virtual bool write() {
-        if(jhw_){
-            jhw_->write();
+        if(jh_){
+            if(jh_ == &jph_){
+                motor_->setTargetPos(cmd_pos_);
+            }else if(jh_ == &jvh_){
+                motor_->setTargetVel(cmd_vel_);
+            }else if(jh_ == &jeh_){
+                motor_->setTargetEff(cmd_eff_);
+            }
             return true;
         }
         return motor_->getMode() == MotorNode::No_Mode;
     }
     virtual bool report() { return true; }
     virtual bool init() {
-        CommandMap::iterator it = commands_.find(motor_->getMode());
-        if(it != commands_.end()) jhw_ = it->second;
-
+        select(motor_->getMode());
         return true;
     }
     virtual bool recover() {
