@@ -160,6 +160,7 @@ void Node::diag(LayerReport &report){
     }else if(!checkHeartbeat()){
         report.error("Heartbeat timeout");
     }
+    emcy_.diag(report);
 }
 void Node::init(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
