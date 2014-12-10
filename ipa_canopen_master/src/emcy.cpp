@@ -72,9 +72,8 @@ void EMCYHandler::diag(LayerReport &report){
 
     }
 }
-EMCYHandler::EMCYHandler(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): storage_ (storage){
+EMCYHandler::EMCYHandler(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): storage_ (storage), error_register_(0xFF){
     storage_->entry(error_register_obj_, 0x1001);
-    error_register_ = error_register_obj_.get();
 
     storage_->entry(num_errors_, 0x1003,0);
 
