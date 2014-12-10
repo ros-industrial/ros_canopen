@@ -158,30 +158,8 @@ public:
     }
 };
 
-class ControllerManagerLayer : public SimpleLayer, public hardware_interface::RobotHW {
-    ros::NodeHandle nh_;
-    boost::shared_ptr<controller_manager::ControllerManager> cm_;
-    boost::mutex mutex_;
-    bool recover_;
-    bool paused_;
-    ros::Time last_time_;
-    ControllerManagerLayer * this_non_const;
-    
-    void update(){
-        ros::Time now = ros::Time::now();
-        ros::Duration period(now -last_time_);
-        cm_->update(now, period, recover_);
-        recover_ = false;
-        last_time_ = now;
 
-        pos_saturation_interface_.enforceLimits(period);
-        pos_soft_limits_interface_.enforceLimits(period);
-        vel_saturation_interface_.enforceLimits(period);
-        vel_soft_limits_interface_.enforceLimits(period);
-        eff_saturation_interface_.enforceLimits(period);
-        eff_soft_limits_interface_.enforceLimits(period);
-    }
-
+class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interface::RobotHW{
     hardware_interface::JointStateInterface state_interface_;
     hardware_interface::PositionJointInterface pos_interface_;
     hardware_interface::VelocityJointInterface vel_interface_;
@@ -193,32 +171,18 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
     joint_limits_interface::VelocityJointSaturationInterface vel_saturation_interface_;
     joint_limits_interface::EffortJointSoftLimitsInterface eff_soft_limits_interface_;
     joint_limits_interface::EffortJointSaturationInterface eff_saturation_interface_;
-    
+
+    ros::NodeHandle nh_;
+
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
-
-    void pause(){
-        boost::mutex::scoped_lock lock(mutex_);
-        if(cm_) paused_ = true;
-    }
-    void resume(){
-        boost::mutex::scoped_lock lock(mutex_);
-        if(paused_){
-            paused_ = false;
-            recover_ = true;
-        }
-    }
-    
 public:
-    virtual bool checkForConflict(const std::list<hardware_interface::ControllerInfo>& info) const{
-        bool in_conflict = RobotHW::checkForConflict(info);
-        if(in_conflict) return true;
+    typedef std::vector<std::pair <boost::shared_ptr<HandleLayer>, MotorNode::OperationMode> >  SwitchContainer;
 
-        typedef std::vector<std::pair <boost::shared_ptr<HandleLayer>, MotorNode::OperationMode> >  SwitchContainer;
-        SwitchContainer to_switch;
+    virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &info_list, SwitchContainer &to_switch) {
         to_switch.reserve(handles_.size());
 
-        for (std::list<hardware_interface::ControllerInfo>::const_iterator info_it = info.begin(); info_it != info.end(); ++info_it){
+        for (std::list<hardware_interface::ControllerInfo>::const_iterator info_it = info_list.begin(); info_it != info_list.end(); ++info_it){
             ros::NodeHandle nh(nh_,info_it->name);
             int mode;
             if(!nh.getParam("required_drive_mode", mode)) continue;
@@ -228,59 +192,29 @@ public:
 
                 if(h_it == handles_.end()){
                     ROS_ERROR_STREAM(*res_it << " not found");
-                    return true;
+                    return false;
                 }
                 if(int res = h_it->second->canSwitch((MotorNode::OperationMode)mode)){
                     if(res > 0) to_switch.push_back(std::make_pair(h_it->second, MotorNode::OperationMode(mode)));
                 }else{
                     ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
-                    return true;
+                    return false;
                 }
             }
         }
-
-        if(!to_switch.empty()){
-            this_non_const->pause();
-            for(SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-                // TODO: rollback
-                if(!it->first->switchMode(it->second)) return true;
-            }
-            
-            ///call enforceLimits with large period in order to reset their internal prev_cmd_ value!
-            ros::Duration period(1000000000.0);
-            this_non_const->pos_saturation_interface_.enforceLimits(period);
-            this_non_const->pos_soft_limits_interface_.enforceLimits(period);
-            this_non_const->vel_saturation_interface_.enforceLimits(period);
-            this_non_const->vel_soft_limits_interface_.enforceLimits(period);
-            this_non_const->eff_saturation_interface_.enforceLimits(period);
-            this_non_const->eff_soft_limits_interface_.enforceLimits(period);
-
-            /*try{  ej_sat_interface_.enforceLimits(period);  }
-            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
-            try{  ej_limits_interface_.enforceLimits(period);  }
-            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
-            try{  pj_sat_interface_.enforceLimits(period);  }
-            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
-            try{  pj_limits_interface_.enforceLimits(period);  }
-            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
-            try{  vj_sat_interface_.enforceLimits(period);  }
-            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
-            try{  vj_limits_interface_.enforceLimits(period);  }
-            catch(const joint_limits_interface::JointLimitsInterfaceException&){}
-            */
-
-            this_non_const->resume();
-        }
-
-        return false;
+        return true;
     }
 
-    ControllerManagerLayer(const ros::NodeHandle &nh)
-    :SimpleLayer("ControllerManager"), nh_(nh), recover_(false), paused_(false), last_time_(ros::Time::now()), this_non_const(this) {
+    void add(const std::string &name, boost::shared_ptr<HandleLayer> handle){
+        LayerGroupNoDiag::add(handle);
+        handles_.insert(std::make_pair(name, handle));
+    }
+    RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh) {
         registerInterface(&state_interface_);
         registerInterface(&pos_interface_);
         registerInterface(&vel_interface_);
         registerInterface(&eff_interface_);
+
 
         registerInterface(&pos_saturation_interface_);
         registerInterface(&pos_soft_limits_interface_);
@@ -288,22 +222,11 @@ public:
         registerInterface(&vel_soft_limits_interface_);
         registerInterface(&eff_saturation_interface_);
         registerInterface(&eff_soft_limits_interface_);
+
         
     }
 
-    virtual bool read() {
-        boost::mutex::scoped_lock lock(mutex_);
-        return cm_;
-    }
-    virtual bool write()  {
-        boost::mutex::scoped_lock lock(mutex_);
-        if(cm_ && !paused_){
-            update();
-        }
-        return cm_;
-    }
-    virtual bool report() { return true; }
-    bool register_handles(){
+    virtual void init(LayerStatus &status){
         urdf::Model urdf;
         urdf.initParam("robot_description");
 
@@ -312,8 +235,10 @@ public:
             joint_limits_interface::SoftJointLimits soft_limits;
 
             boost::shared_ptr<const urdf::Joint> joint = urdf.getJoint(it->first);
+            
             if(!joint){
-                return false;
+                status.error("joint " + it->first + " not found");
+                return;
             }
 
             bool has_joint_limits = joint_limits_interface::getJointLimits(joint, limits);
@@ -329,6 +254,7 @@ public:
             it->second->registerHandle(state_interface_);
 
             const hardware_interface::JointHandle *h  = 0;
+            
             h = it->second->registerHandle(pos_interface_);
             if(h && has_joint_limits){
                 joint_limits_interface::PositionJointSaturationHandle sathandle(*h, limits);
@@ -356,50 +282,114 @@ public:
                     eff_soft_limits_interface_.registerHandle(softhandle);
                 }
             }
+
         }
-		return true;
+        LayerGroupNoDiag::init(status);
     }
+
+    void enforce(const ros::Duration &period){
+        pos_saturation_interface_.enforceLimits(period);
+        pos_soft_limits_interface_.enforceLimits(period);
+        vel_saturation_interface_.enforceLimits(period);
+        vel_soft_limits_interface_.enforceLimits(period);
+        eff_saturation_interface_.enforceLimits(period);
+        eff_soft_limits_interface_.enforceLimits(period);
+    }
+    
+};
+
+ class ControllerManager : public controller_manager::ControllerManager{
+    boost::shared_ptr<RobotLayer> robot_;
+
+    bool recover_;
+    bool paused_;
+    ros::Time last_time_;
+ public:
+    virtual bool notifyHardwareInterface(const std::list<hardware_interface::ControllerInfo> &info_list) {
+        RobotLayer::SwitchContainer to_switch;
+
+        if(!robot_->canSwitch(info_list, to_switch)) return false;
+
+        if(!to_switch.empty()){
+            paused_ = true;
+            for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
+                if(!it->first->switchMode(it->second)) return false;
+            }
+            recover_ = true;
+            paused_ = false;
+        }
+
+        return true;
+
+    }
+
+    void update(){
+        ros::Time now = ros::Time::now();
+        ros::Duration period(now -last_time_);
+        if(!paused_){
+            controller_manager::ControllerManager::update(now, period, recover_);
+            recover_ = false;
+        }
+        robot_->enforce(period);
+    }
+
+    void recover() { recover_ = true; }
+    
+    ControllerManager(boost::shared_ptr<RobotLayer> robot, ros::NodeHandle nh)  : controller_manager::ControllerManager(robot.get(), nh), robot_(robot), recover_(false), paused_(false), last_time_(ros::Time::now()) {}
+ };
+
+class ControllerManagerLayer : public SimpleLayer {
+    boost::shared_ptr<ControllerManager> cm_;
+    boost::shared_ptr<RobotLayer> robot_;
+    ros::NodeHandle nh_;
+    
+public:
+    ControllerManagerLayer(const boost::shared_ptr<RobotLayer> robot, const ros::NodeHandle &nh)
+    :SimpleLayer("ControllerManager"), robot_(robot), nh_(nh) {
+    }
+
+    virtual bool read() {
+        return cm_;
+    }
+    virtual bool write()  {
+        if(cm_) cm_->update();
+        return cm_;
+    }
+    virtual bool report() { return true; }
 		
     virtual bool init() {
-        boost::mutex::scoped_lock lock(mutex_);
         if(cm_) return false;
-
-		cm_.reset(new controller_manager::ControllerManager(this, nh_));
-        recover_ = true;
+        cm_.reset(new ControllerManager(robot_, nh_));
+        cm_->recover();
         return true;
     }
     virtual bool recover() {
-        boost::mutex::scoped_lock lock(mutex_);
         if(!cm_) return false;
-        recover_ = true;
+        cm_->recover();
         return true;
     }
     virtual bool shutdown(){
-        boost::mutex::scoped_lock lock(mutex_);
-        if(cm_) cm_.reset();
+        cm_.reset();
         return true;
     }
-    void add(const std::string &name, boost::shared_ptr<HandleLayer> handle){
-        handles_.insert(std::make_pair(name, handle));
-    }
-
 };
 
 class MotorChain : RosChain<ThreadedSocketCANInterface, SharedMaster>{
-    boost::shared_ptr< LayerGroup<MotorNode> > motors_;
-    boost::shared_ptr< LayerGroup<HandleLayer> > handle_layer_;
+    boost::shared_ptr< LayerGroupNoDiag<MotorNode> > motors_;
+    boost::shared_ptr<RobotLayer> robot_layer_;
 
     boost::shared_ptr< ControllerManagerLayer> cm_;
 
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node)
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node, const boost::shared_ptr<Logger> &logger)
     {
         std::string name = module["name"];
         boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor"));
         motors_->add(motor);
+        logger->add(motor);
 
         boost::shared_ptr<HandleLayer> handle( new HandleLayer(name, motor));
-        handle_layer_->add(handle);
-        cm_->add(name, handle);
+        robot_layer_->add(name, handle);
+        logger->add(handle);
 
         return true;
     }
@@ -408,18 +398,17 @@ public:
     MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv){}
     
     virtual bool setup() {
-        motors_.reset( new LayerGroup<MotorNode>("402 Layer"));
-        handle_layer_.reset( new LayerGroup<HandleLayer>("Handle Layer"));
-        cm_.reset(new ControllerManagerLayer(nh_));
+        motors_.reset( new LayerGroupNoDiag<MotorNode>("402 Layer"));
+        robot_layer_.reset( new RobotLayer(nh_));
+        cm_.reset(new ControllerManagerLayer(robot_layer_, nh_));
 
         if(RosChain::setup()){
-            boost::mutex::scoped_lock lock(mutex_);
             add(motors_);
-            add(handle_layer_);
+            add(robot_layer_);
 
             add(cm_);
 
-            return cm_->register_handles();
+            return true;
         }
 
         return false;
