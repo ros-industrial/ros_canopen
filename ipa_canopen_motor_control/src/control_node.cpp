@@ -16,33 +16,6 @@
 
 #include <controller_manager/controller_manager.h>
 
-//// Dummy class
-//class MotorNode : public ipa_canopen::SimpleLayer{
-//    boost::shared_ptr <ipa_canopen::Node> n_;
-//    volatile bool running;
-//    ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
-
-//public:
-//    MotorNode(boost::shared_ptr <ipa_canopen::Node> n) : SimpleLayer("MotorNode"), n_(n) {
-//        n->getStorage()->entry(actual_pos, 0x6064);
-//    }
-//    virtual bool read() { return true; }
-//    virtual bool write() { return true; }
-//    virtual bool report() { return true; }
-//    virtual bool init() { running = true; return true; }
-//    virtual bool recover()  { return true; }
-//    virtual bool shutdown() { running = false; return true; }
-//    const double getActualPos() { return running?actual_pos.get():0; }
-//    const double getActualVel() { return 0.0; }
-//    const double getActualEff() { return 0.0; }
-//    void setTargetPos(const double &v) {}
-//    void setTargetVel(const double &v) {}
-//    void setTargetEff(const double &v) {}
-//    const double getTargetPos() { return 0.0; }
-//    const double getTargetVel() { return 0.0; }
-//    const double getTargetEff() { return 0.0; }
-//};
-
 using namespace ipa_can;
 using namespace ipa_canopen;
 
