@@ -21,18 +21,28 @@ template<typename T> bool read_xmlrpc_or_praram(T &val, const std::string &name,
     return nh.getParam(name, val);
 }
 
-template<typename NodeType> class Logger{
-    boost::weak_ptr<NodeType> node_;
+class Logger: public DiagGroup<ipa_canopen::Layer>{
+    const boost::shared_ptr<ipa_canopen::Node> node_;
+    
     std::vector<boost::function< void (diagnostic_updater::DiagnosticStatusWrapper &)> > entries_;
     
     template<typename T> void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, const std::string &name, const ObjectDict::Key &key){
-        boost::shared_ptr<NodeType> node = node_.lock();
-        if(node){
-            stat.add(name, node->template get<T>(key));
-        }
+        stat.add(name, node_->template get<T>(key));
     }
+
+    class LayerStatReport : public ipa_canopen::LayerReport {
+        diagnostic_updater::DiagnosticStatusWrapper &stat;
+        virtual void add(const std::pair<const std::string, const std::string> &p){
+            stat.add(p.first, p.second);
+        }
+    public:
+        LayerStatReport(diagnostic_updater::DiagnosticStatusWrapper &s) : stat(s) {}
+
+    };
+    
 public:
-    Logger(boost::shared_ptr<NodeType> node):  node_(node) {}
+    Logger(boost::shared_ptr<ipa_canopen::Node> node):  node_(node) { add(node_); }
+    
     template<typename T> void add(const std::string &name, const ObjectDict::Key &key){
             entries_.push_back(boost::bind(&Logger::log_entry<T>, this, _1, name, key));
     }
@@ -43,16 +53,16 @@ public:
         branch_type<Logger, void (Logger &, const std::string &, const ObjectDict::Key &)>(data_type)(*this,name, key);
     }
 
-    virtual void log(diagnostic_updater::DiagnosticStatusWrapper &stat){
-        boost::shared_ptr<NodeType> node = node_.lock();
-        if(node){
-            stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "Active");
-            if(node->getState() == ipa_canopen::Node::Operational)
-                for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat);
-            //ROS_INFO_STREAM(node->getStorage()->template entry<std::string>(0x1008).get_once());
-            //stat.add("desc",std::string());
+    template<typename T> void add(const boost::shared_ptr<T> &n){
+        DiagGroup::add(boost::static_pointer_cast<ipa_canopen::Layer>(n));
+    }
 
-        }
+    virtual void log(diagnostic_updater::DiagnosticStatusWrapper &stat){
+        LayerStatReport report(stat);
+        diag(report);
+        stat.summary(report.get(), report.reason());
+
+        // for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat); TODO
     }
     virtual ~Logger() {}
 };
@@ -63,7 +73,10 @@ protected:
     
     boost::shared_ptr<InterfaceType> interface_;
     boost::shared_ptr<MasterType> master_;
-    boost::shared_ptr<ipa_canopen::LayerGroup<ipa_canopen::Node> > nodes_;
+    boost::shared_ptr<ipa_canopen::LayerGroupNoDiag<ipa_canopen::Node> > nodes_;
+
+    std::vector<boost::shared_ptr<ipa_canopen::DiagGroup<ipa_canopen::Layer> > > diags_;
+
     boost::shared_ptr<ipa_canopen::SyncLayer> sync_;
 
     ipa_can::StateInterface::StateListener::Ptr state_listener_;
@@ -274,7 +287,7 @@ protected:
         return true;
     }
     bool setup_nodes(){
-        nodes_.reset(new ipa_canopen::LayerGroup<ipa_canopen::Node>("301 layer"));
+        nodes_.reset(new ipa_canopen::LayerGroupNoDiag<ipa_canopen::Node>("301 layer"));
         add(nodes_);
 
         XmlRpc::XmlRpcValue modules;
@@ -313,18 +326,19 @@ protected:
                 return false;
             }
             boost::shared_ptr<ipa_canopen::Node> node = boost::make_shared<ipa_canopen::Node>(interface_, dict, node_id, sync_);
-            
-            if(!nodeAdded(module, node)) return false;
 
-            boost::shared_ptr<Logger<ipa_canopen::Node> > logger = boost::make_shared<Logger<ipa_canopen::Node> >(node);
+            boost::shared_ptr<Logger> logger = boost::make_shared<Logger>(node);
+
+            if(!nodeAdded(module, node, logger)) return false;
+
             //logger->add(4,"pos", ipa_canopen::ObjectDict::Key(0x6064));
-            diag_updater_.add(name, boost::bind(&Logger<Node>::log, logger, _1));
+            //diag_updater_.add(name, boost::bind(&Logger::log, logger, _1));
             
             nodes_->add(node);
         }
         return true;
     }
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node) { return true; }
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         boost::mutex::scoped_lock lock(mutex_);
         LayerReport r;
