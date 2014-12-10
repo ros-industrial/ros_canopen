@@ -259,6 +259,24 @@ public:
     LayerGroup(const std::string &n) : Layer(n) {}
 };
 
+template<typename T> class LayerGroupNoDiag : public LayerGroup<T>{
+public:
+    LayerGroupNoDiag(const std::string &n) : LayerGroup<T>(n) {}
+    virtual void diag(LayerReport &report){
+        // no report
+    }
+};
+
+template<typename T> class DiagGroup : public VectorHelper<T>{
+    typedef VectorHelper<T> V;
+public:
+    virtual void diag(LayerReport &report){
+        this->template call(&Layer::diag, report, this->layers.begin(), this->layers.end());
+    }
+};
+
+
+
 } // namespace ipa_canopen
 
 #endif
