@@ -160,6 +160,7 @@ public:
         if(it != end){
             LayerStatus omit;
             call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it));
+            call(&Layer::read, omit, it+1, end);
         }
     }
     virtual void pending(LayerStatus &status){
@@ -178,10 +179,12 @@ public:
             boost::mutex::scoped_lock lock(end_mutex_);
             begin = vector_type::reverse_iterator(run_end_);
         }
-        vector_type::reverse_iterator it = call(&Layer::write, status, begin, layers.rend());
+        
+        vector_type::reverse_iterator it = call<LayerStatus::Warn>(&Layer::write, status, begin, layers.rend());
         if(it != layers.rend()){
             LayerStatus omit;
             call(&Layer::halt, omit, begin, vector_type::reverse_iterator(it));
+            call(&Layer::write, omit, it+1, layers.rend());
         }
     }
     virtual void diag(LayerReport &report){
@@ -224,6 +227,7 @@ public:
         if(it != this->layers.end()){
             LayerStatus omit;
             this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+            this->template call(&Layer::read, omit, it+1, this->layers.end());
         }
     }
     virtual void write(LayerStatus &status){
@@ -231,6 +235,7 @@ public:
         if(it != this->layers.end()){
             LayerStatus omit;
             this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+            this->template call(&Layer::write, omit, it+1, this->layers.end());
         }
     }
     virtual void diag(LayerReport &report){
