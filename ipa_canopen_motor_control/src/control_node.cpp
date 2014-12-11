@@ -120,7 +120,7 @@ public:
             cmd_eff_ = eff_ = motor_->getActualEff();
             if(!jh_){
                 MotorNode::OperationMode m = motor_->getMode();
-                if(m != MotorNode::No_Mode) return select(m);
+                if(m != MotorNode::No_Mode && !select(m)) return false;
             }
             if(jh_ == &jph_){
                 cmd_pos_ = motor_->getTargetPos();
