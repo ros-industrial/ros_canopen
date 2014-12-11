@@ -157,6 +157,9 @@ protected:
             boost::shared_ptr<LayerStatus> pending_status(new LayerStatus);
             pending_status_ = pending_status;
             try{
+                thread_->interrupt();
+                thread_->join();
+                thread_.reset(new boost::thread(&RosChain::run, this));
                 recover(*pending_status);
                 res.success.data = pending_status->bounded<LayerStatus::Warn>();
                 res.error_message.data = pending_status->reason();
