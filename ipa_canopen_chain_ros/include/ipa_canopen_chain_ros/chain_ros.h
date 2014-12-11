@@ -30,16 +30,6 @@ class Logger: public DiagGroup<ipa_canopen::Layer>{
         stat.add(name, node_->template get<T>(key));
     }
 
-    class LayerStatReport : public ipa_canopen::LayerReport {
-        diagnostic_updater::DiagnosticStatusWrapper &stat;
-        virtual void add(const std::pair<const std::string, const std::string> &p){
-            stat.add(p.first, p.second);
-        }
-    public:
-        LayerStatReport(diagnostic_updater::DiagnosticStatusWrapper &s) : stat(s) {}
-
-    };
-    
 public:
     Logger(boost::shared_ptr<ipa_canopen::Node> node):  node_(node) { add(node_); }
     
@@ -58,10 +48,14 @@ public:
     }
 
     virtual void log(diagnostic_updater::DiagnosticStatusWrapper &stat){
-        LayerStatReport report(stat);
-        diag(report);
-        stat.summary(report.get(), report.reason());
-
+        LayerReport r;
+        diag(r);
+        if(r.bounded<LayerStatus::Unbounded>()){ // valid
+            stat.summary(r.get(), r.reason());
+            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
+                stat.add(it->first, it->second);
+            }
+        }
         // for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat); TODO
     }
     virtual ~Logger() {}
