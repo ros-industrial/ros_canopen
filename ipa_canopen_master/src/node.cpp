@@ -162,12 +162,14 @@ void Node::init(LayerStatus &status){
 
     sdo_.init();
     try{
-        reset_com();
+        reset();
+        prepare();
     }
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not reset node '%1%'") % (int)node_id_));
         return;
     }
+	emcy_.recover();
 
 	pdo_.init(getStorage());
 	getStorage()->init_all();

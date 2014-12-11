@@ -49,11 +49,10 @@ const uint8_t EMCYHandler::error_register(){
 }
 
 void EMCYHandler::init(LayerStatus &status){
-    error_register_ = 0;
-    if(emcy_listener_) error_register_ = error_register_obj_.get();
     read(status);
 }
 void EMCYHandler::recover(){
+    error_register_ = 0;
     num_errors_.set(0);
 }
 
