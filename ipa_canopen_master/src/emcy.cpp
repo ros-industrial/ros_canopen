@@ -31,7 +31,7 @@ struct EMCYmsg{
     uint16_t error_code;
     uint8_t error_register;
     uint8_t manufacturer_specific_error_field[5];
-    
+
     struct Frame: public FrameOverlay<EMCYmsg>{
         Frame(const ipa_can::Frame &f) : FrameOverlay(f){ }
     };
@@ -42,37 +42,46 @@ struct EMCYmsg{
 void EMCYHandler::handleEMCY(const ipa_can::Frame & msg){
     EMCYmsg::Frame em(msg);
     error_register_ = em.data.error_register;
-
 }
 const uint8_t EMCYHandler::error_register(){
     if(!emcy_listener_) error_register_ = error_register_obj_.get();
     return error_register_;
 }
 
-void EMCYHandler::read(LayerReport &report){
-    if(error_register()){
-        report.error("Node has emergency error");
-        report.add("error_register", (uint32_t) error_register_);
+void EMCYHandler::init(LayerStatus &status){
+    error_register_ = 0;
+    if(emcy_listener_) error_register_ = error_register_obj_.get();
+    read(status);
+}
+void EMCYHandler::recover(){
+    num_errors_.set(0);
+}
+
+void EMCYHandler::read(LayerStatus &status){
+    if(error_register() & (~32)){ // mask device specific error
+        status.error("Node has emergency error");
     }
 }
 void EMCYHandler::diag(LayerReport &report){
     read(report);
 
     if(error_register_){
+        report.add("error_register", (uint32_t) error_register_);
+
         uint8_t num = num_errors_.get();
         std::stringstream buf;
         for(size_t i= 0; i <num; ++i) {
             if( i!= 0){
                 buf << ", ";
             }
-            EMCYfield field(storage_->entry<uint32_t>(0x1003,i).get());
+            EMCYfield field(storage_->entry<uint32_t>(0x1003,i+1).get());
             buf << std::hex << field.error_code << "#" << field.addition_info;
         }
         report.add("errors", buf.str());
 
     }
 }
-EMCYHandler::EMCYHandler(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): storage_ (storage), error_register_(0xFF){
+EMCYHandler::EMCYHandler(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): storage_ (storage), error_register_(0){
     storage_->entry(error_register_obj_, 0x1001);
 
     storage_->entry(num_errors_, 0x1003,0);

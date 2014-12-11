@@ -144,7 +144,8 @@ bool Node::checkHeartbeat(){
 void Node::read(LayerStatus &status){
     if(!checkHeartbeat()) status.error("heartbeat problem");
     else if(getState() != Operational)  status.error("not operational");
-    else if(! pdo_.read())  status.error("PDO read problem");
+    else if(!pdo_.read())  status.error("PDO read problem");
+    else emcy_.read(status);
 }
 void Node::write(LayerStatus &status){
     if(getState() != Operational)  status.error("not operational");
@@ -160,7 +161,7 @@ void Node::diag(LayerReport &report){
     }else if(!checkHeartbeat()){
         report.error("Heartbeat timeout");
     }
-    emcy_.diag(report);
+    if(state != Unknown) emcy_.diag(report);
 }
 void Node::init(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
@@ -180,8 +181,10 @@ void Node::init(LayerStatus &status){
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
     }
+	emcy_.init(status);
 }
 void Node::recover(LayerStatus &status){
+	emcy_.recover();
     if(getState() != Operational){
         try{
             start();
@@ -190,7 +193,7 @@ void Node::recover(LayerStatus &status){
             status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
         }
     }
-
+	emcy_.read(status);
 }
 void Node::shutdown(LayerStatus &status){
     stop();

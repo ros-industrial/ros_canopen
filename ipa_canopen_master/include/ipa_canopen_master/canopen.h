@@ -146,8 +146,10 @@ class EMCYHandler{
     void handleEMCY(const ipa_can::Frame & msg);
     const boost::shared_ptr<ObjectStorage> storage_;
 public:
+    virtual void init(LayerStatus &status);
+    virtual void recover();
     virtual void diag(LayerReport &report);
-    virtual void read(LayerReport &report);
+    virtual void read(LayerStatus &status);
     const uint8_t error_register();
     EMCYHandler(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage);
 };
