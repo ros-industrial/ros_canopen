@@ -147,7 +147,7 @@ public:
     }
     virtual bool report() { return true; }
     virtual bool init() {
-        select(motor_->getMode());
+        read();
         return true;
     }
     virtual bool recover() {
