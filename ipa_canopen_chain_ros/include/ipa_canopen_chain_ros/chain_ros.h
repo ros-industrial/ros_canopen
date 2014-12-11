@@ -75,7 +75,7 @@ protected:
     boost::shared_ptr<MasterType> master_;
     boost::shared_ptr<ipa_canopen::LayerGroupNoDiag<ipa_canopen::Node> > nodes_;
 
-    std::vector<boost::shared_ptr<ipa_canopen::DiagGroup<ipa_canopen::Layer> > > diags_;
+    std::vector<boost::shared_ptr<Logger > > loggers_;
 
     boost::shared_ptr<ipa_canopen::SyncLayer> sync_;
 
@@ -332,7 +332,8 @@ protected:
             if(!nodeAdded(module, node, logger)) return false;
 
             //logger->add(4,"pos", ipa_canopen::ObjectDict::Key(0x6064));
-            //diag_updater_.add(name, boost::bind(&Logger::log, logger, _1));
+            loggers_.push_back(logger);
+            diag_updater_.add(name, boost::bind(&Logger::log, logger, _1));
             
             nodes_->add(node);
         }
