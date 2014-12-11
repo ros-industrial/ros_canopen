@@ -335,7 +335,6 @@ protected:
     }
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
-        boost::mutex::scoped_lock lock(mutex_);
         LayerReport r;
         diag(r);
         if(r.bounded<LayerStatus::Unbounded>()){ // valid
