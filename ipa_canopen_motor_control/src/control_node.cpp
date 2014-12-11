@@ -287,7 +287,11 @@ public:
         LayerGroupNoDiag::init(status);
     }
 
-    void enforce(const ros::Duration &period){
+    void enforce(const ros::Duration &period, bool reset){
+        if(reset){
+            pos_saturation_interface_.reset();
+            pos_soft_limits_interface_.reset();
+        }
         pos_saturation_interface_.enforceLimits(period);
         pos_soft_limits_interface_.enforceLimits(period);
         vel_saturation_interface_.enforceLimits(period);
@@ -295,7 +299,7 @@ public:
         eff_saturation_interface_.enforceLimits(period);
         eff_soft_limits_interface_.enforceLimits(period);
     }
-    
+
 };
 
  class ControllerManager : public controller_manager::ControllerManager{
@@ -327,14 +331,15 @@ public:
         ros::Time now = ros::Time::now();
         ros::Duration period(now -last_time_);
         if(!paused_){
+            last_time_ = now;
             controller_manager::ControllerManager::update(now, period, recover_);
+            robot_->enforce(period, recover_);
             recover_ = false;
         }
-        robot_->enforce(period);
-    }
+   }
 
     void recover() { recover_ = true; }
-    
+
     ControllerManager(boost::shared_ptr<RobotLayer> robot, ros::NodeHandle nh)  : controller_manager::ControllerManager(robot.get(), nh), robot_(robot), recover_(false), paused_(false), last_time_(ros::Time::now()) {}
  };
 
