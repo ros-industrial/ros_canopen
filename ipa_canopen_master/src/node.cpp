@@ -69,12 +69,6 @@ void Node::start(){
     if(state_ == BootUp){
         // ERROR
     }
-    else if(state_ == PreOperational){
-        pdo_.init(getStorage());
-        getStorage()->init_all();
-        sdo_.init(); // reread SDO paramters;
-        // TODO: set SYNC data
-    }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Start));
     wait_for(Operational, boost::chrono::milliseconds(heartbeat_.get_cached() * 3));
 }
@@ -175,6 +169,11 @@ void Node::init(LayerStatus &status){
         return;
     }
 
+	pdo_.init(getStorage());
+	getStorage()->init_all();
+	sdo_.init(); // reread SDO paramters;
+	// TODO: set SYNC data
+
     try{
         start();
     }
@@ -185,6 +184,7 @@ void Node::init(LayerStatus &status){
 }
 void Node::recover(LayerStatus &status){
 	emcy_.recover();
+	prepare();
     if(getState() != Operational){
         try{
             start();
@@ -198,6 +198,7 @@ void Node::recover(LayerStatus &status){
 void Node::shutdown(LayerStatus &status){
     stop();
     nmt_listener_.reset();
+    switchState(Unknown);
 }
 void Node::halt(LayerStatus &status){
     // do nothing
