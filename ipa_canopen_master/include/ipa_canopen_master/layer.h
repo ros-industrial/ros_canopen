@@ -138,12 +138,10 @@ class LayerStack : public Layer, public VectorHelper<Layer>{
         if(it != layers.end()){
             LayerStatus omit;
             call(func_fail, omit, vector_type::reverse_iterator(it), layers.rend());
-            boost::mutex::scoped_lock lock(end_mutex_);
-            run_end_ = layers.begin();
         }
-        else{
+        {
             boost::mutex::scoped_lock lock(end_mutex_);
-            run_end_ = layers.end();
+            run_end_ = it;
         }
     }
 public:
