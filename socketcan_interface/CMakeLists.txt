@@ -39,8 +39,8 @@ include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 # )
 
 ## Declare a cpp executable
-add_executable(ipa_can_dump src/candump.cpp)
-target_link_libraries(ipa_can_dump
+add_executable(socketcan_dump src/candump.cpp)
+target_link_libraries(socketcan_dump
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
 )
@@ -71,7 +71,7 @@ target_link_libraries(ipa_can_dump
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ipa_can_dump
+install(TARGETS socketcan_dump
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

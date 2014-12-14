@@ -7,6 +7,7 @@ project(canopen_motor_node)
 find_package(catkin REQUIRED COMPONENTS
   canopen_chain_node
   hardware_interface
+  joint_limits_interface
   controller_manager
   canopen_402
   urdf
@@ -94,7 +95,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include)
+# include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
