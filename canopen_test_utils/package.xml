@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ipa_canopen_test</name>
+  <name>canopen_test_utils</name>
   <version>0.0.0</version>
-  <description>The ipa_canopen_test package</description>
+  <description>The canopen_test_utils package</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
   <license>LGPLv3</license>

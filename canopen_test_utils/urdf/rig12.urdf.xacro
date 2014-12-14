@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro"
-       name="rig1_rig2" >
+       name="rig12" >
 
-  <xacro:include filename="$(find ipa_canopen_test)/urdf/elmo_test_rig.urdf.xacro" />
+  <xacro:include filename="$(find canopen_test_utils)/urdf/elmo_test_rig.urdf.xacro" />
 
   <link name="world" />"
 

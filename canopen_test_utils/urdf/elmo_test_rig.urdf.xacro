@@ -4,7 +4,7 @@
 
   <xacro:include filename="$(find cob_description)/urdf/common.xacro" />
   <xacro:include filename="$(find cob_description)/urdf/materials.urdf.xacro" />
-  <xacro:include filename="$(find ipa_canopen_test)/urdf/elmo_test_rig.transmission.xacro" />
+  <xacro:include filename="$(find canopen_test_utils)/urdf/elmo_test_rig.transmission.xacro" />
 
   <property name="base_height" value="0.04" />
   <property name="base_radius" value="0.01" />

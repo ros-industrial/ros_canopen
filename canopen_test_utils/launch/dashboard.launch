@@ -7,7 +7,7 @@
 	<!-- start command_gui -->
 	<node ns="command_gui" pkg="cob_command_gui" type="knoeppkes.py" name="$(anon command_gui_node)" cwd="node" respawn="false" output="screen" >
 		<!-- upload button parameters, but delete the old ones before -->
-		<rosparam command="load" ns="control_buttons" file="$(find ipa_canopen_test)/config/command_gui_buttons.yaml"/>
+		<rosparam command="load" ns="control_buttons" file="$(find canopen_test_utils)/config/command_gui_buttons.yaml"/>
 	</node>
 
 </launch>

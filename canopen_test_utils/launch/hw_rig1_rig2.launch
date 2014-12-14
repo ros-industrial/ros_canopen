@@ -2,15 +2,15 @@
 <launch>
     <arg name="sim" value="false" />
 
-    <include file="$(find ipa_canopen_test)/launch/test_setup_robot.xml">
+    <include file="$(find canopen_test_utils)/launch/test_setup_robot.xml">
         <arg name="name" value="rig12"/>
         <arg name="sim" value="$(arg sim)"/>
     </include>
-    <include file="$(find ipa_canopen_test)/launch/test_setup_controller.xml">
+    <include file="$(find canopen_test_utils)/launch/test_setup_controller.xml">
         <arg name="name" value="rig1"/>
         <arg name="sim" value="$(arg sim)"/>
     </include>
-    <include file="$(find ipa_canopen_test)/launch/test_setup_controller.xml">
+    <include file="$(find canopen_test_utils)/launch/test_setup_controller.xml">
         <arg name="name" value="rig2"/>
         <arg name="sim" value="$(arg sim)"/>
     </include>

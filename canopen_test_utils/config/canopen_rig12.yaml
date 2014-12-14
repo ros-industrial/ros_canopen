@@ -1,7 +1,7 @@
 name: rig12_plate_controller
 
 defaults:
-  eds_pkg: ipa_canopen_test
+  eds_pkg: canopen_test_utils
   eds_file: "config/Elmo.dcf"
 
 modules:

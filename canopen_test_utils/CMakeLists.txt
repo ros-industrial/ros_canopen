@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ipa_canopen_test)
+project(canopen_test_utils)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -37,11 +37,11 @@ catkin_package(
 #include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
-add_executable(ipa_canopen_test src/test.cpp)
-target_link_libraries(ipa_canopen_test ${catkin_LIBRARIES})
+add_executable(canopen_test_utils src/test.cpp)
+target_link_libraries(canopen_test_utils ${catkin_LIBRARIES})
 
-add_executable(ipa_canopen_test_motor src/test_motor.cpp)
-target_link_libraries(ipa_canopen_test_motor ${catkin_LIBRARIES})
+add_executable(canopen_test_utils_motor src/test_motor.cpp)
+target_link_libraries(canopen_test_utils_motor ${catkin_LIBRARIES})
 
 
 #############
@@ -59,7 +59,7 @@ target_link_libraries(ipa_canopen_test_motor ${catkin_LIBRARIES})
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ipa_canopen_test
+install(TARGETS canopen_test_utils
 ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

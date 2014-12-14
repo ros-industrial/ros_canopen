@@ -10,7 +10,7 @@
     </include>
 
     <!-- send urdf to param server -->
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find ipa_canopen_test)/urdf/$(arg name).urdf.xacro'" />
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find canopen_test_utils)/urdf/$(arg name).urdf.xacro'" />
     
     <!-- push robot_description to factory and spawn robot in gazebo -->
     <node if="$(arg sim)" name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model $(arg name) -z 0.01 " respawn="false" output="screen" />
