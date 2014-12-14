@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ipa_canopen_motor_control)
+project(canopen_motor_node)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -83,7 +83,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES ipa_canopen_motor_control
+#  LIBRARIES canopen_motor_node
 #  CATKIN_DEPENDS canopen_chain_node ros_control
 #  DEPENDS system_lib
 )
@@ -100,19 +100,19 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(ipa_canopen_motor_control
-#   src/${PROJECT_NAME}/ipa_canopen_motor_control.cpp
+# add_library(canopen_motor_node
+#   src/${PROJECT_NAME}/canopen_motor_node.cpp
 # )
 
 ## Declare a cpp executable
-add_executable(ipa_canopen_motor_control_node src/control_node.cpp)
+add_executable(canopen_motor_node_node src/control_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(ipa_canopen_motor_control_node ipa_canopen_motor_control_generate_messages_cpp)
+# add_dependencies(canopen_motor_node_node canopen_motor_node_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(ipa_canopen_motor_control_node
+target_link_libraries(canopen_motor_node_node
   ${catkin_LIBRARIES}
 )
 
@@ -131,7 +131,7 @@ target_link_libraries(ipa_canopen_motor_control_node
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ipa_canopen_motor_control_node
+install(TARGETS canopen_motor_node_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -160,7 +160,7 @@ install(TARGETS ipa_canopen_motor_control_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_ipa_canopen_motor_control.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_canopen_motor_node.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

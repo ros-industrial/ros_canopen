@@ -23,7 +23,7 @@
   <depend>canopen_master</depend>
   <depend>canopen_402</depend>
   <depend>roslaunch</depend>
-  <exec_depend>ipa_canopen_motor_control</exec_depend>
+  <exec_depend>canopen_motor_node</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>controller_manager</exec_depend>
