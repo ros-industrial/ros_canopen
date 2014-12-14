@@ -2,22 +2,14 @@
 <package format="2">
   <name>canopen_motor_node</name>
   <version>0.0.0</version>
-  <description>The canopen_motor_node package</description>
+  <description>This package extends the canopen_chain_node with specialized handling for canopen_402 devices. It facilitates interface abstraction with ros_control.</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
+  <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
+
   <license>LGPLv3</license>
 
-  <!-- Url tags are optional, but mutiple are allowed, one per tag -->
-  <!-- Optional attribute type can be: website, bugtracker, or repository -->
-  <!-- Example: -->
   <!-- <url type="website">http://wiki.ros.org/canopen_motor_node</url> -->
-
-
-  <!-- Author tags are optional, mutiple are allowed, one per tag -->
-  <!-- Authors do not have to be maintianers, but could be -->
-  <!-- Example: -->
-  <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
-
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>canopen_chain_node</depend>
