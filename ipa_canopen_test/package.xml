@@ -10,7 +10,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/ipa_canopen_master</url> -->
+  <!-- <url type="website">http://wiki.ros.org/canopen_master</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -20,7 +20,7 @@
 
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>ipa_canopen_master</depend>
+  <depend>canopen_master</depend>
   <depend>ipa_canopen_402</depend>
   <depend>roslaunch</depend>
   <exec_depend>ipa_canopen_motor_control</exec_depend>

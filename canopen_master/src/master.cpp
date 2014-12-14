@@ -1,4 +1,4 @@
-#include <ipa_canopen_master/master.h>
+#include <canopen_master/master.h>
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <boost/interprocess/containers/list.hpp>
 

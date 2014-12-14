@@ -56,7 +56,7 @@
 #ifndef IPA_CANOPEN_402_IPA_CANOPEN_402_H
 #define IPA_CANOPEN_402_IPA_CANOPEN_402_H
 
-#include <ipa_canopen_master/canopen.h>
+#include <canopen_master/canopen.h>
 #include <string>
 #include <vector>
 

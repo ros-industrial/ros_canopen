@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ipa_canopen_master)
+project(canopen_master)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -23,7 +23,7 @@ find_package(Boost REQUIRED COMPONENTS chrono)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ipa_canopen_master ${RT_LIBRARY}
+  LIBRARIES canopen_master ${RT_LIBRARY}
   CATKIN_DEPENDS socketcan_interface
   DEPENDS Boost
 )
@@ -35,24 +35,24 @@ catkin_package(
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
-add_library(ipa_canopen_master
+add_library(canopen_master
   src/objdict.cpp
   src/sdo.cpp
   src/pdo.cpp
   src/node.cpp
   src/master.cpp
 )
-target_link_libraries(ipa_canopen_master
+target_link_libraries(canopen_master
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 
 ## Declare a cpp executable
-# add_executable(ipa_canopen_master_node src/ipa_canopen_master_node.cpp)
+# add_executable(canopen_master_node src/canopen_master_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(ipa_canopen_master_node ipa_canopen_master_generate_messages_cpp)
+# add_dependencies(canopen_master_node canopen_master_generate_messages_cpp)
 
 
 #############
@@ -70,7 +70,7 @@ target_link_libraries(ipa_canopen_master
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ipa_canopen_master
+install(TARGETS canopen_master
 ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -94,7 +94,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_ipa_canopen_master.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_canopen_master.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

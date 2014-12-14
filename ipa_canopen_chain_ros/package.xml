@@ -22,7 +22,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>roslib</depend>
   <depend>roscpp</depend>
-  <depend>ipa_canopen_master</depend>
+  <depend>canopen_master</depend>
   <depend>cob_srvs</depend>
   <depend>diagnostic_updater</depend>
 

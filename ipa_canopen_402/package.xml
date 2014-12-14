@@ -10,5 +10,5 @@
   <license>LGPLv3</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>ipa_canopen_master</depend>
+  <depend>canopen_master</depend>
 </package>

@@ -5,7 +5,7 @@ project(ipa_canopen_402)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  ipa_canopen_master
+  canopen_master
 )
 
 ## System dependencies are found with CMake's conventions
@@ -24,7 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ipa_canopen_402
-  CATKIN_DEPENDS ipa_canopen_master
+  CATKIN_DEPENDS canopen_master
 #  DEPENDS system_lib
 )
 
@@ -83,7 +83,7 @@ RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_ipa_canopen_master.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_canopen_master.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

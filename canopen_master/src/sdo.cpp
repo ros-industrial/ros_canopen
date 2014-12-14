@@ -1,4 +1,4 @@
-#include <ipa_canopen_master/canopen.h>
+#include <canopen_master/canopen.h>
 
 using namespace ipa_canopen;
 

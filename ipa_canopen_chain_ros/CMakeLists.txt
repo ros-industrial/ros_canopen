@@ -7,7 +7,7 @@ project(ipa_canopen_chain_ros)
 find_package(catkin REQUIRED COMPONENTS
   roslib
   roscpp
-  ipa_canopen_master
+  canopen_master
   cob_srvs
   diagnostic_updater
 )
@@ -84,7 +84,7 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES ipa_canopen_chain_ros
-  CATKIN_DEPENDS ipa_canopen_master roslib roscpp cob_srvs diagnostic_updater
+  CATKIN_DEPENDS canopen_master roslib roscpp cob_srvs diagnostic_updater
 #  DEPENDS system_lib
 )
 

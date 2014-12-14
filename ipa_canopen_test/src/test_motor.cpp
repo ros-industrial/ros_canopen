@@ -1,6 +1,6 @@
-#include <ipa_canopen_master/canopen.h>
-#include <ipa_canopen_master/master.h>
-#include <ipa_canopen_master/can_layer.h>
+#include <canopen_master/canopen.h>
+#include <canopen_master/master.h>
+#include <canopen_master/can_layer.h>
 #include <boost/make_shared.hpp>
 #include <iostream>
 
