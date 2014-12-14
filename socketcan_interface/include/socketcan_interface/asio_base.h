@@ -1,7 +1,7 @@
 #ifndef H_IPA_ASIO_BASE
 #define H_IPA_ASIO_BASE
 
-#include <ipa_can_interface/interface.h>
+#include <socketcan_interface/interface.h>
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>

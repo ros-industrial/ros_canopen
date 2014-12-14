@@ -1,7 +1,7 @@
 #ifndef H_IPA_CAN_DISPATCHER
 #define H_IPA_CAN_DISPATCHER
 
-#include <ipa_can_interface/interface.h>
+#include <socketcan_interface/interface.h>
 #include <list>
 #include <boost/thread/mutex.hpp>
 #include <boost/unordered_map.hpp>

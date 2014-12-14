@@ -1,7 +1,7 @@
 #ifndef H_IPA_OBJDICT
 #define H_IPA_OBJDICT
 
-#include <ipa_can_interface/FastDelegate.h>
+#include <socketcan_interface/FastDelegate.h>
 #include <boost/unordered_map.hpp>    
 #include <boost/unordered_set.hpp>    
 #include <boost/thread/mutex.hpp>    

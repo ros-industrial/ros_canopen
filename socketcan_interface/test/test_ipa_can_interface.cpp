@@ -1,5 +1,5 @@
 // Bring in my package's API, which is what I'm testing
-#include <ipa_can_interface/dispatcher.h>
+#include <socketcan_interface/dispatcher.h>
 
 // Bring in gtest
 #include <gtest/gtest.h>

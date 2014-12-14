@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ipa_can_interface)
+project(socketcan_interface)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -34,8 +34,8 @@ catkin_package(
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
-# add_library(ipa_can_interface
-#   src/${PROJECT_NAME}/ipa_can_interface.cpp
+# add_library(socketcan_interface
+#   src/${PROJECT_NAME}/socketcan_interface.cpp
 # )
 
 ## Declare a cpp executable
@@ -47,10 +47,10 @@ target_link_libraries(ipa_can_dump
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(ipa_can_interface_node ipa_can_interface_generate_messages_cpp)
+# add_dependencies(socketcan_interface_node socketcan_interface_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(ipa_can_interface_node
+# target_link_libraries(socketcan_interface_node
 #   ${catkin_LIBRARIES}
 #   ${Boost_LIBRARIES}
 #   ${boost_LIBRARIES}
@@ -95,7 +95,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_ipa_can_interface.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_socketcan_interface.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ipa_can_interface</name>
+  <name>socketcan_interface</name>
   <version>0.0.0</version>
-  <description>The ipa_can_interface package</description>
+  <description>The socketcan_interface package</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
   <license>LGPLv3</license>
@@ -10,7 +10,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/ipa_can_interface</url> -->
+  <!-- <url type="website">http://wiki.ros.org/socketcan_interface</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->

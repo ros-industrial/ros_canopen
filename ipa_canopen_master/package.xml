@@ -20,7 +20,7 @@
 
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>ipa_can_interface</depend>
+  <depend>socketcan_interface</depend>
   <depend>boost</depend>
 
   <export>

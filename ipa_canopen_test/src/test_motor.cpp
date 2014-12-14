@@ -4,9 +4,9 @@
 #include <boost/make_shared.hpp>
 #include <iostream>
 
-#include <ipa_can_interface/dispatcher.h>
+#include <socketcan_interface/dispatcher.h>
 #include <boost/unordered_set.hpp>
-#include <ipa_can_interface/socketcan.h>
+#include <socketcan_interface/socketcan.h>
 
 #include <boost/thread.hpp>
 

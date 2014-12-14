@@ -5,7 +5,7 @@ project(ipa_canopen_master)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  ipa_can_interface
+  socketcan_interface
 )
 
 ## System dependencies are found with CMake's conventions
@@ -24,7 +24,7 @@ find_package(Boost REQUIRED COMPONENTS chrono)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ipa_canopen_master ${RT_LIBRARY}
-  CATKIN_DEPENDS ipa_can_interface
+  CATKIN_DEPENDS socketcan_interface
   DEPENDS Boost
 )
 

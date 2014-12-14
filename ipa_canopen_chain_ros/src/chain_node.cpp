@@ -1,5 +1,5 @@
-#include <ipa_can_interface/dispatcher.h>
-#include <ipa_can_interface/socketcan.h>
+#include <socketcan_interface/dispatcher.h>
+#include <socketcan_interface/socketcan.h>
 #include <ipa_canopen_chain_ros/chain_ros.h>
 
 using namespace ipa_can;

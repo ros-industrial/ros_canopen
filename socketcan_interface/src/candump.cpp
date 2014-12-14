@@ -1,7 +1,7 @@
 #include <iostream>
 #include <boost/unordered_set.hpp>
 
-#include <ipa_can_interface/socketcan.h>
+#include <socketcan_interface/socketcan.h>
 
 using namespace ipa_can;
 

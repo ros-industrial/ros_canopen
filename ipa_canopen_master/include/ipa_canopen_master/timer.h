@@ -1,7 +1,7 @@
 #ifndef H_IPA_CANOPEN_TIMER
 #define H_IPA_CANOPEN_TIMER
 
-#include <ipa_can_interface/FastDelegate.h>
+#include <socketcan_interface/FastDelegate.h>
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/asio/high_resolution_timer.hpp>
