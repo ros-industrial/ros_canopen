@@ -2,7 +2,7 @@
 #include <socketcan_interface/socketcan.h>
 #include <ipa_canopen_chain_ros/chain_ros.h>
 
-#include <ipa_canopen_402/ipa_canopen_402.h>
+#include <canopen_402/canopen_402.h>
 
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>

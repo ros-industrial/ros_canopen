@@ -6,7 +6,7 @@ project(ipa_canopen_test)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   canopen_master
-  ipa_canopen_402
+  canopen_402
   roslaunch
 )
 
@@ -26,7 +26,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES
-#  CATKIN_DEPENDS canopen_master ipa_canopen_402
+#  CATKIN_DEPENDS canopen_master canopen_402
 #  DEPENDS system_lib
 )
 

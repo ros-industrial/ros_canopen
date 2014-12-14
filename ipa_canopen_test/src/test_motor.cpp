@@ -10,7 +10,7 @@
 
 #include <boost/thread.hpp>
 
-#include <ipa_canopen_402/ipa_canopen_402.h>
+#include <canopen_402/canopen_402.h>
 
 #include <signal.h>
 #include <cstdlib>

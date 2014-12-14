@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ipa_canopen_402)
+project(canopen_402)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ipa_canopen_402
+  LIBRARIES canopen_402
   CATKIN_DEPENDS canopen_master
 #  DEPENDS system_lib
 )
@@ -34,13 +34,13 @@ catkin_package(
 
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
-#add_executable(ipa_canopen_402 src/test.cpp)
-#target_link_libraries(ipa_canopen_402 ${catkin_LIBRARIES})
+#add_executable(canopen_402 src/test.cpp)
+#target_link_libraries(canopen_402 ${catkin_LIBRARIES})
 
-add_library(ipa_canopen_402
-  src/ipa_canopen_402/ipa_canopen_402.cpp
+add_library(canopen_402
+  src/canopen_402/canopen_402.cpp
 )
-target_link_libraries(ipa_canopen_402
+target_link_libraries(canopen_402
   ${catkin_LIBRARIES}
 )
 
@@ -59,7 +59,7 @@ target_link_libraries(ipa_canopen_402
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ipa_canopen_402
+install(TARGETS canopen_402
 ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

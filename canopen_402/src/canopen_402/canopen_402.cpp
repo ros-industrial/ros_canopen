@@ -7,9 +7,9 @@
  *
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *
- * Project name: ipa_canopen_402
- * ROS stack name: ipa_canopen_402
- * ROS package name: ipa_canopen_402
+ * Project name: canopen_402
+ * ROS stack name: canopen_402
+ * ROS package name: canopen_402
  * Description: This class implements the CANopen device profile for
  * drives and motion control
  * CiA (r) 402
@@ -53,7 +53,7 @@
  *
  ****************************************************************/
 
-#include <ipa_canopen_402/ipa_canopen_402.h>
+#include <canopen_402/canopen_402.h>
 
 using ipa_canopen::Node_402;
 

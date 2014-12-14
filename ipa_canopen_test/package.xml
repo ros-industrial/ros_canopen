@@ -21,7 +21,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>canopen_master</depend>
-  <depend>ipa_canopen_402</depend>
+  <depend>canopen_402</depend>
   <depend>roslaunch</depend>
   <exec_depend>ipa_canopen_motor_control</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>

@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   ipa_canopen_chain_ros
   hardware_interface
   controller_manager
-  ipa_canopen_402
+  canopen_402
   urdf
 )
 
