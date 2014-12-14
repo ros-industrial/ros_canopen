@@ -5,7 +5,7 @@ project(ipa_canopen_motor_control)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  ipa_canopen_chain_ros
+  canopen_chain_node
   hardware_interface
   controller_manager
   canopen_402
@@ -84,7 +84,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ipa_canopen_motor_control
-#  CATKIN_DEPENDS ipa_canopen_chain_ros ros_control
+#  CATKIN_DEPENDS canopen_chain_node ros_control
 #  DEPENDS system_lib
 )
 

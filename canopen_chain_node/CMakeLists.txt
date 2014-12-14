@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ipa_canopen_chain_ros)
+project(canopen_chain_node)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -83,7 +83,7 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES ipa_canopen_chain_ros
+#  LIBRARIES canopen_chain_node
   CATKIN_DEPENDS canopen_master roslib roscpp cob_srvs diagnostic_updater
 #  DEPENDS system_lib
 )
@@ -103,8 +103,8 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(ipa_canopen_chain_ros
-#   src/${PROJECT_NAME}/ipa_canopen_chain_ros.cpp
+# add_library(canopen_chain_node
+#   src/${PROJECT_NAME}/canopen_chain_node.cpp
 # )
 
 ## Declare a cpp executable
@@ -163,7 +163,7 @@ install(DIRECTORY launch/
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_ipa_canopen_chain_ros.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_canopen_chain_node.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

@@ -1,6 +1,6 @@
 #include <socketcan_interface/dispatcher.h>
 #include <socketcan_interface/socketcan.h>
-#include <ipa_canopen_chain_ros/chain_ros.h>
+#include <canopen_chain_node/chain_ros.h>
 
 #include <canopen_402/canopen_402.h>
 
@@ -456,7 +456,7 @@ public:
 };
 
 int main(int argc, char** argv){
-  ros::init(argc, argv, "ipa_canopen_chain_ros_node");
+  ros::init(argc, argv, "canopen_chain_node_node");
   ros::AsyncSpinner spinner(0);
   spinner.start();
 

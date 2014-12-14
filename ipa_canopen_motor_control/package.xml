@@ -20,7 +20,7 @@
 
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>ipa_canopen_chain_ros</depend>
+  <depend>canopen_chain_node</depend>
   <depend>hardware_interface</depend>
   <depend>controller_manager</depend>
   <depend>joint_limits_interface</depend>
