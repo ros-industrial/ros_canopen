@@ -1,0 +1,13 @@
+name: rig12_plate_controller
+
+defaults:
+  eds_pkg: canopen_test_utils
+  eds_file: "config/Elmo.dcf"
+
+modules:
+  - name: rig1_plate_joint
+    id: 1
+  - name: rig2_plate_joint
+    id: 85
+
+     

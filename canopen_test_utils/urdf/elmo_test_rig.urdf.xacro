@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="elmo_test_rig" >
+
+  <xacro:include filename="$(find cob_description)/urdf/common.xacro" />
+  <xacro:include filename="$(find cob_description)/urdf/materials.urdf.xacro" />
+  <xacro:include filename="$(find canopen_test_utils)/urdf/elmo_test_rig.transmission.xacro" />
+
+  <property name="base_height" value="0.04" />
+  <property name="base_radius" value="0.01" />
+  <property name="plate_height" value="0.01" />
+  <property name="plate_radius" value="0.03" />
+  <property name="indicator_height" value="0.001" />
+
+  <xacro:macro name="elmo_test_rig" params="prefix parent *origin">
+
+    <joint name="${prefix}base_joint" type="fixed">
+      <parent link="${parent}" />
+      <child link = "${prefix}base_link" />
+      <insert_block name="origin" />
+    </joint>
+    
+    <link name="${prefix}base_link" >
+      <visual>
+        <origin xyz="0.0 0.0 ${base_height/2}" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="${base_height}" radius="${base_radius}" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0.0 0.0 ${base_height/2}" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="${base_height}" radius="${base_radius}" />
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial radius="${base_radius}" length="${base_height}" mass="0.100">
+        <origin xyz="0.0 0.0 ${base_height/2}" rpy="0 0 0" />
+      </xacro:cylinder_inertial>
+    </link>
+
+    <joint name="${prefix}plate_joint" type="revolute">
+      <parent link="${prefix}base_link" />
+      <child link = "${prefix}plate_link" />
+      <origin xyz="0.0 0.0 ${base_height}" rpy="0.0 0.0 0.0" />
+      <axis xyz="0 0 1" />
+      <limit lower="${-M_PI}" upper="${M_PI}" effort="10.0" velocity="3.15"/>
+      <dynamics damping="0.0" friction="0.0"/>
+    </joint>
+
+    <link name="${prefix}plate_link" >
+      <visual>
+        <origin xyz="0.0 0.0 ${plate_height/2}" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="${plate_height}" radius="${plate_radius}" />
+        </geometry>
+        <material name="IPA/Blue"/>
+      </visual>
+      <collision>
+        <origin xyz="0.0 0.0 ${plate_height/2}" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="${plate_height}" radius="${plate_radius}" />
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial radius="${plate_radius}" length="${plate_height}" mass="0.100">
+        <origin xyz="0.0 0.0 ${plate_height/2}" rpy="0 0 0" />
+      </xacro:cylinder_inertial>
+    </link>
+
+    <joint name="${prefix}indicator_joint" type="fixed">
+      <parent link="${prefix}plate_link" />
+      <child link = "${prefix}indicator_link" />
+      <origin xyz="0.0 0.0 ${plate_height}" rpy="0 0 0" />
+    </joint>
+
+    <link name="${prefix}indicator_link" >
+      <visual>
+        <origin xyz="${plate_radius/2} 0.0 ${indicator_height/2}" rpy="0 0 0" />
+        <geometry>
+          <box size="${plate_radius} ${indicator_height} ${indicator_height}" />
+        </geometry>
+        <material name="IPA/Orange"/>
+      </visual>
+      <collision>
+        <origin xyz="${plate_radius/2} 0.0 ${indicator_height/2}" rpy="0 0 0" />
+        <geometry>
+          <box size="${plate_radius} ${indicator_height} ${indicator_height}" />
+        </geometry>
+      </collision>
+      <xacro:box_inertial x="${plate_radius}" y="${indicator_height}" z="${indicator_height}" mass="0.050">
+        <origin xyz="${plate_radius/2} 0.0 ${indicator_height/2}" rpy="0 0 0" />
+      </xacro:box_inertial>
+    </link>
+
+    <!-- extensions -->
+    <xacro:torso_transmission name="${prefix}plate" />
+
+  </xacro:macro>
+
+</robot>
