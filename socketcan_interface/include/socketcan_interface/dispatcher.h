@@ -1,5 +1,5 @@
-#ifndef H_IPA_CAN_DISPATCHER
-#define H_IPA_CAN_DISPATCHER
+#ifndef H_CAN_DISPATCHER
+#define H_CAN_DISPATCHER
 
 #include <socketcan_interface/interface.h>
 #include <list>
@@ -8,7 +8,7 @@
 #include <boost/utility.hpp>
 #include <boost/foreach.hpp>
 
-namespace ipa_can{
+namespace can{
 
 template< typename Listener > class SimpleDispatcher{
 public:
@@ -117,5 +117,5 @@ public:
 };
 
 
-} // namespace ipa_can
+} // namespace can
 #endif

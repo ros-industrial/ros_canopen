@@ -1,5 +1,5 @@
-#ifndef H_IPA_SOCKETCAN_DRIVER
-#define H_IPA_SOCKETCAN_DRIVER
+#ifndef H_SOCKETCAN_DRIVER
+#define H_SOCKETCAN_DRIVER
 
 #include <socketcan_interface/asio_base.h>
 #include <boost/bind.hpp>
@@ -13,7 +13,7 @@
 #include <linux/can/raw.h>
 #include <linux/can/error.h>
 
-namespace ipa_can {
+namespace can {
 
 template<typename FrameDelegate, typename StateDelegate> class SocketCANDriver : public AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> {
     typedef AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> BaseClass;
@@ -218,5 +218,5 @@ template <typename T> class ThreadedInterface;
 typedef ThreadedInterface<SocketCANInterface> ThreadedSocketCANInterface;
 
 
-} // namespace ipa_can
+} // namespace can
 #endif

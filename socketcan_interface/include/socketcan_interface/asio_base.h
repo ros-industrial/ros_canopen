@@ -1,5 +1,5 @@
-#ifndef H_IPA_ASIO_BASE
-#define H_IPA_ASIO_BASE
+#ifndef H_ASIO_BASE
+#define H_ASIO_BASE
 
 #include <socketcan_interface/interface.h>
 #include <boost/asio.hpp>
@@ -7,7 +7,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
 
-namespace ipa_can{
+namespace can{
 
 
 template<typename FrameDelegate, typename StateDelegate, typename Socket> class AsioDriver : public DriverInterface{
@@ -112,9 +112,9 @@ public:
 class StateWaiter{
     boost::mutex mutex_;
     boost::condition_variable cond_;
-    ipa_can::StateInterface::StateListener::Ptr state_listener_;
-    ipa_can::State state_;
-    void updateState(const ipa_can::State &s){
+    can::StateInterface::StateListener::Ptr state_listener_;
+    can::State state_;
+    void updateState(const can::State &s){
         boost::mutex::scoped_lock lock(mutex_);
         state_ = s;
         lock.unlock();
@@ -123,9 +123,9 @@ class StateWaiter{
 public:
     template<typename InterfaceType> StateWaiter(InterfaceType *interface){
         state_ = interface->getState();
-        state_listener_ = interface->createStateListener(ipa_can::StateInterface::StateDelegate(this, &StateWaiter::updateState));
+        state_listener_ = interface->createStateListener(can::StateInterface::StateDelegate(this, &StateWaiter::updateState));
     }
-    template<typename DurationType> bool wait(const ipa_can::State::DriverState &s, const DurationType &duration){
+    template<typename DurationType> bool wait(const can::State::DriverState &s, const DurationType &duration){
         boost::mutex::scoped_lock cond_lock(mutex_);
         boost::system_time abs_time = boost::get_system_time() + duration;
         while(s != state_.driver_state)
@@ -137,7 +137,7 @@ public:
         }
         return true;
     }
-    template<typename InterfaceType, typename DurationType> static bool wait_for(const ipa_can::State::DriverState &s, InterfaceType *interface, const DurationType &duration){
+    template<typename InterfaceType, typename DurationType> static bool wait_for(const can::State::DriverState &s, InterfaceType *interface, const DurationType &duration){
         StateWaiter waiter(interface);
         return waiter.wait(s,duration);
     }
@@ -152,7 +152,7 @@ public:
     virtual bool init(const std::string &device, unsigned int bitrate) {
         if(!thread_ && WrappedInterface::init(device, bitrate)){
             thread_.reset(new boost::thread(&ThreadedInterface::run_thread, this));
-            return StateWaiter::wait_for(ipa_can::State::ready, this, boost::posix_time::seconds(1));
+            return StateWaiter::wait_for(can::State::ready, this, boost::posix_time::seconds(1));
         }
         return WrappedInterface::getState().isReady();
     }
@@ -177,5 +177,5 @@ public:
 };
 
 
-} // namespace ipa_can
+} // namespace can
 #endif

@@ -1,5 +1,5 @@
-#ifndef H_IPA_CAN_INTERFACE
-#define H_IPA_CAN_INTERFACE
+#ifndef H_CAN_INTERFACE
+#define H_CAN_INTERFACE
 
 #include <boost/array.hpp>
 #include <boost/system/error_code.hpp>
@@ -7,7 +7,7 @@
 
 #include "FastDelegate.h"
 
-namespace ipa_can{
+namespace can{
 
 /** Header for CAN id an meta data*/
 struct Header{
@@ -186,7 +186,7 @@ public:
     virtual ~CommInterface() {}
 };
 
-} // namespace ipa_can
+} // namespace can
 
 #include <boost/thread/mutex.hpp>
 

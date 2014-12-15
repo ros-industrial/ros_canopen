@@ -9,8 +9,8 @@
 
 #include <boost/thread.hpp>
 
-using namespace ipa_can;
-using namespace ipa_canopen;
+using namespace can;
+using namespace canopen;
 
 boost::shared_ptr<ThreadedInterface<SocketCANInterface> > driver = boost::make_shared<ThreadedInterface<SocketCANInterface> > (true);
 
@@ -50,24 +50,24 @@ int main(int argc, char *argv[]){
 
     sleep(1.0);
 
-    boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
+    boost::shared_ptr<canopen::ObjectDict>  dict = canopen::ObjectDict::fromFile(argv[2]);
 
     LocalMaster master(argv[1], driver);
-    boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(ipa_can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), 0));
+    boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), 0));
 
     Node node(driver, dict, 1, sync);
 
-    ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  sw;
-    ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  cw;
-    ipa_canopen::ObjectStorage::Entry<int8_t >  op_mode;
-    ipa_canopen::ObjectStorage::Entry<int8_t >  op_mode_disp;
+    canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  sw;
+    canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  cw;
+    canopen::ObjectStorage::Entry<int8_t >  op_mode;
+    canopen::ObjectStorage::Entry<int8_t >  op_mode_disp;
 
     node.getStorage()->entry(sw, 0x6041);
     node.getStorage()->entry(op_mode, 0x6060);
     node.getStorage()->entry(op_mode_disp, 0x6061);
     node.getStorage()->entry(cw, 0x6040);
 
-    ipa_canopen::ObjectStorage::Entry<int32_t > actual_vel = node.getStorage()->entry<int32_t>(0x606C);
+    canopen::ObjectStorage::Entry<int32_t > actual_vel = node.getStorage()->entry<int32_t>(0x606C);
     Node::StateListener::Ptr nsl = node.addStateListener(print_node_state);
 
     node.reset();

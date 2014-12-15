@@ -1,5 +1,5 @@
-#ifndef H_IPA_CANOPEN_CHAIN_ROS
-#define H_IPA_CANOPEN_CHAIN_ROS
+#ifndef H_CANOPEN_CHAIN_ROS
+#define H_CANOPEN_CHAIN_ROS
 
 #include <canopen_master/canopen.h>
 #include <canopen_master/master.h>
@@ -11,7 +11,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/weak_ptr.hpp>
 
-namespace ipa_canopen{
+namespace canopen{
     
 template<typename T> bool read_xmlrpc_or_praram(T &val, const std::string &name, XmlRpc::XmlRpcValue &valstruct, const ros::NodeHandle &nh){
     if(valstruct.hasMember(name)){
@@ -47,7 +47,7 @@ public:
         boost::shared_ptr<NodeType> node = node_.lock();
         if(node){
             stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "Active");
-            if(node->getState() == ipa_canopen::Node::Operational)
+            if(node->getState() == canopen::Node::Operational)
                 for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat);
             //ROS_INFO_STREAM(node->getStorage()->template entry<std::string>(0x1008).get_once());
             //stat.add("desc",std::string());
@@ -57,16 +57,16 @@ public:
     virtual ~Logger() {}
 };
 
-template<typename InterfaceType, typename MasterType> class RosChain : public ipa_canopen::LayerStack {
+template<typename InterfaceType, typename MasterType> class RosChain : public canopen::LayerStack {
 protected:
     std::string chain_name_;
     
     boost::shared_ptr<InterfaceType> interface_;
     boost::shared_ptr<MasterType> master_;
-    boost::shared_ptr<ipa_canopen::LayerGroup<ipa_canopen::Node> > nodes_;
-    boost::shared_ptr<ipa_canopen::SyncLayer> sync_;
+    boost::shared_ptr<canopen::LayerGroup<canopen::Node> > nodes_;
+    boost::shared_ptr<canopen::SyncLayer> sync_;
 
-    ipa_can::StateInterface::StateListener::Ptr state_listener_;
+    can::StateInterface::StateListener::Ptr state_listener_;
     
     boost::scoped_ptr<boost::thread> thread_;
 
@@ -86,7 +86,7 @@ protected:
 
     boost::weak_ptr<LayerStatus> pending_status_;
     
-    void logState(const ipa_can::State &s){
+    void logState(const can::State &s){
         boost::shared_ptr<InterfaceType> interface = interface_;
         std::string msg;
         if(interface && !interface->translateError(s.internal_error, msg)) msg  =  "Undefined"; ;
@@ -104,7 +104,7 @@ protected:
                 if(pending_status) pending(*pending_status);
                 write(s);
             }
-            catch(const ipa_canopen::Exception& e){
+            catch(const canopen::Exception& e){
                 ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
             }
             abs_time += update_duration_;
@@ -132,7 +132,7 @@ protected:
                 thread_.reset();
             }
         }
-        catch( const ipa_canopen::Exception &e){
+        catch( const canopen::Exception &e){
             std::string info = boost::diagnostic_information(e);
             ROS_ERROR_STREAM(info);
             res.success.data = false;
@@ -154,7 +154,7 @@ protected:
                 res.success.data = pending_status->bounded<LayerStatus::Warn>();
                 res.error_message.data = pending_status->reason();
             }
-            catch( const ipa_canopen::Exception &e){
+            catch( const canopen::Exception &e){
                 std::string info = boost::diagnostic_information(e);
                 ROS_ERROR_STREAM(info);
                 res.success.data = false;
@@ -221,7 +221,7 @@ protected:
             return false;
         }
         interface_ = boost::make_shared<InterfaceType>(true); // enable loopback
-        state_listener_ = interface_->createStateListener(ipa_can::StateInterface::StateDelegate(this, &RosChain::logState));
+        state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
         
         master_ = boost::make_shared<MasterType>(can_device, interface_);
         
@@ -263,7 +263,7 @@ protected:
 
         if(sync_ms){
             // TODO: parse header
-            sync_ = master_->getSync(SyncProperties(ipa_can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
+            sync_ = master_->getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
             
             if(!sync_ && sync_ms){
                 ROS_ERROR_STREAM("Initializing sync master failed");
@@ -274,7 +274,7 @@ protected:
         return true;
     }
     bool setup_nodes(){
-        nodes_.reset(new ipa_canopen::LayerGroup<ipa_canopen::Node>("301 layer"));
+        nodes_.reset(new canopen::LayerGroup<canopen::Node>("301 layer"));
         add(nodes_);
 
         XmlRpc::XmlRpcValue modules;
@@ -312,19 +312,19 @@ protected:
                 ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
                 return false;
             }
-            boost::shared_ptr<ipa_canopen::Node> node = boost::make_shared<ipa_canopen::Node>(interface_, dict, node_id, sync_);
+            boost::shared_ptr<canopen::Node> node = boost::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
             
             if(!nodeAdded(module, node)) return false;
 
-            boost::shared_ptr<Logger<ipa_canopen::Node> > logger = boost::make_shared<Logger<ipa_canopen::Node> >(node);
-            //logger->add(4,"pos", ipa_canopen::ObjectDict::Key(0x6064));
+            boost::shared_ptr<Logger<canopen::Node> > logger = boost::make_shared<Logger<canopen::Node> >(node);
+            //logger->add(4,"pos", canopen::ObjectDict::Key(0x6064));
             diag_updater_.add(name, boost::bind(&Logger<Node>::log, logger, _1));
             
             nodes_->add(node);
         }
         return true;
     }
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node) { return true; }
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         boost::mutex::scoped_lock lock(mutex_);
         LayerReport r;
@@ -370,7 +370,7 @@ public:
     }
 };
 
-} //namespace ipa_canopen
+} //namespace canopen
 
 #endif
 

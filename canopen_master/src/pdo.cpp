@@ -1,6 +1,6 @@
 #include <canopen_master/canopen.h>
 
-using namespace ipa_canopen;
+using namespace canopen;
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1) /* set alignment to 1 byte boundary */
@@ -13,8 +13,8 @@ struct PDOid{
     PDOid(uint32_t val){
         *(uint32_t*) this = val;
     }
-    ipa_can::Header header() {
-        return ipa_can::Header(id, extended, false, false);
+    can::Header header() {
+        return can::Header(id, extended, false, false);
     }
     const uint32_t get() const { return *(uint32_t*) this; }
 };
@@ -80,7 +80,7 @@ bool check_map_changed(const uint8_t &num, const ObjectDict &dict, const uint16_
 }
 void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index, const bool &read, const bool &write){
                             
-    const ipa_canopen::ObjectDict & dict = *storage->dict_;
+    const canopen::ObjectDict & dict = *storage->dict_;
     
     ObjectStorage::Entry<uint8_t> num_entry;
     storage->entry(num_entry, map_index, SUB_MAP_NUM);
@@ -160,7 +160,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
         
     
 }
-PDOMapper::PDOMapper(const boost::shared_ptr<ipa_can::CommInterface> interface)
+PDOMapper::PDOMapper(const boost::shared_ptr<can::CommInterface> interface)
 :interface_(interface)
 {
 }
@@ -169,7 +169,7 @@ void PDOMapper::init(const boost::shared_ptr<ObjectStorage> storage){
 
     rpdos_.clear();
     
-    const ipa_canopen::ObjectDict & dict = *storage->dict_;
+    const canopen::ObjectDict & dict = *storage->dict_;
     for(uint8_t i=0; i < dict.device_info.nr_of_tx_pdo;++i){ // TPDOs of device
         boost::shared_ptr<RPDO> rpdo = RPDO::create(interface_,storage, TPDO_COM_BASE + i, TPDO_MAP_BASE + i);
         if(rpdo){
@@ -192,7 +192,7 @@ void PDOMapper::init(const boost::shared_ptr<ObjectStorage> storage){
 bool PDOMapper::RPDO::init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
     boost::mutex::scoped_lock lock(mutex);
     listener_.reset();
-    const ipa_canopen::ObjectDict & dict = *storage->dict_;
+    const canopen::ObjectDict & dict = *storage->dict_;
     parse_and_set_mapping(storage, com_index, map_index, true, false);
     
     PDOid pdoid( NodeIdOffset<uint32_t>::apply(dict(com_index, SUB_COM_COB_ID).value(), storage->node_id_) );
@@ -206,14 +206,14 @@ bool PDOMapper::RPDO::init(const boost::shared_ptr<ObjectStorage> &storage, cons
     
     transmission_type = dict(com_index, SUB_COM_TRANSMISSION_TYPE).value().get<uint8_t>();
     
-    listener_ = interface_->createMsgListener(pdoid.header() ,ipa_can::CommInterface::FrameDelegate(this, &RPDO::handleFrame));
+    listener_ = interface_->createMsgListener(pdoid.header() ,can::CommInterface::FrameDelegate(this, &RPDO::handleFrame));
     
     return true;
 }
 
 bool PDOMapper::TPDO::init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
     boost::mutex::scoped_lock lock(mutex);
-    const ipa_canopen::ObjectDict & dict = *storage->dict_;
+    const canopen::ObjectDict & dict = *storage->dict_;
 
     
     PDOid pdoid( NodeIdOffset<uint32_t>::apply(dict(com_index, SUB_COM_COB_ID).value(), storage->node_id_) );
@@ -277,7 +277,7 @@ void PDOMapper::RPDO::sync(){
     }
 }
 
-void PDOMapper::RPDO::handleFrame(const ipa_can::Frame & msg){
+void PDOMapper::RPDO::handleFrame(const can::Frame & msg){
     size_t offset = 0;
     const uint8_t * src = msg.data.data();
     for(std::vector<boost::shared_ptr<Buffer> >::iterator it = buffers.begin(); it != buffers.end(); ++it){
@@ -343,7 +343,7 @@ void PDOMapper::Buffer::write(const uint8_t* b, const size_t len){
     lock.unlock();
     cond.notify_all();
 }
-void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
+void PDOMapper::Buffer::read(const canopen::ObjectDict::Entry &entry, String &data){
     boost::mutex::scoped_lock lock(mutex);
     time_point abs_time = get_abs_time(boost::chrono::seconds(1));
     if(size != data.size()){
@@ -360,7 +360,7 @@ void PDOMapper::Buffer::read(const ipa_canopen::ObjectDict::Entry &entry, String
         dirty = false;
     }
 }
-void PDOMapper::Buffer::write(const ipa_canopen::ObjectDict::Entry &, const String &data){
+void PDOMapper::Buffer::write(const canopen::ObjectDict::Entry &, const String &data){
     boost::mutex::scoped_lock lock(mutex);
     if(size != data.size()){
         BOOST_THROW_EXCEPTION( std::bad_cast() );

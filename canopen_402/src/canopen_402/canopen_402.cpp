@@ -55,7 +55,7 @@
 
 #include <canopen_402/canopen_402.h>
 
-using ipa_canopen::Node_402;
+using canopen::Node_402;
 
 void Node_402::pending(LayerStatus &status)
 {

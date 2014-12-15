@@ -1,6 +1,6 @@
 #include <canopen_master/canopen.h>
 
-using namespace ipa_canopen;
+using namespace canopen;
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1) /* set alignment to 1 byte boundary */
@@ -18,7 +18,7 @@ struct NMTcommand{
     uint8_t node_id;
     
     struct Frame: public FrameOverlay<NMTcommand>{
-        Frame(uint8_t node_id, const Command &c) : FrameOverlay(ipa_can::Header()) {
+        Frame(uint8_t node_id, const Command &c) : FrameOverlay(can::Header()) {
             data.command = c;
             data.node_id = node_id;
         }
@@ -27,7 +27,7 @@ struct NMTcommand{
 
 #pragma pack(pop) /* pop previous alignment from stack */
 
-Node::Node(const boost::shared_ptr<ipa_can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync)
+Node::Node(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync)
 : SimpleLayer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
     getStorage()->entry(heartbeat_, 0x1017);
 }
@@ -105,7 +105,7 @@ void Node::switchState(const uint8_t &s){
     state_ = (State) s;
     state_dispatcher_.dispatch(state_);
 }
-void Node::handleNMT(const ipa_can::Frame & msg){
+void Node::handleNMT(const can::Frame & msg){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     heartbeat_timeout_ = boost::chrono::high_resolution_clock::now() + boost::chrono::milliseconds(3*heartbeat_.get_cached());
     assert(msg.dlc == 1);
@@ -114,7 +114,7 @@ void Node::handleNMT(const ipa_can::Frame & msg){
     cond.notify_one();
     
 }
-void Node::handleEMCY(const ipa_can::Frame & msg){
+void Node::handleEMCY(const can::Frame & msg){
 }
 
 template<typename T> void Node::wait_for(const State &s, const T &timeout){
@@ -165,8 +165,8 @@ void Node::diag(LayerReport &report){
     }
 }
 void Node::init(LayerStatus &status){
-    nmt_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x700 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleNMT));
-    emcy_listener_ = interface_->createMsgListener( ipa_can::MsgHeader(0x080 + node_id_), ipa_can::CommInterface::FrameDelegate(this, &Node::handleEMCY));
+    nmt_listener_ = interface_->createMsgListener( can::MsgHeader(0x700 + node_id_), can::CommInterface::FrameDelegate(this, &Node::handleNMT));
+    emcy_listener_ = interface_->createMsgListener( can::MsgHeader(0x080 + node_id_), can::CommInterface::FrameDelegate(this, &Node::handleEMCY));
 
     sdo_.init();
     try{

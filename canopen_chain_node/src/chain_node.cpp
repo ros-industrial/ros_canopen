@@ -2,8 +2,8 @@
 #include <socketcan_interface/socketcan.h>
 #include <canopen_chain_node/chain_ros.h>
 
-using namespace ipa_can;
-using namespace ipa_canopen;
+using namespace can;
+using namespace canopen;
 
 int main(int argc, char** argv){
   ros::init(argc, argv, "canopen_chain_node_node");

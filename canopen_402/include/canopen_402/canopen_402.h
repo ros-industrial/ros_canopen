@@ -53,19 +53,19 @@
  *
  ****************************************************************/
 
-#ifndef IPA_CANOPEN_402_IPA_CANOPEN_402_H
-#define IPA_CANOPEN_402_IPA_CANOPEN_402_H
+#ifndef CANOPEN_402_CANOPEN_402_H
+#define CANOPEN_402_CANOPEN_402_H
 
 #include <canopen_master/canopen.h>
 #include <string>
 #include <vector>
 
-namespace ipa_canopen
+namespace canopen
 {
-class Node_402 : public ipa_canopen::Layer
+class Node_402 : public canopen::Layer
 {
 public:
-  Node_402(boost::shared_ptr <ipa_canopen::Node> n, const std::string &name) : Layer(name), n_(n)
+  Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), n_(n)
   {
     configureEntries();
     status_word_mask.set(SW_Ready_To_Switch_On);
@@ -227,7 +227,7 @@ public:
   void configureModeSpecificEntries();
 
 private:
-  boost::shared_ptr <ipa_canopen::Node> n_;
+  boost::shared_ptr <canopen::Node> n_;
   volatile bool running;
   State state_;
   State target_state_;
@@ -240,24 +240,24 @@ private:
   boost::mutex cond_mutex;
   boost::condition_variable cond;
 
-  ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  status_word;
-  ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x006>::type >  control_word;
-  ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode_display;
-  ipa_canopen::ObjectStorage::Entry<int8_t>  op_mode;
-  ipa_canopen::ObjectStorage::Entry<int16_t>  ip_mode_sub_mode;
-  ipa_canopen::ObjectStorage::Entry<uint32_t>  supported_drive_modes;
+  canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  status_word;
+  canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  control_word;
+  canopen::ObjectStorage::Entry<int8_t>  op_mode_display;
+  canopen::ObjectStorage::Entry<int8_t>  op_mode;
+  canopen::ObjectStorage::Entry<int16_t>  ip_mode_sub_mode;
+  canopen::ObjectStorage::Entry<uint32_t>  supported_drive_modes;
 
-  ipa_canopen::ObjectStorage::Entry<int8_t>  homing_method;
+  canopen::ObjectStorage::Entry<int8_t>  homing_method;
 
-  ipa_canopen::ObjectStorage::Entry<int32_t> actual_vel;
-  ipa_canopen::ObjectStorage::Entry<int16_t> target_velocity;
-  ipa_canopen::ObjectStorage::Entry<uint32_t> profile_velocity;
-  ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
-  ipa_canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
-  ipa_canopen::ObjectStorage::Entry<int32_t> target_position;
-  ipa_canopen::ObjectStorage::Entry<int32_t> target_interpolated_position;
-  ipa_canopen::ObjectStorage::Entry<int32_t> target_interpolated_velocity;
-  ipa_canopen::ObjectStorage::Entry<int32_t> target_profiled_velocity;
+  canopen::ObjectStorage::Entry<int32_t> actual_vel;
+  canopen::ObjectStorage::Entry<int16_t> target_velocity;
+  canopen::ObjectStorage::Entry<uint32_t> profile_velocity;
+  canopen::ObjectStorage::Entry<int32_t> actual_pos;
+  canopen::ObjectStorage::Entry<int32_t> actual_internal_pos;
+  canopen::ObjectStorage::Entry<int32_t> target_position;
+  canopen::ObjectStorage::Entry<int32_t> target_interpolated_position;
+  canopen::ObjectStorage::Entry<int32_t> target_interpolated_velocity;
+  canopen::ObjectStorage::Entry<int32_t> target_profiled_velocity;
 
 
   double ac_vel_;
@@ -309,5 +309,5 @@ private:
   }*/
   
 };
-}  //  namespace ipa_canopen
-#endif  // IPA_CANOPEN_402_IPA_CANOPEN_402_H
+}  //  namespace canopen
+#endif  // CANOPEN_402_CANOPEN_402_H

@@ -1,12 +1,12 @@
-#ifndef H_IPA_CANOPEN_TIMER
-#define H_IPA_CANOPEN_TIMER
+#ifndef H_CANOPEN_TIMER
+#define H_CANOPEN_TIMER
 
 #include <socketcan_interface/FastDelegate.h>
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/asio/high_resolution_timer.hpp>
 
-namespace ipa_canopen{
+namespace canopen{
 
 class Timer{
 public:

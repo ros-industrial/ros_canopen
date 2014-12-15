@@ -24,8 +24,8 @@ void my_handler(int s){
   running = false;
 }
 
-using namespace ipa_can;
-using namespace ipa_canopen;
+using namespace can;
+using namespace canopen;
 
 boost::shared_ptr<ThreadedInterface<SocketCANInterface> > driver = boost::make_shared<ThreadedInterface<SocketCANInterface> > (true);
 
@@ -74,12 +74,12 @@ int main(int argc, char *argv[])
 
   sleep(1.0);
 
-  boost::shared_ptr<ipa_canopen::ObjectDict>  dict = ipa_canopen::ObjectDict::fromFile(argv[2]);
+  boost::shared_ptr<canopen::ObjectDict>  dict = canopen::ObjectDict::fromFile(argv[2]);
 
   LocalMaster master(argv[1], driver);
-  boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(ipa_can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), 0));
+  boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), 0));
 
-  boost::shared_ptr<ipa_canopen::Node> node (new Node(driver, dict, id, sync));
+  boost::shared_ptr<canopen::Node> node (new Node(driver, dict, id, sync));
 
   std::string name = "402";
   boost::shared_ptr<Node_402> motor( new Node_402(node, name));
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
   stack.init(es);
   LayerStatus s;
-  ipa_canopen::ObjectStorage::Entry<ipa_canopen::ObjectStorage::DataType<0x007>::type >  sup_mod;
+  canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x007>::type >  sup_mod;
   node->getStorage()->entry(sup_mod, 0x6502);
 
   LOG("modes: " << sup_mod.get());

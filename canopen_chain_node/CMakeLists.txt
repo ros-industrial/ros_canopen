@@ -108,14 +108,14 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(ipa_canopen_chain_node src/chain_node.cpp)
+add_executable(canopen_chain_node src/chain_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(ipa_canopen_chain_node cob_srvs_gencpp) # TODO: workaround needed?
+add_dependencies(canopen_chain_node cob_srvs_gencpp) # TODO: workaround needed?
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(ipa_canopen_chain_node
+target_link_libraries(canopen_chain_node
   ${Boost_LIBRARIES}
   ${catkin_LIBRARIES}
 )
@@ -135,7 +135,7 @@ target_link_libraries(ipa_canopen_chain_node
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ipa_canopen_chain_node
+install(TARGETS canopen_chain_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

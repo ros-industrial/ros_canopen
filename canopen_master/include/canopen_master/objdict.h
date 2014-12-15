@@ -1,5 +1,5 @@
-#ifndef H_IPA_OBJDICT
-#define H_IPA_OBJDICT
+#ifndef H_OBJDICT
+#define H_OBJDICT
 
 #include <socketcan_interface/FastDelegate.h>
 #include <boost/unordered_map.hpp>    
@@ -10,7 +10,7 @@
 #include <vector>
 #include "exceptions.h"
 
-namespace ipa_canopen{
+namespace canopen{
 
 class TypeGuard{
     const std::type_info& (*get_type)();
@@ -467,6 +467,6 @@ template<typename T, typename R> static R *branch_type(const uint16_t data_type)
     }
 }
 
-} // ipa_canopen
+} // canopen
 
-#endif // !H_IPA_OBJDICT
+#endif // !H_OBJDICT

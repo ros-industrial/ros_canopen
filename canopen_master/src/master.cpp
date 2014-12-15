@@ -2,17 +2,17 @@
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <boost/interprocess/containers/list.hpp>
 
-namespace ipa_can{
-std::size_t hash_value(ipa_can::Header const& h){ return (unsigned int)(h);}
+namespace can{
+std::size_t hash_value(can::Header const& h){ return (unsigned int)(h);}
 }
 
-using namespace ipa_canopen;
+using namespace canopen;
 
 void IPCSyncMaster::run() {
     boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock = sync_obj_->waiter.get_lock();
     boost::posix_time::ptime abs_time = boost::get_system_time();
     
-    ipa_can::Frame frame(sync_obj_->properties.header_, sync_obj_->properties.overflow_ ? 1 : 0);
+    can::Frame frame(sync_obj_->properties.header_, sync_obj_->properties.overflow_ ? 1 : 0);
     while(true){
         abs_time += sync_obj_->properties.period_;
         if(abs_time > boost::get_system_time()){
@@ -37,16 +37,16 @@ void IPCSyncLayer::init(LayerStatus &status) {
     }
     last_sync_ = 0;
     sync_master_->start(status);
-    sync_listener_ = interface_->createMsgListener( properties.header_, ipa_can::CommInterface::FrameDelegate(this, &IPCSyncLayer::handleFrame));
+    sync_listener_ = interface_->createMsgListener( properties.header_, can::CommInterface::FrameDelegate(this, &IPCSyncLayer::handleFrame));
 }
 
 // TODO: unify/combine
 
 boost::shared_ptr<SyncLayer> LocalMaster::getSync(const SyncProperties &p){
     boost::mutex::scoped_lock lock(mutex_);
-    boost::unordered_map<ipa_can::Header, boost::shared_ptr<LocalIPCSyncMaster> >::iterator it = syncmasters_.find(p.header_);
+    boost::unordered_map<can::Header, boost::shared_ptr<LocalIPCSyncMaster> >::iterator it = syncmasters_.find(p.header_);
     if(it == syncmasters_.end()){
-        std::pair<boost::unordered_map<ipa_can::Header, boost::shared_ptr<LocalIPCSyncMaster> >::iterator, bool>
+        std::pair<boost::unordered_map<can::Header, boost::shared_ptr<LocalIPCSyncMaster> >::iterator, bool>
             res = syncmasters_.insert(std::make_pair(p.header_, boost::make_shared<LocalIPCSyncMaster>(p,interface_)));
         it = res.first;
     }else if(!it->second->matches(p)) return boost::shared_ptr<SyncLayer>();
@@ -55,9 +55,9 @@ boost::shared_ptr<SyncLayer> LocalMaster::getSync(const SyncProperties &p){
 
 boost::shared_ptr<SyncLayer> SharedMaster::getSync(const SyncProperties &p){
     boost::mutex::scoped_lock lock(mutex_);
-    boost::unordered_map<ipa_can::Header, boost::shared_ptr<SharedIPCSyncMaster> >::iterator it = syncmasters_.find(p.header_);
+    boost::unordered_map<can::Header, boost::shared_ptr<SharedIPCSyncMaster> >::iterator it = syncmasters_.find(p.header_);
     if(it == syncmasters_.end()){
-        std::pair<boost::unordered_map<ipa_can::Header, boost::shared_ptr<SharedIPCSyncMaster> >::iterator, bool>
+        std::pair<boost::unordered_map<can::Header, boost::shared_ptr<SharedIPCSyncMaster> >::iterator, bool>
             res = syncmasters_.insert(std::make_pair(p.header_, boost::make_shared<SharedIPCSyncMaster>(boost::ref(managed_shm_), p,interface_)));
         it = res.first;
     }else if(!it->second->matches(p)) return boost::shared_ptr<SyncLayer>();

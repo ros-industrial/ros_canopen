@@ -17,13 +17,13 @@
 #include <controller_manager/controller_manager.h>
 
 //// Dummy class
-//class MotorNode : public ipa_canopen::SimpleLayer{
-//    boost::shared_ptr <ipa_canopen::Node> n_;
+//class MotorNode : public canopen::SimpleLayer{
+//    boost::shared_ptr <canopen::Node> n_;
 //    volatile bool running;
-//    ipa_canopen::ObjectStorage::Entry<int32_t> actual_pos;
+//    canopen::ObjectStorage::Entry<int32_t> actual_pos;
 
 //public:
-//    MotorNode(boost::shared_ptr <ipa_canopen::Node> n) : SimpleLayer("MotorNode"), n_(n) {
+//    MotorNode(boost::shared_ptr <canopen::Node> n) : SimpleLayer("MotorNode"), n_(n) {
 //        n->getStorage()->entry(actual_pos, 0x6064);
 //    }
 //    virtual bool read() { return true; }
@@ -43,8 +43,8 @@
 //    const double getTargetEff() { return 0.0; }
 //};
 
-using namespace ipa_can;
-using namespace ipa_canopen;
+using namespace can;
+using namespace canopen;
 
 
 //typedef Node_402 MotorNode;
@@ -52,7 +52,7 @@ using namespace ipa_canopen;
 class MotorNode : public Node_402{
     double scale_factor;
 public:
-   MotorNode(boost::shared_ptr <ipa_canopen::Node> n, const std::string &name) : Node_402(n, name), scale_factor(360*1000/(2*M_PI)) {
+   MotorNode(boost::shared_ptr <canopen::Node> n, const std::string &name) : Node_402(n, name), scale_factor(360*1000/(2*M_PI)) {
    }
    const double getActualPos() { return Node_402::getActualPos() / scale_factor; }
    const double getActualVel() { return Node_402::getActualVel() / scale_factor; }
@@ -420,7 +420,7 @@ class MotorChain : RosChain<ThreadedSocketCANInterface, SharedMaster>{
 
     boost::shared_ptr< ControllerManagerLayer> cm_;
 
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<ipa_canopen::Node> &node)
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node)
     {
         std::string name = module["name"];
         boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor"));

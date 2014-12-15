@@ -5,11 +5,11 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-namespace ipa_canopen{
+namespace canopen{
     size_t hash_value(ObjectDict::Key const& k)  { return k.hash;  }
 }
 
-using namespace ipa_canopen;
+using namespace canopen;
 
 template<> const String & HoldAny::get() const{
     return buffer;
@@ -200,7 +200,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptre
         }else if(entry->obj_code == ObjectDict::ARRAY || entry->obj_code == ObjectDict::RECORD){
             uint8_t subs = object->get<uint8_t>("CompactSubObj",0);
             if(subs){ // compact
-                dict->insert(true, boost::make_shared<const ipa_canopen::ObjectDict::Entry>(entry->index, 0, ObjectDict::DEFTYPE_UNSIGNED8, "NrOfObjects", true, false, false, HoldAny(subs)));
+                dict->insert(true, boost::make_shared<const canopen::ObjectDict::Entry>(entry->index, 0, ObjectDict::DEFTYPE_UNSIGNED8, "NrOfObjects", true, false, false, HoldAny(subs)));
 
                 read_var(*entry, *object);
                 
@@ -208,7 +208,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptre
                     std::string subname = pt.get<std::string>(name.substr(2)+"Name." + boost::lexical_cast<std::string>((int)i),entry->desc + boost::lexical_cast<std::string>((int)i));
                     subname = pt.get<std::string>(name.substr(2)+"Denotation." + boost::lexical_cast<std::string>((int)i), subname);
                     
-                    dict->insert(true, boost::make_shared<const ipa_canopen::ObjectDict::Entry>(entry->index, i, entry->data_type, name, entry->readable, entry->writable, entry->mappable, entry->def_val,
+                    dict->insert(true, boost::make_shared<const canopen::ObjectDict::Entry>(entry->index, i, entry->data_type, name, entry->readable, entry->writable, entry->mappable, entry->def_val,
                        ReadAnyValue::read_value(pt, entry->data_type, name.substr(2)+"Value." + boost::lexical_cast<std::string>((int)i))));
                 }
             }else{

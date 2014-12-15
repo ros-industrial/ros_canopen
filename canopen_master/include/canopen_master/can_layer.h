@@ -1,18 +1,18 @@
-#ifndef H_IPA_CAN_LAYER
-#define H_IPA_CAN_LAYER
+#ifndef H_CAN_LAYER
+#define H_CAN_LAYER
 
 #include "layer.h"
 
-namespace ipa_canopen{
+namespace canopen{
     
 template<typename Driver> class CANLayer: public Layer{
     boost::mutex mutex_;
     boost::shared_ptr<Driver> driver_;
     const std::string device_;
     const unsigned int bitrate_;
-    ipa_can::Frame last_error_;
-    ipa_can::CommInterface::FrameListener::Ptr error_listener_;
-    void handleFrame(const ipa_can::Frame & msg){
+    can::Frame last_error_;
+    can::CommInterface::FrameListener::Ptr error_listener_;
+    void handleFrame(const can::Frame & msg){
         boost::mutex::scoped_lock lock(mutex_);
         last_error_ = msg;
         LOG("ID: " << msg.id);
@@ -29,7 +29,7 @@ public:
     }
 
     virtual void diag(LayerReport &report){
-        ipa_can::State s = driver_->getState();
+        can::State s = driver_->getState();
         if(!s.isReady()){
             report.error("CAN layer not ready");
             report.add("driver_state", int(s.driver_state));
@@ -59,7 +59,7 @@ public:
         if(!driver_->init(device_, bitrate_)){
             status.error("CAN init failed");
         }else{
-            error_listener_ = driver_->createMsgListener(ipa_can::ErrorHeader(), ipa_can::CommInterface::FrameDelegate(this, &CANLayer::handleFrame));
+            error_listener_ = driver_->createMsgListener(can::ErrorHeader(), can::CommInterface::FrameDelegate(this, &CANLayer::handleFrame));
         }
     }
     virtual void shutdown(LayerStatus &status){
@@ -74,6 +74,6 @@ public:
     }
 
 };
-} // namespace ipa_canopen
+} // namespace canopen
 
 #endif

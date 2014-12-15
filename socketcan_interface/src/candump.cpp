@@ -3,7 +3,7 @@
 
 #include <socketcan_interface/socketcan.h>
 
-using namespace ipa_can;
+using namespace can;
 
 #include <iostream>
 

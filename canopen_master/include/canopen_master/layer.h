@@ -1,11 +1,11 @@
-#ifndef H_IPA_CANOPEN_LAYER
-#define H_IPA_CANOPEN_LAYER
+#ifndef H_CANOPEN_LAYER
+#define H_CANOPEN_LAYER
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
 
-namespace ipa_canopen{
+namespace canopen{
 
 class LayerStatus{
     mutable boost::mutex write_mutex_;
@@ -261,6 +261,6 @@ public:
     LayerGroup(const std::string &n) : Layer(n) {}
 };
 
-} // namespace ipa_canopen
+} // namespace canopen
 
 #endif

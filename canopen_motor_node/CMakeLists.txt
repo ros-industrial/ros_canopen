@@ -106,14 +106,14 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(canopen_motor_node_node src/control_node.cpp)
+add_executable(canopen_motor_node src/control_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(canopen_motor_node_node canopen_motor_node_generate_messages_cpp)
+# add_dependencies(canopen_motor_node canopen_motor_node_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(canopen_motor_node_node
+target_link_libraries(canopen_motor_node
   ${catkin_LIBRARIES}
 )
 
@@ -132,7 +132,7 @@ target_link_libraries(canopen_motor_node_node
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS canopen_motor_node_node
+install(TARGETS canopen_motor_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

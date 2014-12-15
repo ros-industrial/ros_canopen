@@ -1,6 +1,6 @@
 #include <canopen_master/canopen.h>
 
-using namespace ipa_canopen;
+using namespace canopen;
 
 const uint8_t COMMAND_MASK =  (1<<7) | (1<<6) | (1<<5);
 const uint8_t INITIATE_DOWNLOAD_REQUEST =  (0 << 5);
@@ -25,8 +25,8 @@ struct SDOid{
     SDOid(uint32_t val){
         *(uint32_t*) this = val;
     }
-    ipa_can::Header header() {
-        return ipa_can::Header(id, extended, false, false);
+    can::Header header() {
+        return can::Header(id, extended, false, false);
     }
 };
 
@@ -98,21 +98,21 @@ struct SegmentLong{
 struct DownloadInitiateRequest: public FrameOverlay<InitiateLong>{
     static const uint8_t command = 1;
     
-    DownloadInitiateRequest(const Header &h, const ipa_canopen::ObjectDict::Entry &entry, const String &buffer, size_t &offset) : FrameOverlay(h) {
+    DownloadInitiateRequest(const Header &h, const canopen::ObjectDict::Entry &entry, const String &buffer, size_t &offset) : FrameOverlay(h) {
         data.command = command;
         data.index = entry.index;
         data.sub_index = entry.sub_index;
         offset = data.apply_buffer(buffer);
    }
-    DownloadInitiateRequest(const ipa_can::Frame &f) : FrameOverlay(f){ }
+    DownloadInitiateRequest(const can::Frame &f) : FrameOverlay(f){ }
 };
 
 struct DownloadInitiateResponse: public FrameOverlay<InitiateShort>{
     static const uint8_t command = 3;
     
-    DownloadInitiateResponse(const ipa_can::Frame &f) : FrameOverlay(f){ }
+    DownloadInitiateResponse(const can::Frame &f) : FrameOverlay(f){ }
     
-    bool test(const ipa_can::Frame  &msg, uint32_t &reason){
+    bool test(const can::Frame  &msg, uint32_t &reason){
         DownloadInitiateRequest req(msg);
         if(req.data.command ==  DownloadInitiateRequest::command && data.index == req.data.index && data.sub_index == req.data.sub_index){
             return true;
@@ -125,7 +125,7 @@ struct DownloadInitiateResponse: public FrameOverlay<InitiateShort>{
 struct DownloadSegmentRequest: public FrameOverlay<SegmentLong>{
     static const uint8_t command = 0;
     
-    DownloadSegmentRequest(const ipa_can::Frame &f) : FrameOverlay(f){ }
+    DownloadSegmentRequest(const can::Frame &f) : FrameOverlay(f){ }
     
     DownloadSegmentRequest(const Header &h, bool toggle, const String &buffer, size_t& offset) : FrameOverlay(h) {
         data.command = command;
@@ -136,9 +136,9 @@ struct DownloadSegmentRequest: public FrameOverlay<SegmentLong>{
 
 struct DownloadSegmentResponse : public FrameOverlay<SegmentShort>{
     static const uint8_t command = 1;
-    DownloadSegmentResponse(const ipa_can::Frame &f) : FrameOverlay(f) {
+    DownloadSegmentResponse(const can::Frame &f) : FrameOverlay(f) {
     }
-    bool test(const ipa_can::Frame  &msg, uint32_t &reason){
+    bool test(const can::Frame  &msg, uint32_t &reason){
         DownloadSegmentRequest req(msg);
         if (req.data.command !=  DownloadSegmentRequest::command){
             reason = 0x08000000; // General error
@@ -153,18 +153,18 @@ struct DownloadSegmentResponse : public FrameOverlay<SegmentShort>{
 
 struct UploadInitiateRequest: public FrameOverlay<InitiateShort>{
     static const uint8_t command = 2;
-    UploadInitiateRequest(const Header &h, const ipa_canopen::ObjectDict::Entry &entry) : FrameOverlay(h) {
+    UploadInitiateRequest(const Header &h, const canopen::ObjectDict::Entry &entry) : FrameOverlay(h) {
         data.command = command;
         data.index = entry.index;
         data.sub_index = entry.sub_index;
    }
-    UploadInitiateRequest(const ipa_can::Frame &f) : FrameOverlay(f){ }
+    UploadInitiateRequest(const can::Frame &f) : FrameOverlay(f){ }
 };
 
 struct UploadInitiateResponse: public FrameOverlay<InitiateLong>{
     static const uint8_t command = 2;
-    UploadInitiateResponse(const ipa_can::Frame &f) : FrameOverlay(f) { }
-    bool test(const ipa_can::Frame  &msg, size_t size, uint32_t &reason){
+    UploadInitiateResponse(const can::Frame &f) : FrameOverlay(f) { }
+    bool test(const can::Frame  &msg, size_t size, uint32_t &reason){
         UploadInitiateRequest req(msg);
         if(req.data.command ==  UploadInitiateRequest::command && data.index == req.data.index && data.sub_index == req.data.sub_index){
                 size_t ds = data.data_size();
@@ -196,14 +196,14 @@ struct UploadSegmentRequest: public FrameOverlay<SegmentShort>{
         data.command = command;
         data.toggle = toggle?1:0;
    }
-    UploadSegmentRequest(const ipa_can::Frame &f) : FrameOverlay(f) { }
+    UploadSegmentRequest(const can::Frame &f) : FrameOverlay(f) { }
 };
 
 struct UploadSegmentResponse : public FrameOverlay<SegmentLong>{
     static const uint8_t command = 0;
-    UploadSegmentResponse(const ipa_can::Frame &f) : FrameOverlay(f) {
+    UploadSegmentResponse(const can::Frame &f) : FrameOverlay(f) {
     }
-    bool test(const ipa_can::Frame  &msg, uint32_t &reason){
+    bool test(const can::Frame  &msg, uint32_t &reason){
         UploadSegmentRequest req(msg);
         if(req.data.command !=  UploadSegmentRequest::command){
             reason = 0x08000000; // General error
@@ -275,7 +275,7 @@ struct AbortData{
 
 struct AbortTranserRequest: public FrameOverlay<AbortData>{
     static const uint8_t command = 4;
-    AbortTranserRequest(const ipa_can::Frame &f) : FrameOverlay(f) {}
+    AbortTranserRequest(const can::Frame &f) : FrameOverlay(f) {}
     AbortTranserRequest(const Header &h, uint16_t index, uint8_t sub_index, uint32_t reason) : FrameOverlay(h) {
         data.command = command;
         data.index = index;
@@ -292,7 +292,7 @@ void SDOClient::abort(uint32_t reason){
     }
 }
 
-void SDOClient::handleFrame(const ipa_can::Frame & msg){
+void SDOClient::handleFrame(const can::Frame & msg){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     assert(msg.dlc == 8);
     
@@ -376,26 +376,26 @@ void SDOClient::handleFrame(const ipa_can::Frame & msg){
 void SDOClient::init(){
     assert(storage_);
     assert(interface_);
-    const ipa_canopen::ObjectDict & dict = *storage_->dict_;
+    const canopen::ObjectDict & dict = *storage_->dict_;
 
     try{
         client_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 1).value(), storage_->node_id_)).header();
     }
     catch(...){
-        client_id = ipa_can::MsgHeader(0x600+ storage_->node_id_);
+        client_id = can::MsgHeader(0x600+ storage_->node_id_);
     }
     
     last_msg = AbortTranserRequest(client_id, 0,0,0);
     current_entry = 0;
 
-    ipa_can::Header server_id;
+    can::Header server_id;
     try{
         server_id = SDOid(NodeIdOffset<uint32_t>::apply(dict(0x1200, 2).value(), storage_->node_id_)).header();
     }
     catch(...){
-        server_id = ipa_can::MsgHeader(0x580+ storage_->node_id_);
+        server_id = can::MsgHeader(0x580+ storage_->node_id_);
     }
-    listener_ = interface_->createMsgListener(server_id, ipa_can::CommInterface::FrameDelegate(this, &SDOClient::handleFrame));
+    listener_ = interface_->createMsgListener(server_id, can::CommInterface::FrameDelegate(this, &SDOClient::handleFrame));
 }
 void SDOClient::wait_for_response(){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
@@ -412,7 +412,7 @@ void SDOClient::wait_for_response(){
         BOOST_THROW_EXCEPTION( TimeoutException() ); // TODO
     }
 }
-void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
+void SDOClient::read(const canopen::ObjectDict::Entry &entry, String &data){
     boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
 
@@ -429,7 +429,7 @@ void SDOClient::read(const ipa_canopen::ObjectDict::Entry &entry, String &data){
         BOOST_THROW_EXCEPTION( TimeoutException() );
     }
 }
-void SDOClient::write(const ipa_canopen::ObjectDict::Entry &entry, const String &data){
+void SDOClient::write(const canopen::ObjectDict::Entry &entry, const String &data){
     boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
         buffer = data;
