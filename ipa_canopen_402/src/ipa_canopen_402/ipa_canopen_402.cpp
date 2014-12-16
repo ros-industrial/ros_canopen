@@ -609,6 +609,7 @@ const Node_402::State& Node_402::getState()
 
 const Node_402::OperationMode Node_402::getMode()
 {
+  if(operation_mode_ == Homing) return No_Mode; // TODO: remove after mode switch is handled properly in init
   return operation_mode_;
 }
 
