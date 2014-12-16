@@ -102,9 +102,11 @@ protected:
     vector_type layers;
     
     template<typename Bound, typename Iterator, typename Data> Iterator call(void(Layer::*func)(Data&), Data &status, const Iterator &begin, const Iterator &end){
+        bool okay_on_start = status.template bounded<Bound>();
+
         for(Iterator it = begin; it != end; ++it){
             ((**it).*func)(status);
-            if(!status.template bounded<Bound>()){
+            if(okay_on_start && !status.template bounded<Bound>()){
                 return it;
             }
         }
@@ -158,6 +160,7 @@ public:
         if(it != end){
             LayerStatus omit;
             call(&Layer::halt, omit, layers.rbegin(), vector_type::reverse_iterator(it));
+            omit.error();
             call(&Layer::read, omit, it+1, end);
         }
     }
@@ -182,6 +185,7 @@ public:
         if(it != layers.rend()){
             LayerStatus omit;
             call(&Layer::halt, omit, begin, vector_type::reverse_iterator(it));
+            omit.error();
             call(&Layer::write, omit, it+1, layers.rend());
         }
     }
@@ -225,6 +229,7 @@ public:
         if(it != this->layers.end()){
             LayerStatus omit;
             this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+            omit.error();
             this->template call(&Layer::read, omit, it+1, this->layers.end());
         }
     }
@@ -233,6 +238,7 @@ public:
         if(it != this->layers.end()){
             LayerStatus omit;
             this->template call(&Layer::halt, omit, this->layers.begin(), this->layers.end());
+            omit.error();
             this->template call(&Layer::write, omit, it+1, this->layers.end());
         }
     }
