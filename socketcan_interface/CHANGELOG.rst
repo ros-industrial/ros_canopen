@@ -2,6 +2,9 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.6.1 (2014-12-15)
 ------------------
 * remove ipa_* and IPA_* prefixes
