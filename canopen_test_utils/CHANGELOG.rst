@@ -2,6 +2,11 @@
 Changelog for package canopen_test_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.2 (2014-12-18)
+------------------
+* add dep
+* Contributors: Florian Weisshardt
+
 0.6.1 (2014-12-15)
 ------------------
 * rename node
