@@ -19,7 +19,7 @@
   <run_depend>canopen_chain_node</run_depend>
   <run_depend>canopen_master</run_depend>
   <run_depend>canopen_motor_node</run_depend>
-  <run_depend>canopen_test_utils</run_depend>
+  <!--run_depend>canopen_test_utils</run_depend-->
   <run_depend>socketcan_interface</run_depend>
 
 
