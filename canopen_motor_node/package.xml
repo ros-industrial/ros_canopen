@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>canopen_motor_node</name>
+  <version>0.6.2</version>
+  <description>This package extends the canopen_chain_node with specialized handling for canopen_402 devices. It facilitates interface abstraction with ros_control.</description>
+
+  <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
+  <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
+
+  <license>LGPLv3</license>
+
+  <!-- <url type="website">http://wiki.ros.org/canopen_motor_node</url> -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>canopen_chain_node</depend>
+  <depend>hardware_interface</depend>
+  <depend>controller_manager</depend>
+  <depend>joint_limits_interface</depend>
+  <depend>canopen_402</depend>
+  <depend>urdf</depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- You can specify that this package is a metapackage here: -->
+    <!-- <metapackage/> -->
+
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>canopen_master</name>
+  <version>0.6.2</version>
+  <description>CiA(r) CANopen 301 master implementation with support for interprocess master synchronisation.</description>
+
+  <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
+  <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
+
+  <license>LGPLv3</license>
+
+  <!-- <url type="website">http://wiki.ros.org/canopen_master</url> -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>socketcan_interface</depend>
+  <depend>boost</depend>
+
+  <export>
+    <!-- You can specify that this package is a metapackage here: -->
+    <!-- <metapackage/> -->
+
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

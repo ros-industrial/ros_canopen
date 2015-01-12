@@ -1,6 +1,0 @@
-<launch>
-  <arg name="yaml"/>
-  <node name="canopen_chain" pkg="ipa_canopen_chain_ros" type="ipa_canopen_chain_node" output="screen" clear_params="true">
-    <rosparam command="load" file="$(arg yaml)" />
-  </node>
-</launch>

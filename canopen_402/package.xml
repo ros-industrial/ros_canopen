@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>canopen_402</name>
+  <version>0.6.2</version>
+  <description>This implements the CANopen device profile for drives and motion control. CiA(r) 402</description>
+
+  <maintainer email="tdf@ipa.fhg.de">Thiago de Freitas</maintainer>
+  <author email="tdf@ipa.fhg.de">Thiago de Freitas</author>
+  <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
+
+  <license>LGPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>canopen_master</depend>
+</package>

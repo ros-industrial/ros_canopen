@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package>
+  <name>ros_canopen</name>
+  <version>0.6.2</version>
+  <description>A generic canopen implementation for ROS</description>
+
+  <license>LGPL</license>
+
+  <url type="website">http://ros.org/wiki/ros_canopen</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <maintainer email="fmw@ipa.fhg.de">Florian Weisshardt</maintainer>
+  <maintainer email="nhg@ipa.fhg.de">Nadia Hammoudeh Garcia</maintainer>
+  <author email="fmw@ipa.fhg.de">Florian Weisshardt</author>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>canopen_402</run_depend>
+  <run_depend>canopen_chain_node</run_depend>
+  <run_depend>canopen_master</run_depend>
+  <run_depend>canopen_motor_node</run_depend>
+  <!--run_depend>canopen_test_utils</run_depend-->
+  <run_depend>socketcan_interface</run_depend>
+
+
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
