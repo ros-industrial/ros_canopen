@@ -12,14 +12,17 @@
 #include <boost/weak_ptr.hpp>
 
 namespace canopen{
-    
-template<typename T> bool read_xmlrpc_or_praram(T &val, const std::string &name, XmlRpc::XmlRpcValue &valstruct, const ros::NodeHandle &nh){
-    if(valstruct.hasMember(name)){
-        val = static_cast<T>(valstruct[name]);
-        return true;
+
+class MergedXmlRpcStruct : public XmlRpc::XmlRpcValue{
+public:
+    MergedXmlRpcStruct(){
+        assertStruct();
     }
-    return nh.getParam(name, val);
-}
+    MergedXmlRpcStruct(XmlRpc::XmlRpcValue& a, MergedXmlRpcStruct &b) :XmlRpc::XmlRpcValue(a){
+        assertStruct();
+        _value.asStruct->insert(b._value.asStruct->begin(), b._value.asStruct->end());
+    }
+};
 
 template<typename NodeType> class Logger{
     boost::weak_ptr<NodeType> node_;
@@ -279,34 +282,45 @@ protected:
 
         XmlRpc::XmlRpcValue modules;
         nh_priv_.getParam("modules", modules);
-        ros::NodeHandle def_nh(nh_priv_,"defaults");
+        MergedXmlRpcStruct defaults;
+        nh_priv_.getParam("defaults", defaults);
 
         for (int32_t i = 0; i < modules.size(); ++i){
             XmlRpc::XmlRpcValue &module = modules[i];
             std::string name = module["name"];
             int node_id;
             try{
-            node_id = module["id"];
+                node_id = module["id"];
             }
             catch(...){
                 ROS_ERROR_STREAM("Module at list index " << i << " has no id");
                 return false;
             }
+
+            MergedXmlRpcStruct merged(module, defaults);
+                            
             std::string eds;
-            std::string pkg;
             
-            if(!read_xmlrpc_or_praram(eds, "eds_file", module, def_nh) || eds.empty()){
+            try{
+                eds = (std::string) merged["eds_file"];
+            }
+            catch(...){
                 ROS_ERROR_STREAM("EDS path '" << eds << "' invalid");
                 return false;
             }
-            if(read_xmlrpc_or_praram(pkg, "eds_pkg", module, def_nh)){
-            std::string p = ros::package::getPath(pkg);
-            if(p.empty()){
-                    ROS_ERROR_STREAM("Package '" << pkg << "' not found");
-                    return false;
+
+            try{
+                std::string pkg = merged["eds_pkg"];
+                std::string p = ros::package::getPath(pkg);
+                if(p.empty()){
+                        ROS_ERROR_STREAM("Package '" << pkg << "' not found");
+                        return false;
+                }
+                eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
             }
-            eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
+            catch(...){
             }
+            
             boost::shared_ptr<ObjectDict>  dict = ObjectDict::fromFile(eds);
             if(!dict){
                 ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
@@ -314,7 +328,7 @@ protected:
             }
             boost::shared_ptr<canopen::Node> node = boost::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
             
-            if(!nodeAdded(module, node)) return false;
+            if(!nodeAdded(merged, node)) return false;
 
             boost::shared_ptr<Logger<canopen::Node> > logger = boost::make_shared<Logger<canopen::Node> >(node);
             //logger->add(4,"pos", canopen::ObjectDict::Key(0x6064));
