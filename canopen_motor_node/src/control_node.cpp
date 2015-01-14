@@ -49,23 +49,27 @@ using namespace canopen;
 
 //typedef Node_402 MotorNode;
 
-class MotorNode : public Node_402
-{
-    double scale_factor;
+class MotorNode : public Node_402{
+    double pos_unit_factor;
+    double vel_unit_factor;
+    double eff_unit_factor;
 public:
-   MotorNode(boost::shared_ptr <canopen::Node> n, const std::string &name) : Node_402(n, name)
-   {
+   MotorNode(boost::shared_ptr <canopen::Node> n, const std::string &name, XmlRpc::XmlRpcValue & options) : Node_402(n, name), pos_unit_factor(360*1000/(2*M_PI)),vel_unit_factor(360*1000/(2*M_PI)), eff_unit_factor(1) {
+       if(options.hasMember("pos_unit_factor")) pos_unit_factor = options["pos_unit_factor"];
+       if(options.hasMember("vel_unit_factor")) vel_unit_factor = options["vel_unit_factor"];
+       if(options.hasMember("eff_unit_factor")) eff_unit_factor = options["eff_unit_factor"];
    }
-   const double getActualPos() { return Node_402::getActualPos() / scale_factor; }
-   const double getActualVel() { return Node_402::getActualVel() / scale_factor; }
-   const double getActualEff() { return Node_402::getActualEff() / scale_factor; }
-   void setTargetPos(const double &v) { Node_402::setTargetPos(v*scale_factor); }
-   void setTargetVel(const double &v) { Node_402::setTargetVel(v*scale_factor); }
-   void setTargetEff(const double &v) { Node_402::setTargetEff(v*scale_factor); }
-   const double getTargetPos() { return Node_402::getTargetPos() / scale_factor; }
-   const double getTargetVel() { return Node_402::getTargetVel() / scale_factor; }
-   const double getTargetEff() { return Node_402::getTargetEff() / scale_factor; }
-   void setScaleFactor(const double &sf){scale_factor = sf;}
+   const double getActualPos() { return Node_402::getActualPos() / pos_unit_factor; }
+   const double getActualVel() { return Node_402::getActualVel() / vel_unit_factor; }
+   const double getActualEff() { return Node_402::getActualEff() / eff_unit_factor; }
+   
+   void setTargetPos(const double &v) { Node_402::setTargetPos(v*pos_unit_factor); }
+   void setTargetVel(const double &v) { Node_402::setTargetVel(v*vel_unit_factor); }
+   void setTargetEff(const double &v) { Node_402::setTargetEff(v*eff_unit_factor); }
+   
+   const double getTargetPos() { return Node_402::getTargetPos() / pos_unit_factor; }
+   const double getTargetVel() { return Node_402::getTargetVel() / vel_unit_factor; }
+   const double getTargetEff() { return Node_402::getTargetEff() / eff_unit_factor; }
 };
 
 
@@ -202,7 +206,7 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
     bool paused_;
     ros::Time last_time_;
     ControllerManagerLayer * this_non_const;
-
+    
     void update(){
         ros::Time now = ros::Time::now();
         ros::Duration period(now -last_time_);
@@ -229,7 +233,7 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
     joint_limits_interface::VelocityJointSaturationInterface vel_saturation_interface_;
     joint_limits_interface::EffortJointSoftLimitsInterface eff_soft_limits_interface_;
     joint_limits_interface::EffortJointSaturationInterface eff_saturation_interface_;
-
+    
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
 
@@ -244,7 +248,7 @@ class ControllerManagerLayer : public SimpleLayer, public hardware_interface::Ro
             recover_ = true;
         }
     }
-
+    
 public:
     virtual bool checkForConflict(const std::list<hardware_interface::ControllerInfo>& info) const{
         bool in_conflict = RobotHW::checkForConflict(info);
@@ -281,7 +285,7 @@ public:
                 // TODO: rollback
                 if(!it->first->switchMode(it->second)) return true;
             }
-
+            
             ///call enforceLimits with large period in order to reset their internal prev_cmd_ value!
             ros::Duration period(1000000000.0);
             this_non_const->pos_saturation_interface_.enforceLimits(period);
@@ -324,7 +328,7 @@ public:
         registerInterface(&vel_soft_limits_interface_);
         registerInterface(&eff_saturation_interface_);
         registerInterface(&eff_soft_limits_interface_);
-
+        
     }
 
     virtual bool read() {
@@ -345,7 +349,7 @@ public:
 
         urdf::Model urdf;
         urdf.initParam("robot_description");
-
+        
         for(HandleMap::iterator it = handles_.begin(); it != handles_.end(); ++it){
             joint_limits_interface::JointLimits limits;
             joint_limits_interface::SoftJointLimits soft_limits;
@@ -426,31 +430,7 @@ class MotorChain : RosChain<ThreadedSocketCANInterface, SharedMaster>{
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node)
     {
         std::string name = module["name"];
-        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor"));
-
-        /** Begin of scale factor acquisition from yaml file
-         *  Not optimal, but removes the  hard-coded scale factor
-         * This enables e.g. the conversion from micrometer to meters
-         * used in the Schunk PG70+
-        */
-        double scale_factor;
-        if (nh_.hasParam("scale_factor"))
-        {
-          nh_.getParam("scale_factor", scale_factor);
-          motor->setScaleFactor(scale_factor);
-        }
-        else
-        {
-          scale_factor = 360*1000/(2*M_PI);
-          motor->setScaleFactor(scale_factor);
-        }
-
-        ROS_INFO("Setting a scale factor of %f", scale_factor);
-
-        /*
-         * Should later be obtained from the eds file
-         */
-
+        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor", module));
         motors_->add(motor);
 
         boost::shared_ptr<HandleLayer> handle( new HandleLayer(name, motor));
@@ -462,7 +442,7 @@ class MotorChain : RosChain<ThreadedSocketCANInterface, SharedMaster>{
 
 public:
     MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv){}
-
+    
     virtual bool setup() {
         motors_.reset( new LayerGroup<MotorNode>("402 Layer"));
         handle_layer_.reset( new LayerGroup<HandleLayer>("Handle Layer"));
