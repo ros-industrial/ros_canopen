@@ -3,8 +3,12 @@ name: rig1_controller
 defaults:
   eds_pkg: canopen_test_utils
   eds_file: "config/Elmo.dcf"
+  # pos_unit_factor: 0.1
+  # eff_unit_factor: 1000000000000.0
 
 modules:
   - name: rig1_plate_joint
     id: 1
+    # vel_unit_factor: 0.01
+
      

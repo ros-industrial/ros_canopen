@@ -50,19 +50,26 @@ using namespace canopen;
 //typedef Node_402 MotorNode;
 
 class MotorNode : public Node_402{
-    double scale_factor;
+    double pos_unit_factor;
+    double vel_unit_factor;
+    double eff_unit_factor;
 public:
-   MotorNode(boost::shared_ptr <canopen::Node> n, const std::string &name) : Node_402(n, name), scale_factor(360*1000/(2*M_PI)) {
+   MotorNode(boost::shared_ptr <canopen::Node> n, const std::string &name, XmlRpc::XmlRpcValue & options) : Node_402(n, name), pos_unit_factor(360*1000/(2*M_PI)),vel_unit_factor(360*1000/(2*M_PI)), eff_unit_factor(1) {
+       if(options.hasMember("pos_unit_factor")) pos_unit_factor = options["pos_unit_factor"];
+       if(options.hasMember("vel_unit_factor")) vel_unit_factor = options["vel_unit_factor"];
+       if(options.hasMember("eff_unit_factor")) eff_unit_factor = options["eff_unit_factor"];
    }
-   const double getActualPos() { return Node_402::getActualPos() / scale_factor; }
-   const double getActualVel() { return Node_402::getActualVel() / scale_factor; }
-   const double getActualEff() { return Node_402::getActualEff() / scale_factor; }
-   void setTargetPos(const double &v) { Node_402::setTargetPos(v*scale_factor); }
-   void setTargetVel(const double &v) { Node_402::setTargetVel(v*scale_factor); }
-   void setTargetEff(const double &v) { Node_402::setTargetEff(v*scale_factor); }
-   const double getTargetPos() { return Node_402::getTargetPos() / scale_factor; }
-   const double getTargetVel() { return Node_402::getTargetVel() / scale_factor; }
-   const double getTargetEff() { return Node_402::getTargetEff() / scale_factor; }
+   const double getActualPos() { return Node_402::getActualPos() / pos_unit_factor; }
+   const double getActualVel() { return Node_402::getActualVel() / vel_unit_factor; }
+   const double getActualEff() { return Node_402::getActualEff() / eff_unit_factor; }
+   
+   void setTargetPos(const double &v) { Node_402::setTargetPos(v*pos_unit_factor); }
+   void setTargetVel(const double &v) { Node_402::setTargetVel(v*vel_unit_factor); }
+   void setTargetEff(const double &v) { Node_402::setTargetEff(v*eff_unit_factor); }
+   
+   const double getTargetPos() { return Node_402::getTargetPos() / pos_unit_factor; }
+   const double getTargetVel() { return Node_402::getTargetVel() / vel_unit_factor; }
+   const double getTargetEff() { return Node_402::getTargetEff() / eff_unit_factor; }
 };
 
 
@@ -423,7 +430,7 @@ class MotorChain : RosChain<ThreadedSocketCANInterface, SharedMaster>{
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node)
     {
         std::string name = module["name"];
-        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor"));
+        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor", module));
         motors_->add(motor);
 
         boost::shared_ptr<HandleLayer> handle( new HandleLayer(name, motor));
