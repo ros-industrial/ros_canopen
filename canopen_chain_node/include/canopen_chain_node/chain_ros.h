@@ -57,7 +57,7 @@ public:
     virtual ~Logger() {}
 };
 
-template<typename InterfaceType, typename MasterType> class RosChain : public canopen::LayerStack {
+template<typename InterfaceType> class RosChain : public canopen::LayerStack {
 protected:
     std::string chain_name_;
     
