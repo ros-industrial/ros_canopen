@@ -62,7 +62,7 @@ protected:
     std::string chain_name_;
     
     boost::shared_ptr<InterfaceType> interface_;
-    boost::shared_ptr<MasterType> master_;
+    boost::shared_ptr<Master> master_;
     boost::shared_ptr<canopen::LayerGroup<canopen::Node> > nodes_;
     boost::shared_ptr<canopen::SyncLayer> sync_;
 
@@ -207,6 +207,7 @@ protected:
     bool setup_bus(){
         ros::NodeHandle bus_nh(nh_priv_,"bus");
         std::string can_device;
+        std::string master_type;
         int can_bitrate = 0;
         
         if(!bus_nh.getParam("device",can_device)){
@@ -223,8 +224,21 @@ protected:
         interface_ = boost::make_shared<InterfaceType>(true); // enable loopback
         state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
         
-        master_ = boost::make_shared<MasterType>(can_device, interface_);
-        
+        bus_nh.param("master_type",master_type, std::string("shared"));
+
+        if(master_type == "exclusive"){
+            master_ = boost::make_shared<SharedMaster>(can_device, interface_);
+        }else if (master_type == "shared"){
+            boost::interprocess::permissions perm;
+            perm.set_unrestricted();
+            master_ = boost::make_shared<SharedMaster>(can_device, interface_, perm);
+        }else if (master_type == "local"){
+            master_ = boost::make_shared<LocalMaster>(can_device, interface_);
+        }else{
+            ROS_ERROR_STREAM("Master type  "<< master_type << " is not supported");
+            return false;
+        }
+
         add(boost::make_shared<CANLayer<InterfaceType> >(interface_, can_device, can_bitrate));
         
         return true;
