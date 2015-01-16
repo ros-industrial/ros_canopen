@@ -226,19 +226,26 @@ protected:
         
         bus_nh.param("master_type",master_type, std::string("shared"));
 
-        if(master_type == "exclusive"){
-            master_ = boost::make_shared<SharedMaster>(can_device, interface_);
-        }else if (master_type == "shared"){
-            boost::interprocess::permissions perm;
-            perm.set_unrestricted();
-            master_ = boost::make_shared<SharedMaster>(can_device, interface_, perm);
-        }else if (master_type == "local"){
-            master_ = boost::make_shared<LocalMaster>(can_device, interface_);
-        }else{
-            ROS_ERROR_STREAM("Master type  "<< master_type << " is not supported");
+        try{
+            if(master_type == "exclusive"){
+                master_ = boost::make_shared<SharedMaster>(can_device, interface_);
+            }else if (master_type == "shared"){
+                boost::interprocess::permissions perm;
+                perm.set_unrestricted();
+                master_ = boost::make_shared<SharedMaster>(can_device, interface_, perm);
+            }else if (master_type == "local"){
+                master_ = boost::make_shared<LocalMaster>(can_device, interface_);
+            }else{
+                ROS_ERROR_STREAM("Master type  "<< master_type << " is not supported");
+                return false;
+            }
+        }
+        catch( const std::exception &e){
+            std::string info = boost::diagnostic_information(e);
+            ROS_ERROR_STREAM(info);
             return false;
         }
-
+        
         add(boost::make_shared<CANLayer<InterfaceType> >(interface_, can_device, can_bitrate));
         
         return true;
