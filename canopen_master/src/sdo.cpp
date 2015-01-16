@@ -399,6 +399,7 @@ void SDOClient::init(){
 }
 void SDOClient::wait_for_response(){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
+    boost::this_thread::disable_interruption di;
     done = false;
     time_point abs_time = get_abs_time(boost::chrono::seconds(1));
     while(!done){
