@@ -296,7 +296,7 @@ class LocalMaster: public Master{
     boost::shared_ptr<can::CommInterface> interface_;
 public:
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
-    LocalMaster(const std::string &name, boost::shared_ptr<can::CommInterface> interface) : interface_(interface)  {}
+    LocalMaster(const std::string &name, boost::shared_ptr<can::CommInterface> interface, const boost::interprocess::permissions & perm = boost::interprocess::permissions()) : interface_(interface)  {}
 };
 
 class SharedIPCSyncMaster : public IPCSyncMaster{
@@ -322,9 +322,9 @@ class SharedMaster: public Master{
     boost::unordered_map<can::Header, boost::shared_ptr<SharedIPCSyncMaster> > syncmasters_;
     boost::shared_ptr<can::CommInterface> interface_;
 public:
-    SharedMaster(const std::string &name, boost::shared_ptr<can::CommInterface> interface)
+    SharedMaster(const std::string &name, boost::shared_ptr<can::CommInterface> interface, const boost::interprocess::permissions & perm = boost::interprocess::permissions())
     : name_("canopen_master_shm_"+name), remover_(name_.c_str()),
-        managed_shm_(boost::interprocess::open_or_create, name_.c_str(), 4096),
+        managed_shm_(boost::interprocess::open_or_create, name_.c_str(), 4096, 0, perm),
         interface_(interface)  {}
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
 };

@@ -138,6 +138,22 @@ public:
     void init(const boost::shared_ptr<ObjectStorage> storage);
 };
 
+class EMCYHandler{
+    uint8_t error_register_;
+    ObjectStorage::Entry<uint8_t> error_register_obj_;
+    ObjectStorage::Entry<uint8_t> num_errors_;
+    can::CommInterface::FrameListener::Ptr emcy_listener_;
+    void handleEMCY(const can::Frame & msg);
+    const boost::shared_ptr<ObjectStorage> storage_;
+public:
+    virtual void init(LayerStatus &status);
+    virtual void recover();
+    virtual void diag(LayerReport &report);
+    virtual void read(LayerStatus &status);
+    const uint8_t error_register();
+    EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage);
+};
+
 struct SyncProperties{
     const can::Header header_;
     const boost::posix_time::time_duration period_;
@@ -155,7 +171,7 @@ public:
     virtual  void removeNode(void * const ptr) = 0;
 };
 
-class Node : public SimpleLayer{
+class Node : public Layer{
 public:
     enum State{
         Unknown = 255, BootUp = 0, Stopped = 4, Operational = 5 , PreOperational = 127
@@ -185,15 +201,15 @@ public:
         return getStorage()->entry<T>(k).get();
     }
 
-    virtual bool read();
-    virtual bool write();
+    
     virtual void diag(LayerReport &report);
-    virtual bool report() { return false; } //unused
+    
     virtual void init(LayerStatus &status);
-    virtual bool init() { return false; } //unused
     virtual void recover(LayerStatus &status);
-    virtual bool recover() { return false; } //unused
-    virtual bool shutdown();
+    virtual void read(LayerStatus &status);
+    virtual void write(LayerStatus &status);
+    virtual void halt(LayerStatus &status);
+    virtual void shutdown(LayerStatus &status);
     
 private:
     template<typename T> void wait_for(const State &s, const T &timeout);
@@ -205,19 +221,17 @@ private:
     const boost::shared_ptr<can::CommInterface> interface_;
     const boost::shared_ptr<SyncCounter> sync_;
     can::CommInterface::FrameListener::Ptr nmt_listener_;
-    can::CommInterface::FrameListener::Ptr emcy_listener_;
     
     ObjectStorage::Entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16>::type> heartbeat_;
     
     can::SimpleDispatcher<StateListener> state_dispatcher_;
     
     void handleNMT(const can::Frame & msg);
-    void handleEMCY(const can::Frame & msg);
     void switchState(const uint8_t &s);
 
     State state_;
     SDOClient sdo_;
-    //EMCYHandler emcy;
+    EMCYHandler emcy_;
     PDOMapper pdo_;
 
     boost::chrono::high_resolution_clock::time_point heartbeat_timeout_;

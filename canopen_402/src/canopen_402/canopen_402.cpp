@@ -354,7 +354,7 @@ void Node_402::diag(LayerReport &report)
 
 void Node_402::halt(LayerStatus &status)
 {
-  //control_word_bitset.set(CW_Halt);
+  control_word_bitset.set(CW_Halt);
 }
 
 
@@ -612,6 +612,7 @@ const Node_402::State& Node_402::getState()
 
 const Node_402::OperationMode Node_402::getMode()
 {
+  if(operation_mode_ == Homing) return No_Mode; // TODO: remove after mode switch is handled properly in init
   return operation_mode_;
 }
 

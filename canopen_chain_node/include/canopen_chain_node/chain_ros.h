@@ -24,18 +24,18 @@ public:
     }
 };
 
-template<typename NodeType> class Logger{
-    boost::weak_ptr<NodeType> node_;
+class Logger: public DiagGroup<canopen::Layer>{
+    const boost::shared_ptr<canopen::Node> node_;
+    
     std::vector<boost::function< void (diagnostic_updater::DiagnosticStatusWrapper &)> > entries_;
     
     template<typename T> void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, const std::string &name, const ObjectDict::Key &key){
-        boost::shared_ptr<NodeType> node = node_.lock();
-        if(node){
-            stat.add(name, node->template get<T>(key));
-        }
+        stat.add(name, node_->template get<T>(key));
     }
+
 public:
-    Logger(boost::shared_ptr<NodeType> node):  node_(node) {}
+    Logger(boost::shared_ptr<canopen::Node> node):  node_(node) { add(node_); }
+    
     template<typename T> void add(const std::string &name, const ObjectDict::Key &key){
             entries_.push_back(boost::bind(&Logger::log_entry<T>, this, _1, name, key));
     }
@@ -46,28 +46,34 @@ public:
         branch_type<Logger, void (Logger &, const std::string &, const ObjectDict::Key &)>(data_type)(*this,name, key);
     }
 
-    virtual void log(diagnostic_updater::DiagnosticStatusWrapper &stat){
-        boost::shared_ptr<NodeType> node = node_.lock();
-        if(node){
-            stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "Active");
-            if(node->getState() == canopen::Node::Operational)
-                for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat);
-            //ROS_INFO_STREAM(node->getStorage()->template entry<std::string>(0x1008).get_once());
-            //stat.add("desc",std::string());
+    template<typename T> void add(const boost::shared_ptr<T> &n){
+        DiagGroup::add(boost::static_pointer_cast<canopen::Layer>(n));
+    }
 
+    virtual void log(diagnostic_updater::DiagnosticStatusWrapper &stat){
+        LayerReport r;
+        diag(r);
+        if(r.bounded<LayerStatus::Unbounded>()){ // valid
+            stat.summary(r.get(), r.reason());
+            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
+                stat.add(it->first, it->second);
+            }
         }
+        // for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat); TODO
     }
     virtual ~Logger() {}
 };
 
-template<typename InterfaceType, typename MasterType> class RosChain : public canopen::LayerStack {
+template<typename InterfaceType> class RosChain : public canopen::LayerStack {
 protected:
     std::string chain_name_;
     
     boost::shared_ptr<InterfaceType> interface_;
-    boost::shared_ptr<MasterType> master_;
-    boost::shared_ptr<canopen::LayerGroup<canopen::Node> > nodes_;
+    boost::shared_ptr<Master> master_;
+    boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::Node> > nodes_;
     boost::shared_ptr<canopen::SyncLayer> sync_;
+    std::vector<boost::shared_ptr<Logger > > loggers_;
+
 
     can::StateInterface::StateListener::Ptr state_listener_;
     
@@ -153,6 +159,9 @@ protected:
             boost::shared_ptr<LayerStatus> pending_status(new LayerStatus);
             pending_status_ = pending_status;
             try{
+                thread_->interrupt();
+                thread_->join();
+                thread_.reset(new boost::thread(&RosChain::run, this));
                 recover(*pending_status);
                 res.success.data = pending_status->bounded<LayerStatus::Warn>();
                 res.error_message.data = pending_status->reason();
@@ -210,6 +219,7 @@ protected:
     bool setup_bus(){
         ros::NodeHandle bus_nh(nh_priv_,"bus");
         std::string can_device;
+        std::string master_type;
         int can_bitrate = 0;
         
         if(!bus_nh.getParam("device",can_device)){
@@ -226,7 +236,27 @@ protected:
         interface_ = boost::make_shared<InterfaceType>(true); // enable loopback
         state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
         
-        master_ = boost::make_shared<MasterType>(can_device, interface_);
+        bus_nh.param("master_type",master_type, std::string("shared"));
+
+        try{
+            if(master_type == "exclusive"){
+                master_ = boost::make_shared<SharedMaster>(can_device, interface_);
+            }else if (master_type == "shared"){
+                boost::interprocess::permissions perm;
+                perm.set_unrestricted();
+                master_ = boost::make_shared<SharedMaster>(can_device, interface_, perm);
+            }else if (master_type == "local"){
+                master_ = boost::make_shared<LocalMaster>(can_device, interface_);
+            }else{
+                ROS_ERROR_STREAM("Master type  "<< master_type << " is not supported");
+                return false;
+            }
+        }
+        catch( const std::exception &e){
+            std::string info = boost::diagnostic_information(e);
+            ROS_ERROR_STREAM(info);
+            return false;
+        }
         
         add(boost::make_shared<CANLayer<InterfaceType> >(interface_, can_device, can_bitrate));
         
@@ -277,7 +307,7 @@ protected:
         return true;
     }
     bool setup_nodes(){
-        nodes_.reset(new canopen::LayerGroup<canopen::Node>("301 layer"));
+        nodes_.reset(new canopen::LayerGroupNoDiag<canopen::Node>("301 layer"));
         add(nodes_);
 
         XmlRpc::XmlRpcValue modules;
@@ -327,20 +357,21 @@ protected:
                 return false;
             }
             boost::shared_ptr<canopen::Node> node = boost::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
-            
-            if(!nodeAdded(merged, node)) return false;
 
-            boost::shared_ptr<Logger<canopen::Node> > logger = boost::make_shared<Logger<canopen::Node> >(node);
+            boost::shared_ptr<Logger> logger = boost::make_shared<Logger>(node);
+
+            if(!nodeAdded(merged, node, logger)) return false;
+
             //logger->add(4,"pos", canopen::ObjectDict::Key(0x6064));
-            diag_updater_.add(name, boost::bind(&Logger<Node>::log, logger, _1));
+            loggers_.push_back(logger);
+            diag_updater_.add(name, boost::bind(&Logger::log, logger, _1));
             
             nodes_->add(node);
         }
         return true;
     }
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node) { return true; }
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
-        boost::mutex::scoped_lock lock(mutex_);
         LayerReport r;
         diag(r);
         if(r.bounded<LayerStatus::Unbounded>()){ // valid
