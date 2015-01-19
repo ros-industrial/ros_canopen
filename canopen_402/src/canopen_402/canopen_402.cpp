@@ -286,7 +286,7 @@ void Node_402::switchMode(LayerStatus &status)
         cond.notify_all();
     }
     else
-    { 
+    {
         motorEnableOp();
     }
   }
@@ -301,7 +301,7 @@ bool Node_402::enterMode(const OperationMode &op_mode_var)
   control_word_bitset.set(CW_Halt);
   operation_mode_to_set_ = op_mode_var;
   check_mode = true;
-  
+
   target_pos_ = ac_pos_;
   target_vel_ = 0;
 
@@ -311,26 +311,27 @@ bool Node_402::enterMode(const OperationMode &op_mode_var)
 bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 {
     boost::mutex::scoped_lock cond_lock(cond_mutex);
-    
+
     if(!isModeSupported(op_mode_var)){
       LOG( "Mode " << (int)op_mode_var << " not supported");
       return false;
     }
-    
+
     motor_ready_ = false;
-    
+
     LOG( "Enter mode" << (int)op_mode_var);
     enterMode(op_mode_var);
     time_point t0 = get_abs_time(boost::chrono::seconds(10));
-  
+
     while (!motor_ready_)
     {
       if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
       {
-          LOG("Mode Timeout");
+          enter_mode_failure_ = true;
           break;
       }
     }
+    enter_mode_failure_ = false;
     return motor_ready_;
 }
 
@@ -595,6 +596,8 @@ void Node_402::write(LayerStatus &status)
   {
     driveSettings();
   }
+  else if(enter_mode_failure_)
+    status.error("Failed to enter mode");
   else
     status.error("Motor not in operation enabled state");
 
@@ -629,7 +632,7 @@ uint32_t Node_402::getModeMask(const OperationMode &op_mode)
         case Cyclic_Synchronous_Torque:
         case Homing:
             return (1<<(op_mode-1));
-        case No_Mode:       
+        case No_Mode:
             return 0;
     }
     return 0;
