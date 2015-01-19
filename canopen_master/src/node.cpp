@@ -28,7 +28,7 @@ struct NMTcommand{
 #pragma pack(pop) /* pop previous alignment from stack */
 
 Node::Node(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync)
-: SimpleLayer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
+: Layer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), emcy_(interface, getStorage()), pdo_(interface){
     getStorage()->entry(heartbeat_, 0x1017);
 }
     
@@ -69,12 +69,6 @@ void Node::start(){
     if(state_ == BootUp){
         // ERROR
     }
-    else if(state_ == PreOperational){
-        pdo_.init(getStorage());
-        getStorage()->init_all();
-        sdo_.init(); // reread SDO paramters;
-        // TODO: set SYNC data
-    }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Start));
     wait_for(Operational, boost::chrono::milliseconds(heartbeat_.get_cached() * 3));
 }
@@ -114,9 +108,6 @@ void Node::handleNMT(const can::Frame & msg){
     cond.notify_one();
     
 }
-void Node::handleEMCY(const can::Frame & msg){
-}
-
 template<typename T> void Node::wait_for(const State &s, const T &timeout){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     time_point abs_time = get_abs_time(timeout);
@@ -144,14 +135,15 @@ bool Node::checkHeartbeat(){
 }
 
 
-bool Node::read(){
-    if(!checkHeartbeat()) return false;
-    if(getState() != Operational) return false;
-    return pdo_.read();
+void Node::read(LayerStatus &status){
+    if(!checkHeartbeat()) status.error("heartbeat problem");
+    else if(getState() != Operational)  status.error("not operational");
+    else if(!pdo_.read())  status.error("PDO read problem");
+    else emcy_.read(status);
 }
-bool Node::write(){
-    if(getState() != Operational) return false;
-    return pdo_.write();
+void Node::write(LayerStatus &status){
+    if(getState() != Operational)  status.error("not operational");
+    else if(! pdo_.write())  status.error("PDO write problem");
 }
 
 
@@ -163,19 +155,26 @@ void Node::diag(LayerReport &report){
     }else if(!checkHeartbeat()){
         report.error("Heartbeat timeout");
     }
+    if(state != Unknown) emcy_.diag(report);
 }
 void Node::init(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( can::MsgHeader(0x700 + node_id_), can::CommInterface::FrameDelegate(this, &Node::handleNMT));
-    emcy_listener_ = interface_->createMsgListener( can::MsgHeader(0x080 + node_id_), can::CommInterface::FrameDelegate(this, &Node::handleEMCY));
 
     sdo_.init();
     try{
-        reset_com();
+        reset();
+        prepare();
     }
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not reset node '%1%'") % (int)node_id_));
         return;
     }
+	emcy_.recover();
+
+	pdo_.init(getStorage());
+	getStorage()->init_all();
+	sdo_.init(); // reread SDO paramters;
+	// TODO: set SYNC data
 
     try{
         start();
@@ -183,8 +182,11 @@ void Node::init(LayerStatus &status){
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
     }
+	emcy_.init(status);
 }
 void Node::recover(LayerStatus &status){
+	emcy_.recover();
+	prepare();
     if(getState() != Operational){
         try{
             start();
@@ -193,11 +195,13 @@ void Node::recover(LayerStatus &status){
             status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
         }
     }
-
+	emcy_.read(status);
 }
-bool Node::shutdown(){
+void Node::shutdown(LayerStatus &status){
     stop();
     nmt_listener_.reset();
-    emcy_listener_.reset();
-    return true;
+    switchState(Unknown);
+}
+void Node::halt(LayerStatus &status){
+    // do nothing
 }

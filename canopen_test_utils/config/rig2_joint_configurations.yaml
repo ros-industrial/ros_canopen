@@ -1,4 +1,8 @@
 joint_names: ["rig2_plate_joint"]
+action_name: /rig2/joint_trajectory_controller/follow_joint_trajectory
+service_ns: /rig2/driver
+default_vel: 0.3
+
 home: [[0.0]]
 up: [[0.0]]
 right: [[-1.5708]]
