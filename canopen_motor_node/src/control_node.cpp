@@ -414,7 +414,7 @@ public:
 
 };
 
-class MotorChain : RosChain<ThreadedSocketCANInterface, SharedMaster>{
+class MotorChain : RosChain<ThreadedSocketCANInterface>{
     boost::shared_ptr< LayerGroup<MotorNode> > motors_;
     boost::shared_ptr< LayerGroup<HandleLayer> > handle_layer_;
 
