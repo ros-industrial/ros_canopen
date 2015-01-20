@@ -592,13 +592,12 @@ void Node_402::write(LayerStatus &status)
   {
     switchMode(status);
   }
-
+  else if(enter_mode_failure_)
+    status.error("Failed to enter mode");
   else if (state_ == Operation_Enable)
   {
     driveSettings();
   }
-  else if(enter_mode_failure_)
-    status.error("Failed to enter mode");
   else
     status.error("Motor not in operation enabled state");
 
