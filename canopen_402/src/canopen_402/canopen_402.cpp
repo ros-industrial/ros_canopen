@@ -318,6 +318,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
     }
 
     motor_ready_ = false;
+    enter_mode_failure_ = false;
 
     LOG( "Enter mode" << (int)op_mode_var);
     enterMode(op_mode_var);
@@ -331,7 +332,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
           break;
       }
     }
-    enter_mode_failure_ = false;
+
     return motor_ready_;
 }
 
