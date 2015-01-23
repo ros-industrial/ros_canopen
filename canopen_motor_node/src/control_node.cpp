@@ -313,8 +313,8 @@ public:
     boost::shared_ptr<RobotLayer> robot_;
 
     bool recover_;
-    bool paused_;
     ros::Time last_time_;
+    boost::mutex mutex_;
  public:
     virtual bool notifyHardwareInterface(const std::list<hardware_interface::ControllerInfo> &info_list) {
         RobotLayer::SwitchContainer to_switch;
@@ -322,12 +322,11 @@ public:
         if(!robot_->canSwitch(info_list, to_switch)) return false;
 
         if(!to_switch.empty()){
-            paused_ = true;
+            boost::mutex::scoped_lock lock(mutex_);
             for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
                 if(!it->first->switchMode(it->second)) return false;
             }
             recover_ = true;
-            paused_ = false;
         }
 
         return true;
@@ -335,19 +334,21 @@ public:
     }
 
     void update(){
+        boost::mutex::scoped_lock lock(mutex_);
+        
+
         ros::Time now = ros::Time::now();
         ros::Duration period(now -last_time_);
-        if(!paused_){
-            last_time_ = now;
-            controller_manager::ControllerManager::update(now, period, recover_);
-            robot_->enforce(period, recover_);
-            recover_ = false;
-        }
+
+        last_time_ = now;
+        controller_manager::ControllerManager::update(now, period, recover_);
+        robot_->enforce(period, recover_);
+        recover_ = false;
    }
 
-    void recover() { recover_ = true; }
+    void recover() { boost::mutex::scoped_lock lock(mutex_); recover_ = true; }
 
-    ControllerManager(boost::shared_ptr<RobotLayer> robot, ros::NodeHandle nh)  : controller_manager::ControllerManager(robot.get(), nh), robot_(robot), recover_(false), paused_(false), last_time_(ros::Time::now()) {}
+    ControllerManager(boost::shared_ptr<RobotLayer> robot, ros::NodeHandle nh)  : controller_manager::ControllerManager(robot.get(), nh), robot_(robot), recover_(false), last_time_(ros::Time::now()) {}
  };
 
 class ControllerManagerLayer : public SimpleLayer {
