@@ -334,8 +334,8 @@ public:
     }
 
     void update(){
-        boost::mutex::scoped_lock lock(mutex_);
-        
+        boost::mutex::scoped_lock lock(mutex_, boost::try_to_lock);
+        if(!lock) return;
 
         ros::Time now = ros::Time::now();
         ros::Duration period(now -last_time_);
