@@ -65,7 +65,7 @@ namespace canopen
 class Node_402 : public canopen::Layer
 {
 public:
-  Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), n_(n)
+  Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), state_(Start), operation_mode_(No_Mode), operation_mode_to_set_(No_Mode), n_(n), check_mode(false)
   {
     configureEntries();
     status_word_mask.set(SW_Ready_To_Switch_On);
