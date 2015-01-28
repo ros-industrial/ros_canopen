@@ -168,7 +168,7 @@ struct UploadInitiateResponse: public FrameOverlay<InitiateLong>{
         UploadInitiateRequest req(msg);
         if(req.data.command ==  UploadInitiateRequest::command && data.index == req.data.index && data.sub_index == req.data.sub_index){
                 size_t ds = data.data_size();
-                if(ds == 0  || size == 0 || ds == size) {
+                if(ds == 0  || size == 0 || ds >= size) { // should be ==, but >= is needed for Elmo, it responses with more byte than requested
                     if(!data.expedited || (ds <= 4 && size <= 4)) return true;
                 }else{
                     reason = 0x06070010; // Data type does not match, length of service parameter does not match                    

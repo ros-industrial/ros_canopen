@@ -127,7 +127,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
                 ObjectStorage::ReadDelegate rd;
                 ObjectStorage::WriteDelegate wd;
                 if(read) rd = ObjectStorage::ReadDelegate(b.get(), &Buffer::read);
-                if(write) wd = ObjectStorage::WriteDelegate(b.get(), &Buffer::write);
+                if(read || write) wd = ObjectStorage::WriteDelegate(b.get(), &Buffer::write); // set writer for buffer setup or as write delegate
                 size_t l = storage->map(param.index, param.sub_index, rd, wd);
                 assert(l  == param.length/8);
             }
