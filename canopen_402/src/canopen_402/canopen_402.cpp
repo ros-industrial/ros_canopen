@@ -343,6 +343,7 @@ void Node_402::read(LayerStatus &status)
   operation_mode_ = (OperationMode) op_mode_display.get();
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
+  ac_eff_=0; //Currently no effort directly obtained from the HW
 }
 
 void Node_402::shutdown(LayerStatus &status)
