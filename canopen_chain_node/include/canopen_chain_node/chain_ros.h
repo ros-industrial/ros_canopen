@@ -327,6 +327,15 @@ protected:
                 return false;
             }
 
+            ObjectDict::Overlay overlay;
+            if(module.hasMember("dcf_overlay")){
+                XmlRpc::XmlRpcValue dcf_overlay = module["dcf_overlay"];
+                for(XmlRpc::XmlRpcValue::iterator it = dcf_overlay.begin(); it!= dcf_overlay.end(); ++it){
+                    overlay.push_back(ObjectDict::Overlay::value_type(it->first, it->second));
+                }
+
+            }
+
             MergedXmlRpcStruct merged(module, defaults);
                             
             std::string eds;
@@ -351,7 +360,7 @@ protected:
             catch(...){
             }
             
-            boost::shared_ptr<ObjectDict>  dict = ObjectDict::fromFile(eds);
+            boost::shared_ptr<ObjectDict>  dict = ObjectDict::fromFile(eds, overlay);
             if(!dict){
                 ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
                 return false;
