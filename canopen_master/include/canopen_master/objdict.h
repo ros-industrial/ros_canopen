@@ -316,6 +316,7 @@ protected:
         }
         void init();
         void reset();
+        void force_write();
 
     };        
         
