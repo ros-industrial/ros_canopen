@@ -176,7 +176,7 @@ void PDOMapper::init(const boost::shared_ptr<ObjectStorage> storage){
             rpdos_.insert(rpdo);
         }
     }
-    LOG("RPDOs: " << rpdos_.size());
+    // LOG("RPDOs: " << rpdos_.size());
     
     tpdos_.clear();
     for(uint8_t i=0; i < dict.device_info.nr_of_rx_pdo;++i){ // RPDOs of device
@@ -185,7 +185,7 @@ void PDOMapper::init(const boost::shared_ptr<ObjectStorage> storage){
             tpdos_.insert(tpdo);
         }
     }
-    LOG("TPDOs: " << tpdos_.size());
+    // LOG("TPDOs: " << tpdos_.size());
 }
 
 

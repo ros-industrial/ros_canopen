@@ -100,7 +100,6 @@ public:
     }
     
     virtual void shutdown(){
-        LOG("SHUTDOWN");
         if(socket_.is_open()){
             socket_.cancel();
             socket_.close();
