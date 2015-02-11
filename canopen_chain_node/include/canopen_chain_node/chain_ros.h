@@ -14,13 +14,21 @@
 namespace canopen{
 
 class MergedXmlRpcStruct : public XmlRpc::XmlRpcValue{
+    MergedXmlRpcStruct(const XmlRpc::XmlRpcValue& a) :XmlRpc::XmlRpcValue(a){ assertStruct(); }
 public:
-    MergedXmlRpcStruct(){
+    MergedXmlRpcStruct(){ assertStruct(); }
+    MergedXmlRpcStruct(const XmlRpc::XmlRpcValue& a, const MergedXmlRpcStruct &b, bool recursive= true) :XmlRpc::XmlRpcValue(a){
         assertStruct();
-    }
-    MergedXmlRpcStruct(XmlRpc::XmlRpcValue& a, MergedXmlRpcStruct &b) :XmlRpc::XmlRpcValue(a){
-        assertStruct();
-        _value.asStruct->insert(b._value.asStruct->begin(), b._value.asStruct->end());
+
+        for(ValueStruct::const_iterator it = b._value.asStruct->begin(); it != b._value.asStruct->end(); ++it){
+            std::pair<XmlRpc::XmlRpcValue::iterator,bool> res =  _value.asStruct->insert(*it);
+
+            if(recursive && !res.second && res.first->second.getType() == XmlRpc::XmlRpcValue::TypeStruct && it->second.getType() == XmlRpc::XmlRpcValue::TypeStruct){
+                res.first->second = MergedXmlRpcStruct(res.first->second, it->second); // recursive struct merge with implicit cast
+            }
+        }
+
+
     }
 };
 
