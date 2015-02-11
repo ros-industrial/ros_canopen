@@ -90,7 +90,9 @@ struct SegmentLong{
     size_t apply_buffer(const String &buffer, const size_t offset){
         size_t size = buffer.size() - offset;
         if(size > 7) size = 7;
-        num = size;
+        else done = 1;
+        num = 7 - size;
+        memcpy(payload, buffer.data() + offset, size);
         return offset + size;
     }
 };
