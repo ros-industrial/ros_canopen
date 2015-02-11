@@ -181,13 +181,14 @@ struct UploadInitiateResponse: public FrameOverlay<InitiateLong>{
         return false;
     }
     bool read_data(String & buffer, size_t & offset, size_t & total){
+        if(data.size_indicated && total == 0){
+            total = data.data_size();
+            buffer.resize(total);
+        }
         if(data.expedited){
             memcpy(&buffer[0], data.payload, buffer.size());
             offset = buffer.size();
             return true;
-        }else if(data.size_indicated && total == 0){
-            total = data.data_size();
-            buffer.resize(total);
         }
         return false;
     }
