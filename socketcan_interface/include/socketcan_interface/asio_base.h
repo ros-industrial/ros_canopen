@@ -69,7 +69,7 @@ protected:
     {}
 
 public:
-    virtual ~AsioDriver() {}
+    virtual ~AsioDriver() { shutdown(); }
     
     State getState(){
         boost::mutex::scoped_lock lock(state_mutex_);
