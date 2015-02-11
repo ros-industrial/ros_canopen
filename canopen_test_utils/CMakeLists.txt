@@ -43,6 +43,9 @@ target_link_libraries(canopen_test_utils ${catkin_LIBRARIES})
 add_executable(canopen_test_utils_motor src/test_motor.cpp)
 target_link_libraries(canopen_test_utils_motor ${catkin_LIBRARIES})
 
+add_executable(canopen_elmo_console src/elmo_console.cpp)
+target_link_libraries(canopen_elmo_console ${catkin_LIBRARIES})
+
 
 #############
 ## Install ##
@@ -59,7 +62,7 @@ target_link_libraries(canopen_test_utils_motor ${catkin_LIBRARIES})
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS canopen_test_utils
+install(TARGETS canopen_test_utils canopen_elmo_console
 ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
