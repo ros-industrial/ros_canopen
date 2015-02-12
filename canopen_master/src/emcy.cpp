@@ -53,7 +53,7 @@ void EMCYHandler::init(LayerStatus &status){
 }
 void EMCYHandler::recover(){
     error_register_ = 0;
-    num_errors_.set(0);
+    if(num_errors_.valid()) num_errors_.set(0);
 }
 
 void EMCYHandler::read(LayerStatus &status){
@@ -67,7 +67,7 @@ void EMCYHandler::diag(LayerReport &report){
     if(error_register_){
         report.add("error_register", (uint32_t) error_register_);
 
-        uint8_t num = num_errors_.get();
+        uint8_t num = num_errors_.valid() ? num_errors_.get() : 0;
         std::stringstream buf;
         for(size_t i= 0; i <num; ++i) {
             if( i!= 0){
@@ -82,10 +82,9 @@ void EMCYHandler::diag(LayerReport &report){
 }
 EMCYHandler::EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): storage_ (storage), error_register_(0){
     storage_->entry(error_register_obj_, 0x1001);
-
-    storage_->entry(num_errors_, 0x1003,0);
-
     try{
+        storage_->entry(num_errors_, 0x1003,0);
+        
         EMCYid emcy_id(storage_->entry<uint32_t>(0x1014).get_cached());
         emcy_listener_ = interface->createMsgListener( emcy_id.header(), can::CommInterface::FrameDelegate(this, &EMCYHandler::handleEMCY));
     }

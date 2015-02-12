@@ -318,6 +318,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
     }
 
     motor_ready_ = false;
+    enter_mode_failure_ = false;
 
     LOG( "Enter mode" << (int)op_mode_var);
     enterMode(op_mode_var);
@@ -331,7 +332,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
           break;
       }
     }
-    enter_mode_failure_ = false;
+
     return motor_ready_;
 }
 
@@ -342,6 +343,7 @@ void Node_402::read(LayerStatus &status)
   operation_mode_ = (OperationMode) op_mode_display.get();
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
+  ac_eff_=0; //Currently no effort directly obtained from the HW
 }
 
 void Node_402::shutdown(LayerStatus &status)
@@ -591,13 +593,12 @@ void Node_402::write(LayerStatus &status)
   {
     switchMode(status);
   }
-
+  else if(enter_mode_failure_)
+    status.error("Failed to enter mode");
   else if (state_ == Operation_Enable)
   {
     driveSettings();
   }
-  else if(enter_mode_failure_)
-    status.error("Failed to enter mode");
   else
     status.error("Motor not in operation enabled state");
 

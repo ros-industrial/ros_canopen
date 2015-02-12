@@ -329,6 +329,7 @@ public:
         boost::shared_ptr<Data> data;
     public:
         typedef T type;
+        bool valid() const { return data != 0; }
         const T get() {
             if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
 
