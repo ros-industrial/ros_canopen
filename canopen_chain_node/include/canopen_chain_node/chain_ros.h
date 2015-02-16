@@ -14,13 +14,21 @@
 namespace canopen{
 
 class MergedXmlRpcStruct : public XmlRpc::XmlRpcValue{
+    MergedXmlRpcStruct(const XmlRpc::XmlRpcValue& a) :XmlRpc::XmlRpcValue(a){ assertStruct(); }
 public:
-    MergedXmlRpcStruct(){
+    MergedXmlRpcStruct(){ assertStruct(); }
+    MergedXmlRpcStruct(const XmlRpc::XmlRpcValue& a, const MergedXmlRpcStruct &b, bool recursive= true) :XmlRpc::XmlRpcValue(a){
         assertStruct();
-    }
-    MergedXmlRpcStruct(XmlRpc::XmlRpcValue& a, MergedXmlRpcStruct &b) :XmlRpc::XmlRpcValue(a){
-        assertStruct();
-        _value.asStruct->insert(b._value.asStruct->begin(), b._value.asStruct->end());
+
+        for(ValueStruct::const_iterator it = b._value.asStruct->begin(); it != b._value.asStruct->end(); ++it){
+            std::pair<XmlRpc::XmlRpcValue::iterator,bool> res =  _value.asStruct->insert(*it);
+
+            if(recursive && !res.second && res.first->second.getType() == XmlRpc::XmlRpcValue::TypeStruct && it->second.getType() == XmlRpc::XmlRpcValue::TypeStruct){
+                res.first->second = MergedXmlRpcStruct(res.first->second, it->second); // recursive struct merge with implicit cast
+            }
+        }
+
+
     }
 };
 
@@ -327,6 +335,15 @@ protected:
                 return false;
             }
 
+            ObjectDict::Overlay overlay;
+            if(module.hasMember("dcf_overlay")){
+                XmlRpc::XmlRpcValue dcf_overlay = module["dcf_overlay"];
+                for(XmlRpc::XmlRpcValue::iterator it = dcf_overlay.begin(); it!= dcf_overlay.end(); ++it){
+                    overlay.push_back(ObjectDict::Overlay::value_type(it->first, it->second));
+                }
+
+            }
+
             MergedXmlRpcStruct merged(module, defaults);
                             
             std::string eds;
@@ -351,7 +368,7 @@ protected:
             catch(...){
             }
             
-            boost::shared_ptr<ObjectDict>  dict = ObjectDict::fromFile(eds);
+            boost::shared_ptr<ObjectDict>  dict = ObjectDict::fromFile(eds, overlay);
             if(!dict){
                 ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
                 return false;

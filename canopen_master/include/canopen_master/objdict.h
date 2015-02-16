@@ -186,8 +186,8 @@ public:
         return res.second;
     }
     bool iterate(boost::unordered_map<Key, boost::shared_ptr<const Entry> >::const_iterator &it) const;
-    static boost::shared_ptr<ObjectDict> fromFile(const std::string &path);
-    
+    typedef std::list<std::pair<std::string, std::string> > Overlay;
+    static boost::shared_ptr<ObjectDict> fromFile(const std::string &path, const Overlay &overlay = Overlay());
     const DeviceInfo device_info;
     
     ObjectDict(const DeviceInfo &info): device_info(info) {}
@@ -329,6 +329,7 @@ public:
         boost::shared_ptr<Data> data;
     public:
         typedef T type;
+        bool valid() const { return data != 0; }
         const T get() {
             if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
 

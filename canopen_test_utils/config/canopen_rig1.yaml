@@ -10,5 +10,5 @@ modules:
   - name: rig1_plate_joint
     id: 1
     # vel_unit_factor: 0.01
-
-     
+    dcf_overlay: # "ObjectID": "ParameterValue" (both as strings)
+      "6098": "35" #  homing method

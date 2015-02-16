@@ -245,7 +245,7 @@ void parse_objects(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptr
         parse_object(dict, pt, name);
     }
 }
-boost::shared_ptr<ObjectDict> ObjectDict::fromFile(const std::string &path){
+boost::shared_ptr<ObjectDict> ObjectDict::fromFile(const std::string &path, const ObjectDict::Overlay &overlay){
     DeviceInfo info;
     boost::property_tree::ptree pt;
     boost::shared_ptr<ObjectDict> dict;
@@ -292,7 +292,11 @@ boost::shared_ptr<ObjectDict> ObjectDict::fromFile(const std::string &path){
     }
 
     dict = boost::make_shared<ObjectDict>(info);
-    
+
+    for(Overlay::const_iterator it= overlay.begin(); it != overlay.end(); ++it){
+        pt.get_child(it->first).put("ParameterValue", it->second);
+    }
+
     parse_objects(dict, pt, "MandatoryObjects");
     parse_objects(dict, pt, "OptionalObjects");
     parse_objects(dict, pt, "ManufacturerObjects");

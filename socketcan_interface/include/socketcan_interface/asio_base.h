@@ -69,7 +69,7 @@ protected:
     {}
 
 public:
-    virtual ~AsioDriver() {}
+    virtual ~AsioDriver() { shutdown(); }
     
     State getState(){
         boost::mutex::scoped_lock lock(state_mutex_);
@@ -100,7 +100,6 @@ public:
     }
     
     virtual void shutdown(){
-        LOG("SHUTDOWN");
         if(socket_.is_open()){
             socket_.cancel();
             socket_.close();

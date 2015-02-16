@@ -11,9 +11,9 @@ namespace can{
 
 /** Header for CAN id an meta data*/
 struct Header{
-    static const unsigned int ERROR_MASK = (1 << 29);
-    static const unsigned int RTR_MASK = (1 << 30);
-    static const unsigned int EXTENDED_MASK = (1 << 31);
+    static const unsigned int ERROR_MASK = (1u << 29);
+    static const unsigned int RTR_MASK = (1u << 30);
+    static const unsigned int EXTENDED_MASK = (1u << 31);
     
     unsigned int id:29; ///< CAN ID (11 or 29 bits valid, depending on is_extended member
     unsigned int is_error:1; ///< marks an error frame (only used internally)

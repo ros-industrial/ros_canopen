@@ -162,8 +162,9 @@ void Node::init(LayerStatus &status){
 
     sdo_.init();
     try{
-        reset_com();
-        emcy_.recover();
+        reset();
+        //reset_com();
+        //emcy_.recover();
         prepare();
     }
     catch(const TimeoutException&){
