@@ -27,7 +27,7 @@ void my_handler(int s){
 using namespace can;
 using namespace canopen;
 
-boost::shared_ptr<ThreadedSocketCANInterface > driver = boost::make_shared<ThreadedSocketCANInterface> ();
+boost::shared_ptr<SocketCANInterface > driver = boost::make_shared<SocketCANInterface> ();
 
 void print_frame(const Frame &f){
   LOG( "in: " << std:: hex << f.id << std::dec);
