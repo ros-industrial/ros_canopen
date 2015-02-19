@@ -15,7 +15,7 @@
   <depend>linux-headers-generic</depend>
   <depend>boost</depend>
 
-  <depend>pluginlib</depend> 
+  <depend>class_loader</depend> 
   
   <export>
     <!-- You can specify that this package is a metapackage here: -->

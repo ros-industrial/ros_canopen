@@ -1,8 +1,9 @@
 #include <iostream>
 #include <boost/unordered_set.hpp>
 
+#include <boost/make_shared.hpp>
 #include <pluginlib/class_loader.h>
-#include <socketcan_interface/interface.h>
+#include <socketcan_interface/socketcan.h>
 
 using namespace can;
 
@@ -36,6 +37,7 @@ void print_frame(const Frame &f){
 }
 
 
+boost::shared_ptr<class_loader::ClassLoader> g_loader;
 boost::shared_ptr<DriverInterface> g_driver;
 
 void print_error(const State & s){
@@ -47,29 +49,28 @@ void print_error(const State & s){
 
 int main(int argc, char *argv[]){
     
-    std::string plugin = "can::SocketCANInterface";
-  
-    if(argc <2 ){
-        std::cout << "usage: "<< argv[0] << " DEVICE [PLUGIN]" << std::endl;
+    if(argc != 2 && argc != 4){
+        std::cout << "usage: "<< argv[0] << " DEVICE [PLUGIN_PATH PLUGIN_NAME]" << std::endl;
         return 1;
     }
 
-    if(argc > 2 ){
-        plugin = argv[2];
+    if(argc == 4 ){
+        try
+        {
+            g_loader = boost::make_shared<class_loader::ClassLoader>(argv[2]);
+            g_driver = g_loader->createInstance<DriverInterface>(argv[3]);
+        }
+        
+        catch(std::exception& ex)
+        {
+            std::cerr << boost::diagnostic_information(ex) << std::endl;;
+            return 1;
+        }
+    }else{
+        g_driver = boost::make_shared<SocketCANInterface>();
     }
     
-    pluginlib::ClassLoader<can::DriverInterface> driver_loader("socketcan_interface", "can::DriverInterface");
 
-    try
-    {
-	g_driver = driver_loader.createInstance(plugin);
-    }
-      
-    catch(pluginlib::PluginlibException& ex)
-    {
-	std::cerr << ex.what() << std::endl;;
-	return 1;
-    }
 
     CommInterface::FrameListener::Ptr frame_printer = g_driver->createMsgListener(print_frame);
     StateInterface::StateListener::Ptr error_printer = g_driver->createStateListener(print_error);
@@ -83,6 +84,7 @@ int main(int argc, char *argv[]){
     
     g_driver->shutdown();
     g_driver.reset();
+    g_loader.reset();
     
     return 0;
     
