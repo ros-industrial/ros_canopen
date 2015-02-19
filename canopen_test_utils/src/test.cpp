@@ -12,7 +12,7 @@
 using namespace can;
 using namespace canopen;
 
-boost::shared_ptr<ThreadedInterface<SocketCANInterface> > driver = boost::make_shared<ThreadedInterface<SocketCANInterface> > (true);
+boost::shared_ptr<ThreadedInterface<SocketCANInterface> > driver = boost::make_shared<ThreadedInterface<SocketCANInterface> > ();
 
 void print_frame(const Frame &f){
     LOG( "in: " << std:: hex << f.id << std::dec);
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
     int sync_ms = 10;
     if(argc > 3) sync_ms = atol(argv[3]);
 
-    if(!driver->init(argv[1],0)){
+    if(!driver->init(argv[1],true)){
         std::cout << "init failed" << std::endl;
         return -1;
     }

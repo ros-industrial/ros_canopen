@@ -159,8 +159,8 @@ template<typename WrappedInterface> class ThreadedInterface : public WrappedInte
         WrappedInterface::run();
     }
 public:
-    virtual bool init(const std::string &device, unsigned int bitrate) {
-        if(!thread_ && WrappedInterface::init(device, bitrate)){
+    virtual bool init(const std::string &device, bool loopback) {
+        if(!thread_ && WrappedInterface::init(device, loopback)){
             thread_.reset(new boost::thread(&ThreadedInterface::run_thread, this));
             return StateWaiter::wait_for(can::State::ready, this, boost::posix_time::seconds(1));
         }

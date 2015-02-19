@@ -228,20 +228,16 @@ protected:
         ros::NodeHandle bus_nh(nh_priv_,"bus");
         std::string can_device;
         std::string master_type;
-        int can_bitrate = 0;
+        bool loopback;
         
         if(!bus_nh.getParam("device",can_device)){
             ROS_ERROR("Device not set");
             return false;
         }
         
-        bus_nh.param("bitrate",can_bitrate, 0);
+        bus_nh.param("loopback",loopback, true);
         
-        if(can_bitrate < 0){
-            ROS_ERROR_STREAM("CAN bitrate  "<< can_bitrate << " is invalid");
-            return false;
-        }
-        interface_ = boost::make_shared<InterfaceType>(true); // enable loopback
+        interface_ = boost::make_shared<InterfaceType>();
         state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
         
         bus_nh.param("master_type",master_type, std::string("shared"));
@@ -266,7 +262,7 @@ protected:
             return false;
         }
         
-        add(boost::make_shared<CANLayer<InterfaceType> >(interface_, can_device, can_bitrate));
+        add(boost::make_shared<CANLayer>(interface_, can_device, loopback));
         
         return true;
     }

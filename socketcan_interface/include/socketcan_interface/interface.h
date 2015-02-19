@@ -153,10 +153,10 @@ public:
      * initialize interface
      * 
      * @param[in] device: driver-specific device name/path
-     * @param[in] bitrate: desired bitrate in bit/s
+     * @param[in] loopback: loop-back own messages
      * @return true if device was initialized succesfully, false otherwise
      */
-    virtual bool init(const std::string &device, unsigned int bitrate) = 0;
+    virtual bool init(const std::string &device, bool loopback) = 0;
     
     /**
      * Recover interface after errors and emergency stops

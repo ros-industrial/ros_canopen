@@ -5,11 +5,11 @@
 
 namespace canopen{
     
-template<typename Driver> class CANLayer: public Layer{
+class CANLayer: public Layer{
     boost::mutex mutex_;
-    boost::shared_ptr<Driver> driver_;
+    boost::shared_ptr<can::DriverInterface> driver_;
     const std::string device_;
-    const unsigned int bitrate_;
+    const bool loopback_;
     can::Frame last_error_;
     can::CommInterface::FrameListener::Ptr error_listener_;
     void handleFrame(const can::Frame & msg){
@@ -19,8 +19,8 @@ template<typename Driver> class CANLayer: public Layer{
     }
 
 public:
-    CANLayer(const boost::shared_ptr<Driver> &driver, const std::string &device, const unsigned int bitrate)
-    : Layer(device + " Layer"), driver_(driver), device_(device), bitrate_(bitrate) { assert(driver_); }
+    CANLayer(const boost::shared_ptr<can::DriverInterface> &driver, const std::string &device, bool loopback)
+    : Layer(device + " Layer"), driver_(driver), device_(device), loopback_(loopback) { assert(driver_); }
     virtual void read(LayerStatus &status){
         if(!driver_->getState().isReady()) status.error();
     }
@@ -56,7 +56,7 @@ public:
     }
     
     virtual void init(LayerStatus &status){
-        if(!driver_->init(device_, bitrate_)){
+        if(!driver_->init(device_, loopback_)){
             status.error("CAN init failed");
         }else{
             error_listener_ = driver_->createMsgListener(can::ErrorHeader(), can::CommInterface::FrameDelegate(this, &CANLayer::handleFrame));

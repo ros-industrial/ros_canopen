@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
     CommInterface::FrameListener::Ptr frame_printer = g_driver->createMsgListener(print_frame);
     StateInterface::StateListener::Ptr error_printer = g_driver->createStateListener(print_error);
     
-    if(!g_driver->init(argv[1],0)){
+    if(!g_driver->init(argv[1], false)){
         print_error(g_driver->getState());
         return 1;
     }

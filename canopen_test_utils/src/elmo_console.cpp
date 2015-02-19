@@ -144,7 +144,7 @@ int main(int argc, char *argv[]){
     signal(SIGINT, sigint_handler);
 
 
-    driver = boost::make_shared<ThreadedSocketCANInterface> (true);
+    driver = boost::make_shared<ThreadedSocketCANInterface> ();
     state_printer = driver->createStateListener(print_state);
 
     if(!driver->init(argv[1],0)){
