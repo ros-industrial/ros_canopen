@@ -1,7 +1,8 @@
 #include <iostream>
 #include <boost/unordered_set.hpp>
 
-#include <socketcan_interface/socketcan.h>
+#include <pluginlib/class_loader.h>
+#include <socketcan_interface/interface.h>
 
 using namespace can;
 
@@ -34,30 +35,54 @@ void print_frame(const Frame &f){
     std::cout << std::dec << std::endl;
 }
 
-SocketCANInterface driver;
+
+boost::shared_ptr<DriverInterface> g_driver;
 
 void print_error(const State & s){
     std::string err;
-    driver.translateError(s.internal_error,err);
+    g_driver->translateError(s.internal_error,err);
     std::cout << "ERROR: state=" << s.driver_state << " internal_error=" << s.internal_error << "('" << err << "') asio: " << s.error_code << std::endl;
 }
 
 
 int main(int argc, char *argv[]){
     
+    std::string plugin = "can::SocketCANInterface";
+  
     if(argc <2 ){
-        std::cout << "usage: "<< argv[0] << " DEVICE" << std::endl;
-        return 1;
-    }
-    CommInterface::FrameListener::Ptr frame_printer = driver.createMsgListener(print_frame);
-    StateInterface::StateListener::Ptr error_printer = driver.createStateListener(print_error);
-    
-    if(!driver.init(argv[1],0)){
-        print_error(driver.getState());
+        std::cout << "usage: "<< argv[0] << " DEVICE [PLUGIN]" << std::endl;
         return 1;
     }
 
-    driver.run();
+    if(argc > 2 ){
+        plugin = argv[2];
+    }
+    
+    pluginlib::ClassLoader<can::DriverInterface> driver_loader("socketcan_interface", "can::DriverInterface");
+
+    try
+    {
+	g_driver = driver_loader.createInstance(plugin);
+    }
+      
+    catch(pluginlib::PluginlibException& ex)
+    {
+	std::cerr << ex.what() << std::endl;;
+	return 1;
+    }
+
+    CommInterface::FrameListener::Ptr frame_printer = g_driver->createMsgListener(print_frame);
+    StateInterface::StateListener::Ptr error_printer = g_driver->createStateListener(print_error);
+    
+    if(!g_driver->init(argv[1],0)){
+        print_error(g_driver->getState());
+        return 1;
+    }
+
+    g_driver->run();
+    
+    g_driver->shutdown();
+    g_driver.reset();
     
     return 0;
     
