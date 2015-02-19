@@ -6,6 +6,7 @@
 #include <socketcan_interface/dispatcher.h>
 #include <boost/unordered_set.hpp>
 #include <socketcan_interface/socketcan.h>
+#include <socketcan_interface/threading.h>
 
 #include <boost/thread.hpp>
 
