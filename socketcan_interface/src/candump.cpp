@@ -34,7 +34,7 @@ void print_frame(const Frame &f){
     std::cout << std::dec << std::endl;
 }
 
-SocketCANDriver<CommInterface::FrameDelegate, StateInterface::StateDelegate> driver(print_frame, print_error);
+SocketCANInterface driver;
 
 void print_error(const State & s){
     std::string err;
@@ -49,6 +49,9 @@ int main(int argc, char *argv[]){
         std::cout << "usage: "<< argv[0] << " DEVICE" << std::endl;
         return 1;
     }
+    CommInterface::FrameListener::Ptr frame_printer = driver.createMsgListener(print_frame);
+    StateInterface::StateListener::Ptr error_printer = driver.createStateListener(print_error);
+    
     if(!driver.init(argv[1],0)){
         print_error(driver.getState());
         return 1;
