@@ -387,7 +387,7 @@ public:
     }
 };
 
-class MotorChain : RosChain<SocketCANInterface>{
+class MotorChain : RosChain{
     boost::shared_ptr< LayerGroupNoDiag<MotorNode> > motors_;
     boost::shared_ptr<RobotLayer> robot_layer_;
 

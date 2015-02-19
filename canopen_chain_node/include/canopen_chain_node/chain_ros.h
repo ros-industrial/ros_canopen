@@ -10,6 +10,7 @@
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <boost/filesystem/path.hpp>
 #include <boost/weak_ptr.hpp>
+#include <pluginlib/class_loader.h>
 
 namespace canopen{
 
@@ -72,11 +73,12 @@ public:
     virtual ~Logger() {}
 };
 
-template<typename InterfaceType> class RosChain : public canopen::LayerStack {
+class RosChain : public canopen::LayerStack {
+      pluginlib::ClassLoader<can::DriverInterface> driver_loader_;
 protected:
     std::string chain_name_;
     
-    boost::shared_ptr<InterfaceType> interface_;
+    boost::shared_ptr<can::DriverInterface> interface_;
     boost::shared_ptr<Master> master_;
     boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::Node> > nodes_;
     boost::shared_ptr<canopen::SyncLayer> sync_;
@@ -104,7 +106,7 @@ protected:
     boost::weak_ptr<LayerStatus> pending_status_;
     
     void logState(const can::State &s){
-        boost::shared_ptr<InterfaceType> interface = interface_;
+        boost::shared_ptr<can::DriverInterface> interface = interface_;
         std::string msg;
         if(interface && !interface->translateError(s.internal_error, msg)) msg  =  "Undefined"; ;
         ROS_INFO_STREAM("Current state: " << s.driver_state << " device error: " << s.error_code << " internal_error: " << s.internal_error << " (" << msg << ")");
@@ -227,6 +229,7 @@ protected:
     bool setup_bus(){
         ros::NodeHandle bus_nh(nh_priv_,"bus");
         std::string can_device;
+        std::string driver_plugin;
         std::string master_type;
         bool loopback;
         
@@ -237,8 +240,18 @@ protected:
         
         bus_nh.param("loopback",loopback, true);
         
-        interface_ = boost::make_shared<InterfaceType>();
-        state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
+        bus_nh.param("driver_plugin",driver_plugin, std::string("can::SocketCANInterface"));
+
+        try{
+            interface_ =  driver_loader_.createInstance(driver_plugin);
+        }
+            
+        catch(pluginlib::PluginlibException& ex){
+            ROS_ERROR_STREAM(ex.what());
+            return false;
+        }
+        
+	state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
         
         bus_nh.param("master_type",master_type, std::string("shared"));
 
@@ -395,7 +408,7 @@ protected:
         }
     }
 public:
-    RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): LayerStack("ROS stack"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_){}
+    RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_){}
     virtual bool setup(){
         boost::mutex::scoped_lock lock(mutex_);
 
