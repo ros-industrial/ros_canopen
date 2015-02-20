@@ -68,6 +68,7 @@ public:
     }
 
     virtual void halt(LayerStatus &status) { /* nothing to do */ }
+    virtual void pending(LayerStatus &status) { /* nothing to do */ }
     
     virtual void recover(LayerStatus &status){
         if(!driver_->recover()) status.error("driver recover failed"); // TODO: implement logging for driver

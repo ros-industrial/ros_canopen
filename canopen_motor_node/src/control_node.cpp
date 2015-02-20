@@ -163,6 +163,13 @@ public:
     virtual bool shutdown(){
         return true;
     }
+    
+    virtual void pending(LayerStatus &status) { /* nothing to do */ }
+    virtual void diag(LayerReport &report) { /* nothing to do */ }
+    virtual void shutdown(LayerStatus &status) { /* nothing to do */ }
+    virtual void halt(LayerStatus &status) { /* TODO */ }
+    virtual void recover(LayerStatus &status) { /* nothing to do */ }
+    
 };
 
 
@@ -368,6 +375,10 @@ public:
         if(cm_) cm_->update();
         return cm_;
     }
+    virtual void diag(LayerReport &report) { /* nothing to do */ }
+    virtual void pending(LayerStatus &status) { /* nothing to do */ }
+    virtual void halt(LayerStatus &status) { /* nothing to do (?) */ }
+
     virtual bool report() { return true; }
 		
     virtual bool init() {

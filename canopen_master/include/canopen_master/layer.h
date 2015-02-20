@@ -55,7 +55,8 @@ public:
 class Layer{
 public:
     const std::string name;
-    virtual void pending(LayerStatus &status) {}
+
+    virtual void pending(LayerStatus &status) = 0;
     virtual void read(LayerStatus &status) = 0;
     virtual void write(LayerStatus &status) = 0;
     
@@ -64,7 +65,7 @@ public:
     virtual void init(LayerStatus &status) = 0;
     virtual void shutdown(LayerStatus &status) = 0;
     
-    virtual void halt(LayerStatus &status) {} // TODO
+    virtual void halt(LayerStatus &status) = 0;
     virtual void recover(LayerStatus &status) = 0;
     
     Layer(const std::string &n) : name(n) {}

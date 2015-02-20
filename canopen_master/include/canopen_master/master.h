@@ -245,8 +245,7 @@ public:
         }
         sync_master_->notify(status);
     }
-    
-    virtual void diag(LayerReport &report) {}
+
     virtual void init(LayerStatus &status);
     virtual void shutdown(LayerStatus &status) {
         boost::mutex::scoped_lock lock(mutex_);
@@ -259,8 +258,10 @@ public:
         sync_master_->stop(status);
     }
     
-    virtual void halt(LayerStatus &status) {}
-    virtual void recover(LayerStatus &status) {}
+    virtual void pending(LayerStatus &status)  { /* nothing to do */ }
+    virtual void halt(LayerStatus &status)  { /* nothing to do */ }
+    virtual void diag(LayerReport &report)  { /* TODO */ }
+    virtual void recover(LayerStatus &status)  { /* TODO */ }
     
     virtual void addNode(void * const ptr) {
         boost::mutex::scoped_lock lock(mutex_);
