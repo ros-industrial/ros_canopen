@@ -73,30 +73,6 @@ public:
     virtual ~Layer() {}
 };
 
-class SimpleLayer: public Layer {
-    void adapt(bool (SimpleLayer::*func) (void), LayerStatus &status){
-        if(!(this->*func)()) status.error();
-    }
-public:
-        
-    virtual void read(LayerStatus &status) { adapt(&SimpleLayer::read, status); }
-    virtual void write(LayerStatus &status) { adapt(&SimpleLayer::write, status); }
-    virtual void diag(LayerReport &report) { adapt(&SimpleLayer::report, report); }
-    virtual void init(LayerStatus &status) { adapt(&SimpleLayer::init, status); }
-    virtual void recover(LayerStatus &status) { adapt(&SimpleLayer::recover, status); }
-    virtual void shutdown(LayerStatus &status) {  adapt(&SimpleLayer::shutdown, status); }
-    
-    virtual bool read()  = 0;
-    virtual bool write()  = 0;
-    virtual bool report()  = 0;
-    virtual bool init()  = 0;
-    virtual bool recover()  = 0;
-    virtual bool shutdown()  = 0;
-    
-    SimpleLayer(const std::string &n) : Layer(n) {}
-    SimpleLayer() : Layer("NO NAME GIVEN") {}
-};
-
 template<typename T> class VectorHelper{
 protected:
     typedef std::vector<boost::shared_ptr<T> > vector_type ;
