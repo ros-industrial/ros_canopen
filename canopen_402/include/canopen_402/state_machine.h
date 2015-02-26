@@ -174,7 +174,11 @@ public:
     control_word_bitset.reset(CW_Operation_mode_specific2);
   }
   // transition actions
-  void shutdown_motor(shutdown const&)       { std::cout << "motor_sm::shutdown\n"; }
+  void shutdown_motor(shutdown const&)
+  {
+    std::cout << "motor_sm::shutdown\n";
+    BOOST_THROW_EXCEPTION(std::range_error("Index out of range"));
+  }
   void turn_on(switch_on const&)       { std::cout << "motor_sm::switch_on\n"; }
   void turn_off(disable_voltage const&)       { std::cout << "motor_sm::disable_voltage\n"; }
   void activate_QS(quick_stop const&)       { std::cout << "motor_sm::quick_stop\n"; }
@@ -223,8 +227,15 @@ public:
   template <class FSM,class Event>
   void no_transition(Event const& e, FSM&,int state)
   {
-      std::cout << "no transition from state " << state
-          << " on event " << typeid(e).name() << std::endl;
+    std::cout << "no transition from state " << state
+              << " on event " << typeid(e).name() << std::endl;
+  }
+
+  template <class FSM,class Event>
+  void exception_caught (Event const&,FSM& fsm,std::exception& )
+  {
+    std::cout << "Could not switch_state" << std::endl;
+    fsm.process_event(disable_voltage());
   }
 };
 

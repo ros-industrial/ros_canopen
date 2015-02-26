@@ -61,7 +61,7 @@ void Node_402::pending(LayerStatus &status)
 {
   getDeviceState(status);
 
-  //  control_word.s et(cw_set);
+  //  control_word.set(cw_set);
 }
 
 void Node_402::getDeviceState(LayerStatus &status)
@@ -118,30 +118,7 @@ bool Node_402::enterMode(const OperationMode &op_mode_var)
 
 bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 {
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
 
-  if(!isModeSupported(op_mode_var)){
-    LOG( "Mode " << (int)op_mode_var << " not supported");
-    return false;
-  }
-
-  motor_ready_ = false;
-  enter_mode_failure_ = false;
-
-  LOG( "Enter mode" << (int)op_mode_var);
-  enterMode(op_mode_var);
-  time_point t0 = get_abs_time(boost::chrono::seconds(10));
-
-  while (!motor_ready_)
-  {
-    if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
-    {
-      enter_mode_failure_ = true;
-      break;
-    }
-  }
-
-  return motor_ready_;
 }
 
 void Node_402::read(LayerStatus &status)
@@ -192,7 +169,7 @@ void Node_402::write(LayerStatus &status)
 
 }
 
-const State& Node_402::getState()
+const InternalState& Node_402::getState()
 {
   return state_;
 }
@@ -312,9 +289,10 @@ void Node_402::configureModeSpecificEntries()
 
 bool Node_402::turnOn()
 {
-  Motor.process_event(motorSM::shutdown());
+  int success = Motor.process_event(motorSM::shutdown());
+  std::cout << "Success: " << success << std::endl;
   Motor.process_event(motorSM::switch_on());
-  Motor.process_event(motorSM::enable_op());
+ // Motor.process_event(motorSM::enable_op());
 
   return true;
 }

@@ -81,10 +81,7 @@ public:
     homing_mask.set(SW_Operation_specific0);
     homing_mask.set(SW_Operation_specific1);
 
-    homing_needed_ = false;
-    motor_ready_ = false;
-    configure_drive_ = false;
-    configuring_node_ = true;
+    Motor.process_event(motorSM::boot());
   }
 
   Node_402(const std::string &name) : Layer(name)
@@ -99,8 +96,8 @@ public:
   static uint32_t getModeMask(const OperationMode &op_mode);
   bool isModeMaskRunning(const uint32_t &mask);
 
-  const State& getState();
-  void enterState(const State &s);
+  const InternalState& getState();
+  void enterState(const InternalState &s);
 
 
   virtual void read(LayerStatus &status);
@@ -154,8 +151,8 @@ private:
 
   boost::shared_ptr <canopen::Node> n_;
   volatile bool running;
-  State state_;
-  State target_state_;
+  InternalState state_;
+  InternalState target_state_;
 
   bool new_target_pos_;
 

@@ -125,7 +125,7 @@ enum SupportedOperationMode
   Sup_Cyclic_Synchronous_Torque = 9
 };
 
-enum State
+enum InternalState
 {
   Start = 0,
   Not_Ready_To_Switch_On = 1,
