@@ -57,6 +57,7 @@
 #define CANOPEN_402_CANOPEN_402_H
 
 #include <canopen_master/canopen.h>
+#include <canopen_402/state_machine.h>
 #include <string>
 #include <vector>
 
@@ -284,6 +285,7 @@ private:
   void driveSettings();
   void driveSettingsOnlyPos();
   void driveSettingsOnlyBits();
+  void internal_sm(LayerStatus &status);
 
   bool configure_drive_;
 
@@ -295,20 +297,7 @@ private:
 
   bool enter_mode_failure_;
 
-  /*template<typename Duration> bool waitMotorReady(const Duration &d){
-    time_point t0 = boost::chrono::high_resolution_clock::now() + d;
-
-    boost::mutex::scoped_lock cond_lock(cond_mutex);
-    motor_ready_ = false;
-    while (!motor_ready_)
-    {
-      if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
-      {
-          break;
-      }
-    }
-    return motor_ready_;
-  }*/
+  typedef msm::back::state_machine<MotorSM_> motor_sm;
 
 };
 }  //  namespace canopen
