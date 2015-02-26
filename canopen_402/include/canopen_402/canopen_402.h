@@ -87,6 +87,11 @@ public:
     configuring_node_ = true;
   }
 
+  Node_402(const std::string &name) : Layer(name)
+  {
+    Motor.process_event(motorSM::boot());
+  }
+
   const OperationMode getMode();
   bool enterMode(const OperationMode &op_mode);
   bool enterModeAndWait(const OperationMode &op_mode);
@@ -215,8 +220,7 @@ private:
 
   bool enter_mode_failure_;
 
-  typedef msm::back::state_machine<MotorSM_> motor_sm;
-
+  motorSM Motor;
 };
 }  //  namespace canopen
 #endif  // CANOPEN_402_CANOPEN_402_H

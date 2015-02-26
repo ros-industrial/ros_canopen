@@ -229,7 +229,7 @@ public:
 };
 
 
-
+typedef msm::back::state_machine<MotorSM_> motorSM;
 };
 
 #endif // STATE_MACHINE_H
