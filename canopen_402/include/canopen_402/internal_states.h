@@ -57,17 +57,19 @@
 #define INTERNAL_STATES_H
 
 #include <iostream>
+#include <string>
+#include <vector>
 #include <boost/msm/back/state_machine.hpp>
 #include <boost/msm/front/state_machine_def.hpp>
+#include <canopen_402/enums_402.h>
 
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
 
 namespace canopen
 {
-
 // The list of FSM states
-struct Not_Ready_To_Switch_On : public msm::front::state<>
+struct Not_Ready_To_Switch_On_State : public msm::front::state<>
 {
   // every (optional) entry/exit methods get the event passed.
   template <class Event,class FSM>
@@ -76,7 +78,7 @@ struct Not_Ready_To_Switch_On : public msm::front::state<>
   void on_exit(Event const&,FSM& ) {std::cout << "leaving: Start" << std::endl;}
 };
 
-struct Switch_On_Disabled : public msm::front::state<>
+struct Switch_On_Disabled_State : public msm::front::state<>
 {
   // every (optional) entry/exit methods get the event passed.
   template <class Event,class FSM>
@@ -85,7 +87,7 @@ struct Switch_On_Disabled : public msm::front::state<>
   void on_exit(Event const&,FSM& ) {std::cout << "leaving: Switch_On_Disabled" << std::endl;}
 };
 
-struct Ready_To_Switch_On : public msm::front::state<>
+struct Ready_To_Switch_On_State : public msm::front::state<>
 {
   // every (optional) entry/exit methods get the event passed.
   template <class Event,class FSM>
@@ -98,7 +100,7 @@ struct Ready_To_Switch_On : public msm::front::state<>
   }
 };
 
-struct Switched_On : public msm::front::state<>
+struct Switched_On_State : public msm::front::state<>
 {
   // every (optional) entry/exit methods get the event passed.
   template <class Event,class FSM>
@@ -107,7 +109,7 @@ struct Switched_On : public msm::front::state<>
   void on_exit(Event const&,FSM& ) {std::cout << "leaving: Switched_On" << std::endl;}
 };
 
-struct Operation_Enable : public msm::front::state<>
+struct Operation_Enable_State : public msm::front::state<>
 {
   // every (optional) entry/exit methods get the event passed.
   template <class Event,class FSM>
@@ -116,7 +118,7 @@ struct Operation_Enable : public msm::front::state<>
   void on_exit(Event const&,FSM& ) {std::cout << "leaving: Operation_Enable" << std::endl;}
 };
 
-struct Quick_Stop : public msm::front::state<>
+struct Quick_Stop_State : public msm::front::state<>
 {
   // every (optional) entry/exit methods get the event passed.
   template <class Event,class FSM>
@@ -125,7 +127,7 @@ struct Quick_Stop : public msm::front::state<>
   void on_exit(Event const&,FSM& ) {std::cout << "leaving: Quick_Stop" << std::endl;}
 };
 
-struct Fault : public msm::front::state<>
+struct Fault_State : public msm::front::state<>
 {
   // every (optional) entry/exit methods get the event passed.
   template <class Event,class FSM>
@@ -135,7 +137,7 @@ struct Fault : public msm::front::state<>
 };
 
 // the initial state of the player SM. Must be defined
-typedef Not_Ready_To_Switch_On initial_state;
+typedef Not_Ready_To_Switch_On_State initial_state;
 
 }
 
