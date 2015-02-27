@@ -117,17 +117,17 @@ public:
     struct writeControl : public msm::front::state<>
     {
       template <class Event,class FSM>
-      void on_entry(Event const&,FSM& ) {std::cout << "starting: First song" << std::endl;}
+      void on_entry(Event const&,FSM& ) {std::cout << "starting: writeControl" << std::endl;}
       template <class Event,class FSM>
-      void on_exit(Event const&,FSM& ) {std::cout << "finishing: First Song" << std::endl;}
+      void on_exit(Event const&,FSM& ) {std::cout << "finishing: writeControl" << std::endl;}
 
     };
     struct readStatus : public msm::front::state<>
     {
       template <class Event,class FSM>
-      void on_entry(Event const&,FSM& ) {std::cout << "starting: Second song" << std::endl;}
+      void on_entry(Event const&,FSM& ) {std::cout << "starting: readStatus" << std::endl;}
       template <class Event,class FSM>
-      void on_exit(Event const&,FSM& ) {std::cout << "finishing: Second Song" << std::endl;}
+      void on_exit(Event const&,FSM& ) {std::cout << "finishing: readStatus" << std::endl;}
     };
 
     // the initial state. Must be defined
