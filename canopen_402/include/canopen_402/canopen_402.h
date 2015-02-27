@@ -195,7 +195,6 @@ private:
 
   std::bitset<16> status_word_mask;
   std::bitset<16> homing_mask;
-  std::bitset<16> status_word_bitset;
 
   double target_vel_;
   double target_pos_;
@@ -218,6 +217,7 @@ private:
   bool enter_mode_failure_;
 
   motorSM Motor;
+
 };
 }  //  namespace canopen
 #endif  // CANOPEN_402_CANOPEN_402_H

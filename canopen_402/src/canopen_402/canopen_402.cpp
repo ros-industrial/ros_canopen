@@ -66,44 +66,44 @@ void Node_402::pending(LayerStatus &status)
 
 void Node_402::getDeviceState(LayerStatus &status)
 {
+
   std::bitset<16> sw_new(status_word.get());
+//  MotorUtils.setStatusWord(sw_new);
 
-  status_word_bitset = sw_new;
-
-  switch ((status_word_bitset & status_word_mask).to_ulong())
-  {
-  case 0b0000000:
-  case 0b0100000:
-    state_ = Not_Ready_To_Switch_On;
-    break;
-  case 0b1000000:
-  case 0b1100000:
-    state_ = Switch_On_Disabled;
-    break;
-  case 0b0100001:
-    state_ = Ready_To_Switch_On;
-    break;
-  case 0b0100011:
-    state_ = Switched_On;
-    break;
-  case 0b0100111:
-    state_ = Operation_Enable;
-    break;
-  case 0b0000111:
-    state_ = Quick_Stop_Active;
-    break;
-  case 0b0001111:
-  case 0b0101111:
-    state_ = Fault_Reaction_Active;
-    break;
-  case 0b0001000:
-  case 0b0101000:
-    state_ = Fault;
-    break;
-  default:
-    LOG("Motor currently in an unknown state");
-    status.error("Motor currently in an unknown state");
-  }
+//  switch ((status_word_bitset & status_word_mask).to_ulong())
+//  {
+//  case 0b0000000:
+//  case 0b0100000:
+//    state_ = Not_Ready_To_Switch_On;
+//    break;
+//  case 0b1000000:
+//  case 0b1100000:
+//    state_ = Switch_On_Disabled;
+//    break;
+//  case 0b0100001:
+//    state_ = Ready_To_Switch_On;
+//    break;
+//  case 0b0100011:
+//    state_ = Switched_On;
+//    break;
+//  case 0b0100111:
+//    state_ = Operation_Enable;
+//    break;
+//  case 0b0000111:
+//    state_ = Quick_Stop_Active;
+//    break;
+//  case 0b0001111:
+//  case 0b0101111:
+//    state_ = Fault_Reaction_Active;
+//    break;
+//  case 0b0001000:
+//  case 0b0101000:
+//    state_ = Fault;
+//    break;
+//  default:
+//    LOG("Motor currently in an unknown state");
+//    status.error("Motor currently in an unknown state");
+//  }
 }
 
 void Node_402::switchMode(LayerStatus &status)
@@ -286,14 +286,25 @@ void Node_402::configureModeSpecificEntries()
     n_->getStorage()->entry(homing_method, 0x6098);
   }
 }
-
+//TODO: Implement a smaller state machine for On, Off, Fault, Halt
 bool Node_402::turnOn()
 {
-  int success = Motor.process_event(motorSM::shutdown());
-  std::cout << "Success: " << success << std::endl;
-  Motor.process_event(motorSM::switch_on());
- // Motor.process_event(motorSM::enable_op());
 
+  int transition_sucess = Motor.process_event(motorSM::shutdown());
+  std::cout << "Success: " << transition_sucess << std::endl;
+  if(!transition_sucess)
+    return false;
+
+  transition_sucess = Motor.process_event(motorSM::switch_on());
+  std::cout << "Success: " << transition_sucess << std::endl;
+  if(!transition_sucess)
+    return false;
+
+  transition_sucess = Motor.process_event(motorSM::enable_op());
+  if(!transition_sucess)
+    return false;
+
+  std::cout << "Success: " << transition_sucess << std::endl;
   return true;
 }
 
