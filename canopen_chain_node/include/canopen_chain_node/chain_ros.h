@@ -335,17 +335,17 @@ protected:
                 return false;
             }
 
+            MergedXmlRpcStruct merged(module, defaults);
+
             ObjectDict::Overlay overlay;
-            if(module.hasMember("dcf_overlay")){
-                XmlRpc::XmlRpcValue dcf_overlay = module["dcf_overlay"];
+            if(merged.hasMember("dcf_overlay")){
+                XmlRpc::XmlRpcValue dcf_overlay = merged["dcf_overlay"];
                 for(XmlRpc::XmlRpcValue::iterator it = dcf_overlay.begin(); it!= dcf_overlay.end(); ++it){
                     overlay.push_back(ObjectDict::Overlay::value_type(it->first, it->second));
                 }
 
             }
 
-            MergedXmlRpcStruct merged(module, defaults);
-                            
             std::string eds;
             
             try{
