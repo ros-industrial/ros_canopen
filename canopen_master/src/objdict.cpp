@@ -225,8 +225,10 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptre
             }else{
                 subs = object->get<uint8_t>("SubNumber");
                 for(uint8_t i=0; i< subs; ++i){
-                   
-                   parse_object(dict, pt, name + "sub" + boost::lexical_cast<std::string>((int)i), &i);
+                   std::stringstream buf;
+                   buf << name << "sub" << std::hex << int(i);
+                   std::cout << "added " << buf.str() <<  "  " << int(i) << std::endl;
+                   parse_object(dict, pt, buf.str(), &i);
                 }
             }
         }else{
