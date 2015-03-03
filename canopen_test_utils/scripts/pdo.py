@@ -68,6 +68,11 @@ def set_pdo(ini, writable, nr, objs, transmission):
     ini[mapobj+"sub0"]["ParameterValue"]=str(len(mapping))
     for i in range(len(mapping)):
         ini[mapobj+"sub%x" % (i+1)]["ParameterValue"]=mapping[i]
+    for i in range(len(mapping),8):
+        try:
+            del ini[mapobj+"sub%x" % (i+1)]["ParameterValue"]
+        except:
+            pass
 
 def patch(fname,out, writable, nr, objs, transmission):
     ini = configparser.RawConfigParser(dict_type=OrderedDict,allow_no_value=True)
