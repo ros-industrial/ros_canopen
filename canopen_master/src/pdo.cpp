@@ -134,6 +134,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
             
             frame.dlc += b->size;
             assert( frame.dlc <= 8 );
+            b->clean();
             buffers.push_back(b);
         }
     }

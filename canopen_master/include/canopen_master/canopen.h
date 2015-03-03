@@ -73,6 +73,7 @@ class PDOMapper{
         void write(const uint8_t* b, const size_t len);
         void read(const canopen::ObjectDict::Entry &entry, String &data);
         void write(const canopen::ObjectDict::Entry &, const String &data);
+        void clean() { dirty = false; }
         const size_t size;
         Buffer(const size_t sz) : size(sz), dirty(false), empty(true), buffer(sz) {}
         
