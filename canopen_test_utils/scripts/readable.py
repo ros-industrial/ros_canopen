@@ -1,16 +1,11 @@
 #!/usr/bin/env python2
-import sys
+import sys, importlib
 
-PDOs={
-"RPDO1": [("control_word",2),("target_velocity",2), ("target_interpolated_position",4)],
-"RPDO2": [("target_position",4),("profile_velocity",4)],
-"RPDO3": [("target_position",4),("profile_velocity",4)],
-"RPDO4": [("target_interpolated_position",4),("target_interpolated_velocity",4)],
+if len(sys.argv) < 2:
+    print("please provide mapping modulde as first argument, e.g schunk_mapping or elmo_mapping");
+    exit()
 
-"TPDO1": [("status_word",2),("op_mode_display",1)],
-"TPDO3": [("actual_position",4),("actual_velocity",4)],
-
-}
+PDOs = importlib.import_module(sys.argv[1]).PDOs
 
 def hex_reverse(data):
     return ''.join(reversed([data[i:i+2] for i in xrange(0, len(data), 2)]))
@@ -65,9 +60,9 @@ def decode_pdo(id,data, name, start_id):
     out = []
 
     i = 0
-    for d in PDOs[name]:
-        out += [d[0],hex_reverse(data[i:i+2*d[1] ])]
-        i +=2*d[1]
+    for d in PDOs[name][1:]:
+        out += [d[1],hex_reverse(data[i:i+2*d[2] ])]
+        i +=2*d[2]
     return [name, id-start_id]+out
     
 def decode_sdo(id,data, name, start_id):
@@ -116,7 +111,7 @@ def decode_canopen(id,data):
     elif id > 0x600 and id <= 0x600 + 127:
         return decode_sdo(id,data,"RSDO", 0x600)
     return [id,data]
-        
+
 start = -1
 for line in sys.stdin:
     parts = line.split()
