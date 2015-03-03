@@ -381,7 +381,7 @@ void ObjectStorage::init_all(){
 
     boost::unordered_map<ObjectDict::Key, boost::shared_ptr<const ObjectDict::Entry> >::const_iterator entry_it;
     while(dict_->iterate(entry_it)){
-       if(!entry_it->second->init_val.is_empty() && !entry_it->second->def_val.is_empty() && entry_it->second->init_val.data() != entry_it->second->def_val.data()){
+       if(!entry_it->second->init_val.is_empty() && (entry_it->second->def_val.is_empty() || entry_it->second->init_val.data() != entry_it->second->def_val.data())){
            init_nolock(entry_it->first, entry_it->second);
        }
     }
