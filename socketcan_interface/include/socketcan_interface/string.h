@@ -7,9 +7,9 @@
 namespace can{
 
 bool hex2dec(uint8_t &d, const char &h){
-    if( '0' >= h && h <='9') d = h - '0';
-    else if( 'a' >= h && h <='f') d = h - 'a' + 10;
-    else if( 'A' >= h && h <='F') d = h - 'A' + 10;
+    if( '0' <= h && h <='9') d = h - '0';
+    else if( 'a' <= h && h <='f') d = h - 'a' + 10;
+    else if( 'A' <= h && h <='F') d = h - 'A' + 10;
     else return false;
     return true;
 }
@@ -58,7 +58,7 @@ std::string byte2hex(const uint8_t &d, bool pad, bool lc){
 std::string buffer2hex(const std::string &in, bool lc){
     std::string s; s.reserve(in.size()*2);
     for(size_t i=0; i < in.size(); ++i){
-        std::string b = byte2hex(in[i], i != 0, lc);
+        std::string b = byte2hex(in[i], i != 0 || 1 == in.size(), lc);
         if(b.empty()) return b;
         s += b;
     }
@@ -93,7 +93,6 @@ std::string tostring(const Frame &f, bool lc){
     for(uint8_t i = 0; i < f.dlc; ++i){
         s[i] = f.data[i];
     }
-
     return tostring((const Header &)f, lc) + '#' + buffer2hex(s, lc);
 }
 
