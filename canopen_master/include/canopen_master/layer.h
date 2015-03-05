@@ -92,6 +92,7 @@ protected:
     template<typename Iterator, typename Data> Iterator call(void(Layer::*func)(Data&), Data &status, const Iterator &begin, const Iterator &end){
         return call<LayerStatus::Unbounded, Iterator, Data>(func, status, begin, end);
     }
+    void destroy() { layers.clear(); }
 public:
     void add(const boost::shared_ptr<T> &l) { layers.push_back(l); }
 };

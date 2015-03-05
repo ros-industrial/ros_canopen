@@ -450,6 +450,7 @@ public:
             LayerStatus s;
             shutdown(s);
         }catch(...){ }
+        destroy();
     }
 };
 
