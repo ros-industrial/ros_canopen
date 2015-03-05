@@ -76,8 +76,6 @@ public:
 class RosChain : public canopen::LayerStack {
       pluginlib::ClassLoader<can::DriverInterface> driver_loader_;
 protected:
-    std::string chain_name_;
-    
     boost::shared_ptr<can::DriverInterface> interface_;
     boost::shared_ptr<Master> master_;
     boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::Node> > nodes_;
@@ -412,15 +410,11 @@ public:
     virtual bool setup(){
         boost::mutex::scoped_lock lock(mutex_);
 
-        if(!nh_priv_.getParam("name", chain_name_)){
-            ROS_ERROR("Chain name not set");
-            return false;
-        }
         std::string hw_id;
         nh_priv_.param("hardware_id", hw_id, std::string("none"));
         
         diag_updater_.setHardwareID(hw_id);
-        diag_updater_.add(chain_name_, this, &RosChain::report_diagnostics);
+        diag_updater_.add("chain", this, &RosChain::report_diagnostics);
         
         diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),boost::bind(&diagnostic_updater::Updater::update, &diag_updater_));
         
