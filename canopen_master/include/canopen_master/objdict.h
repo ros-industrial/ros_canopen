@@ -334,12 +334,28 @@ public:
             if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
 
             return data->get<T>(false);
-        }        
+        }    
+        bool get(T & val){
+            try{
+                val = get();
+                return true;
+            }catch(...){
+                return false;
+            }
+        }    
         const T get_cached() {
             if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
 
             return data->get<T>(true);
         }        
+        bool get_cached(T & val){
+            try{
+                val = get_cached();
+                return true;
+            }catch(...){
+                return false;
+            }
+        }    
         void set(const T &val) {
             if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
             data->set(val);
