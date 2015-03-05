@@ -325,8 +325,11 @@ protected:
         nodes_.reset(new canopen::LayerGroupNoDiag<canopen::Node>("301 layer"));
         add(nodes_);
 
-        XmlRpc::XmlRpcValue modules;
-        nh_priv_.getParam("modules", modules);
+        XmlRpc::XmlRpcValue nodes;
+        if(!nh_priv_.getParam("nodes", nodes)){
+            ROS_WARN("falling back to 'modules', please switch to 'nodes'");
+            nh_priv_.getParam("modules", nodes);
+        }
         MergedXmlRpcStruct defaults;
         nh_priv_.getParam("defaults", defaults);
 
@@ -394,7 +397,7 @@ protected:
         }
         return true;
     }
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         LayerReport r;
         diag(r);
