@@ -6,6 +6,7 @@
 #include <socketcan_interface/dispatcher.h>
 #include <boost/unordered_set.hpp>
 #include <socketcan_interface/socketcan.h>
+#include <socketcan_interface/threading.h>
 
 #include <boost/thread.hpp>
 
@@ -144,7 +145,7 @@ int main(int argc, char *argv[]){
     signal(SIGINT, sigint_handler);
 
 
-    driver = boost::make_shared<ThreadedSocketCANInterface> (true);
+    driver = boost::make_shared<ThreadedSocketCANInterface> ();
     state_printer = driver->createStateListener(print_state);
 
     if(!driver->init(argv[1],0)){

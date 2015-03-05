@@ -10,6 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
   canopen_master
   cob_srvs
   diagnostic_updater
+  pluginlib
+  socketcan_interface
 )
 
 ## System dependencies are found with CMake's conventions
@@ -84,7 +86,7 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES canopen_chain_node
-  CATKIN_DEPENDS canopen_master roslib roscpp cob_srvs diagnostic_updater
+  CATKIN_DEPENDS canopen_master roslib roscpp cob_srvs diagnostic_updater pluginlib socketcan_interface
 #  DEPENDS system_lib
 )
 

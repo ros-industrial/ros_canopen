@@ -17,6 +17,8 @@
   <depend>canopen_master</depend>
   <depend>cob_srvs</depend>
   <depend>diagnostic_updater</depend>
+  <depend>pluginlib</depend>
+  <depend>socketcan_interface</depend> <!-- direct dependency needed for pluginlib look-up -->
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
