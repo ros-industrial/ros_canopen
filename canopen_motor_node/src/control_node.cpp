@@ -397,12 +397,13 @@ class MotorChain : RosChain{
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger)
     {
         std::string name = params["name"];
+        std::string &joint = name; 
         boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor", params));
         motors_->add(motor);
         logger->add(motor);
 
-        boost::shared_ptr<HandleLayer> handle( new HandleLayer(name, motor));
-        robot_layer_->add(name, handle);
+        boost::shared_ptr<HandleLayer> handle( new HandleLayer(joint, motor));
+        robot_layer_->add(joint, handle);
         logger->add(handle);
 
         return true;
