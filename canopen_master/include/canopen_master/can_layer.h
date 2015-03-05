@@ -1,15 +1,16 @@
 #ifndef H_CAN_LAYER
 #define H_CAN_LAYER
 
+#include <socketcan_interface/threading.h>
 #include "layer.h"
 
 namespace canopen{
-    
-template<typename Driver> class CANLayer: public Layer{
+
+class CANLayer: public Layer{
     boost::mutex mutex_;
-    boost::shared_ptr<Driver> driver_;
+    boost::shared_ptr<can::DriverInterface> driver_;
     const std::string device_;
-    const unsigned int bitrate_;
+    const bool loopback_;
     can::Frame last_error_;
     can::CommInterface::FrameListener::Ptr error_listener_;
     void handleFrame(const can::Frame & msg){
@@ -17,10 +18,11 @@ template<typename Driver> class CANLayer: public Layer{
         last_error_ = msg;
         LOG("ID: " << msg.id);
     }
+    boost::shared_ptr<boost::thread> thread_;
 
 public:
-    CANLayer(const boost::shared_ptr<Driver> &driver, const std::string &device, const unsigned int bitrate)
-    : Layer(device + " Layer"), driver_(driver), device_(device), bitrate_(bitrate) { assert(driver_); }
+    CANLayer(const boost::shared_ptr<can::DriverInterface> &driver, const std::string &device, bool loopback)
+    : Layer(device + " Layer"), driver_(driver), device_(device), loopback_(loopback) { assert(driver_); }
     virtual void read(LayerStatus &status){
         if(!driver_->getState().isReady()) status.error();
     }
@@ -56,18 +58,34 @@ public:
     }
     
     virtual void init(LayerStatus &status){
-        if(!driver_->init(device_, bitrate_)){
+	if(thread_){
+            status.warn("CAN thread already running");
+        } else if(!driver_->init(device_, loopback_)) {
             status.error("CAN init failed");
-        }else{
+        } else {
+            thread_.reset(new boost::thread(&can::DriverInterface::run, driver_));
             error_listener_ = driver_->createMsgListener(can::ErrorHeader(), can::CommInterface::FrameDelegate(this, &CANLayer::handleFrame));
+	    
+	    if(!can::StateWaiter::wait_for(can::State::ready, driver_.get(), boost::posix_time::seconds(1))){
+		status.error("CAN init timed out");
+	    }
         }
+	if(!driver_->getState().isReady()){
+	  status.error("CAN is not ready");
+	}
     }
     virtual void shutdown(LayerStatus &status){
         error_listener_.reset();
         driver_->shutdown();
+        if(thread_){
+            thread_->interrupt();
+            thread_->join();
+            thread_.reset();
+        }
     }
 
     virtual void halt(LayerStatus &status) { /* nothing to do */ }
+    virtual void pending(LayerStatus &status) { /* nothing to do */ }
     
     virtual void recover(LayerStatus &status){
         if(!driver_->recover()) status.error("driver recover failed"); // TODO: implement logging for driver

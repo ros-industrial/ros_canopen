@@ -211,3 +211,6 @@ void Node::shutdown(LayerStatus &status){
 void Node::halt(LayerStatus &status){
     // do nothing
 }
+void Node::pending(LayerStatus &status){
+    // TODO
+}

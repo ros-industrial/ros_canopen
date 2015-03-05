@@ -13,25 +13,27 @@
 #include <linux/can/raw.h>
 #include <linux/can/error.h>
 
+#include <socketcan_interface/dispatcher.h>
+
 namespace can {
 
-template<typename FrameDelegate, typename StateDelegate> class SocketCANDriver : public AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> {
-    typedef AsioDriver<FrameDelegate,StateDelegate,boost::asio::posix::stream_descriptor> BaseClass;
-    const bool loopback_;
+class SocketCANInterface : public AsioDriver<boost::asio::posix::stream_descriptor> {
+    typedef AsioDriver<boost::asio::posix::stream_descriptor> BaseClass;
+    bool loopback_;
 public:    
-    SocketCANDriver(FrameDelegate frame_delegate, StateDelegate state_delegate, bool loopback = false)
-    : BaseClass(frame_delegate, state_delegate), loopback_(loopback)
+    SocketCANInterface()
+    : loopback_(false)
     {}
     
-    bool doesLoopBack() const{
+    virtual bool doesLoopBack() const{
         return loopback_;
     }
 
-    bool init(const std::string &device, unsigned int bitrate){
+    virtual bool init(const std::string &device, bool loopback){
         State s = BaseClass::getState();
         if(s.driver_state == State::closed){
             device_ = device;
-            if(bitrate != 0) return false; // not supported, TODO: use libsocketcan
+            loopback_ = loopback;
 
             int sc = socket( PF_CAN, SOCK_RAW, CAN_RAW );
             if(sc < 0){
@@ -106,14 +108,14 @@ public:
         }
         return BaseClass::getState().isReady();
     }
-    bool recover(){
+    virtual bool recover(){
         if(!BaseClass::getState().isReady()){
             BaseClass::shutdown();
-            return init(device_, 0);
+            return init(device_, doesLoopBack());
         }
         return BaseClass::getState().isReady();
     }
-    bool translateError(unsigned int internal_error, std::string & str){
+    virtual bool translateError(unsigned int internal_error, std::string & str){
 
         bool ret = false;
         if(!internal_error){
@@ -154,12 +156,12 @@ protected:
     std::string device_;
     can_frame frame_;
     
-    void triggerReadSome(){
+    virtual void triggerReadSome(){
         boost::mutex::scoped_lock lock(send_mutex_);
-        BaseClass::socket_.async_read_some(boost::asio::buffer(&frame_, sizeof(frame_)), boost::bind( &SocketCANDriver::readFrame,this, boost::asio::placeholders::error));
+        BaseClass::socket_.async_read_some(boost::asio::buffer(&frame_, sizeof(frame_)), boost::bind( &SocketCANInterface::readFrame,this, boost::asio::placeholders::error));
     }
     
-    bool enqueue(const Frame & msg){
+    virtual bool enqueue(const Frame & msg){
         boost::mutex::scoped_lock lock(send_mutex_); //TODO: timed try lock
 
         can_frame frame;
@@ -211,8 +213,7 @@ private:
     boost::mutex send_mutex_;
 };
 
-template <typename T> class DispatchedInterface;
-typedef DispatchedInterface<SocketCANDriver<CommInterface::FrameDelegate,StateInterface::StateDelegate> > SocketCANInterface;
+typedef SocketCANInterface SocketCANDriver;
 
 template <typename T> class ThreadedInterface;
 typedef ThreadedInterface<SocketCANInterface> ThreadedSocketCANInterface;

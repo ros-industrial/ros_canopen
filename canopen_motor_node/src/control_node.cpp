@@ -45,7 +45,7 @@ public:
    const double getTargetEff() { return Node_402::getTargetEff() / eff_unit_factor; }
 };
 
-class HandleLayer: public SimpleLayer{
+class HandleLayer: public Layer{
     boost::shared_ptr<MotorNode> motor_;
     double pos_, vel_, eff_;
     double cmd_pos_, cmd_vel_, cmd_eff_;
@@ -81,7 +81,7 @@ class HandleLayer: public SimpleLayer{
     }
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor)
-    : SimpleLayer(name + " Handle"), motor_(motor), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {}
+    : Layer(name + " Handle"), motor_(motor), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {}
 
     int canSwitch(const MotorNode::OperationMode &m){
        if(motor_->getMode() == m) return -1;
@@ -118,28 +118,26 @@ public:
         modes.push_back(MotorNode::Cyclic_Synchronous_Torque);
         return addHandle(iface, &jeh_, modes);
     }
-    virtual bool read() {
-        bool okay = true;
-        // okay = motor.okay();
-        if(okay){
-            cmd_pos_ = pos_ = motor_->getActualPos();
-            cmd_vel_ = vel_ = motor_->getActualVel();
-            cmd_eff_ = eff_ = motor_->getActualEff();
-            if(!jh_){
-                MotorNode::OperationMode m = motor_->getMode();
-                if(m != MotorNode::No_Mode && !select(m)) return false;
-            }
-            if(jh_ == &jph_){
-                cmd_pos_ = motor_->getTargetPos();
-            }else if(jh_ == &jvh_){
-                cmd_vel_ = motor_->getTargetVel();
-            }else if(jh_ == &jeh_){
-                cmd_eff_ = motor_->getTargetEff();
+    
+    virtual void read(LayerStatus &status){
+        cmd_pos_ = pos_ = motor_->getActualPos();
+        cmd_vel_ = vel_ = motor_->getActualVel();
+        cmd_eff_ = eff_ = motor_->getActualEff();
+        if(!jh_){
+            MotorNode::OperationMode m = motor_->getMode();
+            if(m != MotorNode::No_Mode && !select(m)){
+                status.error("No mode selected");
             }
         }
-        return okay;
+        if(jh_ == &jph_){
+            cmd_pos_ = motor_->getTargetPos();
+        }else if(jh_ == &jvh_){
+            cmd_vel_ = motor_->getTargetVel();
+        }else if(jh_ == &jeh_){
+            cmd_eff_ = motor_->getTargetEff();
+        }
     }
-    virtual bool write() {
+    virtual void write(LayerStatus &status){
         if(jh_){
             if(jh_ == &jph_){
                 motor_->setTargetPos(cmd_pos_);
@@ -148,21 +146,21 @@ public:
             }else if(jh_ == &jeh_){
                 motor_->setTargetEff(cmd_eff_);
             }
-            return true;
+        }else if (motor_->getMode() != MotorNode::No_Mode){
+            status.warn("unsupported mode active");
         }
-        return motor_->getMode() == MotorNode::No_Mode;
     }
-    virtual bool report() { return true; }
-    virtual bool init() {
-        read();
-        return true;
+    virtual void init(LayerStatus &status){
+        // TODO: implement proper init
+        read(status);
     }
-    virtual bool recover() {
-        return true;
-    }
-    virtual bool shutdown(){
-        return true;
-    }
+    
+    virtual void pending(LayerStatus &status) { /* nothing to do */ }
+    virtual void diag(LayerReport &report) { /* nothing to do */ }
+    virtual void shutdown(LayerStatus &status) { /* nothing to do */ }
+    virtual void halt(LayerStatus &status) { /* TODO */ }
+    virtual void recover(LayerStatus &status) { /* nothing to do */ }
+    
 };
 
 
@@ -352,43 +350,45 @@ public:
     ControllerManager(boost::shared_ptr<RobotLayer> robot, ros::NodeHandle nh)  : controller_manager::ControllerManager(robot.get(), nh), robot_(robot), recover_(false), last_time_(ros::Time::now()) {}
  };
 
-class ControllerManagerLayer : public SimpleLayer {
+class ControllerManagerLayer : public Layer {
     boost::shared_ptr<ControllerManager> cm_;
     boost::shared_ptr<RobotLayer> robot_;
     ros::NodeHandle nh_;
     
 public:
     ControllerManagerLayer(const boost::shared_ptr<RobotLayer> robot, const ros::NodeHandle &nh)
-    :SimpleLayer("ControllerManager"), robot_(robot), nh_(nh) {
+    :Layer("ControllerManager"), robot_(robot), nh_(nh) {
     }
 
-    virtual bool read() {
-        return cm_;
+    virtual void read(LayerStatus &status) {
+        if(!cm_) status.error("controller_manager is not intialized");
     }
-    virtual bool write()  {
-        if(cm_) cm_->update();
-        return cm_;
+    virtual void write(LayerStatus &status) {
+        if(!cm_) status.error("controller_manager is not intialized");
+        else cm_->update();
     }
-    virtual bool report() { return true; }
-		
-    virtual bool init() {
-        if(cm_) return false;
-        cm_.reset(new ControllerManager(robot_, nh_));
+    virtual void diag(LayerReport &report) { /* nothing to do */ }
+    virtual void pending(LayerStatus &status) { /* nothing to do */ }
+    virtual void halt(LayerStatus &status) { /* nothing to do (?) */ }
+
+    virtual void init(LayerStatus &status) {
+        if(cm_){
+            status.warn("controller_manager is already intialized");
+        }else{
+            cm_.reset(new ControllerManager(robot_, nh_));
+        }
         cm_->recover();
-        return true;
     }
-    virtual bool recover() {
-        if(!cm_) return false;
-        cm_->recover();
-        return true;
+    virtual void recover(LayerStatus &status) {
+        if(!cm_) status.error("controller_manager is not intialized");
+        else cm_->recover();
     }
-    virtual bool shutdown(){
+    virtual void shutdown(LayerStatus &status) {
         cm_.reset();
-        return true;
     }
 };
 
-class MotorChain : RosChain<ThreadedSocketCANInterface>{
+class MotorChain : RosChain{
     boost::shared_ptr< LayerGroupNoDiag<MotorNode> > motors_;
     boost::shared_ptr<RobotLayer> robot_layer_;
 

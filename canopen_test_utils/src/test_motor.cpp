@@ -27,7 +27,7 @@ void my_handler(int s){
 using namespace can;
 using namespace canopen;
 
-boost::shared_ptr<ThreadedInterface<SocketCANInterface> > driver = boost::make_shared<ThreadedInterface<SocketCANInterface> > (true);
+boost::shared_ptr<SocketCANInterface > driver = boost::make_shared<SocketCANInterface> ();
 
 void print_frame(const Frame &f){
   LOG( "in: " << std:: hex << f.id << std::dec);
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
 
   LayerStack stack("test402");
-  stack.add(boost::make_shared<CANLayer<ThreadedSocketCANInterface > >(driver, argv[1], 0));
+  stack.add(boost::make_shared<CANLayer>(driver, argv[1], true));
   stack.add(sync);
   stack.add(node);
   stack.add(motor);
