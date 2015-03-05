@@ -178,7 +178,8 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
     joint_limits_interface::EffortJointSaturationInterface eff_saturation_interface_;
 
     ros::NodeHandle nh_;
-
+    urdf::Model urdf_;
+    
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
 public:
@@ -214,7 +215,8 @@ public:
         LayerGroupNoDiag::add(handle);
         handles_.insert(std::make_pair(name, handle));
     }
-    RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh) {
+    RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh)
+    {
         registerInterface(&state_interface_);
         registerInterface(&pos_interface_);
         registerInterface(&vel_interface_);
@@ -228,8 +230,10 @@ public:
         registerInterface(&eff_saturation_interface_);
         registerInterface(&eff_soft_limits_interface_);
 
-        
+        urdf_.initParam("robot_description");
     }
+
+    boost::shared_ptr<const urdf::Joint> getJoint(const std::string &n) const { return urdf_.getJoint(n); }
 
     virtual void init(LayerStatus &status){
         urdf::Model urdf;
@@ -239,7 +243,7 @@ public:
             joint_limits_interface::JointLimits limits;
             joint_limits_interface::SoftJointLimits soft_limits;
 
-            boost::shared_ptr<const urdf::Joint> joint = urdf.getJoint(it->first);
+            boost::shared_ptr<const urdf::Joint> joint = getJoint(it->first);
             
             if(!joint){
                 status.error("joint " + it->first + " not found");
@@ -398,6 +402,13 @@ class MotorChain : RosChain{
     {
         std::string name = params["name"];
         std::string &joint = name; 
+        if(params.hasMember("joint")) joint.assign(params["joint"]);
+        
+        if(!robot_layer_->getJoint(joint)){
+            ROS_ERROR_STREAM("joint " + joint + " was not found in URDF");
+            return false;
+        }
+        
         boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor", params));
         motors_->add(motor);
         logger->add(motor);
