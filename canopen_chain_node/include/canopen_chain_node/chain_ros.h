@@ -333,25 +333,40 @@ protected:
         MergedXmlRpcStruct defaults;
         nh_priv_.getParam("defaults", defaults);
 
-        for (int32_t i = 0; i < modules.size(); ++i){
-            XmlRpc::XmlRpcValue &module = modules[i];
-            std::string name = module["name"];
+        if(nodes.getType() ==  XmlRpc::XmlRpcValue::TypeArray){
+            XmlRpc::XmlRpcValue new_stuct;
+            for(size_t i = 0; i < nodes.size(); ++i){
+                if(nodes[i].hasMember("name")){
+                    std::string &name = nodes[i]["name"];
+                    new_stuct[name] = nodes[i];
+                }else{
+                    ROS_ERROR_STREAM("Node at list index " << i << " has no name");
+                    return false;
+                }
+            }
+            nodes = new_stuct;
+        }
+    
+        for(XmlRpc::XmlRpcValue::iterator it = nodes.begin(); it != nodes.end(); ++it){
             int node_id;
             try{
-                node_id = module["id"];
+                node_id = it->second["id"];
             }
             catch(...){
-                ROS_ERROR_STREAM("Module at list index " << i << " has no id");
+                ROS_ERROR_STREAM("Node '" << it->first  << "' has no id");
                 return false;
             }
-
-            MergedXmlRpcStruct merged(module, defaults);
+            MergedXmlRpcStruct merged(it->second, defaults);
+            
+            if(!it->second.hasMember("name")){
+                merged["name"]=it->first;
+            }
 
             ObjectDict::Overlay overlay;
             if(merged.hasMember("dcf_overlay")){
                 XmlRpc::XmlRpcValue dcf_overlay = merged["dcf_overlay"];
-                for(XmlRpc::XmlRpcValue::iterator it = dcf_overlay.begin(); it!= dcf_overlay.end(); ++it){
-                    overlay.push_back(ObjectDict::Overlay::value_type(it->first, it->second));
+                for(XmlRpc::XmlRpcValue::iterator ito = dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
+                    overlay.push_back(ObjectDict::Overlay::value_type(ito->first, ito->second));
                 }
 
             }
@@ -391,7 +406,7 @@ protected:
 
             //logger->add(4,"pos", canopen::ObjectDict::Key(0x6064));
             loggers_.push_back(logger);
-            diag_updater_.add(name, boost::bind(&Logger::log, logger, _1));
+            diag_updater_.add(it->first, boost::bind(&Logger::log, logger, _1));
             
             nodes_->add(node);
         }
