@@ -208,6 +208,7 @@ public:
     virtual void recover(LayerStatus &status);
     virtual void read(LayerStatus &status);
     virtual void write(LayerStatus &status);
+    virtual void pending(LayerStatus &status);
     virtual void halt(LayerStatus &status);
     virtual void shutdown(LayerStatus &status);
     
