@@ -64,9 +64,6 @@ bool ObjectDict::iterate(boost::unordered_map<Key, boost::shared_ptr<const Entry
     }else it = dict_.begin();
     return it != dict_.end();
 }
-template<typename T> void read_optional(T& var, boost::property_tree::iptree &pt, const std::string &key){
-    var = pt.get(key, T());
-}
 void set_access( ObjectDict::Entry &entry, const std::string &access){
     entry.constant = false;
     if(access == "ro"){
@@ -184,9 +181,21 @@ template<const ObjectDict::DataTypes dt> HoldAny ReadAnyValue::func(boost::prope
     return parse_typed_value<typename ObjectStorage::DataType<dt>::type>(pt, key);
 }
 
+template<typename T> void read_optional(T& var, boost::property_tree::iptree &pt, const std::string &key){
+    var = pt.get(key, T());
+}
+
+template<typename T> void read_integer(T& var, boost::property_tree::iptree &pt, const std::string &key){
+    var = int_from_string<T>(pt.get<std::string>(key));
+}
+
+template<typename T> T read_integer(boost::property_tree::iptree &pt, const std::string &key){
+    return int_from_string<T>(pt.get<std::string>(key, std::string()));
+}
+
 
 void read_var(ObjectDict::Entry &entry, boost::property_tree::iptree &object){
-        entry.data_type = int_from_string<uint16_t>(object.get<std::string>("DataType"));
+        read_integer<uint16_t>(entry.data_type, object, "DataType");
         entry.mappable = object.get<bool>("PDOMapping", false);
         set_access(entry, object.get<std::string>("AccessType"));
         
@@ -209,7 +218,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptr
             read_var(*entry, *object);
             dict->insert(sub_index != 0, entry);
         }else if(entry->obj_code == ObjectDict::ARRAY || entry->obj_code == ObjectDict::RECORD){
-            uint8_t subs = object->get<uint8_t>("CompactSubObj",0);
+            uint8_t subs = read_integer<uint8_t>(*object, "CompactSubObj");
             if(subs){ // compact
                 dict->insert(true, boost::make_shared<const canopen::ObjectDict::Entry>(entry->index, 0, ObjectDict::DEFTYPE_UNSIGNED8, "NrOfObjects", true, false, false, HoldAny(subs)));
 
@@ -223,7 +232,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptr
                        ReadAnyValue::read_value(pt, entry->data_type, name.substr(2)+"Value." + boost::lexical_cast<std::string>((int)i))));
                 }
             }else{
-                subs = object->get<uint8_t>("SubNumber");
+                read_integer(subs, *object, "SubNumber");
                 for(uint8_t i=0; i< subs; ++i){
                    std::stringstream buf;
                    buf << name << "sub" << std::hex << int(i);
@@ -239,9 +248,7 @@ void parse_objects(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ipt
     if(!pt.count(key)) return;
     
     boost::property_tree::iptree objects = pt.get_child(key);
-    
-    uint16_t count;
-    read_optional(count, objects, "SupportedObjects");
+    uint16_t count = read_integer<uint16_t>(objects, "SupportedObjects");
     for(uint16_t i=0; i < count; ++i){
         std::string name = objects.get<std::string>(boost::lexical_cast<std::string>(i+1));
         parse_object(dict, pt, name);
