@@ -94,7 +94,7 @@ protected:
     }
     void destroy() { layers.clear(); }
 public:
-    void add(const boost::shared_ptr<T> &l) { layers.push_back(l); }
+    virtual void add(const boost::shared_ptr<T> &l) { layers.push_back(l); }
 };
 
 template<typename T=Layer> class LayerVector : public Layer, public VectorHelper<T> {
@@ -170,6 +170,7 @@ public:
     virtual void recover(LayerStatus &status) {
         bringup(&Layer::recover, &Layer::halt, status);
     }
+    virtual void add(const boost::shared_ptr<T> &l) { VectorHelper<T>::add(l); pending_ = this->layers.begin();; }
 };
 
 class LayerStack : public LayerVector<>{
