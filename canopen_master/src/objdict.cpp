@@ -138,7 +138,7 @@ template<typename T> HoldAny parse_octets(boost::property_tree::iptree &pt, cons
 
     std::string in = pt.get<std::string>(key);
     
-    if( (in.size() % 2) != 0) throw ParseException();
+    if( (in.size() % 2) != 0) in = "0" + in;
     std::string out(in.size()/2,0);
     for(size_t i=0; i < out.size(); ++i){
         out[i] = (get_dec(in[i<<1]) << 4) | get_dec(in[(i<<1) +1]);
