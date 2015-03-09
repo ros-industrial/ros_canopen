@@ -382,13 +382,15 @@ protected:
             }
 
             try{
-                std::string pkg = merged["eds_pkg"];
-                std::string p = ros::package::getPath(pkg);
-                if(p.empty()){
-                        ROS_ERROR_STREAM("Package '" << pkg << "' not found");
-                        return false;
+                if(merged.hasMember("eds_pkg")){
+                    std::string pkg = merged["eds_pkg"];
+                    std::string p = ros::package::getPath(pkg);
+                    if(p.empty()){
+                            ROS_WARN_STREAM("Package '" << pkg << "' was not found");
+                    }else{
+                        eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
+                    }
                 }
-                eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
             }
             catch(...){
             }
