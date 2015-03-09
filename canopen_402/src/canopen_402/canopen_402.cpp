@@ -702,7 +702,7 @@ void Node_402::configureModeSpecificEntries()
   }
   if (isModeSupported(Interpolated_Position))
   {
-	n_->getStorage()->entry(ip_mode_sub_mode, 0x60C0);
+    n_->getStorage()->entry(ip_mode_sub_mode, 0x60C0);
     n_->getStorage()->entry(target_interpolated_position, 0x60C1, 0x01);
     if (ip_mode_sub_mode.get_cached() == -1)
       n_->getStorage()->entry(target_interpolated_velocity, 0x60C1, 0x02);
