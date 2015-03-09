@@ -228,9 +228,9 @@ bool PDOMapper::TPDO::init(const boost::shared_ptr<ObjectStorage> &storage, cons
     ObjectStorage::Entry<uint8_t> tt;
     storage->entry(tt, com_index, SUB_COM_TRANSMISSION_TYPE);
     transmission_type = tt.desc().value().get<uint8_t>();
-    
-    if(transmission_type > 1 && transmission_type <=240){
-        tt.set(1);
+
+    if(transmission_type != 1 && transmission_type <=240){
+        tt.set(1); // enforce 1 for compatibility
     }
     return true;
 }
