@@ -186,7 +186,7 @@ struct UploadInitiateResponse: public FrameOverlay<InitiateLong>{
             buffer.resize(total);
         }
         if(data.expedited){
-            memcpy(&buffer[0], data.payload, buffer.size());
+            memcpy(&buffer.front(), data.payload, buffer.size());
             offset = buffer.size();
             return true;
         }
