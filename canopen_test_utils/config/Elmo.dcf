@@ -772,7 +772,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
-ParameterValue=0x60ff0020
+ParameterValue=0x60600008
 
 [1600sub3]
 ParameterName=PDO Mapping Entry_3
@@ -918,7 +918,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
-ParameterValue=0x60810020
+ParameterValue=0x60ff0020
 
 [1602sub3]
 ParameterName=PDO Mapping Entry_3
