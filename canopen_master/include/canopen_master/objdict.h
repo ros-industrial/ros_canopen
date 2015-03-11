@@ -60,7 +60,7 @@ public:
     
     template<typename T> HoldAny(const T &t) : type_guard(TypeGuard::create<T>()), empty(false){
         buffer.resize(sizeof(T));
-        *(T*)&buffer[0] = t;
+        *(T*)&(buffer.front()) = t;
     }
     HoldAny(const std::string &t): type_guard(TypeGuard::create<std::string>()), empty(false){
         if(!type_guard.is_type<std::string>()){
@@ -85,7 +85,7 @@ public:
         }else if(empty){
             BOOST_THROW_EXCEPTION(std::length_error("buffer empty"));
         }
-        return *(T*)&buffer[0];
+        return *(T*)&(buffer.front());
     }
 };
 
@@ -252,7 +252,7 @@ protected:
             if(!valid){
                 BOOST_THROW_EXCEPTION(std::length_error("buffer not valid"));
             }
-            return *(T*)&buffer[0];
+            return *(T*)&(buffer.front());
         }
         template <typename T> T & allocate(){
             if(!valid){
