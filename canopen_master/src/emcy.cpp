@@ -49,6 +49,7 @@ const uint8_t EMCYHandler::error_register(){
 }
 
 void EMCYHandler::init(LayerStatus &status){
+    recover();
     read(status);
 }
 void EMCYHandler::recover(){
