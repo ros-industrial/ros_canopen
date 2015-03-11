@@ -754,7 +754,7 @@ void Node_402::init(LayerStatus &s)
     running = true;
   }
   else
-    s.error();
+    s.error("!turnOn");
 
   while (!motor_ready_)
   {

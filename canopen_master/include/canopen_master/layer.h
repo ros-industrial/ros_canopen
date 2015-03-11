@@ -38,9 +38,9 @@ public:
     
     const std::string reason() const { boost::mutex::scoped_lock lock(write_mutex_); return reason_; }
 
-    const void warn(const std::string & r = "") { set(WARN, r); }
-    const void error(const std::string & r = "") { set(ERROR, r); }
-    const void stale(const std::string & r = "") { set(STALE, r); }
+    const void warn(const std::string & r) { set(WARN, r); }
+    const void error(const std::string & r) { set(ERROR, r); }
+    const void stale(const std::string & r) { set(STALE, r); }
 };
 class LayerReport : public LayerStatus {
     std::vector<std::pair<std::string, std::string> > values_;
@@ -146,7 +146,7 @@ protected:
         if(it != end){
             LayerStatus omit;
             this->template call(func_fail, omit, this->layers.rbegin(), reverse_iterator(it));
-            omit.error();
+            omit.error("omit");
             this->template call(func, omit, it+1, end);
         }
     }
@@ -183,7 +183,7 @@ public:
         if(it != layers.rend()){
             LayerStatus omit;
             call(&Layer::halt, omit, begin, reverse_iterator(it));
-            omit.error();
+            omit.error("omit");
             call(&Layer::write, omit, it+1, layers.rend());
         }
     }

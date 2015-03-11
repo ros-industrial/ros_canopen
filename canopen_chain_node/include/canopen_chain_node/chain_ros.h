@@ -120,6 +120,8 @@ protected:
                 boost::shared_ptr<LayerStatus> pending_status = pending_status_.lock();
                 if(pending_status) pending(*pending_status);
                 write(s);
+                if(!s.bounded<LayerStatus::Warn>()) ROS_ERROR_STREAM_THROTTLE(10, s.reason());
+                else if(!s.bounded<LayerStatus::Ok>()) ROS_WARN_STREAM_THROTTLE(10, s.reason());
             }
             catch(const canopen::Exception& e){
                 ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));

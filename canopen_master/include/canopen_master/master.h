@@ -151,7 +151,7 @@ public:
     }
     void stop(LayerStatus &status){
         if(!thread_){
-            status.error();
+            status.error("!thread");
             return;
         }
         thread_->interrupt();
@@ -171,14 +171,14 @@ public:
     void wait(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.wait(sync_obj_->properties.period_);
-            if(!ok) status.warn();
-        }else status.error();
+            if(!ok) status.warn("wait failed");
+        }else status.error("!sync_obj");
     }
     void notify(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.done(sync_obj_->properties.period_);
-            if(!ok) status.warn();
-        }else status.error();
+            if(!ok) status.warn("notify failed");
+        }else status.error("!sync_obj");
     }
 
 private:
@@ -231,7 +231,7 @@ public:
         boost::mutex::scoped_lock lock(mutex_);
         if(!nodes_.empty()){
             if(!waitSync()){
-                status.warn();
+                status.warn("wait for sync failed");
             }
         }
         sync_master_->wait(status);

@@ -24,10 +24,10 @@ public:
     CANLayer(const boost::shared_ptr<can::DriverInterface> &driver, const std::string &device, bool loopback)
     : Layer(device + " Layer"), driver_(driver), device_(device), loopback_(loopback) { assert(driver_); }
     virtual void read(LayerStatus &status){
-        if(!driver_->getState().isReady()) status.error();
+        if(!driver_->getState().isReady()) status.error("CAN not ready");
     }
     virtual void write(LayerStatus &status){
-        if(!driver_->getState().isReady()) status.error();
+        if(!driver_->getState().isReady()) status.error("CAN not ready");
     }
 
     virtual void diag(LayerReport &report){
