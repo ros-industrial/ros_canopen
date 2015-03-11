@@ -392,8 +392,8 @@ public:
     }
 };
 
-class MotorChain : RosChain{
-    boost::shared_ptr< LayerGroupNoDiag<MotorNode> > motors_;
+template<typename MotorNodeType> class MotorChain : public RosChain{
+    boost::shared_ptr< LayerGroupNoDiag<MotorNodeType> > motors_;
     boost::shared_ptr<RobotLayer> robot_layer_;
 
     boost::shared_ptr< ControllerManagerLayer> cm_;
@@ -449,7 +449,7 @@ int main(int argc, char** argv){
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv("~");
 
-  MotorChain chain(nh, nh_priv);
+  MotorChain<MotorNode> chain(nh, nh_priv);
 
   if(!chain.setup()){
       return -1;
