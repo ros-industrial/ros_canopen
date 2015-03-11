@@ -76,8 +76,6 @@ public:
 class RosChain : public canopen::LayerStack {
       pluginlib::ClassLoader<can::DriverInterface> driver_loader_;
 protected:
-    std::string chain_name_;
-    
     boost::shared_ptr<can::DriverInterface> interface_;
     boost::shared_ptr<Master> master_;
     boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::Node> > nodes_;
@@ -327,30 +325,48 @@ protected:
         nodes_.reset(new canopen::LayerGroupNoDiag<canopen::Node>("301 layer"));
         add(nodes_);
 
-        XmlRpc::XmlRpcValue modules;
-        nh_priv_.getParam("modules", modules);
+        XmlRpc::XmlRpcValue nodes;
+        if(!nh_priv_.getParam("nodes", nodes)){
+            ROS_WARN("falling back to 'modules', please switch to 'nodes'");
+            nh_priv_.getParam("modules", nodes);
+        }
         MergedXmlRpcStruct defaults;
         nh_priv_.getParam("defaults", defaults);
 
-        for (int32_t i = 0; i < modules.size(); ++i){
-            XmlRpc::XmlRpcValue &module = modules[i];
-            std::string name = module["name"];
+        if(nodes.getType() ==  XmlRpc::XmlRpcValue::TypeArray){
+            XmlRpc::XmlRpcValue new_stuct;
+            for(size_t i = 0; i < nodes.size(); ++i){
+                if(nodes[i].hasMember("name")){
+                    std::string &name = nodes[i]["name"];
+                    new_stuct[name] = nodes[i];
+                }else{
+                    ROS_ERROR_STREAM("Node at list index " << i << " has no name");
+                    return false;
+                }
+            }
+            nodes = new_stuct;
+        }
+    
+        for(XmlRpc::XmlRpcValue::iterator it = nodes.begin(); it != nodes.end(); ++it){
             int node_id;
             try{
-                node_id = module["id"];
+                node_id = it->second["id"];
             }
             catch(...){
-                ROS_ERROR_STREAM("Module at list index " << i << " has no id");
+                ROS_ERROR_STREAM("Node '" << it->first  << "' has no id");
                 return false;
             }
-
-            MergedXmlRpcStruct merged(module, defaults);
+            MergedXmlRpcStruct merged(it->second, defaults);
+            
+            if(!it->second.hasMember("name")){
+                merged["name"]=it->first;
+            }
 
             ObjectDict::Overlay overlay;
             if(merged.hasMember("dcf_overlay")){
                 XmlRpc::XmlRpcValue dcf_overlay = merged["dcf_overlay"];
-                for(XmlRpc::XmlRpcValue::iterator it = dcf_overlay.begin(); it!= dcf_overlay.end(); ++it){
-                    overlay.push_back(ObjectDict::Overlay::value_type(it->first, it->second));
+                for(XmlRpc::XmlRpcValue::iterator ito = dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
+                    overlay.push_back(ObjectDict::Overlay::value_type(ito->first, ito->second));
                 }
 
             }
@@ -390,13 +406,13 @@ protected:
 
             //logger->add(4,"pos", canopen::ObjectDict::Key(0x6064));
             loggers_.push_back(logger);
-            diag_updater_.add(name, boost::bind(&Logger::log, logger, _1));
+            diag_updater_.add(it->first, boost::bind(&Logger::log, logger, _1));
             
             nodes_->add(node);
         }
         return true;
     }
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         LayerReport r;
         diag(r);
@@ -412,15 +428,11 @@ public:
     virtual bool setup(){
         boost::mutex::scoped_lock lock(mutex_);
 
-        if(!nh_priv_.getParam("name", chain_name_)){
-            ROS_ERROR("Chain name not set");
-            return false;
-        }
         std::string hw_id;
         nh_priv_.param("hardware_id", hw_id, std::string("none"));
         
         diag_updater_.setHardwareID(hw_id);
-        diag_updater_.add(chain_name_, this, &RosChain::report_diagnostics);
+        diag_updater_.add("chain", this, &RosChain::report_diagnostics);
         
         diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),boost::bind(&diagnostic_updater::Updater::update, &diag_updater_));
         
@@ -438,6 +450,7 @@ public:
             LayerStatus s;
             shutdown(s);
         }catch(...){ }
+        destroy();
     }
 };
 

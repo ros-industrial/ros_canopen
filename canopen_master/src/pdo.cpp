@@ -134,6 +134,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
             
             frame.dlc += b->size;
             assert( frame.dlc <= 8 );
+            b->clean();
             buffers.push_back(b);
         }
     }
@@ -261,13 +262,13 @@ void PDOMapper::TPDO::sync(){
     }
 }
 
-void PDOMapper::RPDO::sync(){
+void PDOMapper::RPDO::sync(LayerStatus &status){
     boost::mutex::scoped_lock lock(mutex);
     if((transmission_type >= 1 && transmission_type <= 240) || transmission_type == 0xFC){ // cyclic
         if(timeout > 0){
             --timeout;
         }else if(timeout == 0) {
-            BOOST_THROW_EXCEPTION( TimeoutException() );
+            status.warn("RPDO timeout");
         }
     }
     if(transmission_type == 0xFC || transmission_type == 0xFD){
@@ -305,12 +306,11 @@ void PDOMapper::RPDO::handleFrame(const can::Frame & msg){
     }
 }
 
-bool PDOMapper::read(){
+void PDOMapper::read(LayerStatus &status){
     boost::mutex::scoped_lock lock(mutex_);
     for(boost::unordered_set<boost::shared_ptr<RPDO> >::iterator it = rpdos_.begin(); it != rpdos_.end(); ++it){
-        (*it)->sync();
+        (*it)->sync(status);
     }
-    return true; // TODO: check for errors
 }
 bool PDOMapper::write(){
     boost::mutex::scoped_lock lock(mutex_);

@@ -73,6 +73,7 @@ class PDOMapper{
         void write(const uint8_t* b, const size_t len);
         void read(const canopen::ObjectDict::Entry &entry, String &data);
         void write(const canopen::ObjectDict::Entry &, const String &data);
+        void clean() { dirty = false; }
         const size_t size;
         Buffer(const size_t sz) : size(sz), dirty(false), empty(true), buffer(sz) {}
         
@@ -108,7 +109,7 @@ class PDOMapper{
     };
     
     struct RPDO : public PDO{
-        void sync();
+        void sync(LayerStatus &status);
         static boost::shared_ptr<RPDO> create(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
             boost::shared_ptr<RPDO> rpdo(new RPDO(interface));
             if(!rpdo->init(storage, com_index, map_index))
@@ -133,7 +134,7 @@ class PDOMapper{
 
 public:
     PDOMapper(const boost::shared_ptr<can::CommInterface> interface);
-    bool read();
+    void read(LayerStatus &status);
     bool write();
     void init(const boost::shared_ptr<ObjectStorage> storage);
 };

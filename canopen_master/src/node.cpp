@@ -136,10 +136,14 @@ bool Node::checkHeartbeat(){
 
 
 void Node::read(LayerStatus &status){
-    if(!checkHeartbeat()) status.error("heartbeat problem");
-    else if(getState() != Operational)  status.error("not operational");
-    else if(!pdo_.read())  status.error("PDO read problem");
-    else emcy_.read(status);
+    if(!checkHeartbeat()){
+        status.error("heartbeat problem");
+    } else if(getState() != Operational){
+        status.error("not operational");
+    } else{
+        pdo_.read(status);
+        emcy_.read(status);
+    }
 }
 void Node::write(LayerStatus &status){
     if(getState() != Operational)  status.error("not operational");
@@ -162,9 +166,9 @@ void Node::init(LayerStatus &status){
 
     sdo_.init();
     try{
-        reset();
-        //reset_com();
-        //emcy_.recover();
+        //reset();
+        reset_com();
+        emcy_.recover();
         prepare();
     }
     catch(const TimeoutException&){

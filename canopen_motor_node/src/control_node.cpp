@@ -178,7 +178,8 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
     joint_limits_interface::EffortJointSaturationInterface eff_saturation_interface_;
 
     ros::NodeHandle nh_;
-
+    urdf::Model urdf_;
+    
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
 public:
@@ -214,7 +215,8 @@ public:
         LayerGroupNoDiag::add(handle);
         handles_.insert(std::make_pair(name, handle));
     }
-    RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh) {
+    RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh)
+    {
         registerInterface(&state_interface_);
         registerInterface(&pos_interface_);
         registerInterface(&vel_interface_);
@@ -228,8 +230,10 @@ public:
         registerInterface(&eff_saturation_interface_);
         registerInterface(&eff_soft_limits_interface_);
 
-        
+        urdf_.initParam("robot_description");
     }
+
+    boost::shared_ptr<const urdf::Joint> getJoint(const std::string &n) const { return urdf_.getJoint(n); }
 
     virtual void init(LayerStatus &status){
         urdf::Model urdf;
@@ -239,7 +243,7 @@ public:
             joint_limits_interface::JointLimits limits;
             joint_limits_interface::SoftJointLimits soft_limits;
 
-            boost::shared_ptr<const urdf::Joint> joint = urdf.getJoint(it->first);
+            boost::shared_ptr<const urdf::Joint> joint = getJoint(it->first);
             
             if(!joint){
                 status.error("joint " + it->first + " not found");
@@ -327,6 +331,7 @@ public:
             recover_ = true;
         }
 
+        controller_manager::ControllerManager::notifyHardwareInterface(info_list); //compile-time check for ros_control notifyHardwareInterface support
         return true;
 
     }
@@ -393,15 +398,23 @@ class MotorChain : RosChain{
 
     boost::shared_ptr< ControllerManagerLayer> cm_;
 
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger)
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger)
     {
-        std::string name = module["name"];
-        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor", module));
+        std::string name = params["name"];
+        std::string &joint = name; 
+        if(params.hasMember("joint")) joint.assign(params["joint"]);
+        
+        if(!robot_layer_->getJoint(joint)){
+            ROS_ERROR_STREAM("joint " + joint + " was not found in URDF");
+            return false;
+        }
+        
+        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor", params));
         motors_->add(motor);
         logger->add(motor);
 
-        boost::shared_ptr<HandleLayer> handle( new HandleLayer(name, motor));
-        robot_layer_->add(name, handle);
+        boost::shared_ptr<HandleLayer> handle( new HandleLayer(joint, motor));
+        robot_layer_->add(joint, handle);
         logger->add(handle);
 
         return true;
