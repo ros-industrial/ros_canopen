@@ -4,6 +4,7 @@
 #include <canopen_master/canopen.h>
 #include <canopen_master/master.h>
 #include <canopen_master/can_layer.h>
+#include <socketcan_interface/string.h>
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <cob_srvs/Trigger.h>
@@ -101,6 +102,8 @@ protected:
 
     time_duration update_duration_;
 
+    ros::Timer heartbeat_timer_;
+
     boost::weak_ptr<LayerStatus> pending_status_;
     
     void logState(const can::State &s){
@@ -149,7 +152,7 @@ protected:
             if(!pending_status->bounded<LayerStatus::Warn>()){
                 shutdown(*pending_status);
                 thread_.reset();
-            }
+            }else if(heartbeat_timer_.isValid()) heartbeat_timer_.start();
         }
         catch( const canopen::Exception &e){
             std::string info = boost::diagnostic_information(e);
@@ -189,6 +192,7 @@ protected:
         return true;
     }
     virtual void shutdown(LayerStatus &status){
+        heartbeat_timer_.stop();
         if(thread_){
             halt(status);
             thread_->interrupt();
@@ -325,6 +329,32 @@ protected:
         }
         return true;
     }
+    bool setup_heartbeat(){
+            ros::NodeHandle hb_nh(nh_priv_,"heartbeat");
+            std::string msg;
+            double rate = 0;
+
+            if(!hb_nh.getParam("msg", msg) && !hb_nh.getParam("rate", rate)) return true; // nothing todo
+
+            if(rate <=0 ){
+                ROS_ERROR_STREAM("Rate '"<< rate << "' is invalid");
+                return false;
+            }
+
+            can::Frame frame = can::toframe(msg);
+
+
+            if(!frame.isValid()){
+                ROS_ERROR_STREAM("Message '"<< msg << "' is invalid");
+                return false;
+            }
+
+            heartbeat_timer_ = hb_nh.createTimer(ros::Duration(1.0/rate), boost::bind(&can::DriverInterface::send,interface_, frame), false, false);
+
+            return true;
+
+
+    }
     bool setup_nodes(){
         nodes_.reset(new canopen::LayerGroupNoDiag<canopen::Node>("301 layer"));
         add(nodes_);
@@ -449,7 +479,7 @@ public:
         srv_halt_ = nh_driver.advertiseService("halt",&RosChain::handle_halt, this);
         srv_shutdown_ = nh_driver.advertiseService("shutdown",&RosChain::handle_shutdown, this);
         
-        return setup_bus() && setup_sync() && setup_nodes();
+        return setup_bus() && setup_sync() && setup_heartbeat() && setup_nodes();
     }
     virtual ~RosChain(){
         try{
