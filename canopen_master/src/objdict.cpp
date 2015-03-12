@@ -1,4 +1,5 @@
 #include <canopen_master/objdict.h>
+#include <socketcan_interface/string.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/foreach.hpp>
@@ -127,22 +128,9 @@ template<typename T> HoldAny parse_int(boost::property_tree::iptree &pt, const s
     }else return HoldAny(int_from_string<T>(boost::trim_copy(str)));
 }
 
-uint8_t get_dec(char d){
-    if( '0' >= d && d <='9') return d - '0';
-    else if( 'a' >= d && d <='f') return d - 'a' + 10;
-    else if( 'A' >= d && d <='F') return d - 'A' + 10;
-    else throw ParseException();
-}
 template<typename T> HoldAny parse_octets(boost::property_tree::iptree &pt, const std::string &key){
-    if(pt.count(key) == 0) return HoldAny(TypeGuard::create<T>());
-
-    std::string in = pt.get<std::string>(key);
-    
-    if( (in.size() % 2) != 0) in = "0" + in;
-    std::string out(in.size()/2,0);
-    for(size_t i=0; i < out.size(); ++i){
-        out[i] = (get_dec(in[i<<1]) << 4) | get_dec(in[(i<<1) +1]);
-    }
+    std::string out;
+    if(pt.count(key) == 0 || can::hex2buffer(out,pt.get<std::string>(key), true)) return HoldAny(TypeGuard::create<T>());
     return HoldAny(T(out));
 }
 
