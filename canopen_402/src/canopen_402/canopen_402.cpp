@@ -746,7 +746,7 @@ void Node_402::init(LayerStatus &s)
 
   Node_402::configureModeSpecificEntries();
 
-  if (homing_method.get() != 0)
+  if (homing_method.valid() && homing_method.get() != 0)
     homing_needed_ = true;
 
   if (Node_402::turnOn())
