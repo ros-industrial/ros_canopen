@@ -303,15 +303,14 @@ protected:
             update_duration_ = boost::chrono::milliseconds(update_ms);
         }
 
-        if(!sync_nh.getParam("overflow", sync_overflow)){
-            ROS_WARN("Sync overflow was not specified, so overflow is disabled per default");
-        }
-        if(sync_overflow == 1 || sync_overflow > 240){
-            ROS_ERROR_STREAM("Sync overflow  "<< sync_overflow << " is invalid");
-            return false;
-        }
-
         if(sync_ms){
+            if(!sync_nh.getParam("overflow", sync_overflow)){
+                ROS_WARN("Sync overflow was not specified, so overflow is disabled per default");
+            }
+            if(sync_overflow == 1 || sync_overflow > 240){
+                ROS_ERROR_STREAM("Sync overflow  "<< sync_overflow << " is invalid");
+                return false;
+            }
             // TODO: parse header
             sync_ = master_->getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
             
