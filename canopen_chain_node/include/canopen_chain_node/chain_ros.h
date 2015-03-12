@@ -283,6 +283,7 @@ protected:
         ros::NodeHandle sync_nh(nh_priv_,"sync");
         
         int sync_ms = 0;
+        int silence_us = 0;
         int sync_overflow = 0;
         
         if(!sync_nh.getParam("interval_ms", sync_ms)){
@@ -311,8 +312,10 @@ protected:
                 ROS_ERROR_STREAM("Sync overflow  "<< sync_overflow << " is invalid");
                 return false;
             }
+            sync_nh.getParam("silence_us", silence_us);
+
             // TODO: parse header
-            sync_ = master_->getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
+            sync_ = master_->getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), boost::posix_time::microseconds(silence_us), sync_overflow));
             
             if(!sync_ && sync_ms){
                 ROS_ERROR_STREAM("Initializing sync master failed");
