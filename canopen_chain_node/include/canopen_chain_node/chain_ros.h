@@ -399,7 +399,15 @@ protected:
             ObjectDict::Overlay overlay;
             if(merged.hasMember("dcf_overlay")){
                 XmlRpc::XmlRpcValue dcf_overlay = merged["dcf_overlay"];
+                if(dcf_overlay.getType() != XmlRpc::XmlRpcValue::TypeStruct){
+                    ROS_ERROR_STREAM("dcf_overlay is no struct");
+                    return false;
+                }
                 for(XmlRpc::XmlRpcValue::iterator ito = dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
+                    if(ito->second.getType() != XmlRpc::XmlRpcValue::TypeString){
+                        ROS_ERROR_STREAM("dcf_overlay '" << ito->first << "' must be string");
+                        return false;
+                    }
                     overlay.push_back(ObjectDict::Overlay::value_type(ito->first, ito->second));
                 }
 
