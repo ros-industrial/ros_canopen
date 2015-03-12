@@ -194,7 +194,6 @@ private:
 
 
 class IPCSyncLayer: public SyncLayer {
-    can::CommInterface::FrameListener::Ptr sync_listener_;
     boost::shared_ptr<can::CommInterface> interface_;
 
     boost::shared_ptr<IPCSyncMaster> sync_master_;
@@ -202,26 +201,6 @@ class IPCSyncLayer: public SyncLayer {
     
     boost::mutex mutex_;
     boost::unordered_set<void const *> nodes_;
-    
-    uint8_t last_sync_;
-    boost::condition_variable sync_cond_;
-    boost::mutex sync_mutex_;
-
-    void handleFrame(const can::Frame & msg){
-        boost::mutex::scoped_lock lock(sync_mutex_);
-        last_sync_ = msg.dlc == 1 ?  msg.data[0] : 1;
-        sync_cond_.notify_all();
-        
-    }
-    bool waitSync(){
-        boost::posix_time::ptime  abs_time = boost::get_system_time() + properties.period_;
-        boost::mutex::scoped_lock lock(sync_mutex_);
-        while(last_sync_ == 0){
-            if(!sync_cond_.timed_wait(lock, abs_time)) return false;
-        }
-        return true;
-    }
-    
 public:
     IPCSyncLayer(const SyncProperties &p, boost::shared_ptr<can::CommInterface> interface, boost::shared_ptr<IPCSyncMaster> sync_master) 
     : SyncLayer(p), interface_(interface), sync_master_(sync_master)
@@ -229,20 +208,9 @@ public:
     }
     virtual void read(LayerStatus &status) {
         boost::mutex::scoped_lock lock(mutex_);
-        if(!nodes_.empty()){
-            if(!waitSync()){
-                status.warn("wait for sync failed");
-            }
-        }
         sync_master_->wait(status);
-        
     }
     virtual void write(LayerStatus &status) {
-        boost::mutex::scoped_lock lock(mutex_);
-        {
-            boost::mutex::scoped_lock lock(sync_mutex_);
-            last_sync_ = 0;
-        }
         sync_master_->notify(status);
     }
 
@@ -253,7 +221,6 @@ public:
         if(!nodes_.empty()){
             sync_master_->disableSync();
         }
-        sync_listener_.reset();
         nodes_.clear();
         sync_master_->stop(status);
     }

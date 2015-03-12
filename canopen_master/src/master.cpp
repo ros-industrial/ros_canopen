@@ -37,9 +37,7 @@ void IPCSyncLayer::init(LayerStatus &status) {
         status.warn("Nodes list was not empty");
         nodes_.clear();
     }
-    last_sync_ = 0;
     sync_master_->start(status);
-    sync_listener_ = interface_->createMsgListener( properties.header_, can::CommInterface::FrameDelegate(this, &IPCSyncLayer::handleFrame));
 }
 
 // TODO: unify/combine

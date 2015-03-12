@@ -242,7 +242,7 @@ protected:
             return false;
         }
         
-        bus_nh.param("loopback",loopback, true);
+        bus_nh.param("loopback",loopback, false);
         
         bus_nh.param("driver_plugin",driver_plugin, std::string("can::SocketCANInterface"));
 
