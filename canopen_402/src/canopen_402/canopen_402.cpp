@@ -61,49 +61,13 @@ void Node_402::pending(LayerStatus &status)
 {
   getDeviceState(status);
 
-  //  control_word.set(cw_set);
 }
 
 void Node_402::getDeviceState(LayerStatus &status)
 {
 
   std::bitset<16> sw_new(status_word.get());
-//  MotorUtils.setStatusWord(sw_new);
 
-//  switch ((status_word_bitset & status_word_mask).to_ulong())
-//  {
-//  case 0b0000000:
-//  case 0b0100000:
-//    state_ = Not_Ready_To_Switch_On;
-//    break;
-//  case 0b1000000:
-//  case 0b1100000:
-//    state_ = Switch_On_Disabled;
-//    break;
-//  case 0b0100001:
-//    state_ = Ready_To_Switch_On;
-//    break;
-//  case 0b0100011:
-//    state_ = Switched_On;
-//    break;
-//  case 0b0100111:
-//    state_ = Operation_Enable;
-//    break;
-//  case 0b0000111:
-//    state_ = Quick_Stop_Active;
-//    break;
-//  case 0b0001111:
-//  case 0b0101111:
-//    state_ = Fault_Reaction_Active;
-//    break;
-//  case 0b0001000:
-//  case 0b0101000:
-//    state_ = Fault;
-//    break;
-//  default:
-//    LOG("Motor currently in an unknown state");
-//    status.error("Motor currently in an unknown state");
-//  }
 }
 
 void Node_402::switchMode(LayerStatus &status)
@@ -289,9 +253,13 @@ void Node_402::configureModeSpecificEntries()
 //TODO: Implement a smaller state machine for On, Off, Fault, Halt
 bool Node_402::turnOn()
 {
-
   int transition_sucess = Motor.process_event(motorSM::shutdown());
   std::cout << "Success: " << transition_sucess << std::endl;
+
+  control_word_bitset.get()->set(10);
+  SW_CW_SM.process_event(StatusandControl::newStatusWord());
+
+  SW_CW_SM.process_event(StatusandControl::newControlWord());
   if(!transition_sucess)
     return false;
 
