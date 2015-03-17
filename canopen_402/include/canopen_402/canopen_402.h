@@ -59,6 +59,7 @@
 #include <canopen_master/canopen.h>
 #include <canopen_402/internal_sm.h>
 #include <canopen_402/status_and_control.h>
+#include <canopen_402/ip_mode.h>
 #include <string>
 #include <vector>
 

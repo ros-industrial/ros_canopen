@@ -13,6 +13,14 @@ int main()
 
   motor->init(s);
 
+  while(true)
+  {
+    motor->read(s);
+    sleep(1);
+    motor->write(s);
+    sleep(1);
+  }
+
   return 0;
 }
 

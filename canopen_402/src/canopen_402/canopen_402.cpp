@@ -60,13 +60,48 @@ using canopen::Node_402;
 void Node_402::pending(LayerStatus &status)
 {
   getDeviceState(status);
-
 }
 
 void Node_402::getDeviceState(LayerStatus &status)
 {
 
-  std::bitset<16> sw_new(status_word.get());
+  //std::bitset<16> sw_new(status_word.get());
+  status_word_bitset.get()->set(10);
+
+  switch (((*status_word_bitset.get()) & status_word_mask).to_ulong())
+  {
+  case 0b0000000:
+  case 0b0100000:
+    state_ = Not_Ready_To_Switch_On;
+    break;
+  case 0b1000000:
+  case 0b1100000:
+    state_ = Switch_On_Disabled;
+    break;
+  case 0b0100001:
+    state_ = Ready_To_Switch_On;
+    break;
+  case 0b0100011:
+    state_ = Switched_On;
+    break;
+  case 0b0100111:
+    state_ = Operation_Enable;
+    break;
+  case 0b0000111:
+    state_ = Quick_Stop_Active;
+    break;
+  case 0b0001111:
+  case 0b0101111:
+    state_ = Fault_Reaction_Active;
+    break;
+  case 0b0001000:
+  case 0b0101000:
+    state_ = Fault;
+    break;
+  default:
+    LOG("Motor currently in an unknown state");
+    status.error("Motor currently in an unknown state");
+  }
 
 }
 
@@ -87,12 +122,13 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 
 void Node_402::read(LayerStatus &status)
 {
+  SW_CW_SM.process_event(StatusandControl::newStatusWord());
   getDeviceState(status);
 
-  operation_mode_ = (OperationMode) op_mode_display.get();
-  ac_vel_ = actual_vel.get();
-  ac_pos_ = actual_pos.get();
-  ac_eff_ = 0; //Currently no effort directly obtained from the HW
+  //  operation_mode_ = (OperationMode) op_mode_display.get();
+  //  ac_vel_ = actual_vel.get();
+  //  ac_pos_ = actual_pos.get();
+  //  ac_eff_ = 0; //Currently no effort directly obtained from the HW
 }
 
 void Node_402::shutdown(LayerStatus &status)
@@ -126,11 +162,8 @@ const double Node_402::getTargetVel()
 
 void Node_402::write(LayerStatus &status)
 {
-  ////// FIRST CHECK IF THERE IS THE NEED TO CHANGE THE MODE
-  /// IF SO, TRY TO CHANGE MOE
-  /// IF SUCCESSFUL AND in OP_ENABLED state
-  /// DRIVE()
-
+  SW_CW_SM.process_event(StatusandControl::newControlWord());
+  control_word_bitset.get()->set(10);
 }
 
 const InternalState& Node_402::getState()
@@ -256,10 +289,6 @@ bool Node_402::turnOn()
   int transition_sucess = Motor.process_event(motorSM::shutdown());
   std::cout << "Success: " << transition_sucess << std::endl;
 
-  control_word_bitset.get()->set(10);
-  SW_CW_SM.process_event(StatusandControl::newStatusWord());
-
-  SW_CW_SM.process_event(StatusandControl::newControlWord());
   if(!transition_sucess)
     return false;
 
