@@ -20,7 +20,7 @@
  * Author: Thiago de Freitas, email:thiagodefreitas@gmail.com
  * Supervised by: Thiago de Freitas, email:thiagodefreitas@gmail.com
  *
- * Date of creation: February 2015
+ * Date of creation: March 2015
  *
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *
@@ -80,7 +80,7 @@ public:
   void shutdown_motor(shutdown const&)
   {
     std::cout << "motor_sm::shutdown\n";
-    BOOST_THROW_EXCEPTION(std::range_error("Index out of range"));
+    //BOOST_THROW_EXCEPTION(std::range_error("Index out of range"));
   }
   void turn_on(switch_on const&)       { std::cout << "motor_sm::switch_on\n"; }
   void turn_off(disable_voltage const&)       { std::cout << "motor_sm::disable_voltage\n"; }

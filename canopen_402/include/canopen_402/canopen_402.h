@@ -57,7 +57,6 @@
 #define CANOPEN_402_CANOPEN_402_H
 
 #include <canopen_master/canopen.h>
-#include <canopen_402/internal_sm.h>
 #include <canopen_402/status_and_control.h>
 #include <canopen_402/ip_mode.h>
 #include <canopen_402/high_level_sm.h>
@@ -71,22 +70,18 @@ class Node_402 : public canopen::Layer
 public:
   Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), operation_mode_(No_Mode), operation_mode_to_set_(No_Mode), n_(n), check_mode(false)
   {
-    configureEntries();
+//    configureEntries();
+//    homing_mask.set(SW_Target_reached);
+//    homing_mask.set(SW_Operation_specific0);
+//    homing_mask.set(SW_Operation_specific1);
 
-    homing_mask.set(SW_Target_reached);
-    homing_mask.set(SW_Operation_specific0);
-    homing_mask.set(SW_Operation_specific1);
+//    status_word_bitset = boost::make_shared<sw_word>();
+//    control_word_bitset = boost::make_shared<cw_word>();
 
-    status_word_bitset = boost::make_shared<sw_word>();
-    control_word_bitset = boost::make_shared<cw_word>();
-
-    SW_CW_SM = StatusandControl(status_word_bitset, control_word_bitset);
-
-    Motor.start();
-    SW_CW_SM.start();
-
-    Motor.process_event(motorSM::boot());
-    SW_CW_SM.process_event(StatusandControl::readStatus());
+//    SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
+//    SwCwSM.start();
+//    motorAbstraction.start();
+//    SwCwSM.process_event(StatusandControl::readStatus());
   }
 
   Node_402(const std::string &name) : Layer(name)
@@ -97,15 +92,14 @@ public:
 
     status_word_bitset = boost::make_shared<sw_word>();
     control_word_bitset = boost::make_shared<cw_word>();
+    state_ = boost::make_shared<InternalState>(Start);
+    target_state_ = boost::make_shared<InternalState>(Start);
 
-    SW_CW_SM = StatusandControl(status_word_bitset, control_word_bitset);
-
-    Motor.start();
-    SW_CW_SM.start();
-    highLevel.start();
-
-    Motor.process_event(motorSM::boot());
-    SW_CW_SM.process_event(StatusandControl::readStatus());
+    SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
+    motorAbstraction = highLevelSm();
+    SwCwSM.start();
+    motorAbstraction.start();
+    SwCwSM.process_event(StatusandControl::readStatus());
   }
 
   const OperationMode getMode();
@@ -170,7 +164,8 @@ private:
 
   boost::shared_ptr <canopen::Node> n_;
   volatile bool running;
-  InternalState target_state_;
+  boost::shared_ptr<InternalState> target_state_;
+  boost::shared_ptr<InternalState> state_;
 
   bool new_target_pos_;
 
@@ -236,9 +231,9 @@ private:
   boost::shared_ptr<canopen::sw_word> status_word_bitset;
   boost::shared_ptr<canopen::cw_word> control_word_bitset;
 
-  motorSM Motor;
-  StatusandControl SW_CW_SM;
-  highLevelSm highLevel;
+
+  StatusandControl SwCwSM;
+  highLevelSm motorAbstraction;
 };
 }  //  namespace canopen
 #endif  // CANOPEN_402_CANOPEN_402_H

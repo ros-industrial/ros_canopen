@@ -82,7 +82,9 @@ void Node_402::read(LayerStatus &status)
   std::bitset<16> sw_new(7/*status_word.get()*/);
   (*status_word_bitset.get()) = sw_new;
 
-  SW_CW_SM.process_event(StatusandControl::newStatusWord());
+  SwCwSM.process_event(StatusandControl::newStatusWord());
+
+  std::cout << "Read state" << *state_ << std::endl;
   //  operation_mode_ = (OperationMode) op_mode_display.get();
   //  ac_vel_ = actual_vel.get();
   //  ac_pos_ = actual_pos.get();
@@ -99,7 +101,7 @@ void Node_402::diag(LayerReport &report)
 
 void Node_402::halt(LayerStatus &status)
 {
-  Motor.process_event(motorSM::quick_stop());
+
 }
 
 
@@ -120,14 +122,19 @@ const double Node_402::getTargetVel()
 
 void Node_402::write(LayerStatus &status)
 {
-  SW_CW_SM.process_event(StatusandControl::newControlWord());
-  control_word_bitset.get()->set(10);
 
-  highLevel.process_event(highLevelSm::OnSm::checkUpProcedure());
+  motorAbstraction.process_event(highLevelSm::onSM::checkUpProcedure());
 
-  highLevel.process_event(highLevelSm::OnSm::checkModeSwitch());
+  motorAbstraction.process_event(highLevelSm::onSM::runMotorSM());
 
-  highLevel.process_event(highLevelSm::OnSm::enableDrive());
+  motorAbstraction.process_event(highLevelSm::onSM::checkModeSwitch());
+
+  motorAbstraction.process_event(highLevelSm::onSM::enableMove());
+
+  SwCwSM.process_event(StatusandControl::newControlWord());
+
+  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
+ // control_word.set(cw_set);
 }
 
 
@@ -246,33 +253,13 @@ void Node_402::configureModeSpecificEntries()
 //TODO: Implement a smaller state machine for On, Off, Fault, Halt
 bool Node_402::turnOn()
 {
-  highLevel.process_event(highLevelSm::turnOn());
-
-  int transition_sucess = Motor.process_event(motorSM::shutdown());
-  std::cout << "Success: " << transition_sucess << std::endl;
-
-  if(!transition_sucess)
-    return false;
-
-  transition_sucess = Motor.process_event(motorSM::switch_on());
-  std::cout << "Success: " << transition_sucess << std::endl;
-  if(!transition_sucess)
-    return false;
-
-  transition_sucess = Motor.process_event(motorSM::enable_op());
-  if(!transition_sucess)
-    return false;
-
-  std::cout << "Success: " << transition_sucess << std::endl;
-
-
+  motorAbstraction.process_event(highLevelSm::turnOn());
 
   return true;
 }
 
 bool Node_402::turnOff()
 {
-  Motor.process_event(motorSM::disable_voltage());
   return true;
 }
 

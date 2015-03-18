@@ -20,7 +20,7 @@
  * Author: Thiago de Freitas, email:thiagodefreitas@gmail.com
  * Supervised by: Thiago de Freitas, email:thiagodefreitas@gmail.com
  *
- * Date of creation: February 2015
+ * Date of creation: March 2015
  *
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *
