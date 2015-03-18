@@ -60,6 +60,7 @@
 #include <canopen_402/internal_sm.h>
 #include <canopen_402/status_and_control.h>
 #include <canopen_402/ip_mode.h>
+#include <canopen_402/high_level_sm.h>
 #include <string>
 #include <vector>
 
@@ -68,16 +69,9 @@ namespace canopen
 class Node_402 : public canopen::Layer
 {
 public:
-  Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), state_(Start), operation_mode_(No_Mode), operation_mode_to_set_(No_Mode), n_(n), check_mode(false)
+  Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), operation_mode_(No_Mode), operation_mode_to_set_(No_Mode), n_(n), check_mode(false)
   {
     configureEntries();
-    status_word_mask.set(SW_Ready_To_Switch_On);
-    status_word_mask.set(SW_Switched_On);
-    status_word_mask.set(SW_Operation_enabled);
-    status_word_mask.set(SW_Fault);
-    status_word_mask.reset(SW_Voltage_enabled);
-    status_word_mask.set(SW_Quick_stop);
-    status_word_mask.set(Switch_On_Disabled);
 
     homing_mask.set(SW_Target_reached);
     homing_mask.set(SW_Operation_specific0);
@@ -97,14 +91,6 @@ public:
 
   Node_402(const std::string &name) : Layer(name)
   {
-    status_word_mask.set(SW_Ready_To_Switch_On);
-    status_word_mask.set(SW_Switched_On);
-    status_word_mask.set(SW_Operation_enabled);
-    status_word_mask.set(SW_Fault);
-    status_word_mask.reset(SW_Voltage_enabled);
-    status_word_mask.set(SW_Quick_stop);
-    status_word_mask.set(Switch_On_Disabled);
-
     homing_mask.set(SW_Target_reached);
     homing_mask.set(SW_Operation_specific0);
     homing_mask.set(SW_Operation_specific1);
@@ -116,6 +102,7 @@ public:
 
     Motor.start();
     SW_CW_SM.start();
+    highLevel.start();
 
     Motor.process_event(motorSM::boot());
     SW_CW_SM.process_event(StatusandControl::readStatus());
@@ -141,7 +128,7 @@ public:
   virtual void init(LayerStatus &status);
   virtual void shutdown(LayerStatus &status);
 
-  void getDeviceState(LayerStatus &status);
+
   void switchMode(LayerStatus &status);
 
   void motorShutdown();
@@ -183,7 +170,6 @@ private:
 
   boost::shared_ptr <canopen::Node> n_;
   volatile bool running;
-  InternalState state_;
   InternalState target_state_;
 
   bool new_target_pos_;
@@ -225,8 +211,6 @@ private:
   double internal_pos_;
   double oldpos_;
 
-
-  std::bitset<16> status_word_mask;
   std::bitset<16> homing_mask;
 
   double target_vel_;
@@ -254,7 +238,7 @@ private:
 
   motorSM Motor;
   StatusandControl SW_CW_SM;
-
+  highLevelSm highLevel;
 };
 }  //  namespace canopen
 #endif  // CANOPEN_402_CANOPEN_402_H

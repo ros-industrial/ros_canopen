@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <canopen_402/enums_402.h>
 ///////
 /// \brief m
 ///
@@ -20,8 +21,15 @@ class StatusandControl_ : public msm::front::state_machine_def<StatusandControl_
 {
 public:
   StatusandControl_(){}
-  StatusandControl_(boost::shared_ptr<sw_word> status_word, boost::shared_ptr<cw_word> control_word) : status_word_(status_word), control_word_(control_word)
+  StatusandControl_(boost::shared_ptr<sw_word> status_word, boost::shared_ptr<cw_word> control_word) : status_word_(status_word), control_word_(control_word), state_(Start)
   {
+    status_word_mask_.set(SW_Ready_To_Switch_On);
+    status_word_mask_.set(SW_Switched_On);
+    status_word_mask_.set(SW_Operation_enabled);
+    status_word_mask_.set(SW_Fault);
+    status_word_mask_.reset(SW_Voltage_enabled);
+    status_word_mask_.set(SW_Quick_stop);
+    status_word_mask_.set(Switch_On_Disabled);
   }
 
   struct newStatusWord {};
@@ -60,9 +68,40 @@ public:
   }
   void read_status(newControlWord const&)
   {
-    std::cout << "STATUS_READ:" << (*status_word_.get()) << std::endl;
-    std::cout << "CONTROL_READ:" << (*control_word_.get()) << std::endl;
-    std::cout << "StatusandControl::read_status\n";
+    switch (((*status_word_.get()) & status_word_mask_).to_ulong())
+    {
+    case 0b0000000:
+    case 0b0100000:
+      state_ = Not_Ready_To_Switch_On;
+      break;
+    case 0b1000000:
+    case 0b1100000:
+      state_ = Switch_On_Disabled;
+      break;
+    case 0b0100001:
+      state_ = Ready_To_Switch_On;
+      break;
+    case 0b0100011:
+      state_ = Switched_On;
+      break;
+    case 0b0100111:
+      state_ = Operation_Enable;
+      break;
+    case 0b0000111:
+      state_ = Quick_Stop_Active;
+      break;
+    case 0b0001111:
+    case 0b0101111:
+      state_ = Fault_Reaction_Active;
+      break;
+    case 0b0001000:
+    case 0b0101000:
+      state_ = Fault;
+      break;
+    default:
+      LOG("Motor currently in an unknown state");
+    }
+    std::cout << "StatusandControl::read_status\n" << state_ << std::endl;
   }
   // guard conditions
 
@@ -86,6 +125,8 @@ public:
 private:
   boost::shared_ptr<sw_word> status_word_;
   boost::shared_ptr<cw_word> control_word_;
+  std::bitset<16> status_word_mask_;
+  InternalState state_;
 
 };
 // back-end

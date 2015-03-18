@@ -59,49 +59,6 @@ using canopen::Node_402;
 
 void Node_402::pending(LayerStatus &status)
 {
-  getDeviceState(status);
-}
-
-void Node_402::getDeviceState(LayerStatus &status)
-{
-
-  //std::bitset<16> sw_new(status_word.get());
-  status_word_bitset.get()->set(10);
-
-  switch (((*status_word_bitset.get()) & status_word_mask).to_ulong())
-  {
-  case 0b0000000:
-  case 0b0100000:
-    state_ = Not_Ready_To_Switch_On;
-    break;
-  case 0b1000000:
-  case 0b1100000:
-    state_ = Switch_On_Disabled;
-    break;
-  case 0b0100001:
-    state_ = Ready_To_Switch_On;
-    break;
-  case 0b0100011:
-    state_ = Switched_On;
-    break;
-  case 0b0100111:
-    state_ = Operation_Enable;
-    break;
-  case 0b0000111:
-    state_ = Quick_Stop_Active;
-    break;
-  case 0b0001111:
-  case 0b0101111:
-    state_ = Fault_Reaction_Active;
-    break;
-  case 0b0001000:
-  case 0b0101000:
-    state_ = Fault;
-    break;
-  default:
-    LOG("Motor currently in an unknown state");
-    status.error("Motor currently in an unknown state");
-  }
 
 }
 
@@ -122,9 +79,10 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 
 void Node_402::read(LayerStatus &status)
 {
-  SW_CW_SM.process_event(StatusandControl::newStatusWord());
-  getDeviceState(status);
+  std::bitset<16> sw_new(7/*status_word.get()*/);
+  (*status_word_bitset.get()) = sw_new;
 
+  SW_CW_SM.process_event(StatusandControl::newStatusWord());
   //  operation_mode_ = (OperationMode) op_mode_display.get();
   //  ac_vel_ = actual_vel.get();
   //  ac_pos_ = actual_pos.get();
@@ -164,12 +122,14 @@ void Node_402::write(LayerStatus &status)
 {
   SW_CW_SM.process_event(StatusandControl::newControlWord());
   control_word_bitset.get()->set(10);
+
+  highLevel.process_event(highLevelSm::OnSm::checkUpProcedure());
+
+  highLevel.process_event(highLevelSm::OnSm::checkModeSwitch());
+
+  highLevel.process_event(highLevelSm::OnSm::enableDrive());
 }
 
-const InternalState& Node_402::getState()
-{
-  return state_;
-}
 
 const OperationMode Node_402::getMode()
 {
@@ -226,18 +186,18 @@ const double Node_402::getActualInternalPos()
 
 void Node_402::setTargetVel(const double &target_vel)
 {
-  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
-  {
-    target_vel_ = target_vel;
-  }
+  //  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
+  //  {
+  //    target_vel_ = target_vel;
+  //  }
 }
 
 void Node_402::setTargetPos(const double &target_pos)
 {
-  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
-  {
-    target_pos_ = target_pos;
-  }
+  //  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
+  //  {
+  //    target_pos_ = target_pos;
+  //  }
 }
 
 void Node_402::configureEntries()
@@ -286,6 +246,8 @@ void Node_402::configureModeSpecificEntries()
 //TODO: Implement a smaller state machine for On, Off, Fault, Halt
 bool Node_402::turnOn()
 {
+  highLevel.process_event(highLevelSm::turnOn());
+
   int transition_sucess = Motor.process_event(motorSM::shutdown());
   std::cout << "Success: " << transition_sucess << std::endl;
 
@@ -302,6 +264,9 @@ bool Node_402::turnOn()
     return false;
 
   std::cout << "Success: " << transition_sucess << std::endl;
+
+
+
   return true;
 }
 
