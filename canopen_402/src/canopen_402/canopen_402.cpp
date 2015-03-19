@@ -123,13 +123,13 @@ const double Node_402::getTargetVel()
 void Node_402::write(LayerStatus &status)
 {
 
-  motorAbstraction.process_event(highLevelSm::onSM::checkUpProcedure());
+//  motorAbstraction.process_event(highLevelSm::onSM::checkUpProcedure());
 
-  motorAbstraction.process_event(highLevelSm::onSM::runMotorSM());
+//  motorAbstraction.process_event(highLevelSm::onSM::runMotorSM());
 
-  motorAbstraction.process_event(highLevelSm::onSM::checkModeSwitch());
+//  motorAbstraction.process_event(highLevelSm::onSM::checkModeSwitch());
 
-  motorAbstraction.process_event(highLevelSm::onSM::enableMove());
+//  motorAbstraction.process_event(highLevelSm::onSM::enableMove());
 
   SwCwSM.process_event(StatusandControl::newControlWord());
 
@@ -253,7 +253,9 @@ void Node_402::configureModeSpecificEntries()
 //TODO: Implement a smaller state machine for On, Off, Fault, Halt
 bool Node_402::turnOn()
 {
-  motorAbstraction.process_event(highLevelSm::turnOn());
+  motorAbstraction.process_event(highLevelSM::startMachine());
+
+  motorAbstraction.process_event(highLevelSM::runMotorSM());
 
   return true;
 }

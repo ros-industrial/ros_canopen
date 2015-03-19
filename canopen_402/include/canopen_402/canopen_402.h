@@ -96,7 +96,7 @@ public:
     target_state_ = boost::make_shared<InternalState>(Start);
 
     SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-    motorAbstraction = highLevelSm();
+    motorAbstraction = highLevelSM(control_word_bitset);
     SwCwSM.start();
     motorAbstraction.start();
     SwCwSM.process_event(StatusandControl::readStatus());
@@ -233,7 +233,7 @@ private:
 
 
   StatusandControl SwCwSM;
-  highLevelSm motorAbstraction;
+  highLevelSM motorAbstraction;
 };
 }  //  namespace canopen
 #endif  // CANOPEN_402_CANOPEN_402_H
