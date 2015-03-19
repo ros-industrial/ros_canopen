@@ -56,7 +56,6 @@
 #ifndef STATE_MACHINE_H
 #define STATE_MACHINE_H
 
-#include <canopen_402/internal_states.h>
 #include <canopen_402/status_and_control.h>
 #include <bitset>
 

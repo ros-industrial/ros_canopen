@@ -101,10 +101,15 @@ public:
   //      motorStateMachine.start();
   //      motorStateMachine.process_event(motorSM::boot());
   //    }
-  struct checkUpProcedure {};
+  struct checkStandBy {};
   struct checkModeSwitch {};
   struct enableMove {};
-  struct runMotorSM {};
+  struct runMotorSM
+  {
+    InternalActions action;
+    runMotorSM() : action() {}
+    runMotorSM( InternalActions actionToTake) : action(actionToTake) {}
+  };
 
   motorSM motorStateMachine;
   // when highLevelSm, the CD is loaded and we are in either pause or highLevelSm (duh)
@@ -123,7 +128,7 @@ public:
 
   };
   // The list of FSM states
-  struct CheckUp : public msm::front::state<>
+  struct Standby : public msm::front::state<>
   {
     template <class Event,class FSM>
     void on_entry(Event const&,FSM& ) {std::cout << "starting: CheckUp" << std::endl;}
@@ -161,15 +166,31 @@ public:
   // the initial state. Must be defined
   // typedef StartUp initial_state;
   // transition actions
-  void check_up(checkUpProcedure const&)
+  void standby(checkStandBy const&)
   {
     std::cout << "OnSm::check_up" << std::endl;
   }
 
-  void motor_sm(runMotorSM const&)
+  template <class runMotorSM> void motor_sm(runMotorSM const& evt)
   {
-    std::cout << "OnSm::Running motor SM" << std::endl;
-    motorStateMachine.process_event(motorSM::shutdown());
+    std::cout << "OnSm::Running motor SM" << evt.action <<std::endl;
+    switch(evt.action)
+    {
+    case Shutdown:
+      motorStateMachine.process_event(motorSM::shutdown());
+      std::cout << "Trying to shutdown" << std::endl;
+      break;
+    case SwitchOn:
+      motorStateMachine.process_event(motorSM::switch_on());
+      std::cout << "Trying to switch on" << std::endl;
+      break;
+    case EnableOp:
+      motorStateMachine.process_event(motorSM::enable_op());
+      std::cout << "Trying to enable op" << std::endl;
+      break;
+    default:
+      std::cout << "Action not specified" << std::endl;
+    }
   }
 
   void mode_switch(checkModeSwitch const&)
@@ -254,12 +275,25 @@ public:
       //      Start     Event         Next      Action               Guard
       //    +---------+-------------+---------+---------------------+----------------------+
       a_row < machineStopped   , startMachine    , machineRunning   , &hl::start_machine                       >,
-      Row < machineRunning   , none    , CheckUp   , none, none                       >,
-      a_row < CheckUp   , runMotorSM    , updateMotorSM   , &hl::motor_sm                       >,
+
+      Row < machineRunning   , none    , Standby   , none, none                       >,
+
+      a_row < Standby   , runMotorSM    , updateMotorSM   , &hl::motor_sm                       >,
+      a_row < Standby   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch                       >,
+      a_row < Standby   , enableMove, Move   , &hl::move                     >,
+      a_row < Standby   , stopMachine, machineStopped   , &hl::stop_machine                      >,
+
+      a_row < ModeSwitch   , runMotorSM, updateMotorSM   , &hl::motor_sm                     >,
+      a_row < ModeSwitch   , checkStandBy, Standby   , &hl::standby                      >,
+      a_row < ModeSwitch   , stopMachine, machineStopped   , &hl::stop_machine                      >,
+
       a_row < updateMotorSM   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch                       >,
-      a_row < ModeSwitch   , enableMove, Move   , &hl::move                     >,
-      a_row < Move   , checkUpProcedure, CheckUp   , &hl::check_up                      >,
-      a_row < machineRunning   , stopMachine, machineStopped   , &hl::stop_machine                      >
+      a_row < updateMotorSM   , checkStandBy, Standby   , &hl::standby                      >,
+      a_row < updateMotorSM   , enableMove, Move   , &hl::move                     >,
+      a_row < updateMotorSM   , stopMachine, machineStopped   , &hl::stop_machine                      >,
+
+      a_row < Move   , checkStandBy, Standby   , &hl::standby                      >,
+      a_row < Move   , stopMachine, machineStopped   , &hl::stop_machine                      >
       //    +---------+-------------+---------+---------------------+----------------------+
       > {};
   // Replaces the default no-transition response.

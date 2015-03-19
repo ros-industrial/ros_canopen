@@ -74,7 +74,7 @@ bool Node_402::enterMode(const OperationMode &op_mode_var)
 
 bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 {
-
+//  motorAbstraction.process_event(highLevelSm::onSM::checkModeSwitch());
 }
 
 void Node_402::read(LayerStatus &status)
@@ -124,10 +124,6 @@ void Node_402::write(LayerStatus &status)
 {
 
 //  motorAbstraction.process_event(highLevelSm::onSM::checkUpProcedure());
-
-//  motorAbstraction.process_event(highLevelSm::onSM::runMotorSM());
-
-//  motorAbstraction.process_event(highLevelSm::onSM::checkModeSwitch());
 
 //  motorAbstraction.process_event(highLevelSm::onSM::enableMove());
 
@@ -255,7 +251,7 @@ bool Node_402::turnOn()
 {
   motorAbstraction.process_event(highLevelSM::startMachine());
 
-  motorAbstraction.process_event(highLevelSM::runMotorSM());
+  motorAbstraction.process_event(highLevelSM::runMotorSM(SwitchOn));
 
   return true;
 }
