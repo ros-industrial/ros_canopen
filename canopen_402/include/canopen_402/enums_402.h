@@ -138,4 +138,15 @@ enum InternalState
   Fault = 8,
 };
 
+enum InternalActions
+{
+  Shutdown=0,
+  DisableVoltage=1,
+  SwitchOn=2,
+  EnableOp=3,
+  DisableOp=4,
+  QuickStop=5,
+  FaultReset=6,
+};
+
 #endif // ENUMS_402_H
