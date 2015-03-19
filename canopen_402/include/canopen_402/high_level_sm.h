@@ -102,7 +102,12 @@ public:
   //      motorStateMachine.process_event(motorSM::boot());
   //    }
   struct checkStandBy {};
-  struct checkModeSwitch {};
+  struct checkModeSwitch
+  {
+    OperationMode op_mode;
+    checkModeSwitch() : op_mode() {}
+    checkModeSwitch( OperationMode mode) : op_mode(mode) {}
+  };
   struct enableMove {};
   struct runMotorSM
   {
@@ -168,7 +173,7 @@ public:
   // transition actions
   void standby(checkStandBy const&)
   {
-    std::cout << "OnSm::check_up" << std::endl;
+    std::cout << "OnSm::standby" << std::endl;
   }
 
   template <class runMotorSM> void motor_sm(runMotorSM const& evt)
