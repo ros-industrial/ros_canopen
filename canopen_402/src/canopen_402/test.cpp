@@ -13,6 +13,7 @@ int main()
 
   motor->init(s);
 
+  motor->enterModeAndWait(OperationMode(7));
   while(true)
   {
     motor->read(s);

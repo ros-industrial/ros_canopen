@@ -64,6 +64,13 @@
 // the player state machine contains a state which is himself a state machine
 // as you see, no need to declare it anywhere so IPMode can be developed separately
 // by another team in another module. For simplicity I just declare it inside player
+namespace msm = boost::msm;
+namespace mpl = boost::mpl;
+
+
+using namespace boost::msm::front;
+
+
 namespace canopen
 {
 class IPMode_ : public msm::front::state_machine_def<IPMode_>
@@ -72,6 +79,8 @@ public:
   IPMode_(){}
   struct enableIP {};
   struct disableIP {};
+  struct selectMode {};
+  struct deselectMode {};
   // when IPMode, the CD is loaded and we are in either pause or IPMode (duh)
   template <class Event,class FSM>
   void on_entry(Event const&,FSM& ) {std::cout << "entering: IPMode" << std::endl;}
@@ -95,8 +104,25 @@ public:
     void on_exit(Event const&,FSM& ) {std::cout << "finishing: IPActive" << std::endl;}
   };
 
+  // The list of FSM states
+  struct modeDeselected : public msm::front::state<>
+  {
+    template <class Event,class FSM>
+    void on_entry(Event const&,FSM& ) {std::cout << "starting: modeDeselected" << std::endl;}
+    template <class Event,class FSM>
+    void on_exit(Event const&,FSM& ) {std::cout << "finishing: modeDeselected" << std::endl;}
+
+  };
+  struct modeSelected : public msm::front::state<>
+  {
+    template <class Event,class FSM>
+    void on_entry(Event const&,FSM& ) {std::cout << "starting: modeSelected" << std::endl;}
+    template <class Event,class FSM>
+    void on_exit(Event const&,FSM& ) {std::cout << "finishing: modeSelected" << std::endl;}
+  };
+
   // the initial state. Must be defined
-  typedef IPInactive initial_state;
+  typedef modeDeselected initial_state;
   // transition actions
   void enable_ip(enableIP const&)
   {
@@ -106,15 +132,32 @@ public:
   {
     std::cout << "IPMode::read_status\n";
   }
+
+  void select_mode(selectMode const&)
+  {
+    std::cout << "IPMode::selectMode\n";
+  }
+  void deselect_mode(deselectMode const&)
+  {
+    std::cout << "IPMode::deselectMode\n";
+  }
   // guard conditions
 
-  typedef IPMode_ pl; // makes transition table cleaner
+  typedef IPMode_ ip; // makes transition table cleaner
   // Transition table for IPMode
   struct transition_table : mpl::vector<
       //      Start     Event         Next      Action               Guard
       //    +---------+-------------+---------+---------------------+----------------------+
-      a_row < IPInactive   , enableIP    , IPActive   , &pl::enable_ip                       >,
-      a_row < IPActive   , disableIP, IPInactive   , &pl::disable_ip                      >
+      a_row < modeDeselected   , selectMode    , modeSelected   , &ip::select_mode                       >,
+
+      Row < modeSelected   , none    , IPInactive   , none, none                       >,
+      a_row < modeSelected   , deselectMode    , modeDeselected   , &ip::deselect_mode                       >,
+
+      a_row < IPActive   , disableIP, IPInactive   , &ip::disable_ip                      >,
+      a_row < IPActive   , deselectMode    , modeDeselected   , &ip::deselect_mode                       >,
+
+      a_row < IPInactive   , enableIP    , IPActive   , &ip::enable_ip                       >,
+      a_row < IPInactive   , deselectMode    , modeDeselected   , &ip::deselect_mode                       >
       //    +---------+-------------+---------+---------------------+----------------------+
       > {};
   // Replaces the default no-transition response.

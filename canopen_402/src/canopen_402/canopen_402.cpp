@@ -74,7 +74,7 @@ bool Node_402::enterMode(const OperationMode &op_mode_var)
 
 bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 {
-  motorAbstraction.process_event(highLevelSM::checkModeSwitch());
+  motorAbstraction.process_event(highLevelSM::checkModeSwitch(op_mode_var));
 }
 
 void Node_402::read(LayerStatus &status)
@@ -93,6 +93,7 @@ void Node_402::read(LayerStatus &status)
 
 void Node_402::shutdown(LayerStatus &status)
 {
+  turnOff();
 }
 
 void Node_402::diag(LayerReport &report)
@@ -112,25 +113,25 @@ void Node_402::recover(LayerStatus &status)
 
 const double Node_402::getTargetPos()
 {
-  return target_pos_;
+  return *target_pos_;
 }
 const double Node_402::getTargetVel()
 {
-  return target_vel_;
+  return *target_vel_;
 }
 
 
 void Node_402::write(LayerStatus &status)
 {
 
-//  motorAbstraction.process_event(highLevelSm::onSM::checkUpProcedure());
-
-//  motorAbstraction.process_event(highLevelSm::onSM::enableMove());
+  motorAbstraction.process_event(highLevelSM::enableMove());
 
   SwCwSM.process_event(StatusandControl::newControlWord());
 
   int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
- // control_word.set(cw_set);
+
+  motorAbstraction.process_event(highLevelSM::enterStandBy());
+  // control_word.set(cw_set);
 }
 
 
@@ -189,18 +190,18 @@ const double Node_402::getActualInternalPos()
 
 void Node_402::setTargetVel(const double &target_vel)
 {
-  //  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
-  //  {
-  //    target_vel_ = target_vel;
-  //  }
+    if (*state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
+    {
+      *target_vel_ = target_vel;
+    }
 }
 
 void Node_402::setTargetPos(const double &target_pos)
 {
-  //  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
-  //  {
-  //    target_pos_ = target_pos;
-  //  }
+    if (*state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
+    {
+      *target_pos_ = target_pos;
+    }
 }
 
 void Node_402::configureEntries()
@@ -254,14 +255,20 @@ bool Node_402::turnOn()
   if(*state_ == Fault)
     motorAbstraction.process_event(highLevelSM::runMotorSM(FaultReset));
 
-  motorAbstraction.process_event(highLevelSM::runMotorSM(Shutdown));
-  motorAbstraction.process_event(highLevelSM::checkStandBy());
+  bool transition_sucess = motorAbstraction.process_event(highLevelSM::runMotorSM(Shutdown));
+  if(!transition_sucess)
+    return false;
+  motorAbstraction.process_event(highLevelSM::enterStandBy());
 
-  motorAbstraction.process_event(highLevelSM::runMotorSM(SwitchOn));
-  motorAbstraction.process_event(highLevelSM::checkStandBy());
+  transition_sucess = motorAbstraction.process_event(highLevelSM::runMotorSM(SwitchOn));
+  if(!transition_sucess)
+    return false;
+  motorAbstraction.process_event(highLevelSM::enterStandBy());
 
-  motorAbstraction.process_event(highLevelSM::runMotorSM(EnableOp));
-  motorAbstraction.process_event(highLevelSM::checkStandBy());
+  transition_sucess = motorAbstraction.process_event(highLevelSM::runMotorSM(EnableOp));
+  if(!transition_sucess)
+    return false;
+  motorAbstraction.process_event(highLevelSM::enterStandBy());
 
   return true;
 }
@@ -273,6 +280,8 @@ bool Node_402::turnOff()
 
 void Node_402::init(LayerStatus &s)
 {
-  turnOn();
+  if(!turnOn())
+    s.error("Could not properly initialize the module");
 
+  s.error("Module succesfuly initialized");
 }

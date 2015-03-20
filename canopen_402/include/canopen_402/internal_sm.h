@@ -257,7 +257,7 @@ public:
       a_row < Quick_Stop_State, enable_op , Operation_Enable_State, &m::operate               >,
       a_row < Quick_Stop_State, disable_voltage , Switch_On_Disabled_State, &m::turn_off               >,
       g_row < Quick_Stop_State , fault  , Fault_State    ,           &m::motor_fault    >
-//TODO: add the Fault State transitions
+      //TODO: add the Fault State transitions
       //  +---------+-------------+---------+---------------------+----------------------+
       //  +---------+-------------+---------+---------------------+----------------------+
       > {};

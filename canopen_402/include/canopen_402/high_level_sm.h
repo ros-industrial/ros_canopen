@@ -69,6 +69,7 @@
 #include <canopen_402/enums_402.h>
 #include <canopen_402/internal_sm.h>
 #include <canopen_402/status_and_control.h>
+#include <canopen_402/ip_mode.h>
 
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
@@ -82,11 +83,14 @@ class highLevelSM_ : public msm::front::state_machine_def<highLevelSM_>
 {
 public:
   highLevelSM_(){}
-  highLevelSM_(const boost::shared_ptr<cw_word> &control_word) : control_word_(control_word)
+  highLevelSM_(const boost::shared_ptr<cw_word> &control_word, boost::shared_ptr<double> target_pos, boost::shared_ptr<double> target_vel) : control_word_(control_word)
   {
     motorStateMachine = motorSM(control_word_);
     motorStateMachine.start();
     motorStateMachine.process_event(motorSM::boot());
+
+    ipModeMachine = IPMode();
+    ipModeMachine.start();
   }
   struct startMachine {};
   struct stopMachine {};
@@ -101,7 +105,7 @@ public:
   //      motorStateMachine.start();
   //      motorStateMachine.process_event(motorSM::boot());
   //    }
-  struct checkStandBy {};
+  struct enterStandBy {};
   struct checkModeSwitch
   {
     OperationMode op_mode;
@@ -117,6 +121,7 @@ public:
   };
 
   motorSM motorStateMachine;
+  IPMode ipModeMachine;
   // when highLevelSm, the CD is loaded and we are in either pause or highLevelSm (duh)
   //      template <class Event,class FSM>
   //      void on_entry(Event const&,FSM& ) {std::cout << "entering: OnSm" << std::endl;}
@@ -171,7 +176,7 @@ public:
   // the initial state. Must be defined
   // typedef StartUp initial_state;
   // transition actions
-  void standby(checkStandBy const&)
+  void standby(enterStandBy const&)
   {
     std::cout << "OnSm::standby" << std::endl;
   }
@@ -198,44 +203,20 @@ public:
     }
   }
 
-  void mode_switch(checkModeSwitch const&)
+  template <class checkModeSwitch> void mode_switch(checkModeSwitch const& evt)
   {
     std::cout << "OnSm::switch_mode" << std::endl;
+    switch(evt.op_mode)
+    {
+      case Interpolated_Position:
+        ipModeMachine.process_event(IPMode::selectMode());
+    }
   }
 
   void move(enableMove const&)
   {
     std::cout << "OnSm::drive" << std::endl;
   }
-  //    // guard conditions
-
-  //    typedef onSM_ on; // makes transition table cleaner
-  //    // Transition table for OnSm
-  //    struct transition_table : mpl::vector<
-  //        //      Start     Event         Next      Action               Guard
-  //        //    +---------+-------------+---------+---------------------+----------------------+
-  //        Row < StartUp   , none    , CheckUp   , none, none                       >,
-  //        a_row < CheckUp   , runMotorSM    , updateMotorSM   , &on::motor_sm                       >,
-  //        a_row < updateMotorSM   , checkModeSwitch    , ModeSwitch   , &on::mode_switch                       >,
-  //        a_row < ModeSwitch   , enableMove, Move   , &on::move                     >,
-  //        a_row < Move   , checkUpProcedure, CheckUp   , &on::check_up                      >
-  //        //    +---------+-------------+---------+---------------------+----------------------+
-  //        > {};
-  //    // Replaces the default no-transition response.
-  //    template <class FSM,class Event>
-  //    void no_transition(Event const& e, FSM&,int state)
-  //    {
-  //      std::cout << "no transition from state " << state
-  //                << " on event " << typeid(e).name() << std::endl;
-  //    }
-
-  //private:
-  //    boost::shared_ptr<cw_word> control_word_intern_;
-  //  };
-  //  // back-end
-  //  typedef msm::back::state_machine<onSM_> onSM;
-
-
 
   // when highLevelSm, the CD is loaded and we are in either pause or highLevelSm (duh)
   template <class Event,class FSM>
@@ -289,15 +270,15 @@ public:
       a_row < Standby   , stopMachine, machineStopped   , &hl::stop_machine                      >,
 
       a_row < ModeSwitch   , runMotorSM, updateMotorSM   , &hl::motor_sm                     >,
-      a_row < ModeSwitch   , checkStandBy, Standby   , &hl::standby                      >,
+      a_row < ModeSwitch   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < ModeSwitch   , stopMachine, machineStopped   , &hl::stop_machine                      >,
 
       a_row < updateMotorSM   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch                       >,
-      a_row < updateMotorSM   , checkStandBy, Standby   , &hl::standby                      >,
+      a_row < updateMotorSM   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < updateMotorSM   , enableMove, Move   , &hl::move                     >,
       a_row < updateMotorSM   , stopMachine, machineStopped   , &hl::stop_machine                      >,
 
-      a_row < Move   , checkStandBy, Standby   , &hl::standby                      >,
+      a_row < Move   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < Move   , stopMachine, machineStopped   , &hl::stop_machine                      >
       //    +---------+-------------+---------+---------------------+----------------------+
       > {};
@@ -312,31 +293,12 @@ private:
   boost::shared_ptr<InternalState> state_;
   boost::shared_ptr<InternalState> target_state_;
   boost::shared_ptr<cw_word> control_word_;
+  boost::shared_ptr<double> target_pos_;
+  boost::shared_ptr<double> target_vel_;
 
 };
 // back-end
 typedef msm::back::state_machine<highLevelSM_> highLevelSM;
 };
-///// */
-/////
-/////
 
-//int transition_sucess = motorStateMachine.process_event(motorSM::shutdown());
-//std::cout << "Success: " << transition_sucess << std::endl;
-
-//if(!transition_sucess)
-//  return false;
-
-//transition_sucess = motorStateMachine.process_event(motorSM::switch_on());
-//std::cout << "Success: " << transition_sucess << std::endl;
-//if(!transition_sucess)
-//  return false;
-
-//transition_sucess = motorStateMachine.process_event(motorSM::enable_op());
-//if(!transition_sucess)
-//  return false;
-
-//std::cout << "Success: " << transition_sucess << std::endl;
-
-//motorStateMachine.process_event(motorSM::disable_voltage());
 #endif // HIGH_LEVEL_SM_H

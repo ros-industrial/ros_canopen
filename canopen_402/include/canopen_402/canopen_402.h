@@ -70,18 +70,18 @@ class Node_402 : public canopen::Layer
 public:
   Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), operation_mode_(No_Mode), operation_mode_to_set_(No_Mode), n_(n), check_mode(false)
   {
-//    configureEntries();
-//    homing_mask.set(SW_Target_reached);
-//    homing_mask.set(SW_Operation_specific0);
-//    homing_mask.set(SW_Operation_specific1);
+    //    configureEntries();
+    //    homing_mask.set(SW_Target_reached);
+    //    homing_mask.set(SW_Operation_specific0);
+    //    homing_mask.set(SW_Operation_specific1);
 
-//    status_word_bitset = boost::make_shared<sw_word>();
-//    control_word_bitset = boost::make_shared<cw_word>();
+    //    status_word_bitset = boost::make_shared<sw_word>();
+    //    control_word_bitset = boost::make_shared<cw_word>();
 
-//    SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-//    SwCwSM.start();
-//    motorAbstraction.start();
-//    SwCwSM.process_event(StatusandControl::readStatus());
+    //    SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
+    //    SwCwSM.start();
+    //    motorAbstraction.start();
+    //    SwCwSM.process_event(StatusandControl::readStatus());
   }
 
   Node_402(const std::string &name) : Layer(name)
@@ -96,7 +96,7 @@ public:
     target_state_ = boost::make_shared<InternalState>(Start);
 
     SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-    motorAbstraction = highLevelSM(control_word_bitset);
+    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_);
     SwCwSM.start();
     motorAbstraction.start();
     SwCwSM.process_event(StatusandControl::readStatus());
@@ -208,8 +208,8 @@ private:
 
   std::bitset<16> homing_mask;
 
-  double target_vel_;
-  double target_pos_;
+  boost::shared_ptr<double> target_vel_;
+  boost::shared_ptr<double> target_pos_;
 
   std::vector<int> control_word_buffer;
 
