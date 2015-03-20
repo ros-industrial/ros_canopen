@@ -68,24 +68,11 @@ namespace canopen
 class Node_402 : public canopen::Layer
 {
 public:
-  Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), operation_mode_(No_Mode), operation_mode_to_set_(No_Mode), n_(n), check_mode(false)
+  Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), n_(n), check_mode(false)
   {
-    //    configureEntries();
-    //    homing_mask.set(SW_Target_reached);
-    //    homing_mask.set(SW_Operation_specific0);
-    //    homing_mask.set(SW_Operation_specific1);
+    operation_mode_ = boost::make_shared<OperationMode>(No_Mode);
+    configureEntries();
 
-    //    status_word_bitset = boost::make_shared<sw_word>();
-    //    control_word_bitset = boost::make_shared<cw_word>();
-
-    //    SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-    //    SwCwSM.start();
-    //    motorAbstraction.start();
-    //    SwCwSM.process_event(StatusandControl::readStatus());
-  }
-
-  Node_402(const std::string &name) : Layer(name)
-  {
     homing_mask.set(SW_Target_reached);
     homing_mask.set(SW_Operation_specific0);
     homing_mask.set(SW_Operation_specific1);
@@ -96,43 +83,53 @@ public:
     target_state_ = boost::make_shared<InternalState>(Start);
 
     SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_);
+    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_, operation_mode_);
+    SwCwSM.start();
+    motorAbstraction.start();
+    SwCwSM.process_event(StatusandControl::readStatus());
+  }
+
+  Node_402(const std::string &name) : Layer(name)
+  {
+    supported_modes = 255;
+    operation_mode_ = boost::make_shared<OperationMode>(No_Mode);
+    homing_mask.set(SW_Target_reached);
+    homing_mask.set(SW_Operation_specific0);
+    homing_mask.set(SW_Operation_specific1);
+
+    status_word_bitset = boost::make_shared<sw_word>();
+    control_word_bitset = boost::make_shared<cw_word>();
+    state_ = boost::make_shared<InternalState>(Start);
+    target_state_ = boost::make_shared<InternalState>(Start);
+
+    SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
+    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_, operation_mode_);
     SwCwSM.start();
     motorAbstraction.start();
     SwCwSM.process_event(StatusandControl::readStatus());
   }
 
   const OperationMode getMode();
-  bool enterMode(const OperationMode &op_mode);
+
   bool enterModeAndWait(const OperationMode &op_mode);
+  bool enterModeAndWait(LayerStatus &status, const OperationMode &op_mode);
   bool isModeSupported(const OperationMode &op_mode);
   static uint32_t getModeMask(const OperationMode &op_mode);
   bool isModeMaskRunning(const uint32_t &mask);
-
-  const InternalState& getState();
-  void enterState(const InternalState &s);
 
 
   virtual void read(LayerStatus &status);
   virtual void pending(LayerStatus &status);
   virtual void write(LayerStatus &status);
 
+  virtual void read();
+  virtual void write();
+
   virtual void diag(LayerReport &report);
 
   virtual void init(LayerStatus &status);
+  virtual void init();
   virtual void shutdown(LayerStatus &status);
-
-
-  void switchMode(LayerStatus &status);
-
-  void motorShutdown();
-  void motorSwitchOn();
-  void motorSwitchOnandEnableOp();
-  void motorDisableVoltage();
-  void motorQuickStop();
-  void motorDisableOp();
-  void motorEnableOp();
-  void motorFaultReset();
 
   virtual void halt(LayerStatus &status);
   virtual void recover(LayerStatus &status);
@@ -156,6 +153,8 @@ public:
 
   bool turnOn();
   bool turnOff();
+  bool turnOn(LayerStatus &status);
+  bool turnOff(LayerStatus &status);
 
   void configureEntries();
   void configureModeSpecificEntries();
@@ -195,12 +194,15 @@ private:
   canopen::ObjectStorage::Entry<int32_t> target_profiled_velocity;
 
 
+  uint32_t supported_modes;
   double ac_vel_;
   double ac_eff_;
 
-  OperationMode operation_mode_;
+  boost::shared_ptr<OperationMode> operation_mode_;
   OperationMode operation_mode_to_set_;
   bool check_mode;
+
+  bool valid_mode_state_;
 
   double ac_pos_;
   double internal_pos_;
@@ -212,11 +214,6 @@ private:
   boost::shared_ptr<double> target_pos_;
 
   std::vector<int> control_word_buffer;
-
-  void driveSettings();
-  void driveSettingsOnlyPos();
-  void driveSettingsOnlyBits();
-  void internal_sm(LayerStatus &status);
 
   bool configure_drive_;
 

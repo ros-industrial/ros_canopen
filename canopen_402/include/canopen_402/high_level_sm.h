@@ -83,7 +83,9 @@ class highLevelSM_ : public msm::front::state_machine_def<highLevelSM_>
 {
 public:
   highLevelSM_(){}
-  highLevelSM_(const boost::shared_ptr<cw_word> &control_word, boost::shared_ptr<double> target_pos, boost::shared_ptr<double> target_vel) : control_word_(control_word)
+  highLevelSM_(const boost::shared_ptr<cw_word> &control_word, boost::shared_ptr<double> target_pos
+               , boost::shared_ptr<double> target_vel, boost::shared_ptr<OperationMode> operation_mode)
+    : control_word_(control_word) , target_vel_(target_vel), target_pos_(target_pos), operation_mode_(operation_mode)
   {
     motorStateMachine = motorSM(control_word_);
     motorStateMachine.start();
@@ -112,7 +114,15 @@ public:
     checkModeSwitch() : op_mode() {}
     checkModeSwitch( OperationMode mode) : op_mode(mode) {}
   };
-  struct enableMove {};
+  struct enableMove
+  {
+    OperationMode op_mode;
+    double pos;
+    double vel;
+
+    enableMove() : op_mode(OperationMode(0)), pos(0), vel(0) {}
+    enableMove( OperationMode mode, double pos, double vel) : op_mode(mode), pos(pos), vel(vel) {}
+  };
   struct runMotorSM
   {
     InternalActions action;
@@ -186,6 +196,10 @@ public:
     std::cout << "OnSm::Running motor SM" << evt.action <<std::endl;
     switch(evt.action)
     {
+    case FaultReset:
+      motorStateMachine.process_event(motorSM::fault_reset());
+      std::cout << "Trying to reset the fault" << std::endl;
+      break;
     case Shutdown:
       motorStateMachine.process_event(motorSM::shutdown());
       std::cout << "Trying to shutdown" << std::endl;
@@ -208,14 +222,19 @@ public:
     std::cout << "OnSm::switch_mode" << std::endl;
     switch(evt.op_mode)
     {
-      case Interpolated_Position:
-        ipModeMachine.process_event(IPMode::selectMode());
+    case Interpolated_Position:
+      ipModeMachine.process_event(IPMode::selectMode());
     }
   }
 
-  void move(enableMove const&)
+  template <class enableMove> void move(enableMove const& evt)
   {
     std::cout << "OnSm::drive" << std::endl;
+    switch(evt.op_mode)
+    {
+    case Interpolated_Position:
+      ipModeMachine.process_event(IPMode::selectMode());
+    }
   }
 
   // when highLevelSm, the CD is loaded and we are in either pause or highLevelSm (duh)
@@ -292,9 +311,12 @@ public:
 private:
   boost::shared_ptr<InternalState> state_;
   boost::shared_ptr<InternalState> target_state_;
+
   boost::shared_ptr<cw_word> control_word_;
+
   boost::shared_ptr<double> target_pos_;
   boost::shared_ptr<double> target_vel_;
+  boost::shared_ptr<OperationMode> operation_mode_;
 
 };
 // back-end

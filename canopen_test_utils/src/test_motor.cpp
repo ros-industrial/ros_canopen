@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
     if(count==1)
     {
       motor->setTargetPos((motor->getActualPos()));
-      motor->enterMode(Interpolated_Position);
+      motor->enterModeAndWait(Interpolated_Position);
     }
     motor->setTargetPos((motor->getActualPos()-100));
     //motor->setTargetPos((motor->getActualPos()+10));

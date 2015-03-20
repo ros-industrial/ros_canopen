@@ -77,6 +77,7 @@ public:
   struct disable_op {};
   struct enable_op {};
   struct quick_stop {};
+  struct fault_reset {};
 
   struct Not_Ready_To_Switch_On_State : public msm::front::state<>
   {
@@ -158,7 +159,7 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "motor_sm::shutdown\n";
+    std::cout << "motor_sm::SHUTDOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOWN\n";
     //BOOST_THROW_EXCEPTION(std::range_error("Index out of range"));
   }
   void turn_on(switch_on const&)
@@ -223,6 +224,19 @@ public:
     std::cout << "motor_sm::disable_op\n";
   }
 
+  void reset_fault(fault_reset const&)
+  {
+    control_word_->set(CW_Fault_Reset);
+    control_word_->reset(CW_Switch_On);
+    control_word_->reset(CW_Enable_Voltage);
+    control_word_->set(CW_Quick_Stop);
+    control_word_->reset(CW_Enable_Operation);
+    control_word_->reset(CW_Operation_mode_specific0);
+    control_word_->reset(CW_Operation_mode_specific1);
+    control_word_->reset(CW_Operation_mode_specific2);
+    std::cout << "motor_sm::reset_fault\n";
+  }
+
   // guard conditions
   bool motor_fault(fault const& evt)
   {
@@ -256,7 +270,9 @@ public:
       //  +---------+-------------+---------+---------------------+----------------------+
       a_row < Quick_Stop_State, enable_op , Operation_Enable_State, &m::operate               >,
       a_row < Quick_Stop_State, disable_voltage , Switch_On_Disabled_State, &m::turn_off               >,
-      g_row < Quick_Stop_State , fault  , Fault_State    ,           &m::motor_fault    >
+      g_row < Quick_Stop_State , fault  , Fault_State    ,           &m::motor_fault    >,
+
+      a_row < Fault_State , fault_reset  , Switch_On_Disabled_State    , &m::reset_fault    >
       //TODO: add the Fault State transitions
       //  +---------+-------------+---------+---------------------+----------------------+
       //  +---------+-------------+---------+---------------------+----------------------+

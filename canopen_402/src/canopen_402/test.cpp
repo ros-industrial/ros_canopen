@@ -9,16 +9,14 @@ int main()
 {
   std::string name = "1234";
   boost::shared_ptr<Node_402> motor( new Node_402(name));
-  LayerStatus s;
-
-  motor->init(s);
+  motor->init();
 
   motor->enterModeAndWait(OperationMode(7));
   while(true)
   {
-    motor->read(s);
+    motor->read();
     sleep(1);
-    motor->write(s);
+    motor->write();
     sleep(1);
   }
 

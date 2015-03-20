@@ -55,7 +55,7 @@
 
 #ifndef IP_MODE_H
 #define IP_MODE_H
-
+#include <canopen_402/status_and_control.h>
 ///////
 /// \brief m
 ///
@@ -77,6 +77,7 @@ class IPMode_ : public msm::front::state_machine_def<IPMode_>
 {
 public:
   IPMode_(){}
+  IPMode_(const boost::shared_ptr<cw_word> &control_word) : control_word_(control_word){}
   struct enableIP {};
   struct disableIP {};
   struct selectMode {};
@@ -126,10 +127,16 @@ public:
   // transition actions
   void enable_ip(enableIP const&)
   {
+    control_word_->set(CW_Operation_mode_specific0);
+    control_word_->reset(CW_Operation_mode_specific1);
+    control_word_->reset(CW_Operation_mode_specific2);
     std::cout << "IPMode::enable_ip\n";
   }
   void disable_ip(disableIP const&)
   {
+    //control_word_->reset(CW_Operation_mode_specific0); TODO: for the moment IP remains enable to avoid the breaks to be active
+    control_word_->reset(CW_Operation_mode_specific1);
+    control_word_->reset(CW_Operation_mode_specific2);
     std::cout << "IPMode::read_status\n";
   }
 
@@ -167,7 +174,8 @@ public:
     std::cout << "no transition from state " << state
               << " on event " << typeid(e).name() << std::endl;
   }
-
+private:
+  boost::shared_ptr<cw_word> control_word_;
 
 };
 // back-end
