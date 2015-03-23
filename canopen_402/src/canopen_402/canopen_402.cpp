@@ -59,6 +59,9 @@ using canopen::Node_402;
 
 void Node_402::pending(LayerStatus &status)
 {
+  boost::mutex::scoped_lock cond_lock(cond_mutex);
+
+
   std::bitset<16> sw_new(status_word.get());
 
   *status_word_bitset = sw_new;
@@ -85,7 +88,6 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 
   if (isModeSupported(op_mode_var))
   {
-    std::cout << "Mode:" << op_mode_var << " is supported" << std::endl;
     bool transition_success = motorAbstraction.process_event(highLevelSM::checkModeSwitch(op_mode_var));
     if(!transition_success)
       return false;
@@ -103,7 +105,6 @@ bool Node_402::enterModeAndWait(LayerStatus &s, const OperationMode &op_mode_var
   if (isModeSupported(op_mode_var))
   {
     op_mode.set(op_mode_var);
-    std::cout << "Mode:" << op_mode_var << " is supported" << std::endl;
     bool transition_success = motorAbstraction.process_event(highLevelSM::checkModeSwitch(op_mode_var));
     if(!transition_success)
       return false;
@@ -312,10 +313,6 @@ void Node_402::configureModeSpecificEntries()
 //TODO: Implement a smaller state machine for On, Off, Fault, Halt
 bool Node_402::turnOn(LayerStatus &s)
 {
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
-
-  time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
-
   configure_drive_ = true;
 
   LOG("Turn ON");
@@ -324,11 +321,16 @@ bool Node_402::turnOn(LayerStatus &s)
   motorAbstraction.process_event(highLevelSM::startMachine());
 
   default_operation_mode_ = OperationMode(op_mode.get_cached());
-  enterModeAndWait(OperationMode(7));
+  enterModeAndWait(default_operation_mode_);
 
   if(*state_ == Fault)
+  {
     transition_success =  motorAbstraction.process_event(highLevelSM::runMotorSM(FaultReset));
+    LOG("Trying to reset the device's fault");
+  }
+
   std::cout << "Checking control" << *control_word_bitset << std::endl;
+
   transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(Shutdown));
   if(!transition_success)
    return false;
@@ -346,7 +348,6 @@ bool Node_402::turnOn(LayerStatus &s)
    if(!transition_success)
     return false;
   motorAbstraction.process_event(highLevelSM::enterStandBy());
-
   return true;
 }
 
@@ -409,12 +410,22 @@ void Node_402::init(LayerStatus &s)
 {
   boost::mutex::scoped_lock cond_lock(cond_mutex);
 
+  LOG("Starting the init function");
+
   Node_402::configureModeSpecificEntries();
+
+  LOG("configureModeSpecificEntries");
 
   if (homing_method.get() != 0)
     homing_needed_ = true;
 
-  if (Node_402::turnOn(s))
+  LOG("getHoming");
+
+  bool turn_on = Node_402::turnOn(s);
+
+  LOG("turnON");
+
+  if (turn_on)
   {
     running = true;
   }

@@ -107,17 +107,29 @@ public:
   struct writeControl : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: writeControl" << std::endl;}
+    void on_entry(Event const&,FSM& )
+    {
+     // std::cout << "starting: writeControl" << std::endl;
+    }
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: writeControl" << std::endl;}
+    void on_exit(Event const&,FSM& )
+    {
+      //std::cout << "finishing: writeControl" << std::endl;
+    }
 
   };
   struct readStatus : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: readStatus" << std::endl;}
+    void on_entry(Event const&,FSM& )
+    {
+      //std::cout << "starting: readStatus" << std::endl;
+    }
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: readStatus" << std::endl;}
+    void on_exit(Event const&,FSM& )
+    {
+     //std::cout << "finishing: readStatus" << std::endl;
+    }
   };
 
   // the initial state. Must be defined
@@ -125,9 +137,9 @@ public:
   // transition actions
   void write_control(newStatusWord const&)
   {
-    std::cout << "StatusandControl::write_control\n";
-    std::cout << "STATUS_WRITE:" << (*status_word_.get()) << std::endl;
-    std::cout << "CONTROL_WRITE:" << (*control_word_.get()) << std::endl;
+   // std::cout << "StatusandControl::write_control\n";
+    //std::cout << "STATUS_WRITE:" << (*status_word_.get()) << std::endl;
+    //std::cout << "CONTROL_WRITE:" << (*control_word_.get()) << std::endl;
   }
 
   boost::shared_ptr<InternalState> getState()
@@ -170,7 +182,6 @@ public:
     default:
       LOG("Motor currently in an unknown state");
     }
-    std::cout << "StatusandControl::read_status\n" << *state_ << std::endl;
   }
   // guard conditions
 
