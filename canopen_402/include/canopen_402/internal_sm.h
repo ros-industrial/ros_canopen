@@ -66,7 +66,10 @@ class MotorSM_ : public msm::front::state_machine_def<MotorSM_>
 {
 public:
   MotorSM_(){}
-  MotorSM_(const boost::shared_ptr<cw_word> &control_word) : control_word_(control_word){}
+  MotorSM_(const boost::shared_ptr<cw_word> &control_word, boost::shared_ptr<InternalState> actual_state) : control_word_(control_word), state_(actual_state)
+  {
+     target_state_ = boost::make_shared<InternalState>();
+  }
 
   // defined events from transitioning inside the 402 state machine
   struct boot {};
@@ -159,7 +162,7 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "motor_sm::SHUTDOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOWN\n";
+    std::cout << "motor_sm::SHUTDOWN\n";
     //BOOST_THROW_EXCEPTION(std::range_error("Index out of range"));
   }
   void turn_on(switch_on const&)
@@ -243,6 +246,7 @@ public:
     return false;
   }
 
+
   typedef MotorSM_ m; // makes transition table cleaner
 
   struct transition_table : mpl::vector<
@@ -253,7 +257,7 @@ public:
       a_row < Switch_On_Disabled_State , shutdown  , Ready_To_Switch_On_State    , &m::shutdown_motor    >,
       g_row < Switch_On_Disabled_State , fault  , Fault_State    ,           &m::motor_fault    >,
       //  +---------+-------------+---------+---------------------+----------------------+
-      a_row < Ready_To_Switch_On_State, switch_on , Switched_On_State, &m::turn_on               >,
+      a_row < Ready_To_Switch_On_State, switch_on , Switched_On_State, &m::turn_on              >,
       a_row < Ready_To_Switch_On_State, disable_voltage , Switch_On_Disabled_State, &m::turn_off               >, //quickstop(?)
       g_row < Ready_To_Switch_On_State , fault  , Fault_State                , &m::motor_fault    >,
       //  +---------+-------------+---------+---------------------+----------------------+
@@ -281,8 +285,8 @@ public:
   template <class FSM,class Event>
   void no_transition(Event const& e, FSM&,int state)
   {
-    std::cout << "no transition from state " << state
-              << " on event " << typeid(e).name() << std::endl;
+  // std::cout << "no transition from state " << state
+   //           << " on event " << typeid(e).name() << std::endl;
   }
 
   template <class FSM,class Event>
@@ -293,6 +297,8 @@ public:
   }
 private:
   boost::shared_ptr<cw_word> control_word_;
+  boost::shared_ptr<InternalState> state_;
+  boost::shared_ptr<InternalState> target_state_;
 };
 
 

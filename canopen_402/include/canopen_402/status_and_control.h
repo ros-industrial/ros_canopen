@@ -107,7 +107,7 @@ public:
     template <class Event,class FSM>
     void on_entry(Event const&,FSM& )
     {
-     // std::cout << "starting: writeControl" << std::endl;
+      // std::cout << "starting: writeControl" << std::endl;
     }
     template <class Event,class FSM>
     void on_exit(Event const&,FSM& )
@@ -126,7 +126,7 @@ public:
     template <class Event,class FSM>
     void on_exit(Event const&,FSM& )
     {
-     //std::cout << "finishing: readStatus" << std::endl;
+      //std::cout << "finishing: readStatus" << std::endl;
     }
   };
 
@@ -135,7 +135,7 @@ public:
   // transition actions
   void write_control(newStatusWord const&)
   {
-   // std::cout << "StatusandControl::write_control\n";
+    // std::cout << "StatusandControl::write_control\n";
     //std::cout << "STATUS_WRITE:" << (*status_word_.get()) << std::endl;
     //std::cout << "CONTROL_WRITE:" << (*control_word_.get()) << std::endl;
   }

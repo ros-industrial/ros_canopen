@@ -84,10 +84,9 @@ public:
     target_vel_ = boost::make_shared<double>();
 
     state_ = boost::make_shared<InternalState>(Start);
-    target_state_ = boost::make_shared<InternalState>(Start);
 
     SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_, operation_mode_);
+    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_, operation_mode_, state_);
     SwCwSM.start();
     motorAbstraction.start();
     SwCwSM.process_event(StatusandControl::readStatus());
@@ -107,10 +106,9 @@ public:
     status_word_bitset = boost::make_shared<sw_word>();
     control_word_bitset = boost::make_shared<cw_word>();
     state_ = boost::make_shared<InternalState>(Start);
-    target_state_ = boost::make_shared<InternalState>(Start);
 
     SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_, operation_mode_);
+    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_, operation_mode_, state_);
     SwCwSM.start();
     motorAbstraction.start();
     SwCwSM.process_event(StatusandControl::readStatus());
@@ -170,7 +168,6 @@ private:
 
   boost::shared_ptr <canopen::Node> n_;
   volatile bool running;
-  boost::shared_ptr<InternalState> target_state_;
   boost::shared_ptr<InternalState> state_;
 
   bool new_target_pos_;

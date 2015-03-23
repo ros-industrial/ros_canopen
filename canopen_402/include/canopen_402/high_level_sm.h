@@ -82,10 +82,10 @@ class highLevelSM_ : public msm::front::state_machine_def<highLevelSM_>
 public:
   highLevelSM_(){}
   highLevelSM_(const boost::shared_ptr<cw_word> &control_word, boost::shared_ptr<double> target_pos
-               , boost::shared_ptr<double> target_vel, boost::shared_ptr<OperationMode> operation_mode)
-    : control_word_(control_word) , target_vel_(target_vel), target_pos_(target_pos), operation_mode_(operation_mode)
+               , boost::shared_ptr<double> target_vel, boost::shared_ptr<OperationMode> operation_mode, const boost::shared_ptr<InternalState> &actual_state)
+    : control_word_(control_word) , target_vel_(target_vel), target_pos_(target_pos), operation_mode_(operation_mode), state_(actual_state)
   {
-    motorStateMachine = motorSM(control_word_);
+    motorStateMachine = motorSM(control_word_, state_);
     motorStateMachine.start();
     motorStateMachine.process_event(motorSM::boot());
 

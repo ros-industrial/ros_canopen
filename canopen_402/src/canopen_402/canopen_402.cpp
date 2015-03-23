@@ -337,19 +337,19 @@ bool Node_402::turnOn(LayerStatus &s)
 
   transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(Shutdown));
   if(!transition_success)
-   return false;
+    return false;
   motorAbstraction.process_event(highLevelSM::enterStandBy());
   std::cout << "Checking control" << *control_word_bitset << std::endl;
 
   transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(SwitchOn));
   std::cout << "Checking control" << *control_word_bitset << std::endl;
   if(!transition_success)
-   return false;
+    return false;
   motorAbstraction.process_event(highLevelSM::enterStandBy());
 
   transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(EnableOp));
   std::cout << "Checking control" << *control_word_bitset << std::endl;
-   if(!transition_success)
+  if(!transition_success)
     return false;
   motorAbstraction.process_event(highLevelSM::enterStandBy());
   return true;
@@ -371,19 +371,19 @@ bool Node_402::turnOn()
   std::cout << "Checking control" << *control_word_bitset << std::endl;
   transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(Shutdown));
   if(!transition_success)
-   return false;
+    return false;
   motorAbstraction.process_event(highLevelSM::enterStandBy());
   std::cout << "Checking control" << *control_word_bitset << std::endl;
 
   transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(SwitchOn));
   std::cout << "Checking control" << *control_word_bitset << std::endl;
   if(!transition_success)
-   return false;
+    return false;
   motorAbstraction.process_event(highLevelSM::enterStandBy());
 
   transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(EnableOp));
   std::cout << "Checking control" << *control_word_bitset << std::endl;
-   if(!transition_success)
+  if(!transition_success)
     return false;
   motorAbstraction.process_event(highLevelSM::enterStandBy());
 
