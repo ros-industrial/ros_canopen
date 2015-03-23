@@ -134,9 +134,9 @@ public:
   struct Standby : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: CheckUp" << std::endl;}
+    void on_entry(Event const&,FSM& ) {std::cout << "starting: Standby" << std::endl;}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: CheckUp" << std::endl;}
+    void on_exit(Event const&,FSM& ) {std::cout << "finishing: Standby" << std::endl;}
 
   };
 
@@ -254,6 +254,15 @@ public:
   {
     std::cout << "highLevelSm::read_status\n";
   }
+
+  bool check_hw_switch(checkModeSwitch const& evt)
+  {
+//    if(*operation_mode_ == evt.op_mode)
+//    {
+//       return true;
+//    }
+    return false;
+  }
   // guard conditions
 
   typedef highLevelSM_ hl; // makes transition table cleaner
@@ -266,7 +275,7 @@ public:
       Row < machineRunning   , none    , Standby   , none, none                       >,
 
       a_row < Standby   , runMotorSM    , updateMotorSM   , &hl::motor_sm                       >,
-      a_row < Standby   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch                       >,
+      row < Standby   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch, &hl::check_hw_switch                       >,
       a_row < Standby   , enableMove, Move   , &hl::move                     >,
       a_row < Standby   , stopMachine, machineStopped   , &hl::stop_machine                      >,
 
@@ -274,7 +283,7 @@ public:
       a_row < ModeSwitch   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < ModeSwitch   , stopMachine, machineStopped   , &hl::stop_machine                      >,
 
-      a_row < updateMotorSM   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch                       >,
+      row < updateMotorSM   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch, &hl::check_hw_switch                       >,
       a_row < updateMotorSM   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < updateMotorSM   , enableMove, Move   , &hl::move                     >,
       a_row < updateMotorSM   , stopMachine, machineStopped   , &hl::stop_machine                      >,

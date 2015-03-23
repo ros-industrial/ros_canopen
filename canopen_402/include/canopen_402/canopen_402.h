@@ -117,7 +117,7 @@ public:
   const OperationMode getMode();
 
   bool enterModeAndWait(const OperationMode &op_mode);
-  bool enterModeAndWait(LayerStatus &status, const OperationMode &op_mode);
+  bool enterModeAndWait(const OperationMode &op_mode, bool wait);
   bool isModeSupported(const OperationMode &op_mode);
   static uint32_t getModeMask(const OperationMode &op_mode);
   bool isModeMaskRunning(const uint32_t &mask);
@@ -129,6 +129,15 @@ public:
 
   virtual void read();
   virtual void write();
+
+  virtual void processCW(LayerStatus &status);
+  virtual void processCW();
+
+  virtual void processSW(LayerStatus &status);
+  virtual void processSW();
+
+  virtual void additionalInfo(LayerStatus &status);
+  virtual void additionalInfo();
 
   virtual void diag(LayerReport &report);
 
@@ -175,7 +184,7 @@ private:
   bool motor_ready_;
   bool homing_needed_;
 
-  boost::mutex cond_mutex;
+  boost::mutex cond_mutex_;
   boost::condition_variable cond;
 
   canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  status_word;

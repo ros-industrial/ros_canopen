@@ -59,27 +59,26 @@ using canopen::Node_402;
 
 void Node_402::pending(LayerStatus &status)
 {
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
+  processSW(status);
+
+  processCW(status);
+}
 
 
-  std::bitset<16> sw_new(status_word.get());
+bool Node_402::enterModeAndWait(const OperationMode &op_mode_var, bool wait)
+{
+  valid_mode_state_ = false;
 
-  *status_word_bitset = sw_new;
-
-  SwCwSM.process_event(StatusandControl::newStatusWord());
-
-
-  *operation_mode_ = (OperationMode) op_mode_display.get();
-  ac_vel_ = actual_vel.get();
-  ac_pos_ = actual_pos.get();
-  ac_eff_ = 0; //Currently no effort directly obtained from the HW
-
-
-  SwCwSM.process_event(StatusandControl::newControlWord());
-
-  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
-
-  control_word.set(cw_set);
+  if (isModeSupported(op_mode_var))
+  {
+    bool transition_success = motorAbstraction.process_event(highLevelSM::checkModeSwitch(op_mode_var));
+    if(!transition_success)
+      return false;
+    valid_mode_state_ = true;
+    return true;
+  }
+  else
+    return false;
 }
 
 bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
@@ -88,26 +87,21 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 
   if (isModeSupported(op_mode_var))
   {
-    bool transition_success = motorAbstraction.process_event(highLevelSM::checkModeSwitch(op_mode_var));
-    if(!transition_success)
-      return false;
-    valid_mode_state_ = true;
-    return true;
-  }
-  else
-    return false;
-}
-
-bool Node_402::enterModeAndWait(LayerStatus &s, const OperationMode &op_mode_var)
-{
-  valid_mode_state_ = false;
-
-  if (isModeSupported(op_mode_var))
-  {
     op_mode.set(op_mode_var);
+
+    boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
+
+    boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+    if(!lock) return false;
+
     bool transition_success = motorAbstraction.process_event(highLevelSM::checkModeSwitch(op_mode_var));
-    if(!transition_success)
+    std::cout << "TSHSHSSJSHSJ" << transition_success << std::endl;
+
+    if(transition_success == boost::msm::back::HANDLED_GUARD_REJECT)
+    {
+      std::cout << "COULD NOT SWITCH" << std::endl;
       return false;
+    }
     valid_mode_state_ = true;
     return true;
   }
@@ -115,28 +109,114 @@ bool Node_402::enterModeAndWait(LayerStatus &s, const OperationMode &op_mode_var
     return false;
 }
 
-
-void Node_402::read()
+void Node_402::processSW()
 {
+  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  if(!lock) return;
+
   std::bitset<16> sw_new(7/*status_word.get()*/);
   (*status_word_bitset.get()) = sw_new;
 
   SwCwSM.process_event(StatusandControl::newStatusWord());
-
-  std::cout << "Read state" << *state_ << std::endl;
 }
 
-void Node_402::read(LayerStatus &status)
+void Node_402::processSW(LayerStatus &status)
 {
+  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  if(!lock) return;
+
   std::bitset<16> sw_new(status_word.get());
 
   *status_word_bitset = sw_new;
+
   SwCwSM.process_event(StatusandControl::newStatusWord());
+
+}
+
+void Node_402::additionalInfo(LayerStatus &s)
+{
+
+  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  if(!lock) return;
 
   *operation_mode_ = (OperationMode) op_mode_display.get();
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
   ac_eff_ = 0; //Currently no effort directly obtained from the HW
+}
+
+void Node_402::additionalInfo()
+{
+
+  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  if(!lock) return;
+
+  *operation_mode_ = OperationMode(7);
+  ac_vel_ = 10;
+  ac_pos_ = 10;
+  ac_eff_ = 0; //Currently no effort directly obtained from the HW
+}
+
+
+void Node_402::read()
+{
+  processSW();
+}
+
+void Node_402::read(LayerStatus &status)
+{
+  processSW(status);
+  additionalInfo(status);
+}
+
+void Node_402::write(LayerStatus &status)
+{
+
+  if(*state_ == Operation_Enable)
+    motorAbstraction.process_event(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
+
+  processCW(status);
+}
+
+void Node_402::processCW()
+{
+  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  if(!lock) return;
+
+  SwCwSM.process_event(StatusandControl::newControlWord());
+
+  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
+
+  motorAbstraction.process_event(highLevelSM::enterStandBy());
+}
+
+void Node_402::processCW(LayerStatus &status)
+{
+  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  if(!lock) return;
+
+  SwCwSM.process_event(StatusandControl::newControlWord());
+
+  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
+
+  motorAbstraction.process_event(highLevelSM::enterStandBy());
+  control_word.set(cw_set);
+}
+
+// Temp function,for the purpose of testing the State Machines without the real HW
+void Node_402::write()
+{
+
+  if(*state_ == Operation_Enable)
+    motorAbstraction.process_event(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
+
+  SwCwSM.process_event(StatusandControl::newControlWord());
+
+  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
+
+  motorAbstraction.process_event(highLevelSM::enterStandBy());
+
+  processCW();
 }
 
 void Node_402::shutdown(LayerStatus &status)
@@ -166,33 +246,6 @@ const double Node_402::getTargetPos()
 const double Node_402::getTargetVel()
 {
   return *target_vel_;
-}
-
-void Node_402::write(LayerStatus &status)
-{
-
-  if(*state_ == Operation_Enable)
-    motorAbstraction.process_event(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
-
-  SwCwSM.process_event(StatusandControl::newControlWord());
-
-  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
-
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
-  control_word.set(cw_set);
-}
-// Temp function,for the purpose of testing the State Machines without the real HW
-void Node_402::write()
-{
-
-  if(*state_ == Operation_Enable)
-    motorAbstraction.process_event(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
-
-  SwCwSM.process_event(StatusandControl::newControlWord());
-
-  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
-
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
 }
 
 
@@ -251,21 +304,17 @@ const double Node_402::getActualInternalPos()
 
 void Node_402::setTargetVel(const double &target_vel)
 {
-  double tgvel = target_vel;
-
   if (*state_ == Operation_Enable && valid_mode_state_)
   {
-    *target_vel_ = tgvel;
+    *target_vel_ = target_vel;
   }
 }
 
 void Node_402::setTargetPos(const double &target_pos)
 {
-  double tgpos = target_pos;
-
   if (*state_ == Operation_Enable && valid_mode_state_)
   {
-    *target_pos_ = tgpos;
+    *target_pos_ = target_pos;
   }
 }
 
@@ -364,7 +413,7 @@ bool Node_402::turnOn()
 
   motorAbstraction.process_event(highLevelSM::startMachine());
 
-  enterModeAndWait(OperationMode(7));
+  enterModeAndWait(OperationMode(7), true);
 
   if(*state_ == Fault)
     transition_success =  motorAbstraction.process_event(highLevelSM::runMotorSM(FaultReset));
@@ -412,8 +461,6 @@ bool Node_402::turnOff()
 
 void Node_402::init(LayerStatus &s)
 {
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
-
   LOG("Starting the init function");
 
   Node_402::configureModeSpecificEntries();

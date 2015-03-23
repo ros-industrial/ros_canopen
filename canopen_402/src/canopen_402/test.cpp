@@ -11,7 +11,7 @@ int main()
   boost::shared_ptr<Node_402> motor( new Node_402(name));
   motor->init();
 
-  motor->enterModeAndWait(OperationMode(7));
+  motor->enterModeAndWait(OperationMode(7), true);
   while(true)
   {
     motor->read();
