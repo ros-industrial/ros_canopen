@@ -481,7 +481,7 @@ DataType=0x0007
 AccessType=rw
 PDOMapping=0
 ObjFlags=0
-ParameterValue=0x60c10120
+ParameterValue=0x60600008
 
 [1600sub4]
 ParameterName=4. mapped Object
@@ -557,7 +557,7 @@ DataType=0x0007
 AccessType=rw
 PDOMapping=0
 ObjFlags=0
-ParameterValue=0x60810020
+ParameterValue=0x60c10120
 
 [1601sub3]
 ParameterName=3. mapped Object

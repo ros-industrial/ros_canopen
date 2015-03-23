@@ -7,6 +7,7 @@
 #include <boost/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <boost/foreach.hpp>
+#include <boost/weak_ptr.hpp>
 
 namespace can{
 
@@ -89,33 +90,6 @@ public:
     }
     operator typename BaseClass::Callable() { return typename BaseClass::Callable(this,&FilteredDispatcher::dispatch); }
 };
-
-
-template <typename T>class DispatchedInterface: public CommInterface, public StateInterface, public T{
-    typedef FilteredDispatcher<const unsigned int, CommInterface::FrameListener> FrameDispatcher;
-    typedef SimpleDispatcher<StateInterface::StateListener> StateDispatcher;
-    FrameDispatcher frame_dispatcher_;
-    StateDispatcher state_dispatcher_;
-public:
-    DispatchedInterface(): T(FrameDelegate(&frame_dispatcher_, &FrameDispatcher::dispatch),StateDelegate(&state_dispatcher_, &StateDispatcher::dispatch)) {}
-    template<typename T1> DispatchedInterface(const T1 &t1): T(FrameDelegate(&frame_dispatcher_, &FrameDispatcher::dispatch),StateDelegate(&state_dispatcher_, &StateDispatcher::dispatch), t1) {}
-    template<typename T1,typename T2> DispatchedInterface(const T1 &t1, const T2 &t2): T(FrameDelegate(&frame_dispatcher_, &FrameDispatcher::dispatch),StateDelegate(&state_dispatcher_, &StateDispatcher::dispatch), t1, t2) {}
-    
-    virtual bool send(const Frame & msg){
-        return T::send(msg);
-    }
-
-    virtual FrameListener::Ptr createMsgListener(const FrameDelegate &delegate){
-        return frame_dispatcher_.createListener(delegate);
-    }
-    virtual FrameListener::Ptr createMsgListener(const Frame::Header&h , const FrameDelegate &delegate){
-        return frame_dispatcher_.createListener(h, delegate);
-    }
-    virtual StateListener::Ptr createStateListener(const StateDelegate &delegate){
-        return state_dispatcher_.createListener(delegate);
-    }
-};
-
 
 } // namespace can
 #endif

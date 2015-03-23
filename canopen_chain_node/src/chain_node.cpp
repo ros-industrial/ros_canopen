@@ -10,7 +10,7 @@ int main(int argc, char** argv){
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv("~");
   
-  RosChain<ThreadedSocketCANInterface> chain(nh, nh_priv);
+  RosChain chain(nh, nh_priv);
   
   if(!chain.setup()){
       return -1;

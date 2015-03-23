@@ -4,12 +4,14 @@
 #include <canopen_master/canopen.h>
 #include <canopen_master/master.h>
 #include <canopen_master/can_layer.h>
+#include <socketcan_interface/string.h>
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <cob_srvs/Trigger.h>
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <boost/filesystem/path.hpp>
 #include <boost/weak_ptr.hpp>
+#include <pluginlib/class_loader.h>
 
 namespace canopen{
 
@@ -72,11 +74,10 @@ public:
     virtual ~Logger() {}
 };
 
-template<typename InterfaceType> class RosChain : public canopen::LayerStack {
+class RosChain : public canopen::LayerStack {
+      pluginlib::ClassLoader<can::DriverInterface> driver_loader_;
 protected:
-    std::string chain_name_;
-    
-    boost::shared_ptr<InterfaceType> interface_;
+    boost::shared_ptr<can::DriverInterface> interface_;
     boost::shared_ptr<Master> master_;
     boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::Node> > nodes_;
     boost::shared_ptr<canopen::SyncLayer> sync_;
@@ -101,10 +102,12 @@ protected:
 
     time_duration update_duration_;
 
+    ros::Timer heartbeat_timer_;
+
     boost::weak_ptr<LayerStatus> pending_status_;
     
     void logState(const can::State &s){
-        boost::shared_ptr<InterfaceType> interface = interface_;
+        boost::shared_ptr<can::DriverInterface> interface = interface_;
         std::string msg;
         if(interface && !interface->translateError(s.internal_error, msg)) msg  =  "Undefined"; ;
         ROS_INFO_STREAM("Current state: " << s.driver_state << " device error: " << s.error_code << " internal_error: " << s.internal_error << " (" << msg << ")");
@@ -120,6 +123,8 @@ protected:
                 boost::shared_ptr<LayerStatus> pending_status = pending_status_.lock();
                 if(pending_status) pending(*pending_status);
                 write(s);
+                if(!s.bounded<LayerStatus::Warn>()) ROS_ERROR_STREAM_THROTTLE(10, s.reason());
+                else if(!s.bounded<LayerStatus::Ok>()) ROS_WARN_STREAM_THROTTLE(10, s.reason());
             }
             catch(const canopen::Exception& e){
                 ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
@@ -147,7 +152,7 @@ protected:
             if(!pending_status->bounded<LayerStatus::Warn>()){
                 shutdown(*pending_status);
                 thread_.reset();
-            }
+            }else if(heartbeat_timer_.isValid()) heartbeat_timer_.start();
         }
         catch( const canopen::Exception &e){
             std::string info = boost::diagnostic_information(e);
@@ -187,6 +192,7 @@ protected:
         return true;
     }
     virtual void shutdown(LayerStatus &status){
+        heartbeat_timer_.stop();
         if(thread_){
             halt(status);
             thread_->interrupt();
@@ -227,22 +233,29 @@ protected:
     bool setup_bus(){
         ros::NodeHandle bus_nh(nh_priv_,"bus");
         std::string can_device;
+        std::string driver_plugin;
         std::string master_type;
-        int can_bitrate = 0;
+        bool loopback;
         
         if(!bus_nh.getParam("device",can_device)){
             ROS_ERROR("Device not set");
             return false;
         }
         
-        bus_nh.param("bitrate",can_bitrate, 0);
+        bus_nh.param("loopback",loopback, false);
         
-        if(can_bitrate < 0){
-            ROS_ERROR_STREAM("CAN bitrate  "<< can_bitrate << " is invalid");
+        bus_nh.param("driver_plugin",driver_plugin, std::string("can::SocketCANInterface"));
+
+        try{
+            interface_ =  driver_loader_.createInstance(driver_plugin);
+        }
+            
+        catch(pluginlib::PluginlibException& ex){
+            ROS_ERROR_STREAM(ex.what());
             return false;
         }
-        interface_ = boost::make_shared<InterfaceType>(true); // enable loopback
-        state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
+        
+	state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
         
         bus_nh.param("master_type",master_type, std::string("shared"));
 
@@ -266,7 +279,7 @@ protected:
             return false;
         }
         
-        add(boost::make_shared<CANLayer<InterfaceType> >(interface_, can_device, can_bitrate));
+        add(boost::make_shared<CANLayer>(interface_, can_device, loopback));
         
         return true;
     }
@@ -274,6 +287,7 @@ protected:
         ros::NodeHandle sync_nh(nh_priv_,"sync");
         
         int sync_ms = 0;
+        int silence_us = 0;
         int sync_overflow = 0;
         
         if(!sync_nh.getParam("interval_ms", sync_ms)){
@@ -294,17 +308,18 @@ protected:
             update_duration_ = boost::chrono::milliseconds(update_ms);
         }
 
-        if(!sync_nh.getParam("overflow", sync_overflow)){
-            ROS_WARN("Sync overflow was not specified, so overflow is disabled per default");
-        }
-        if(sync_overflow == 1 || sync_overflow > 240){
-            ROS_ERROR_STREAM("Sync overflow  "<< sync_overflow << " is invalid");
-            return false;
-        }
-
         if(sync_ms){
+            if(!sync_nh.getParam("overflow", sync_overflow)){
+                ROS_WARN("Sync overflow was not specified, so overflow is disabled per default");
+            }
+            if(sync_overflow == 1 || sync_overflow > 240){
+                ROS_ERROR_STREAM("Sync overflow  "<< sync_overflow << " is invalid");
+                return false;
+            }
+            sync_nh.getParam("silence_us", silence_us);
+
             // TODO: parse header
-            sync_ = master_->getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), sync_overflow));
+            sync_ = master_->getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), boost::posix_time::microseconds(silence_us), sync_overflow));
             
             if(!sync_ && sync_ms){
                 ROS_ERROR_STREAM("Initializing sync master failed");
@@ -314,38 +329,90 @@ protected:
         }
         return true;
     }
+    bool setup_heartbeat(){
+            ros::NodeHandle hb_nh(nh_priv_,"heartbeat");
+            std::string msg;
+            double rate = 0;
+
+            if(!hb_nh.getParam("msg", msg) && !hb_nh.getParam("rate", rate)) return true; // nothing todo
+
+            if(rate <=0 ){
+                ROS_ERROR_STREAM("Rate '"<< rate << "' is invalid");
+                return false;
+            }
+
+            can::Frame frame = can::toframe(msg);
+
+
+            if(!frame.isValid()){
+                ROS_ERROR_STREAM("Message '"<< msg << "' is invalid");
+                return false;
+            }
+
+            heartbeat_timer_ = hb_nh.createTimer(ros::Duration(1.0/rate), boost::bind(&can::DriverInterface::send,interface_, frame), false, false);
+
+            return true;
+
+
+    }
     bool setup_nodes(){
         nodes_.reset(new canopen::LayerGroupNoDiag<canopen::Node>("301 layer"));
         add(nodes_);
 
-        XmlRpc::XmlRpcValue modules;
-        nh_priv_.getParam("modules", modules);
+        XmlRpc::XmlRpcValue nodes;
+        if(!nh_priv_.getParam("nodes", nodes)){
+            ROS_WARN("falling back to 'modules', please switch to 'nodes'");
+            nh_priv_.getParam("modules", nodes);
+        }
         MergedXmlRpcStruct defaults;
         nh_priv_.getParam("defaults", defaults);
 
-        for (int32_t i = 0; i < modules.size(); ++i){
-            XmlRpc::XmlRpcValue &module = modules[i];
-            std::string name = module["name"];
+        if(nodes.getType() ==  XmlRpc::XmlRpcValue::TypeArray){
+            XmlRpc::XmlRpcValue new_stuct;
+            for(size_t i = 0; i < nodes.size(); ++i){
+                if(nodes[i].hasMember("name")){
+                    std::string &name = nodes[i]["name"];
+                    new_stuct[name] = nodes[i];
+                }else{
+                    ROS_ERROR_STREAM("Node at list index " << i << " has no name");
+                    return false;
+                }
+            }
+            nodes = new_stuct;
+        }
+    
+        for(XmlRpc::XmlRpcValue::iterator it = nodes.begin(); it != nodes.end(); ++it){
             int node_id;
             try{
-                node_id = module["id"];
+                node_id = it->second["id"];
             }
             catch(...){
-                ROS_ERROR_STREAM("Module at list index " << i << " has no id");
+                ROS_ERROR_STREAM("Node '" << it->first  << "' has no id");
                 return false;
+            }
+            MergedXmlRpcStruct merged(it->second, defaults);
+            
+            if(!it->second.hasMember("name")){
+                merged["name"]=it->first;
             }
 
             ObjectDict::Overlay overlay;
-            if(module.hasMember("dcf_overlay")){
-                XmlRpc::XmlRpcValue dcf_overlay = module["dcf_overlay"];
-                for(XmlRpc::XmlRpcValue::iterator it = dcf_overlay.begin(); it!= dcf_overlay.end(); ++it){
-                    overlay.push_back(ObjectDict::Overlay::value_type(it->first, it->second));
+            if(merged.hasMember("dcf_overlay")){
+                XmlRpc::XmlRpcValue dcf_overlay = merged["dcf_overlay"];
+                if(dcf_overlay.getType() != XmlRpc::XmlRpcValue::TypeStruct){
+                    ROS_ERROR_STREAM("dcf_overlay is no struct");
+                    return false;
+                }
+                for(XmlRpc::XmlRpcValue::iterator ito = dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
+                    if(ito->second.getType() != XmlRpc::XmlRpcValue::TypeString){
+                        ROS_ERROR_STREAM("dcf_overlay '" << ito->first << "' must be string");
+                        return false;
+                    }
+                    overlay.push_back(ObjectDict::Overlay::value_type(ito->first, ito->second));
                 }
 
             }
 
-            MergedXmlRpcStruct merged(module, defaults);
-                            
             std::string eds;
             
             try{
@@ -357,13 +424,15 @@ protected:
             }
 
             try{
-                std::string pkg = merged["eds_pkg"];
-                std::string p = ros::package::getPath(pkg);
-                if(p.empty()){
-                        ROS_ERROR_STREAM("Package '" << pkg << "' not found");
-                        return false;
+                if(merged.hasMember("eds_pkg")){
+                    std::string pkg = merged["eds_pkg"];
+                    std::string p = ros::package::getPath(pkg);
+                    if(p.empty()){
+                            ROS_WARN_STREAM("Package '" << pkg << "' was not found");
+                    }else{
+                        eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
+                    }
                 }
-                eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
             }
             catch(...){
             }
@@ -381,13 +450,13 @@ protected:
 
             //logger->add(4,"pos", canopen::ObjectDict::Key(0x6064));
             loggers_.push_back(logger);
-            diag_updater_.add(name, boost::bind(&Logger::log, logger, _1));
+            diag_updater_.add(it->first, boost::bind(&Logger::log, logger, _1));
             
             nodes_->add(node);
         }
         return true;
     }
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         LayerReport r;
         diag(r);
@@ -399,19 +468,15 @@ protected:
         }
     }
 public:
-    RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): LayerStack("ROS stack"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_){}
+    RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_){}
     virtual bool setup(){
         boost::mutex::scoped_lock lock(mutex_);
 
-        if(!nh_priv_.getParam("name", chain_name_)){
-            ROS_ERROR("Chain name not set");
-            return false;
-        }
         std::string hw_id;
         nh_priv_.param("hardware_id", hw_id, std::string("none"));
         
         diag_updater_.setHardwareID(hw_id);
-        diag_updater_.add(chain_name_, this, &RosChain::report_diagnostics);
+        diag_updater_.add("chain", this, &RosChain::report_diagnostics);
         
         diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),boost::bind(&diagnostic_updater::Updater::update, &diag_updater_));
         
@@ -422,13 +487,14 @@ public:
         srv_halt_ = nh_driver.advertiseService("halt",&RosChain::handle_halt, this);
         srv_shutdown_ = nh_driver.advertiseService("shutdown",&RosChain::handle_shutdown, this);
         
-        return setup_bus() && setup_sync() && setup_nodes();
+        return setup_bus() && setup_sync() && setup_heartbeat() && setup_nodes();
     }
     virtual ~RosChain(){
         try{
             LayerStatus s;
             shutdown(s);
         }catch(...){ }
+        destroy();
     }
 };
 

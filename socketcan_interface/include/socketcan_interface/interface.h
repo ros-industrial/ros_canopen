@@ -11,6 +11,7 @@ namespace can{
 
 /** Header for CAN id an meta data*/
 struct Header{
+    static const unsigned int ID_MASK = (1u << 29)-1;
     static const unsigned int ERROR_MASK = (1u << 29);
     static const unsigned int RTR_MASK = (1u << 30);
     static const unsigned int EXTENDED_MASK = (1u << 31);
@@ -98,45 +99,6 @@ public:
     virtual ~Listener() {} 
 };
 
-class DriverInterface{
-public:
-    /**
-     * initialize interface
-     * 
-     * @param[in] device: driver-specific device name/path
-     * @param[in] bitrate: desired bitrate in bit/s
-     * @return true if device was initialized succesfully, false otherwise
-     */
-    virtual bool init(const std::string &device, unsigned int bitrate) = 0;
-    
-    /**
-     * Recover interface after errors and emergency stops
-     * 
-     * @return true if device was recovered succesfully, false otherwise
-     */
-    virtual bool recover() = 0;
-
-    /**
-     * @return current state of driver
-     */
-    virtual State getState() = 0;
-
-    /**
-     * shutdown interface
-     *
-     * @return true if shutdown was succesful, false otherwise
-     */
-    virtual void shutdown() = 0;
-    
-    virtual bool translateError(unsigned int internal_error, std::string & str) = 0;
-    
-    virtual bool doesLoopBack() const = 0;
-    
-    virtual void run()  = 0;
-    
-    virtual ~DriverInterface() {}
-};
-
 class StateInterface{
 public:
     typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
@@ -185,6 +147,46 @@ public:
     
     virtual ~CommInterface() {}
 };
+
+class DriverInterface : public CommInterface, public StateInterface {
+public:
+    /**
+     * initialize interface
+     * 
+     * @param[in] device: driver-specific device name/path
+     * @param[in] loopback: loop-back own messages
+     * @return true if device was initialized succesfully, false otherwise
+     */
+    virtual bool init(const std::string &device, bool loopback) = 0;
+    
+    /**
+     * Recover interface after errors and emergency stops
+     * 
+     * @return true if device was recovered succesfully, false otherwise
+     */
+    virtual bool recover() = 0;
+
+    /**
+     * @return current state of driver
+     */
+    virtual State getState() = 0;
+
+    /**
+     * shutdown interface
+     *
+     * @return true if shutdown was succesful, false otherwise
+     */
+    virtual void shutdown() = 0;
+    
+    virtual bool translateError(unsigned int internal_error, std::string & str) = 0;
+    
+    virtual bool doesLoopBack() const = 0;
+    
+    virtual void run()  = 0;
+    
+    virtual ~DriverInterface() {}
+};
+
 
 } // namespace can
 

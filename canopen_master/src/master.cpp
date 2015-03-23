@@ -18,9 +18,11 @@ void IPCSyncMaster::run() {
         if(abs_time > boost::get_system_time()){
             if(!sync_obj_->waiter.sync(boost::posix_time::seconds(1))) break; // TODO: handle error
 
-            
-            if(sync_obj_->nextSync(frame.data[0]))
+            if(sync_obj_->nextSync(frame.data[0])){
+                boost::this_thread::sleep(sync_obj_->properties.silence_);
                 interface_->send(frame);
+//                LOG(boost::get_system_time() << " SEND");
+            }
 
             boost::this_thread::sleep(abs_time);
         }
@@ -35,9 +37,7 @@ void IPCSyncLayer::init(LayerStatus &status) {
         status.warn("Nodes list was not empty");
         nodes_.clear();
     }
-    last_sync_ = 0;
     sync_master_->start(status);
-    sync_listener_ = interface_->createMsgListener( properties.header_, can::CommInterface::FrameDelegate(this, &IPCSyncLayer::handleFrame));
 }
 
 // TODO: unify/combine

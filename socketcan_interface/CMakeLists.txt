@@ -4,7 +4,7 @@ project(socketcan_interface)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED class_loader)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -23,7 +23,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS class_loader
   DEPENDS Boost
 )
 
@@ -41,6 +41,12 @@ include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 ## Declare a cpp executable
 add_executable(socketcan_dump src/candump.cpp)
 target_link_libraries(socketcan_dump
+   ${catkin_LIBRARIES}
+   ${Boost_LIBRARIES}
+)
+
+add_library(socketcan_interface_plugin src/socketcan_interface_plugin.cpp)
+target_link_libraries(socketcan_interface_plugin
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
 )
@@ -71,7 +77,7 @@ target_link_libraries(socketcan_dump
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS socketcan_dump
+install(TARGETS socketcan_dump socketcan_interface_plugin
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -81,6 +87,10 @@ install(TARGETS socketcan_dump
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"
+)
+
+install(FILES socketcan_interface_plugin.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
@@ -95,10 +105,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_socketcan_interface.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
+if(CATKIN_ENABLE_TESTING)
+
+  catkin_add_gtest(${PROJECT_NAME}-test_dummy_interface test/test_dummy_interface.cpp)
+  target_link_libraries(${PROJECT_NAME}-test_dummy_interface ${catkin_LIBRARIES})
+
+endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

@@ -6,6 +6,7 @@
 #include <socketcan_interface/dispatcher.h>
 #include <boost/unordered_set.hpp>
 #include <socketcan_interface/socketcan.h>
+#include <socketcan_interface/threading.h>
 
 #include <boost/thread.hpp>
 
@@ -28,10 +29,6 @@ class ElmoNode: public Node
 
         dict->insert(false, boost::make_shared<const canopen::ObjectDict::Entry>(ObjectDict::VAR, 0x1024, ObjectDict::DEFTYPE_UNSIGNED8, "OS command mode", false, true, false));
 
-
-        dict->insert(true, boost::make_shared<const canopen::ObjectDict::Entry>(0x1010, 1, ObjectDict::DEFTYPE_UNSIGNED32, "Store parameters", true, true, false));
-        dict->insert(true, boost::make_shared<const canopen::ObjectDict::Entry>(0x1011, 1, ObjectDict::DEFTYPE_UNSIGNED32, "Load parameters", true, true, false));
-
         dict->insert(false, boost::make_shared<const canopen::ObjectDict::Entry>(ObjectDict::VAR, 0x1001, ObjectDict::DEFTYPE_UNSIGNED8, "error register", true, false, false));
 
         dict->insert(false, boost::make_shared<const canopen::ObjectDict::Entry>(ObjectDict::VAR, 0x1017, ObjectDict::DEFTYPE_UNSIGNED16, "producer heartbeat", true, true, false, HoldAny((uint16_t)0)));
@@ -44,9 +41,6 @@ class ElmoNode: public Node
     ObjectStorage::Entry<canopen::ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING>::type >  reply_;
 
     ObjectStorage::Entry<canopen::ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED8>::type >  mode_;
-
-    ObjectStorage::Entry<canopen::ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED32>::type >  store_;
-    ObjectStorage::Entry<canopen::ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED32>::type >  restore_;
 
     template<typename T> bool try_set(T & entry, const typename T::type &value){
         try{
@@ -65,16 +59,6 @@ public:
         getStorage()->entry(reply_, 0x1023, 3);
 
         getStorage()->entry(mode_, 0x1024);
-        
-        getStorage()->entry(store_, 0x1010, 1);
-        getStorage()->entry(restore_, 0x1011, 1);
-    }
-
-    bool save(){
-        return try_set(store_, 'evas');
-    }
-    bool load(){
-        return try_set(restore_, 'daol');
     }
 
     uint8_t send_command(const std::string &s){
@@ -144,7 +128,7 @@ int main(int argc, char *argv[]){
     signal(SIGINT, sigint_handler);
 
 
-    driver = boost::make_shared<ThreadedSocketCANInterface> (true);
+    driver = boost::make_shared<ThreadedSocketCANInterface> ();
     state_printer = driver->createStateListener(print_state);
 
     if(!driver->init(argv[1],0)){

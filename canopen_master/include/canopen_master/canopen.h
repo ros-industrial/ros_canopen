@@ -73,6 +73,7 @@ class PDOMapper{
         void write(const uint8_t* b, const size_t len);
         void read(const canopen::ObjectDict::Entry &entry, String &data);
         void write(const canopen::ObjectDict::Entry &, const String &data);
+        void clean() { dirty = false; }
         const size_t size;
         Buffer(const size_t sz) : size(sz), dirty(false), empty(true), buffer(sz) {}
         
@@ -108,7 +109,7 @@ class PDOMapper{
     };
     
     struct RPDO : public PDO{
-        void sync();
+        void sync(LayerStatus &status);
         static boost::shared_ptr<RPDO> create(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
             boost::shared_ptr<RPDO> rpdo(new RPDO(interface));
             if(!rpdo->init(storage, com_index, map_index))
@@ -133,7 +134,7 @@ class PDOMapper{
 
 public:
     PDOMapper(const boost::shared_ptr<can::CommInterface> interface);
-    bool read();
+    void read(LayerStatus &status);
     bool write();
     void init(const boost::shared_ptr<ObjectStorage> storage);
 };
@@ -157,9 +158,10 @@ public:
 struct SyncProperties{
     const can::Header header_;
     const boost::posix_time::time_duration period_;
+    const boost::posix_time::time_duration silence_;
     const uint8_t overflow_;
-    SyncProperties(const can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : header_(h), period_(p), overflow_(o) {}
-    bool operator==(const SyncProperties &p) const { return p.header_ == (int) header_ && p.overflow_ == overflow_ && p.period_ == period_; }
+    SyncProperties(const can::Header &h, const boost::posix_time::time_duration &p, const boost::posix_time::time_duration &s, const uint8_t &o) : header_(h), period_(p), silence_(s), overflow_(o) {}
+    bool operator==(const SyncProperties &p) const { return p.header_ == (int) header_ && p.overflow_ == overflow_ && p.period_ == period_ && p.silence_ == silence_; }
 
 };
 
@@ -208,6 +210,7 @@ public:
     virtual void recover(LayerStatus &status);
     virtual void read(LayerStatus &status);
     virtual void write(LayerStatus &status);
+    virtual void pending(LayerStatus &status);
     virtual void halt(LayerStatus &status);
     virtual void shutdown(LayerStatus &status);
     

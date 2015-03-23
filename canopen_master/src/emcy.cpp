@@ -69,12 +69,20 @@ void EMCYHandler::diag(LayerReport &report){
 
         uint8_t num = num_errors_.valid() ? num_errors_.get() : 0;
         std::stringstream buf;
-        for(size_t i= 0; i <num; ++i) {
+        for(size_t i = 0; i < num; ++i) {
             if( i!= 0){
                 buf << ", ";
             }
-            EMCYfield field(storage_->entry<uint32_t>(0x1003,i+1).get());
-            buf << std::hex << field.error_code << "#" << field.addition_info;
+            try{
+                ObjectStorage::Entry<uint32_t> error;
+                storage_->entry(error, 0x1003,i+1);
+                EMCYfield field(error.get());
+                buf << std::hex << field.error_code << "#" << field.addition_info;
+            }
+            catch (const std::out_of_range & e){
+                buf << "NOT_IN_DICT!";
+            }
+
         }
         report.add("errors", buf.str());
 
