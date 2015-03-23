@@ -72,9 +72,7 @@ using namespace boost::msm::front;
 ///
 ///
 ///
-// the player state machine contains a state which is himself a state machine
-// as you see, no need to declare it anywhere so StatusandControl can be developed separately
-// by another team in another module. For simplicity I just declare it inside player
+// the status and control state machine
 namespace canopen
 {
 typedef std::bitset<16> sw_word;
@@ -97,7 +95,7 @@ public:
 
   struct newStatusWord {};
   struct newControlWord {};
-  // when StatusandControl, the CD is loaded and we are in either pause or StatusandControl (duh)
+
   template <class Event,class FSM>
   void on_entry(Event const&,FSM& ) {std::cout << "entering: StatusandControl" << std::endl;}
   template <class Event,class FSM>

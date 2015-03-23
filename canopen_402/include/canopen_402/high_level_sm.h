@@ -60,9 +60,7 @@
 ///
 ///
 ///
-// the player state machine contains a state which is himself a state machine
-// as you see, no need to declare it anywhere so highLevelSm can be developed separately
-// by another team in another module. For simplicity I just declare it inside player
+// the high level state machine
 #include <boost/msm/back/state_machine.hpp>
 #include <boost/msm/front/state_machine_def.hpp>
 #include <boost/msm/front/functor_row.hpp>
@@ -97,16 +95,6 @@ public:
   struct startMachine {};
   struct stopMachine {};
 
-  //  class onSM_ : public msm::front::state_machine_def<onSM_>
-  //  {
-  //  public:
-  //    onSM_() {}
-  //    onSM_(const boost::shared_ptr<cw_word> &control_word) : control_word_intern_(control_word)
-  //    {
-  //      motorStateMachine = motorSM(control_word_intern_);
-  //      motorStateMachine.start();
-  //      motorStateMachine.process_event(motorSM::boot());
-  //    }
   struct enterStandBy {};
   struct checkModeSwitch
   {
@@ -132,11 +120,6 @@ public:
 
   motorSM motorStateMachine;
   IPMode ipModeMachine;
-  // when highLevelSm, the CD is loaded and we are in either pause or highLevelSm (duh)
-  //      template <class Event,class FSM>
-  //      void on_entry(Event const&,FSM& ) {std::cout << "entering: OnSm" << std::endl;}
-  //      template <class Event,class FSM>
-  //      void on_exit(Event const&,FSM& ) {std::cout << "leaving: OnSm" << std::endl;}
 
   // The list of FSM states
   struct StartUp : public msm::front::state<>
@@ -237,7 +220,6 @@ public:
     }
   }
 
-  // when highLevelSm, the CD is loaded and we are in either pause or highLevelSm (duh)
   template <class Event,class FSM>
   void on_entry(Event const&,FSM& ) {std::cout << "entering: highLevelSm" << std::endl;}
   template <class Event,class FSM>
@@ -305,8 +287,8 @@ public:
   template <class FSM,class Event>
   void no_transition(Event const& e, FSM&,int state)
   {
-    std::cout << "no transition from state " << state
-              << " on event " << typeid(e).name() << std::endl;
+    //std::cout << "no transition from state " << state
+    //          << " on event " << typeid(e).name() << std::endl;
   }
 private:
   boost::shared_ptr<InternalState> state_;

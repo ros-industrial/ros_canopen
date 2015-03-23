@@ -61,9 +61,7 @@
 ///
 ///
 ///
-// the player state machine contains a state which is himself a state machine
-// as you see, no need to declare it anywhere so IPMode can be developed separately
-// by another team in another module. For simplicity I just declare it inside player
+// the ip mode state machine
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
 
@@ -82,7 +80,7 @@ public:
   struct disableIP {};
   struct selectMode {};
   struct deselectMode {};
-  // when IPMode, the CD is loaded and we are in either pause or IPMode (duh)
+
   template <class Event,class FSM>
   void on_entry(Event const&,FSM& ) {std::cout << "entering: IPMode" << std::endl;}
   template <class Event,class FSM>

@@ -251,17 +251,21 @@ const double Node_402::getActualInternalPos()
 
 void Node_402::setTargetVel(const double &target_vel)
 {
+  double tgvel = target_vel;
+
   if (*state_ == Operation_Enable && valid_mode_state_)
   {
-    *target_vel_ = target_vel;
+    *target_vel_ = tgvel;
   }
 }
 
 void Node_402::setTargetPos(const double &target_pos)
 {
+  double tgpos = target_pos;
+
   if (*state_ == Operation_Enable && valid_mode_state_)
   {
-    *target_pos_ = target_pos;
+    *target_pos_ = tgpos;
   }
 }
 

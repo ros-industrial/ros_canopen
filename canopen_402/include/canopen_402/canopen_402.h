@@ -79,6 +79,10 @@ public:
 
     status_word_bitset = boost::make_shared<sw_word>();
     control_word_bitset = boost::make_shared<cw_word>();
+
+    target_pos_ = boost::make_shared<double>();
+    target_vel_ = boost::make_shared<double>();
+
     state_ = boost::make_shared<InternalState>(Start);
     target_state_ = boost::make_shared<InternalState>(Start);
 
@@ -96,6 +100,9 @@ public:
     homing_mask.set(SW_Target_reached);
     homing_mask.set(SW_Operation_specific0);
     homing_mask.set(SW_Operation_specific1);
+
+    target_pos_ = boost::make_shared<double>();
+    target_vel_ = boost::make_shared<double>();
 
     status_word_bitset = boost::make_shared<sw_word>();
     control_word_bitset = boost::make_shared<cw_word>();
