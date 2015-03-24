@@ -1438,7 +1438,7 @@ DataType=0x0005
 AccessType=rw
 DefaultValue=8
 PDOMapping=0
-ParameterValue=50
+ParameterValue=10
 
 [60C2sub2]
 ParameterName=interpolation_time_period_index
@@ -1591,7 +1591,7 @@ ParameterName=supported_drive_modes
 ObjectType=0x7
 DataType=0x0007
 AccessType=ro
-DefaultValue=0x00000062
+DefaultValue=0x00000063
 PDOMapping=0
 
 [ManufacturerObjects]
