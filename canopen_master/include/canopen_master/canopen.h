@@ -140,14 +140,14 @@ public:
 };
 
 class EMCYHandler{
-    uint8_t error_register_;
-    ObjectStorage::Entry<uint8_t> error_register_obj_;
+    bool has_error_;
+    ObjectStorage::Entry<uint8_t> error_register_;
     ObjectStorage::Entry<uint8_t> num_errors_;
     can::CommInterface::FrameListener::Ptr emcy_listener_;
     void handleEMCY(const can::Frame & msg);
     const boost::shared_ptr<ObjectStorage> storage_;
 public:
-    virtual void init(LayerStatus &status);
+    virtual void init();
     virtual void recover();
     virtual void diag(LayerReport &report);
     virtual void read(LayerStatus &status);
