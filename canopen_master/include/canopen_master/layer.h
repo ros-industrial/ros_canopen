@@ -59,12 +59,12 @@ public:
     virtual void pending(LayerStatus &status) = 0;
     virtual void read(LayerStatus &status) = 0;
     virtual void write(LayerStatus &status) = 0;
-    
+
     virtual void diag(LayerReport &report) = 0;
-    
+
     virtual void init(LayerStatus &status) = 0;
     virtual void shutdown(LayerStatus &status) = 0;
-    
+
     virtual void halt(LayerStatus &status) = 0;
     virtual void recover(LayerStatus &status) = 0;
     
@@ -103,9 +103,9 @@ protected:
     typedef typename vector_type::iterator iterator;
     typedef typename vector_type::reverse_iterator reverse_iterator;
 
-    class Iterator{
+    class IteratorGuard{
     public:
-        Iterator &operator=(const iterator& it){
+        IteratorGuard &operator=(const iterator& it){
             boost::mutex::scoped_lock lock(mutex_);
             it_ = it;
             return *this;
@@ -113,6 +113,10 @@ protected:
         operator iterator() {
             boost::mutex::scoped_lock lock(mutex_);
             return it_;
+        }
+        bool operator==(const iterator &it) {
+            boost::mutex::scoped_lock lock(mutex_);
+            return it_ == it;
         }
         iterator swap(const iterator& it){
             boost::mutex::scoped_lock lock(mutex_);
@@ -168,7 +172,12 @@ public:
         bringup(&Layer::init, &Layer::shutdown, status);
     }
     virtual void recover(LayerStatus &status) {
-        bringup(&Layer::recover, &Layer::halt, status);
+        if(pending_ == this->layers.end()){
+            bringup(&Layer::recover, &Layer::halt, status);
+            pending_ = this->layers.end();
+        }else{
+            status.error("Chain was not  initialized properly");
+        }
     }
     virtual void add(const boost::shared_ptr<T> &l) { VectorHelper<T>::add(l); pending_ = this->layers.begin();; }
 };
@@ -209,14 +218,16 @@ public:
         this->callFwdOrFail(&Layer::write, &Layer::halt, status);
     }
     virtual void shutdown(LayerStatus &status){
-        typename V::iterator begin = this->pending_.swap(this->layers.begin());
-        if(begin != this->layers.begin()) --begin; // include pendign layer
-        this->template call(&Layer::shutdown, status, begin, this->layers.end());
+        typename V::iterator end = this->pending_.swap(this->layers.begin());
+        if(end != this->layers.end()){
+            ++end; // include pendign layer
+        }
+        this->template call(&Layer::shutdown, status, this->layers.begin(), end);
     }
     virtual void halt(LayerStatus &status){
-        typename V::iterator begin = this->pending_;
-        if( begin != this->layers.begin()) --begin; // include pendign layer
-        this->template call(&Layer::halt, status, begin, this->layers.end());
+        typename V::iterator end = this->layers.end();
+        if(end != this->layers.end()) ++end; // include pendign layer
+        this->template call(&Layer::halt, status, this->layers.begin(), end);
     }
     LayerGroup(const std::string &n) : LayerVector<T>(n) {}
 };
