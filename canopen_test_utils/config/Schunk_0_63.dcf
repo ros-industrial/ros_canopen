@@ -452,7 +452,7 @@ PDOMapping=0
 LowLimit=0
 HighLimit=8
 ObjFlags=0
-ParameterValue=3
+ParameterValue=2
 
 [1600sub1]
 ParameterName=1. mapped Object
@@ -481,7 +481,6 @@ DataType=0x0007
 AccessType=rw
 PDOMapping=0
 ObjFlags=0
-ParameterValue=0x60600008
 
 [1600sub4]
 ParameterName=4. mapped Object

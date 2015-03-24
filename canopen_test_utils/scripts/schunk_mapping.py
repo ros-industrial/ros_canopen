@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 PDOs={
-"RPDO1": [1, ('6040',     "control_word",                 2), ('6042',     "target_velocity",              2), ('6060',     "op_mode",                      1)],
+"RPDO1": [1, ('6040',     "control_word",                 2), ('6042',     "target_velocity",              2)],
 "RPDO2": [1, ('607A',     "target_position",              4), ('60C1sub1', "target_interpolated_velocity", 4)],
 
 "TPDO1": [1, ('6041',     "status_word",                  2), ('6061',     "op_mode_display",              1)],

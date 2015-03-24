@@ -157,7 +157,7 @@ void Node_402::pending(LayerStatus &status)
     else if (homing_needed_)
     {
       if (operation_mode_ != Homing)
-        op_mode.set(Homing);
+        op_mode.set_cached(Homing);
       else
       {
         control_word_bitset.set(CW_Operation_mode_specific0);
@@ -292,7 +292,7 @@ void Node_402::switchMode(LayerStatus &status)
   }
   else
   {
-    op_mode.set(operation_mode_to_set_);
+    op_mode.set_cached(operation_mode_to_set_);
   }
 }
 
