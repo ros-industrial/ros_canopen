@@ -2597,6 +2597,7 @@ DefaultValue=0
 PDOMapping=0
 LowLimit=0
 HighLimit=1
+ParameterValue=1
 
 [60C4sub4]
 ParameterName=interpolation_data_configuration_buffer_position
