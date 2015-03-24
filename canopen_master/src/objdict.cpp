@@ -30,7 +30,10 @@ template<> String & ObjectStorage::Data::allocate(){
 
 void ObjectStorage::Data::init(){
     boost::mutex::scoped_lock lock(mutex);
-    if(!valid || (!entry->init_val.is_empty() && buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
+
+    if(entry->init_val.is_empty()) return;
+
+    if(!valid || (buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
         buffer = entry->init_val.data();
         valid = true;
         if(entry->writable)
@@ -378,9 +381,7 @@ void ObjectStorage::init_all(){
 
     boost::unordered_map<ObjectDict::Key, boost::shared_ptr<const ObjectDict::Entry> >::const_iterator entry_it;
     while(dict_->iterate(entry_it)){
-       if(!entry_it->second->init_val.is_empty() && (entry_it->second->def_val.is_empty() || entry_it->second->init_val.data() != entry_it->second->def_val.data())){
-           init_nolock(entry_it->first, entry_it->second);
-       }
+        init_nolock(entry_it->first, entry_it->second);
     }
 }
 
