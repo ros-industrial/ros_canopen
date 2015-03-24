@@ -62,6 +62,9 @@ void Node_402::pending(LayerStatus &status)
   processSW(status);
   processCW(status);
   additionalInfo(status);
+
+  *target_pos_ = ac_pos_;
+  *target_vel_ = 0;
 }
 
 
@@ -71,7 +74,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var, bool wait)
 
   if (isModeSupported(op_mode_var))
   {
-    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
+    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var, EVENT_TIMEOUT));
 
     if(transition_success == boost::msm::back::HANDLED_FALSE)
     {
@@ -93,9 +96,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
   {
     op_mode.set(op_mode_var);
 
-    boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
-
-    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
+    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var, EVENT_TIMEOUT));
 
     if(transition_success == boost::msm::back::HANDLED_FALSE)
     {
@@ -255,7 +256,9 @@ void Node_402::halt(LayerStatus &status)
 
 void Node_402::recover(LayerStatus &status)
 {
+  motorEvent(highLevelSM::stopMachine());
 
+  turnOn(status);
 }
 
 const double Node_402::getTargetPos()
@@ -328,7 +331,10 @@ void Node_402::setTargetVel(const double &target_vel)
 
 void Node_402::setTargetPos(const double &target_pos)
 {
-  *target_pos_ = target_pos;
+  if (*state_ == Operation_Enable && valid_mode_state_)
+  {
+    *target_pos_ = target_pos;
+  }
 }
 
 void Node_402::configureEntries()
@@ -393,13 +399,12 @@ bool Node_402::turnOn(LayerStatus &s)
 
   if(*state_ == Fault)
   {
-    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset));
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset, EVENT_TIMEOUT)); //this is the timeout in milliseconds
     LOG("Trying to reset the device's fault");
     motorEvent(highLevelSM::enterStandBy());
   }
 
-
-  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown));
+  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown, EVENT_TIMEOUT));
   if(!transition_success)
   {
     return false;
@@ -408,24 +413,18 @@ bool Node_402::turnOn(LayerStatus &s)
   std::cout << "State:" << *state_ << std::endl;
   LOG("shutdown");
 
-  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
-
-  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
+  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn, EVENT_TIMEOUT));
   LOG("switch_on");
-    if(!transition_success)
-      return false;
+  if(!transition_success)
+    return false;
   motorEvent(highLevelSM::enterStandBy());
 
-  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
-
-  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
+  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp, EVENT_TIMEOUT));
   LOG("enable_op");
 
-    if(!transition_success)
-      return false;
+  if(!transition_success)
+    return false;
   motorEvent(highLevelSM::enterStandBy());
-
-  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
 
   return true;
 }
@@ -457,21 +456,21 @@ bool Node_402::turnOn()
   enterModeAndWait(OperationMode(7), true);
 
   if(*state_ == Fault)
-    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset));
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset, EVENT_TIMEOUT));
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown));
+  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown, EVENT_TIMEOUT));
   if(!transition_success)
     return false;
   motorEvent(highLevelSM::enterStandBy());
 
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
+  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn, EVENT_TIMEOUT));
 
   if(!transition_success)
     return false;
   motorEvent(highLevelSM::enterStandBy());
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
+  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp, EVENT_TIMEOUT));
 
   if(!transition_success)
     return false;

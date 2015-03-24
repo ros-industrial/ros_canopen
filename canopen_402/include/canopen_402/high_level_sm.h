@@ -100,8 +100,11 @@ public:
   struct checkModeSwitch
   {
     OperationMode op_mode;
-    checkModeSwitch() : op_mode() {}
-    checkModeSwitch( OperationMode mode) : op_mode(mode) {}
+    int timeout;
+
+    checkModeSwitch() : op_mode(), timeout(0) {}
+    checkModeSwitch( OperationMode mode) : op_mode(mode), timeout(0) {}
+    checkModeSwitch( OperationMode mode, int timeOut) : op_mode(mode), timeout(timeOut) {}
   };
   struct enableMove
   {
@@ -115,8 +118,11 @@ public:
   struct runMotorSM
   {
     InternalActions action;
-    runMotorSM() : action() {}
-    runMotorSM( InternalActions actionToTake) : action(actionToTake) {}
+    int timeout;
+
+    runMotorSM() : action(), timeout(0) {}
+    runMotorSM(InternalActions actionToTake) : action(actionToTake), timeout(0) {}
+    runMotorSM(InternalActions actionToTake, int timeOut) : action(actionToTake), timeout(timeOut) {}
   };
 
   motorSM motorStateMachine;
@@ -162,9 +168,10 @@ public:
   struct Move : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: Drive" << std::endl;}
+    void on_entry(Event const&,FSM& ) {std::cout << "starting: Move" << std::endl;}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: Drive" << std::endl;}
+    void on_exit(Event const&,FSM& )
+    {std::cout << "finishing: Move" << std::endl;}
   };
 
   // the initial state. Must be defined
@@ -182,27 +189,27 @@ public:
     {
     case FaultReset:
       motorStateMachine.process_event(motorSM::fault_reset());
-      boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
       if(*state_ != Ready_To_Switch_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case Shutdown:
       motorStateMachine.process_event(motorSM::shutdown());
-      boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
       std::cout << "State: " <<  *state_ << std::endl;
       if(*state_ != Ready_To_Switch_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case SwitchOn:
       motorStateMachine.process_event(motorSM::switch_on());
-      boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
       std::cout << "State: " <<  *state_ << std::endl;
       if(*state_ != Switched_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case EnableOp:
       motorStateMachine.process_event(motorSM::enable_op());
-      boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
       std::cout << "State: " <<  *state_ << std::endl;
       if(*state_ != Operation_Enable)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
@@ -271,6 +278,8 @@ public:
 
   void stop_machine(stopMachine const&)
   {
+    ipModeMachine.process_event(IPMode::disableIP());
+    ipModeMachine.process_event(IPMode::deselectMode());
     std::cout << "highLevelSm::read_status\n";
   }
   // guard conditions
