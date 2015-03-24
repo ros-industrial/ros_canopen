@@ -93,7 +93,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 
   if (isModeSupported(op_mode_var))
   {
-    op_mode.set(op_mode_var);
+    op_mode.set_cached(op_mode_var);
 
     bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var, EVENT_TIMEOUT));
 
@@ -343,8 +343,6 @@ void Node_402::configureEntries()
   n_->getStorage()->entry(op_mode_display, 0x6061);
   n_->getStorage()->entry(supported_drive_modes, 0x6502);
 
-  n_->getStorage()->entry(ip_mode_sub_mode, 0x60C0);
-
   n_->getStorage()->entry(actual_vel, 0x606C);
 
   n_->getStorage()->entry(actual_pos, 0x6064);
@@ -365,6 +363,7 @@ void Node_402::configureModeSpecificEntries()
   }
   if (isModeSupported(Interpolated_Position))
   {
+    n_->getStorage()->entry(ip_mode_sub_mode, 0x60C0);
     n_->getStorage()->entry(target_interpolated_position, 0x60C1, 0x01);
     if (ip_mode_sub_mode.get_cached() == -1)
       n_->getStorage()->entry(target_interpolated_velocity, 0x60C1, 0x02);
@@ -509,7 +508,7 @@ void Node_402::init(LayerStatus &s)
 
   LOG("configureModeSpecificEntries");
 
-  if (homing_method.get() != 0)
+  if (homing_method.valid() && homing_method.get() != 0)
     homing_needed_ = true;
 
   LOG("getHoming");

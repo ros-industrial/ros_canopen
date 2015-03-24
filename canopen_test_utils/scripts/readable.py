@@ -11,14 +11,13 @@ def hex_reverse(data):
     return ''.join(reversed([data[i:i+2] for i in xrange(0, len(data), 2)]))
     
 def decode_state(id,data):
-    state = int(data[0],16)
+    state = int(data[0:2],16)
 
     if state & 128:
         toggle =" T=1"
         state ^=128
     else:
         toggle = "T=0"
-    
     if state == 0:
         state = 'boot-up'
     elif state == 4:
@@ -69,7 +68,7 @@ def decode_sdo(id,data, name, start_id):
     command = int(data[0:2],16) >> 5
     out = [name, id-start_id]
     if command == 1 or command == 2 or command == 3:
-        out += [hex_reverse(data[2:6]), data[6:8]]
+        out += [hex_reverse(data[2:6]), data[6:8], hex_reverse(data[8:])]
     return out
 
 def decode_emcy(id,data):

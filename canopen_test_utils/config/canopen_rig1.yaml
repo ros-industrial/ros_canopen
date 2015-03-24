@@ -6,9 +6,11 @@ defaults:
   # pos_unit_factor: 0.1
   # eff_unit_factor: 1000000000000.0
 
-modules:
-  - name: rig1_plate_joint
+nodes:
+  rig1_plate_joint:
     id: 1
     # vel_unit_factor: 0.01
     dcf_overlay: # "ObjectID": "ParameterValue" (both as strings)
       "6098": "35" #  homing method
+      "1016sub1" : "0x7F0064" # heartbeat timeout of 100 ms for master at 127
+      "1017": "100" # heartbeat producer

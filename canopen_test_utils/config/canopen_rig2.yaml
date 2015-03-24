@@ -4,7 +4,10 @@ defaults:
   eds_pkg: canopen_test_utils
   eds_file: "config/Elmo.dcf"
 
-modules:
-  - name: rig2_plate_joint
+nodes:
+  rig2_plate_joint:
     id: 85
-     
+    dcf_overlay: # "ObjectID": "ParameterValue" (both as strings)
+      "6098": "35" #  homing method
+      "1016sub1" : "0x7F0064" # heartbeat timeout of 100 ms for master at 127
+      "1017": "100" # heartbeat producer

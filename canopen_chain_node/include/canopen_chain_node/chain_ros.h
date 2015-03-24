@@ -152,7 +152,9 @@ protected:
             if(!pending_status->bounded<LayerStatus::Warn>()){
                 shutdown(*pending_status);
                 thread_.reset();
-            }else if(heartbeat_timer_.isValid()) heartbeat_timer_.start();
+            }else{
+                heartbeat_timer_.start();
+            }
         }
         catch( const canopen::Exception &e){
             std::string info = boost::diagnostic_information(e);
@@ -334,7 +336,10 @@ protected:
             std::string msg;
             double rate = 0;
 
-            if(!hb_nh.getParam("msg", msg) && !hb_nh.getParam("rate", rate)) return true; // nothing todo
+            bool got_any = hb_nh.getParam("msg", msg);
+            got_any = hb_nh.getParam("rate", rate) || got_any;
+
+            if( !got_any) return true; // nothing todo
 
             if(rate <=0 ){
                 ROS_ERROR_STREAM("Rate '"<< rate << "' is invalid");

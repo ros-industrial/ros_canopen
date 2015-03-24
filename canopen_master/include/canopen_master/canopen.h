@@ -140,14 +140,14 @@ public:
 };
 
 class EMCYHandler{
-    uint8_t error_register_;
-    ObjectStorage::Entry<uint8_t> error_register_obj_;
+    bool has_error_;
+    ObjectStorage::Entry<uint8_t> error_register_;
     ObjectStorage::Entry<uint8_t> num_errors_;
     can::CommInterface::FrameListener::Ptr emcy_listener_;
     void handleEMCY(const can::Frame & msg);
     const boost::shared_ptr<ObjectStorage> storage_;
 public:
-    virtual void init(LayerStatus &status);
+    virtual void init();
     virtual void recover();
     virtual void diag(LayerReport &report);
     virtual void read(LayerStatus &status);
@@ -186,11 +186,11 @@ public:
     
     const boost::shared_ptr<ObjectStorage> getStorage() { return sdo_.storage_; }
     
-    void start();
-    void stop();
-    void reset();
-    void reset_com();
-    void prepare();
+    bool start();
+    bool stop();
+    bool reset();
+    bool reset_com();
+    bool prepare();
     
     typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
     typedef can::Listener<const StateDelegate, const State&> StateListener;
@@ -215,7 +215,7 @@ public:
     virtual void shutdown(LayerStatus &status);
     
 private:
-    template<typename T> void wait_for(const State &s, const T &timeout);
+    template<typename T> int wait_for(const State &s, const T &timeout);
     
     boost::timed_mutex mutex;
     boost::mutex cond_mutex;
@@ -238,6 +238,8 @@ private:
     PDOMapper pdo_;
 
     boost::chrono::high_resolution_clock::time_point heartbeat_timeout_;
+    double getHeartbeatInterval() { return heartbeat_.valid()?heartbeat_.get_cached() : 0; }
+    void setHeartbeatInterval() { if(heartbeat_.valid()) heartbeat_.set(heartbeat_.desc().value().get<uint16_t>()); }
     bool checkHeartbeat();
 };
 

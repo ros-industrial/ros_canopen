@@ -314,6 +314,17 @@ protected:
                 write_delegate(*entry, buffer);
             }
         }
+        template<typename T>  void set_cached(const T &val) {
+            boost::mutex::scoped_lock lock(mutex);
+            if(!valid || val != access<T>() ){
+                if(!entry->writable){
+                        BOOST_THROW_EXCEPTION( AccessException(key) );
+                }else{
+                    allocate<T>() = val;
+                    write_delegate(*entry, buffer);
+                }
+            }
+        }
         void init();
         void reset();
         void force_write();
@@ -360,7 +371,16 @@ public:
             if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
             data->set(val);
         }
-        
+        bool set_cached(const T &val) {
+            if(!data) return false;
+            try{
+	            data->set_cached(val);
+				return true;
+            }catch(...){
+                return false;
+            }
+        }
+ 
         Entry() {}
         Entry(boost::shared_ptr<Data> &d)
         : data(d){
