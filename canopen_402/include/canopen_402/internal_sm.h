@@ -284,7 +284,7 @@ public:
   template <class FSM,class Event>
   void exception_caught (Event const&,FSM& fsm,std::exception& )
   {
-    std::cout << "Could not switch_state" << std::endl;
+//    std::cout << "Could not switch_state" << std::endl;
     //fsm.process_event(disable_voltage());
   }
 private:

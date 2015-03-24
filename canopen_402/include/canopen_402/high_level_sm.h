@@ -201,21 +201,18 @@ public:
     case Shutdown:
       motorStateMachine.process_event(motorSM::shutdown());
       boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
-      std::cout << "State: " <<  *state_ << std::endl;
       if(*state_ != Ready_To_Switch_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case SwitchOn:
       motorStateMachine.process_event(motorSM::switch_on());
       boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
-      std::cout << "State: " <<  *state_ << std::endl;
       if(*state_ != Switched_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case EnableOp:
       motorStateMachine.process_event(motorSM::enable_op());
       boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
-      std::cout << "State: " <<  *state_ << std::endl;
       if(*state_ != Operation_Enable)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
@@ -252,25 +249,25 @@ public:
   }
 
   template <class Event,class FSM>
-  void on_entry(Event const&,FSM& ) {std::cout << "entering: highLevelSm" << std::endl;}
+  void on_entry(Event const&,FSM& ) {/*std::cout << "entering: highLevelSm" << std::endl;*/}
   template <class Event,class FSM>
-  void on_exit(Event const&,FSM& ) {std::cout << "leaving: highLevelSm" << std::endl;}
+  void on_exit(Event const&,FSM& ) {/*std::cout << "leaving: highLevelSm" << std::endl;*/}
 
   // The list of FSM states
   struct machineStopped : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: Off" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: Off" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: Off" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: Off" << std::endl;*/}
 
   };
   struct machineRunning : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: On" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: On" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: On" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: On" << std::endl;*/}
   };
 
   // the initial state. Must be defined
@@ -278,14 +275,13 @@ public:
   // transition actions
   void start_machine(startMachine const&)
   {
-    std::cout << "highLevelSm::turn_on\n";
+//    std::cout << "highLevelSm::turn_on\n";
   }
 
   void stop_machine(stopMachine const&)
   {
     ipModeMachine.process_event(IPMode::disableIP());
     ipModeMachine.process_event(IPMode::deselectMode());
-    std::cout << "highLevelSm::read_status\n";
   }
   // guard conditions
 

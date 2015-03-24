@@ -97,9 +97,9 @@ public:
   struct newControlWord {};
 
   template <class Event,class FSM>
-  void on_entry(Event const&,FSM& ) {std::cout << "entering: StatusandControl" << std::endl;}
+  void on_entry(Event const&,FSM& ) {/*std::cout << "entering: StatusandControl" << std::endl;*/}
   template <class Event,class FSM>
-  void on_exit(Event const&,FSM& ) {std::cout << "leaving: StatusandControl" << std::endl;}
+  void on_exit(Event const&,FSM& ) {/*std::cout << "leaving: StatusandControl" << std::endl;*/}
 
   // The list of FSM states
   struct writeControl : public msm::front::state<>
@@ -196,8 +196,8 @@ public:
   template <class FSM,class Event>
   void no_transition(Event const& e, FSM&,int state)
   {
-    std::cout << "no transition from state " << state
-              << " on event " << typeid(e).name() << std::endl;
+//    std::cout << "no transition from state " << state
+//              << " on event " << typeid(e).name() << std::endl;
   }
 
 private:

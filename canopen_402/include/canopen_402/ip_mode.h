@@ -128,23 +128,22 @@ public:
     control_word_->set(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "IPMode::enable_ip\n";
+//    std::cout << "IPMode::enable_ip\n";
   }
   void disable_ip(disableIP const&)
   {
     //control_word_->reset(CW_Operation_mode_specific0); TODO: for the moment IP remains enable to avoid the breaks to be active
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "IPMode::read_status\n";
   }
 
   void select_mode(selectMode const&)
   {
-    std::cout << "IPMode::selectMode\n";
+//    std::cout << "IPMode::selectMode\n";
   }
   void deselect_mode(deselectMode const&)
   {
-    std::cout << "IPMode::deselectMode\n";
+//    std::cout << "IPMode::deselectMode\n";
   }
   // guard conditions
 

@@ -244,15 +244,20 @@ void Node_402::halt(LayerStatus &status)
 {
   bool transition_success;
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(QuickStop, EVENT_TIMEOUT));
+//  transition_success = motorEvent(highLevelSM::runMotorSM(QuickStop, EVENT_TIMEOUT));
 }
 
 
 void Node_402::recover(LayerStatus &status)
 {
+  bool recover_success;
+
   motorEvent(highLevelSM::stopMachine());
 
-  turnOn(status);
+  recover_success = turnOn(status);
+
+  if(!recover_success)
+    status.error("Failed to Recover the modules");
 }
 
 const double Node_402::getTargetPos()
