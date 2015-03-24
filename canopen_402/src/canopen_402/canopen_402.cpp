@@ -60,8 +60,8 @@ using canopen::Node_402;
 void Node_402::pending(LayerStatus &status)
 {
   processSW(status);
-
   processCW(status);
+  additionalInfo(status);
 }
 
 
@@ -71,9 +71,13 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var, bool wait)
 
   if (isModeSupported(op_mode_var))
   {
-    bool transition_success = motorAbstraction.process_event(highLevelSM::checkModeSwitch(op_mode_var));
-    if(!transition_success)
+    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
+
+    if(transition_success == boost::msm::back::HANDLED_FALSE)
+    {
+      std::cout << "COULD NOT SWITCH" << std::endl;
       return false;
+    }
     valid_mode_state_ = true;
     return true;
   }
@@ -91,15 +95,10 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 
     boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
 
-    boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
-    if(!lock) return false;
+    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
 
-    bool transition_success = motorAbstraction.process_event(highLevelSM::checkModeSwitch(op_mode_var));
-    std::cout << "TSHSHSSJSHSJ" << transition_success << std::endl;
-
-    if(transition_success == boost::msm::back::HANDLED_GUARD_REJECT)
+    if(transition_success == boost::msm::back::HANDLED_FALSE)
     {
-      std::cout << "COULD NOT SWITCH" << std::endl;
       return false;
     }
     valid_mode_state_ = true;
@@ -111,7 +110,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 
 void Node_402::processSW()
 {
-  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
   if(!lock) return;
 
   std::bitset<16> sw_new(7/*status_word.get()*/);
@@ -122,7 +121,7 @@ void Node_402::processSW()
 
 void Node_402::processSW(LayerStatus &status)
 {
-  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
   if(!lock) return;
 
   std::bitset<16> sw_new(status_word.get());
@@ -136,10 +135,11 @@ void Node_402::processSW(LayerStatus &status)
 void Node_402::additionalInfo(LayerStatus &s)
 {
 
-  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
   if(!lock) return;
 
   *operation_mode_ = (OperationMode) op_mode_display.get();
+  LOG("AdditionalINfo, Mode: " << *operation_mode_);
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
   ac_eff_ = 0; //Currently no effort directly obtained from the HW
@@ -148,7 +148,7 @@ void Node_402::additionalInfo(LayerStatus &s)
 void Node_402::additionalInfo()
 {
 
-  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
   if(!lock) return;
 
   *operation_mode_ = OperationMode(7);
@@ -161,6 +161,7 @@ void Node_402::additionalInfo()
 void Node_402::read()
 {
   processSW();
+  additionalInfo();
 }
 
 void Node_402::read(LayerStatus &status)
@@ -171,52 +172,66 @@ void Node_402::read(LayerStatus &status)
 
 void Node_402::write(LayerStatus &status)
 {
-
-  if(*state_ == Operation_Enable)
-    motorAbstraction.process_event(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
-
+  move(status);
   processCW(status);
+  motorEvent(highLevelSM::enterStandBy());
 }
+
 
 void Node_402::processCW()
 {
-  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
   if(!lock) return;
 
   SwCwSM.process_event(StatusandControl::newControlWord());
 
   int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
-
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
 }
 
 void Node_402::processCW(LayerStatus &status)
 {
-  boost::mutex::scoped_lock lock(cond_mutex_, boost::try_to_lock);
+  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
   if(!lock) return;
 
   SwCwSM.process_event(StatusandControl::newControlWord());
 
+  std::cout << "Control WORd" << *control_word_bitset << std::endl;
+
   int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
 
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
   control_word.set(cw_set);
+}
+
+void Node_402::move()
+{
+  if(*state_ == Operation_Enable)
+  {
+    bool transition_sucess = motorEvent(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
+
+  }
+}
+
+void Node_402::move(LayerStatus &status)
+{
+  if(*state_ == Operation_Enable)
+  {
+    bool transition_success = motorEvent(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
+    if(transition_success)
+    {
+      target_interpolated_position.set(*target_pos_);
+      if (ip_mode_sub_mode.get_cached() == -1)
+        target_interpolated_velocity.set(*target_vel_);
+    }
+  }
+
 }
 
 // Temp function,for the purpose of testing the State Machines without the real HW
 void Node_402::write()
 {
-
-  if(*state_ == Operation_Enable)
-    motorAbstraction.process_event(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
-
-  SwCwSM.process_event(StatusandControl::newControlWord());
-
-  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
-
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
-
+  move();
   processCW();
+  motorEvent(highLevelSM::enterStandBy());
 }
 
 void Node_402::shutdown(LayerStatus &status)
@@ -304,18 +319,12 @@ const double Node_402::getActualInternalPos()
 
 void Node_402::setTargetVel(const double &target_vel)
 {
-  if (*state_ == Operation_Enable && valid_mode_state_)
-  {
-    *target_vel_ = target_vel;
-  }
+  *target_vel_ = target_vel;
 }
 
 void Node_402::setTargetPos(const double &target_pos)
 {
-  if (*state_ == Operation_Enable && valid_mode_state_)
-  {
-    *target_pos_ = target_pos;
-  }
+  *target_pos_ = target_pos;
 }
 
 void Node_402::configureEntries()
@@ -371,79 +380,106 @@ bool Node_402::turnOn(LayerStatus &s)
   LOG("Turn ON");
   bool transition_success;
 
-  motorAbstraction.process_event(highLevelSM::startMachine());
+  motorEvent(highLevelSM::startMachine());
 
   default_operation_mode_ = OperationMode(op_mode.get_cached());
   enterModeAndWait(default_operation_mode_);
 
+  LOG("enterMode");
+
   if(*state_ == Fault)
   {
-    transition_success =  motorAbstraction.process_event(highLevelSM::runMotorSM(FaultReset));
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset));
     LOG("Trying to reset the device's fault");
+    motorEvent(highLevelSM::enterStandBy());
   }
 
-  std::cout << "Checking control" << *control_word_bitset << std::endl;
+  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
 
-  transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(Shutdown));
-  if(!transition_success)
-    return false;
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
-  std::cout << "Checking control" << *control_word_bitset << std::endl;
+  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown));
+  //  if(!transition_success)
+  //    return false;
+  motorEvent(highLevelSM::enterStandBy());
+  std::cout << "State:" << *state_ << std::endl;
+  LOG("shutdown");
 
-  transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(SwitchOn));
-  std::cout << "Checking control" << *control_word_bitset << std::endl;
-  if(!transition_success)
-    return false;
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
+  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
 
-  transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(EnableOp));
-  std::cout << "Checking control" << *control_word_bitset << std::endl;
-  if(!transition_success)
-    return false;
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
+  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
+  LOG("switch_on");
+  //  if(!transition_success)
+  //    return false;
+  motorEvent(highLevelSM::enterStandBy());
+
+  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
+
+  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
+  LOG("enable_op");
+
+  //  if(!transition_success)
+  //    return false;
+  motorEvent(highLevelSM::enterStandBy());
+
+  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
+
   return true;
+}
+
+template<class Event>
+bool Node_402::motorEvent(Event const& evt)
+{
+  boost::mutex::scoped_lock lock(motor_mutex_, boost::try_to_lock);
+  if(!lock) return false;
+
+  bool transition_success;
+
+  transition_success = motorAbstraction.process_event(evt);
+
+  return transition_success;
 }
 
 bool Node_402::turnOn()
 {
+  motorEvent(highLevelSM::runMotorSM(FaultReset));
+
   configure_drive_ = true;
 
   LOG("Turn ON");
   bool transition_success;
 
-  motorAbstraction.process_event(highLevelSM::startMachine());
+  motorEvent(highLevelSM::startMachine());
 
   enterModeAndWait(OperationMode(7), true);
 
   if(*state_ == Fault)
-    transition_success =  motorAbstraction.process_event(highLevelSM::runMotorSM(FaultReset));
-  std::cout << "Checking control" << *control_word_bitset << std::endl;
-  transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(Shutdown));
-  if(!transition_success)
-    return false;
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
-  std::cout << "Checking control" << *control_word_bitset << std::endl;
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset));
 
-  transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(SwitchOn));
-  std::cout << "Checking control" << *control_word_bitset << std::endl;
+  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown));
   if(!transition_success)
     return false;
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
+  motorEvent(highLevelSM::enterStandBy());
 
-  transition_success = motorAbstraction.process_event(highLevelSM::runMotorSM(EnableOp));
-  std::cout << "Checking control" << *control_word_bitset << std::endl;
+
+  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
+
   if(!transition_success)
     return false;
-  motorAbstraction.process_event(highLevelSM::enterStandBy());
+  motorEvent(highLevelSM::enterStandBy());
+
+  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
+
+  if(!transition_success)
+    return false;
+  motorEvent(highLevelSM::enterStandBy());
 
   return true;
 }
 
 bool Node_402::turnOff(LayerStatus &s)
 {
-  motorAbstraction.process_event(highLevelSM::runMotorSM(Shutdown));
+  motorEvent(highLevelSM::runMotorSM(Shutdown));
 
-  motorAbstraction.process_event(highLevelSM::stopMachine());
+  motorEvent(highLevelSM::stopMachine());
 
 
   return true;
@@ -451,9 +487,9 @@ bool Node_402::turnOff(LayerStatus &s)
 
 bool Node_402::turnOff()
 {
-  motorAbstraction.process_event(highLevelSM::runMotorSM(Shutdown));
+  motorEvent(highLevelSM::runMotorSM(Shutdown));
 
-  motorAbstraction.process_event(highLevelSM::stopMachine());
+  motorEvent(highLevelSM::stopMachine());
 
 
   return true;
@@ -473,8 +509,6 @@ void Node_402::init(LayerStatus &s)
   LOG("getHoming");
 
   bool turn_on = Node_402::turnOn(s);
-
-  LOG("turnON");
 
   if (turn_on)
   {

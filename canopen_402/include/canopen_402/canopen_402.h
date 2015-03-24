@@ -133,6 +133,9 @@ public:
   virtual void processCW(LayerStatus &status);
   virtual void processCW();
 
+  virtual void move(LayerStatus &status);
+  virtual void move();
+
   virtual void processSW(LayerStatus &status);
   virtual void processSW();
 
@@ -173,6 +176,9 @@ public:
   void configureEntries();
   void configureModeSpecificEntries();
 
+  template <class Event>
+  bool motorEvent(Event const&);
+
 private:
 
   boost::shared_ptr <canopen::Node> n_;
@@ -184,7 +190,8 @@ private:
   bool motor_ready_;
   bool homing_needed_;
 
-  boost::mutex cond_mutex_;
+  boost::mutex motor_mutex_;
+  boost::mutex word_mutex_;
   boost::condition_variable cond;
 
   canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  status_word;

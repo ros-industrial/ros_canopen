@@ -89,7 +89,7 @@ public:
     motorStateMachine.start();
     motorStateMachine.process_event(motorSM::boot());
 
-    ipModeMachine = IPMode();
+    ipModeMachine = IPMode(control_word_);
     ipModeMachine.start();
   }
   struct startMachine {};
@@ -181,19 +181,23 @@ public:
     {
     case FaultReset:
       motorStateMachine.process_event(motorSM::fault_reset());
-      std::cout << "Trying to reset the fault" << std::endl;
+      if(*state_ != Ready_To_Switch_On)
+        BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case Shutdown:
       motorStateMachine.process_event(motorSM::shutdown());
-      std::cout << "Trying to shutdown" << std::endl;
+      if(*state_ != Ready_To_Switch_On)
+        BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case SwitchOn:
       motorStateMachine.process_event(motorSM::switch_on());
-      std::cout << "Trying to switch on" << std::endl;
+      if(*state_ != Switched_On)
+        BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case EnableOp:
       motorStateMachine.process_event(motorSM::enable_op());
-      std::cout << "Trying to enable op" << std::endl;
+      if(*state_ != Operation_Enable)
+        BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     default:
       std::cout << "Action not specified" << std::endl;
@@ -203,11 +207,16 @@ public:
   template <class checkModeSwitch> void mode_switch(checkModeSwitch const& evt)
   {
     std::cout << "OnSm::switch_mode" << std::endl;
+    std::cout << "Operation Mode" << *operation_mode_ << ", Op_event:" << evt.op_mode << std::endl;
+    if(*operation_mode_ != evt.op_mode)
+      BOOST_THROW_EXCEPTION(std::invalid_argument("This operation mode can not be used"));
+
     switch(evt.op_mode)
     {
     case Interpolated_Position:
       ipModeMachine.process_event(IPMode::selectMode());
     }
+
   }
 
   template <class enableMove> void move(enableMove const& evt)
@@ -217,6 +226,8 @@ public:
     {
     case Interpolated_Position:
       ipModeMachine.process_event(IPMode::selectMode());
+
+      ipModeMachine.process_event(IPMode::enableIP());
     }
   }
 
@@ -254,15 +265,6 @@ public:
   {
     std::cout << "highLevelSm::read_status\n";
   }
-
-  bool check_hw_switch(checkModeSwitch const& evt)
-  {
-//    if(*operation_mode_ == evt.op_mode)
-//    {
-//       return true;
-//    }
-    return false;
-  }
   // guard conditions
 
   typedef highLevelSM_ hl; // makes transition table cleaner
@@ -275,7 +277,7 @@ public:
       Row < machineRunning   , none    , Standby   , none, none                       >,
 
       a_row < Standby   , runMotorSM    , updateMotorSM   , &hl::motor_sm                       >,
-      row < Standby   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch, &hl::check_hw_switch                       >,
+      a_row < Standby   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch                      >,
       a_row < Standby   , enableMove, Move   , &hl::move                     >,
       a_row < Standby   , stopMachine, machineStopped   , &hl::stop_machine                      >,
 
@@ -283,7 +285,7 @@ public:
       a_row < ModeSwitch   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < ModeSwitch   , stopMachine, machineStopped   , &hl::stop_machine                      >,
 
-      row < updateMotorSM   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch, &hl::check_hw_switch                       >,
+      a_row < updateMotorSM   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch                       >,
       a_row < updateMotorSM   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < updateMotorSM   , enableMove, Move   , &hl::move                     >,
       a_row < updateMotorSM   , stopMachine, machineStopped   , &hl::stop_machine                      >,
@@ -299,6 +301,13 @@ public:
     //std::cout << "no transition from state " << state
     //          << " on event " << typeid(e).name() << std::endl;
   }
+
+  template <class FSM,class Event>
+  void exception_caught (Event const&,FSM& fsm,std::exception& )
+  {
+
+  }
+
 private:
   boost::shared_ptr<InternalState> state_;
   boost::shared_ptr<InternalState> target_state_;

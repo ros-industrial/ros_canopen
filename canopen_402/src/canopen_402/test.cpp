@@ -18,6 +18,8 @@ int main()
     sleep(1);
     motor->write();
     sleep(1);
+    motor->enterModeAndWait(OperationMode(7), true);
+    sleep(1);
   }
 
   return 0;
