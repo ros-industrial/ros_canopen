@@ -86,30 +86,29 @@ public:
   {
     // every (optional) entry/exit methods get the event passed.
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "entering: Not_Ready_To_Switch_On_State" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "entering: Not_Ready_To_Switch_On_State" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "leaving: Not_Ready_To_Switch_On_State" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "leaving: Not_Ready_To_Switch_On_State" << std::endl;*/}
   };
 
   struct Switch_On_Disabled_State : public msm::front::state<>
   {
     // every (optional) entry/exit methods get the event passed.
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "entering: Switch_On_Disabled" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "entering: Switch_On_Disabled" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "leaving: Switch_On_Disabled" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "leaving: Switch_On_Disabled" << std::endl;*/}
   };
 
   struct Ready_To_Switch_On_State : public msm::front::state<>
   {
     // every (optional) entry/exit methods get the event passed.
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "entering: Ready_To_Switch_On" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "entering: Ready_To_Switch_On" << std::endl;*/}
     template <class Event,class FSM>
     void on_exit(Event const&,FSM& )
     {
-      //assert(1==2);
-      std::cout << "leaving: Ready_To_Switch_On" << std::endl;
+//      std::cout << "leaving: Ready_To_Switch_On" << std::endl;
     }
   };
 
@@ -117,36 +116,36 @@ public:
   {
     // every (optional) entry/exit methods get the event passed.
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "entering: Switched_On" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "entering: Switched_On" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "leaving: Switched_On" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "leaving: Switched_On" << std::endl;*/}
   };
 
   struct Operation_Enable_State : public msm::front::state<>
   {
     // every (optional) entry/exit methods get the event passed.
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "entering: Operation_Enable" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "entering: Operation_Enable" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "leaving: Operation_Enable" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "leaving: Operation_Enable" << std::endl;*/}
   };
 
   struct Quick_Stop_State : public msm::front::state<>
   {
     // every (optional) entry/exit methods get the event passed.
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "entering: Quick_Stop" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "entering: Quick_Stop" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "leaving: Quick_Stop" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "leaving: Quick_Stop" << std::endl;*/}
   };
 
   struct Fault_State : public msm::front::state<>
   {
     // every (optional) entry/exit methods get the event passed.
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "entering: Fault" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "entering: Fault" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "leaving: Fault" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "leaving: Fault" << std::endl;*/}
   };
 
   // the initial state of the player SM. Must be defined
@@ -162,8 +161,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "motor_sm::SHUTDOWN\n";
-    //BOOST_THROW_EXCEPTION(std::range_error("Index out of range"));
   }
   void turn_on(switch_on const&)
   {
@@ -175,7 +172,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "motor_sm::switch_on\n";
   }
   void turn_off(disable_voltage const&)
   {
@@ -187,7 +183,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "motor_sm::disable_voltage\n";
   }
   void activate_QS(quick_stop const&)
   {
@@ -199,7 +194,7 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "motor_sm::quick_stop\n";
+    control_word_->set(CW_Halt);
   }
   void operate(enable_op const&)
   {
@@ -212,7 +207,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
     control_word_->reset(CW_Halt);
-    std::cout << "motor_sm::enable_op\n";
   }
   void stop_operation(disable_op const&)
   {
@@ -224,7 +218,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "motor_sm::disable_op\n";
   }
 
   void reset_fault(fault_reset const&)
@@ -237,7 +230,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    std::cout << "motor_sm::reset_fault\n";
   }
 
   // guard conditions

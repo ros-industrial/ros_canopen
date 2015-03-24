@@ -78,7 +78,6 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var, bool wait)
 
     if(transition_success == boost::msm::back::HANDLED_FALSE)
     {
-      std::cout << "COULD NOT SWITCH" << std::endl;
       return false;
     }
     valid_mode_state_ = true;
@@ -117,8 +116,6 @@ void Node_402::processSW()
   std::bitset<16> sw_new(7/*status_word.get()*/);
   (*status_word_bitset.get()) = sw_new;
 
-  std::cout << "Status WORd" << *status_word_bitset << std::endl;
-
   SwCwSM.process_event(StatusandControl::newStatusWord());
 }
 
@@ -131,8 +128,6 @@ void Node_402::processSW(LayerStatus &status)
 
   *status_word_bitset = sw_new;
 
-  std::cout << "Status WORd" << *status_word_bitset << std::endl;
-
   SwCwSM.process_event(StatusandControl::newStatusWord());
 
 }
@@ -144,10 +139,10 @@ void Node_402::additionalInfo(LayerStatus &s)
   if(!lock) return;
 
   *operation_mode_ = (OperationMode) op_mode_display.get();
-  LOG("AdditionalINfo, Mode: " << *operation_mode_);
+
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
-  ac_eff_ = 0; //Currently no effort directly obtained from the HW
+  ac_eff_ = 0; //Currently,no effort value is directly obtained from the HW
 }
 
 void Node_402::additionalInfo()
@@ -159,7 +154,7 @@ void Node_402::additionalInfo()
   *operation_mode_ = OperationMode(7);
   ac_vel_ = 10;
   ac_pos_ = 10;
-  ac_eff_ = 0; //Currently no effort directly obtained from the HW
+  ac_eff_ = 0; //Currently,no effort value is directly obtained from the HW
 }
 
 
@@ -198,8 +193,6 @@ void Node_402::processCW(LayerStatus &status)
   boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
   if(!lock) return;
 
-  std::cout << "Control WORd" << *control_word_bitset << std::endl;
-
   int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
 
   control_word.set(cw_set);
@@ -212,7 +205,6 @@ void Node_402::move()
   if(*state_ == Operation_Enable)
   {
     bool transition_sucess = motorEvent(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
-
   }
 }
 
@@ -250,7 +242,9 @@ void Node_402::diag(LayerReport &report)
 
 void Node_402::halt(LayerStatus &status)
 {
+  bool transition_success;
 
+  transition_success = motorEvent(highLevelSM::runMotorSM(QuickStop, EVENT_TIMEOUT));
 }
 
 
@@ -326,7 +320,10 @@ const double Node_402::getActualInternalPos()
 
 void Node_402::setTargetVel(const double &target_vel)
 {
-  *target_vel_ = target_vel;
+  if (*state_ == Operation_Enable && valid_mode_state_)
+  {
+    *target_vel_ = target_vel;
+  }
 }
 
 void Node_402::setTargetPos(const double &target_pos)
@@ -491,10 +488,15 @@ bool Node_402::turnOff(LayerStatus &s)
 
 bool Node_402::turnOff()
 {
-  motorEvent(highLevelSM::runMotorSM(Shutdown));
+  bool transition_success;
 
-  motorEvent(highLevelSM::stopMachine());
+  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown));
+  if(!transition_success)
+    return false;
 
+  transition_success = motorEvent(highLevelSM::stopMachine());
+  if(!transition_success)
+    return false;
 
   return true;
 }

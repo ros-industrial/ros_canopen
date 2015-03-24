@@ -82,42 +82,42 @@ public:
   struct deselectMode {};
 
   template <class Event,class FSM>
-  void on_entry(Event const&,FSM& ) {std::cout << "entering: IPMode" << std::endl;}
+  void on_entry(Event const&,FSM& ) {/*std::cout << "entering: IPMode" << std::endl;*/}
   template <class Event,class FSM>
-  void on_exit(Event const&,FSM& ) {std::cout << "leaving: IPMode" << std::endl;}
+  void on_exit(Event const&,FSM& ) {/*std::cout << "leaving: IPMode" << std::endl;*/}
 
   // The list of FSM states
   struct IPInactive : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: IPInactive" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: IPInactive" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: IPInactive" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: IPInactive" << std::endl;*/}
 
   };
   struct IPActive : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: IPActive" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: IPActive" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: IPActive" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: IPActive" << std::endl;*/}
   };
 
   // The list of FSM states
   struct modeDeselected : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: modeDeselected" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: modeDeselected" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: modeDeselected" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: modeDeselected" << std::endl;*/}
 
   };
   struct modeSelected : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: modeSelected" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: modeSelected" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: modeSelected" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: modeSelected" << std::endl;*/}
   };
 
   // the initial state. Must be defined
@@ -169,8 +169,8 @@ public:
   template <class FSM,class Event>
   void no_transition(Event const& e, FSM&,int state)
   {
-    std::cout << "no transition from state " << state
-              << " on event " << typeid(e).name() << std::endl;
+//    std::cout << "no transition from state " << state
+//              << " on event " << typeid(e).name() << std::endl;
   }
 private:
   boost::shared_ptr<cw_word> control_word_;

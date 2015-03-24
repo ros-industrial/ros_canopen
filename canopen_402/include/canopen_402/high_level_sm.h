@@ -132,18 +132,18 @@ public:
   struct StartUp : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: StartUp" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: StartUp" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: StartUp" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: StartUp" << std::endl;*/}
 
   };
   // The list of FSM states
   struct Standby : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: Standby" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: Standby" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: Standby" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: Standby" << std::endl;*/}
 
   };
 
@@ -151,27 +151,27 @@ public:
   struct updateMotorSM : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: updateMotorSM" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: updateMotorSM" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: updateMotorSM" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: updateMotorSM" << std::endl;*/}
 
   };
 
   struct ModeSwitch : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: ModeSwitch" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: ModeSwitch" << std::endl;*/}
     template <class Event,class FSM>
-    void on_exit(Event const&,FSM& ) {std::cout << "finishing: ModeSwitch" << std::endl;}
+    void on_exit(Event const&,FSM& ) {/*std::cout << "finishing: ModeSwitch" << std::endl;*/}
   };
 
   struct Move : public msm::front::state<>
   {
     template <class Event,class FSM>
-    void on_entry(Event const&,FSM& ) {std::cout << "starting: Move" << std::endl;}
+    void on_entry(Event const&,FSM& ) {/*std::cout << "starting: Move" << std::endl;*/}
     template <class Event,class FSM>
     void on_exit(Event const&,FSM& )
-    {std::cout << "finishing: Move" << std::endl;}
+    {/*std::cout << "finishing: Move" << std::endl;*/}
   };
 
   // the initial state. Must be defined
@@ -179,14 +179,19 @@ public:
   // transition actions
   void standby(enterStandBy const&)
   {
-    std::cout << "OnSm::standby" << std::endl;
+//    std::cout << "OnSm::standby" << std::endl;
   }
 
   template <class runMotorSM> void motor_sm(runMotorSM const& evt)
   {
-    std::cout << "OnSm::Running motor SM" << evt.action <<std::endl;
     switch(evt.action)
     {
+    case QuickStop:
+      motorStateMachine.process_event(motorSM::quick_stop());
+      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
+      if(*state_ != Quick_Stop_Active)
+        BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
+      break;
     case FaultReset:
       motorStateMachine.process_event(motorSM::fault_reset());
       boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
@@ -221,8 +226,8 @@ public:
 
   template <class checkModeSwitch> void mode_switch(checkModeSwitch const& evt)
   {
-    std::cout << "OnSm::switch_mode" << std::endl;
-    std::cout << "Operation Mode" << *operation_mode_ << ", Op_event:" << evt.op_mode << std::endl;
+//    std::cout << "OnSm::switch_mode" << std::endl;
+//    std::cout << "Operation Mode" << *operation_mode_ << ", Op_event:" << evt.op_mode << std::endl;
     boost::this_thread::sleep(boost::posix_time::milliseconds(100));
     if(*operation_mode_ != evt.op_mode)
       BOOST_THROW_EXCEPTION(std::invalid_argument("This operation mode can not be used"));
@@ -236,7 +241,7 @@ public:
 
   template <class enableMove> void move(enableMove const& evt)
   {
-    std::cout << "OnSm::drive" << std::endl;
+//    std::cout << "OnSm::drive" << std::endl;
     switch(evt.op_mode)
     {
     case Interpolated_Position:
