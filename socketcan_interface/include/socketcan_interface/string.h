@@ -71,7 +71,7 @@ std::string tostring(const Header &h, bool lc){
     buf << std::hex;
     if(lc) buf << std::nouppercase;
     else buf << std::uppercase;
-    buf << h;
+    buf << (int)h;
     return buf.str();
 }
 
