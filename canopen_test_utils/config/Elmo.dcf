@@ -975,7 +975,7 @@ AccessType=rw
 PDOMapping=0
 LowLimit=0
 HighLimit=8
-ParameterValue=2
+ParameterValue=1
 
 [1603sub1]
 ParameterName=PDO Mapping Entry
@@ -991,7 +991,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 PDOMapping=0
-ParameterValue=0x60c10220
+;ParameterValue=0x60c10220
 
 [1603sub3]
 ParameterName=PDO Mapping Entry_3
