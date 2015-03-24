@@ -116,6 +116,8 @@ void Node_402::processSW()
   std::bitset<16> sw_new(7/*status_word.get()*/);
   (*status_word_bitset.get()) = sw_new;
 
+  std::cout << "Status WORd" << *status_word_bitset << std::endl;
+
   SwCwSM.process_event(StatusandControl::newStatusWord());
 }
 
@@ -127,6 +129,8 @@ void Node_402::processSW(LayerStatus &status)
   std::bitset<16> sw_new(status_word.get());
 
   *status_word_bitset = sw_new;
+
+  std::cout << "Status WORd" << *status_word_bitset << std::endl;
 
   SwCwSM.process_event(StatusandControl::newStatusWord());
 
@@ -193,13 +197,13 @@ void Node_402::processCW(LayerStatus &status)
   boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
   if(!lock) return;
 
-  SwCwSM.process_event(StatusandControl::newControlWord());
-
   std::cout << "Control WORd" << *control_word_bitset << std::endl;
 
   int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
 
   control_word.set(cw_set);
+
+  SwCwSM.process_event(StatusandControl::newControlWord());
 }
 
 void Node_402::move()
@@ -394,11 +398,12 @@ bool Node_402::turnOn(LayerStatus &s)
     motorEvent(highLevelSM::enterStandBy());
   }
 
-  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
 
   transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown));
-  //  if(!transition_success)
-  //    return false;
+  if(!transition_success)
+  {
+    return false;
+  }
   motorEvent(highLevelSM::enterStandBy());
   std::cout << "State:" << *state_ << std::endl;
   LOG("shutdown");
@@ -407,8 +412,8 @@ bool Node_402::turnOn(LayerStatus &s)
 
   transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
   LOG("switch_on");
-  //  if(!transition_success)
-  //    return false;
+    if(!transition_success)
+      return false;
   motorEvent(highLevelSM::enterStandBy());
 
   boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
@@ -416,8 +421,8 @@ bool Node_402::turnOn(LayerStatus &s)
   transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
   LOG("enable_op");
 
-  //  if(!transition_success)
-  //    return false;
+    if(!transition_success)
+      return false;
   motorEvent(highLevelSM::enterStandBy());
 
   boost::this_thread::sleep_for(boost::chrono::milliseconds(10));

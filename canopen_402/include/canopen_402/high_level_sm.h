@@ -68,6 +68,7 @@
 #include <canopen_402/internal_sm.h>
 #include <canopen_402/status_and_control.h>
 #include <canopen_402/ip_mode.h>
+#include <boost/thread/thread.hpp>
 
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
@@ -181,21 +182,28 @@ public:
     {
     case FaultReset:
       motorStateMachine.process_event(motorSM::fault_reset());
+      boost::this_thread::sleep(boost::posix_time::milliseconds(100));
       if(*state_ != Ready_To_Switch_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case Shutdown:
       motorStateMachine.process_event(motorSM::shutdown());
+      boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+      std::cout << "State: " <<  *state_ << std::endl;
       if(*state_ != Ready_To_Switch_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case SwitchOn:
       motorStateMachine.process_event(motorSM::switch_on());
+      boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+      std::cout << "State: " <<  *state_ << std::endl;
       if(*state_ != Switched_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case EnableOp:
       motorStateMachine.process_event(motorSM::enable_op());
+      boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+      std::cout << "State: " <<  *state_ << std::endl;
       if(*state_ != Operation_Enable)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
@@ -208,6 +216,7 @@ public:
   {
     std::cout << "OnSm::switch_mode" << std::endl;
     std::cout << "Operation Mode" << *operation_mode_ << ", Op_event:" << evt.op_mode << std::endl;
+    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
     if(*operation_mode_ != evt.op_mode)
       BOOST_THROW_EXCEPTION(std::invalid_argument("This operation mode can not be used"));
 
@@ -216,7 +225,6 @@ public:
     case Interpolated_Position:
       ipModeMachine.process_event(IPMode::selectMode());
     }
-
   }
 
   template <class enableMove> void move(enableMove const& evt)
