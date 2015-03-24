@@ -91,8 +91,7 @@ public:
         boost::posix_time::ptime  abs_time = boost::get_system_time() + d;
         return done_one(abs_time);
     }
-    template <typename DT> bool sync(const DT &d){
-        boost::posix_time::ptime  abs_time = boost::get_system_time() + d;
+    template <typename AT> bool sync(const AT &abs_time){
         scoped_mutex_lock lock_sync(sync_mutex, abs_time);
         return lock_sync && start_sync(abs_time) && wait_done(abs_time);
     }
