@@ -104,7 +104,6 @@ protected:
 
     ros::Timer heartbeat_timer_;
 
-    boost::weak_ptr<LayerStatus> pending_status_;
     
     void logState(const can::State &s){
         boost::shared_ptr<can::DriverInterface> interface = interface_;
@@ -120,8 +119,6 @@ protected:
             LayerStatus s;
             try{
                 read(s);
-                boost::shared_ptr<LayerStatus> pending_status = pending_status_.lock();
-                if(pending_status) pending(*pending_status);
                 write(s);
                 if(!s.bounded<LayerStatus::Warn>()) ROS_ERROR_STREAM_THROTTLE(10, s.reason());
                 else if(!s.bounded<LayerStatus::Ok>()) ROS_WARN_STREAM_THROTTLE(10, s.reason());
@@ -143,14 +140,14 @@ protected:
             return true;
         }
         thread_.reset(new boost::thread(&RosChain::run, this));
-        boost::shared_ptr<LayerStatus> pending_status(new LayerStatus);
-        pending_status_ = pending_status;
+        LayerReport status;
         try{
-            init(*pending_status);
-            res.success.data = pending_status->bounded<LayerStatus::Ok>();
-            res.error_message.data = pending_status->reason();
-            if(!pending_status->bounded<LayerStatus::Warn>()){
-                shutdown(*pending_status);
+            init(status);
+            res.success.data = status.bounded<LayerStatus::Ok>();
+            res.error_message.data = status.reason();
+            if(!status.bounded<LayerStatus::Warn>()){
+                diag(status);
+                shutdown(status);
                 thread_.reset();
             }else{
                 heartbeat_timer_.start();
@@ -161,8 +158,8 @@ protected:
             ROS_ERROR_STREAM(info);
             res.success.data = false;
             res.error_message.data = info;
-            pending_status->error(info);
-            shutdown(*pending_status);
+            status.error(info);
+            shutdown(status);
             thread_.reset();
         }
         return true;
@@ -171,15 +168,17 @@ protected:
 	ROS_INFO("Recovering XXX");
         boost::mutex::scoped_lock lock(mutex_);
         if(thread_){
-            boost::shared_ptr<LayerStatus> pending_status(new LayerStatus);
-            pending_status_ = pending_status;
+            LayerReport status;
             try{
                 thread_->interrupt();
                 thread_->join();
                 thread_.reset(new boost::thread(&RosChain::run, this));
-                recover(*pending_status);
-                res.success.data = pending_status->bounded<LayerStatus::Warn>();
-                res.error_message.data = pending_status->reason();
+                recover(status);
+                if(!status.bounded<LayerStatus::Warn>()){
+                    diag(status);
+                }
+                res.success.data = status.bounded<LayerStatus::Warn>();
+                res.error_message.data = status.reason();
             }
             catch( const canopen::Exception &e){
                 std::string info = boost::diagnostic_information(e);
@@ -193,13 +192,13 @@ protected:
         }
         return true;
     }
-    virtual void shutdown(LayerStatus &status){
+    virtual void handleShutdown(LayerStatus &status){
         heartbeat_timer_.stop();
         if(thread_){
             halt(status);
             thread_->interrupt();
             thread_->join();
-            LayerStack::shutdown(status);
+            LayerStack::handleShutdown(status);
             thread_.reset();
         }
     }

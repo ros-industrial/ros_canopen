@@ -336,31 +336,32 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
     return motor_ready_;
 }
 
-void Node_402::read(LayerStatus &status)
+void Node_402::handleRead(LayerStatus &status, const LayerState &current_state)
 {
-  getDeviceState(status);
-
+  if(current_state == Init || current_state == Recover) {
+    pending(status);
+  }
   operation_mode_ = (OperationMode) op_mode_display.get();
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
   ac_eff_=0; //Currently no effort directly obtained from the HW
 }
 
-void Node_402::shutdown(LayerStatus &status)
+void Node_402::handleShutdown(LayerStatus &status)
 {
 }
 
-void Node_402::diag(LayerReport &report)
+void Node_402::handleDiag(LayerReport &report)
 {
 }
 
-void Node_402::halt(LayerStatus &status)
+void Node_402::handleHalt(LayerStatus &status)
 {
   control_word_bitset.set(CW_Halt);
 }
 
 
-void Node_402::recover(LayerStatus &status)
+void Node_402::handleRecover(LayerStatus &status)
 {
   boost::mutex::scoped_lock cond_lock(cond_mutex);
 
@@ -587,8 +588,11 @@ void Node_402::driveSettings()
     break;
   }
 }
-void Node_402::write(LayerStatus &status)
+void Node_402::handleWrite(LayerStatus &status, const LayerState &current_state)
 {
+  if(current_state == Init || current_state == Recover) {
+    return;
+  }
   if (check_mode)
   {
     switchMode(status);
@@ -735,7 +739,7 @@ bool Node_402::turnOff()
   return true;
 }
 
-void Node_402::init(LayerStatus &s)
+void Node_402::handleInit(LayerStatus &s)
 {
   boost::mutex::scoped_lock cond_lock(cond_mutex);
 

@@ -119,47 +119,51 @@ public:
         return addHandle(iface, &jeh_, modes);
     }
     
-    virtual void read(LayerStatus &status){
-        cmd_pos_ = pos_ = motor_->getActualPos();
-        cmd_vel_ = vel_ = motor_->getActualVel();
-        cmd_eff_ = eff_ = motor_->getActualEff();
-        if(!jh_){
-            MotorNode::OperationMode m = motor_->getMode();
-            if(m != MotorNode::No_Mode && !select(m)){
-                status.error("No mode selected");
+private:
+    virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            cmd_pos_ = pos_ = motor_->getActualPos();
+            cmd_vel_ = vel_ = motor_->getActualVel();
+            cmd_eff_ = eff_ = motor_->getActualEff();
+            if(!jh_){
+                MotorNode::OperationMode m = motor_->getMode();
+                if(m != MotorNode::No_Mode && !select(m)){
+                    status.error("No mode selected");
+                }
             }
-        }
-        if(jh_ == &jph_){
-            cmd_pos_ = motor_->getTargetPos();
-        }else if(jh_ == &jvh_){
-            cmd_vel_ = motor_->getTargetVel();
-        }else if(jh_ == &jeh_){
-            cmd_eff_ = motor_->getTargetEff();
-        }
-    }
-    virtual void write(LayerStatus &status){
-        if(jh_){
             if(jh_ == &jph_){
-                motor_->setTargetPos(cmd_pos_);
+                cmd_pos_ = motor_->getTargetPos();
             }else if(jh_ == &jvh_){
-                motor_->setTargetVel(cmd_vel_);
+                cmd_vel_ = motor_->getTargetVel();
             }else if(jh_ == &jeh_){
-                motor_->setTargetEff(cmd_eff_);
+                cmd_eff_ = motor_->getTargetEff();
             }
-        }else if (motor_->getMode() != MotorNode::No_Mode){
-            status.warn("unsupported mode active");
         }
     }
-    virtual void init(LayerStatus &status){
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            if(jh_){
+                if(jh_ == &jph_){
+                    motor_->setTargetPos(cmd_pos_);
+                }else if(jh_ == &jvh_){
+                    motor_->setTargetVel(cmd_vel_);
+                }else if(jh_ == &jeh_){
+                    motor_->setTargetEff(cmd_eff_);
+                }
+            }else if (motor_->getMode() != MotorNode::No_Mode){
+                status.warn("unsupported mode active");
+            }
+        }
+    }
+    virtual void handleInit(LayerStatus &status){
         // TODO: implement proper init
-        read(status);
+        handleRead(status, Layer::Ready);
     }
     
-    virtual void pending(LayerStatus &status) { /* nothing to do */ }
-    virtual void diag(LayerReport &report) { /* nothing to do */ }
-    virtual void shutdown(LayerStatus &status) { /* nothing to do */ }
-    virtual void halt(LayerStatus &status) { /* TODO */ }
-    virtual void recover(LayerStatus &status) { /* nothing to do */ }
+    virtual void handleDiag(LayerReport &report) { /* nothing to do */ }
+    virtual void handleShutdown(LayerStatus &status) { /* nothing to do */ }
+    virtual void handleHalt(LayerStatus &status) { /* TODO */ }
+    virtual void handleRecover(LayerStatus &status) { /* nothing to do */ }
     
 };
 
@@ -235,7 +239,7 @@ public:
 
     boost::shared_ptr<const urdf::Joint> getJoint(const std::string &n) const { return urdf_.getJoint(n); }
 
-    virtual void init(LayerStatus &status){
+    virtual void handleInit(LayerStatus &status){
         urdf::Model urdf;
         urdf.initParam("robot_description");
 
@@ -293,7 +297,7 @@ public:
             }
 
         }
-        LayerGroupNoDiag::init(status);
+        LayerGroupNoDiag::handleInit(status);
     }
 
     void enforce(const ros::Duration &period, bool reset){
@@ -364,18 +368,21 @@ public:
     :Layer("ControllerManager"), robot_(robot), nh_(nh) {
     }
 
-    virtual void read(LayerStatus &status) {
-        if(!cm_) status.error("controller_manager is not intialized");
+    virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            if(!cm_) status.error("controller_manager is not intialized");
+        }
     }
-    virtual void write(LayerStatus &status) {
-        if(!cm_) status.error("controller_manager is not intialized");
-        else cm_->update();
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            if(!cm_) status.error("controller_manager is not intialized");
+            else cm_->update();
+        }
     }
-    virtual void diag(LayerReport &report) { /* nothing to do */ }
-    virtual void pending(LayerStatus &status) { /* nothing to do */ }
-    virtual void halt(LayerStatus &status) { /* nothing to do (?) */ }
+    virtual void handleDiag(LayerReport &report) { /* nothing to do */ }
+    virtual void handleHalt(LayerStatus &status) { /* nothing to do (?) */ }
 
-    virtual void init(LayerStatus &status) {
+    virtual void handleInit(LayerStatus &status) {
         if(cm_){
             status.warn("controller_manager is already intialized");
         }else{
@@ -383,11 +390,11 @@ public:
         }
         cm_->recover();
     }
-    virtual void recover(LayerStatus &status) {
+    virtual void handleRecover(LayerStatus &status) {
         if(!cm_) status.error("controller_manager is not intialized");
         else cm_->recover();
     }
-    virtual void shutdown(LayerStatus &status) {
+    virtual void handleShutdown(LayerStatus &status) {
         cm_.reset();
     }
 };

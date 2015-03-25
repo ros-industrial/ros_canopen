@@ -178,16 +178,6 @@ public:
   const State& getState();
   void enterState(const State &s);
 
-
-  virtual void read(LayerStatus &status);
-  virtual void pending(LayerStatus &status);
-  virtual void write(LayerStatus &status);
-
-  virtual void diag(LayerReport &report);
-
-  virtual void init(LayerStatus &status);
-  virtual void shutdown(LayerStatus &status);
-
   void getDeviceState(LayerStatus &status);
   void switchMode(LayerStatus &status);
 
@@ -199,9 +189,6 @@ public:
   void motorDisableOp();
   void motorEnableOp();
   void motorFaultReset();
-
-  virtual void halt(LayerStatus &status);
-  virtual void recover(LayerStatus &status);
 
   const double getActualPos();
   const double getActualInternalPos();
@@ -227,6 +214,18 @@ public:
   void configureModeSpecificEntries();
 
 private:
+  virtual void handleRead(LayerStatus &status, const LayerState &current_state);
+  virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
+
+  virtual void handleDiag(LayerReport &report);
+
+  virtual void handleInit(LayerStatus &status);
+  virtual void handleShutdown(LayerStatus &status);
+  virtual void handleHalt(LayerStatus &status);
+  virtual void handleRecover(LayerStatus &status);
+
+  void pending(LayerStatus &status);
+
   boost::shared_ptr <canopen::Node> n_;
   volatile bool running;
   State state_;
