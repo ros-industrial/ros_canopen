@@ -89,6 +89,14 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var, bool wait)
 
 bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 {
+  boost::mutex::scoped_lock lock(mode_mutex_, boost::try_to_lock);
+  if(!lock) return false;
+
+  motorEvent(highLevelSM::enterStandBy());
+
+  canopen::time_point abs_time = canopen::get_abs_time(boost::chrono::seconds(1));
+  canopen::time_point actual_point;
+
   valid_mode_state_ = false;
 
   if (isModeSupported(op_mode_var))
@@ -97,9 +105,17 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 
     bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var, EVENT_TIMEOUT));
 
-    if(transition_success == boost::msm::back::HANDLED_FALSE)
+    while(transition_success == boost::msm::back::HANDLED_FALSE)
     {
-      return false;
+      actual_point = boost::chrono::high_resolution_clock::now();
+      if(boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+      {
+        return false;
+      }
+      transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var, EVENT_TIMEOUT));
+
+      motorEvent(highLevelSM::enterStandBy());
+      //return false;
     }
     valid_mode_state_ = true;
     return true;
@@ -130,6 +146,11 @@ void Node_402::processSW(LayerStatus &status)
 
   SwCwSM.process_event(StatusandControl::newStatusWord());
 
+  //  if(*state_ == Fault)
+  //  {
+  //    bool transition_success;
+  //    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultEnable, EVENT_TIMEOUT)); //this is the timeout in milliseconds
+  //  }
 }
 
 void Node_402::additionalInfo(LayerStatus &s)
@@ -220,7 +241,6 @@ void Node_402::move(LayerStatus &status)
         target_interpolated_velocity.set(*target_vel_);
     }
   }
-
 }
 
 // Temp function,for the purpose of testing the State Machines without the real HW
@@ -244,7 +264,12 @@ void Node_402::halt(LayerStatus &status)
 {
   bool transition_success;
 
-//  transition_success = motorEvent(highLevelSM::runMotorSM(QuickStop, EVENT_TIMEOUT));
+  transition_success = motorEvent(highLevelSM::runMotorSM(QuickStop, EVENT_TIMEOUT));
+
+  if(!transition_success)
+    status.error("Could not halt the module");
+
+  motorEvent(highLevelSM::enterStandBy());
 }
 
 
@@ -325,18 +350,22 @@ const double Node_402::getActualInternalPos()
 
 void Node_402::setTargetVel(const double &target_vel)
 {
-  if (*state_ == Operation_Enable && valid_mode_state_)
+  if (*state_ == Operation_Enable)
   {
     *target_vel_ = target_vel;
   }
+  else
+    *target_vel_ = 0;
 }
 
 void Node_402::setTargetPos(const double &target_pos)
 {
-  if (*state_ == Operation_Enable && valid_mode_state_)
+  if (*state_ == Operation_Enable)
   {
     *target_pos_ = target_pos;
   }
+  else
+    *target_pos_ = ac_pos_;
 }
 
 void Node_402::configureEntries()
@@ -386,45 +415,129 @@ void Node_402::configureModeSpecificEntries()
 //TODO: Implement a smaller state machine for On, Off, Fault, Halt
 bool Node_402::turnOn(LayerStatus &s)
 {
+  boost::mutex::scoped_lock cond_lock(cond_mutex_);
+
+  *target_pos_ = ac_pos_;
+  *target_vel_ = 0;
+
+  canopen::time_point abs_time = canopen::get_abs_time(boost::chrono::seconds(2));
+  canopen::time_point actual_point;
+
+
   configure_drive_ = true;
 
-  LOG("Turn ON");
   bool transition_success;
 
   motorEvent(highLevelSM::startMachine());
 
-  default_operation_mode_ = OperationMode(op_mode.get_cached());
-  enterModeAndWait(default_operation_mode_);
+  while(*state_ == Start)
+  {
+    boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
+  }
+  //  default_operation_mode_ = OperationMode(op_mode.get_cached());
+  //  enterModeAndWait(default_operation_mode_);
 
-  LOG("enterMode");
+  if(*state_==Quick_Stop_Active)
+  {
+    transition_success = motorEvent(highLevelSM::runMotorSM(DisableQuickStop, EVENT_TIMEOUT));
+    motorEvent(highLevelSM::enterStandBy());
+
+    while(!transition_success)
+    {
+      actual_point = boost::chrono::high_resolution_clock::now();
+      if( boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+      {
+        s.error("Could not disable the quick stop");
+        return false;
+      }
+      transition_success = motorEvent(highLevelSM::runMotorSM(DisableQuickStop, EVENT_TIMEOUT));
+      motorEvent(highLevelSM::enterStandBy());
+      //return false;
+    }
+    motorEvent(highLevelSM::enterStandBy());
+  }
 
   if(*state_ == Fault)
   {
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultEnable, EVENT_TIMEOUT)); //this is the timeout in milliseconds
+    motorEvent(highLevelSM::enterStandBy());
+    if(!transition_success)
+    {
+      s.error("Could not properly set the device to a fault state");
+      return false;
+    }
+
     transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset, EVENT_TIMEOUT)); //this is the timeout in milliseconds
-    LOG("Trying to reset the device's fault");
+
+    motorEvent(highLevelSM::enterStandBy());
+
+
+    while(!transition_success)
+    {
+      actual_point = boost::chrono::high_resolution_clock::now();
+      if(boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+      {
+        s.error("Could not reset fault");
+        return false;
+      }
+
+      transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset, EVENT_TIMEOUT)); //this is the timeout in milliseconds
+
+      motorEvent(highLevelSM::enterStandBy());
+    }
+
     motorEvent(highLevelSM::enterStandBy());
   }
 
   transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown, EVENT_TIMEOUT));
-  if(!transition_success)
+  motorEvent(highLevelSM::enterStandBy());
+
+  while(!transition_success)
   {
-    return false;
+    actual_point = boost::chrono::high_resolution_clock::now();
+    if( boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+    {
+      s.error("Could not prepare the device");
+      return false;
+    }
+    transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown, EVENT_TIMEOUT));
+    motorEvent(highLevelSM::enterStandBy());
+    //return false;
   }
   motorEvent(highLevelSM::enterStandBy());
-  std::cout << "State:" << *state_ << std::endl;
-  LOG("shutdown");
 
   transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn, EVENT_TIMEOUT));
-  LOG("switch_on");
-  if(!transition_success)
-    return false;
+  motorEvent(highLevelSM::enterStandBy());
+
+
+  while(!transition_success)
+  {
+    actual_point = boost::chrono::high_resolution_clock::now();
+    if(boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+    {
+      s.error("Could not switch on");
+      return false;
+    }
+    transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn, EVENT_TIMEOUT));
+    motorEvent(highLevelSM::enterStandBy());
+  }
   motorEvent(highLevelSM::enterStandBy());
 
   transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp, EVENT_TIMEOUT));
-  LOG("enable_op");
+  motorEvent(highLevelSM::enterStandBy());
 
-  if(!transition_success)
-    return false;
+  while(!transition_success)
+  {
+    actual_point = boost::chrono::high_resolution_clock::now();
+    if(boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+    {
+      s.error("Could not enable op");
+      return false;
+    }
+    transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp, EVENT_TIMEOUT));
+    motorEvent(highLevelSM::enterStandBy());
+    //return false;
+  }
   motorEvent(highLevelSM::enterStandBy());
 
   return true;
@@ -507,16 +620,10 @@ bool Node_402::turnOff()
 
 void Node_402::init(LayerStatus &s)
 {
-  LOG("Starting the init function");
-
   Node_402::configureModeSpecificEntries();
-
-  LOG("configureModeSpecificEntries");
 
   if (homing_method.valid() && homing_method.get() != 0)
     homing_needed_ = true;
-
-  LOG("getHoming");
 
   bool turn_on = Node_402::turnOn(s);
 

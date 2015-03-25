@@ -161,6 +161,7 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
+    control_word_->reset(CW_Halt);
   }
   void turn_on(switch_on const&)
   {
@@ -172,17 +173,19 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
+    control_word_->reset(CW_Halt);
   }
   void turn_off(disable_voltage const&)
   {
     control_word_->reset(CW_Switch_On);
     control_word_->reset(CW_Enable_Voltage);
-    control_word_->reset(CW_Quick_Stop);
+    control_word_->set(CW_Quick_Stop);
     control_word_->reset(CW_Fault_Reset);
     control_word_->reset(CW_Enable_Operation);
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
+    control_word_->reset(CW_Halt);
   }
   void activate_QS(quick_stop const&)
   {
@@ -218,6 +221,7 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
+    control_word_->reset(CW_Halt);
   }
 
   void reset_fault(fault_reset const&)
@@ -230,14 +234,14 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
+    control_word_->reset(CW_Halt);
   }
 
   // guard conditions
   bool motor_fault(fault const& evt)
   {
-    return false;
+    return true;
   }
-
 
   typedef MotorSM_ m; // makes transition table cleaner
 
@@ -247,29 +251,28 @@ public:
       Row < Not_Ready_To_Switch_On_State , none  , Switch_On_Disabled_State, none                            >,
       //  +---------+-------------+---------+---------------------+----------------------+
       a_row < Switch_On_Disabled_State , shutdown  , Ready_To_Switch_On_State    , &m::shutdown_motor    >,
-      g_row < Switch_On_Disabled_State , fault  , Fault_State    ,           &m::motor_fault    >,
+      Row < Switch_On_Disabled_State , fault  , Fault_State    , none, none              >,
       //  +---------+-------------+---------+---------------------+----------------------+
       a_row < Ready_To_Switch_On_State, switch_on , Switched_On_State, &m::turn_on              >,
       a_row < Ready_To_Switch_On_State, disable_voltage , Switch_On_Disabled_State, &m::turn_off               >, //quickstop(?)
-      g_row < Ready_To_Switch_On_State , fault  , Fault_State                , &m::motor_fault    >,
+      Row < Ready_To_Switch_On_State , fault  , Fault_State    , none, none              >,
       //  +---------+-------------+---------+---------------------+----------------------+
       a_row < Switched_On_State, enable_op , Operation_Enable_State, &m::operate               >,
       a_row < Switched_On_State, shutdown , Ready_To_Switch_On_State, &m::shutdown_motor               >,
       a_row < Switched_On_State, disable_voltage , Switch_On_Disabled_State, &m::turn_off               >, //quickstop(?)
-      g_row < Switched_On_State , fault  , Fault_State    ,           &m::motor_fault    >,
+      Row < Switched_On_State , fault  , Fault_State    , none, none              >,
       //  +---------+-------------+---------+---------------------+----------------------+
       a_row < Operation_Enable_State, disable_op , Switched_On_State, &m::stop_operation               >,
       a_row < Operation_Enable_State, shutdown , Ready_To_Switch_On_State, &m::shutdown_motor               >,
       a_row < Operation_Enable_State, disable_voltage , Switch_On_Disabled_State, &m::turn_off               >,
       a_row < Operation_Enable_State, quick_stop , Quick_Stop_State, &m::activate_QS               >,
-      g_row < Operation_Enable_State , fault  , Fault_State    ,           &m::motor_fault    >,
+      Row < Operation_Enable_State , fault  , Fault_State    , none, none              >,
       //  +---------+-------------+---------+---------------------+----------------------+
       a_row < Quick_Stop_State, enable_op , Operation_Enable_State, &m::operate               >,
-      a_row < Quick_Stop_State, disable_voltage , Switch_On_Disabled_State, &m::turn_off               >,
-      g_row < Quick_Stop_State , fault  , Fault_State    ,           &m::motor_fault    >,
+      a_row < Quick_Stop_State, disable_voltage , Ready_To_Switch_On_State, &m::turn_off               >,
+      Row < Quick_Stop_State , fault  , Fault_State    , none, none              >,
 
       a_row < Fault_State , fault_reset  , Switch_On_Disabled_State    , &m::reset_fault    >
-      //TODO: add the Fault State transitions
       //  +---------+-------------+---------+---------------------+----------------------+
       //  +---------+-------------+---------+---------------------+----------------------+
       > {};

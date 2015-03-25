@@ -147,6 +147,8 @@ enum InternalActions
   DisableOp=4,
   QuickStop=5,
   FaultReset=6,
+  FaultEnable=7,
+  DisableQuickStop=8,
 };
 
 #endif // ENUMS_402_H

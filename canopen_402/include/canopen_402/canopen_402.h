@@ -183,6 +183,8 @@ public:
 
 private:
 
+  template<typename T> int wait_for(const bool &condition, const T &timeout);
+
   boost::shared_ptr <canopen::Node> n_;
   volatile bool running;
   boost::shared_ptr<InternalState> state_;
@@ -194,7 +196,10 @@ private:
 
   boost::mutex motor_mutex_;
   boost::mutex word_mutex_;
-  boost::condition_variable cond;
+  boost::mutex cond_mutex_;
+  boost::mutex mode_mutex_;
+
+  boost::condition_variable cond_event_;
 
   canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  status_word;
   canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  control_word;

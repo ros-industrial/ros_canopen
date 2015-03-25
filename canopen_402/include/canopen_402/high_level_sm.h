@@ -97,6 +97,10 @@ public:
   struct stopMachine {};
 
   struct enterStandBy {};
+
+  struct updateSwitch {};
+  struct updateMotor {};
+
   struct checkModeSwitch
   {
     OperationMode op_mode;
@@ -179,8 +183,9 @@ public:
   // transition actions
   void standby(enterStandBy const&)
   {
-//    std::cout << "OnSm::standby" << std::endl;
+    //    std::cout << "OnSm::standby" << std::endl;
   }
+
 
   template <class runMotorSM> void motor_sm(runMotorSM const& evt)
   {
@@ -188,34 +193,47 @@ public:
     {
     case QuickStop:
       motorStateMachine.process_event(motorSM::quick_stop());
-      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
+
       if(*state_ != Quick_Stop_Active)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case FaultReset:
       motorStateMachine.process_event(motorSM::fault_reset());
-      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
-      if(*state_ != Ready_To_Switch_On)
+
+      if(*state_ != Switch_On_Disabled)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case Shutdown:
       motorStateMachine.process_event(motorSM::shutdown());
-      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
+
       if(*state_ != Ready_To_Switch_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case SwitchOn:
       motorStateMachine.process_event(motorSM::switch_on());
-      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
+
       if(*state_ != Switched_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
     case EnableOp:
       motorStateMachine.process_event(motorSM::enable_op());
-      boost::this_thread::sleep(boost::posix_time::milliseconds(evt.timeout));
+
       if(*state_ != Operation_Enable)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
+
+    case FaultEnable:
+      motorStateMachine.process_event(motorSM::fault());
+      if(*state_ != Fault)
+        BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
+      break;
+
+    case DisableQuickStop:
+      motorStateMachine.process_event(motorSM::disable_voltage());
+      if(*state_ != Not_Ready_To_Switch_On && *state_ != Switch_On_Disabled)
+        BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
+      break;
+
     default:
       std::cout << "Action not specified" << std::endl;
     }
@@ -223,8 +241,8 @@ public:
 
   template <class checkModeSwitch> void mode_switch(checkModeSwitch const& evt)
   {
-//    std::cout << "OnSm::switch_mode" << std::endl;
-//    std::cout << "Operation Mode" << *operation_mode_ << ", Op_event:" << evt.op_mode << std::endl;
+    //    std::cout << "OnSm::switch_mode" << std::endl;
+    //    std::cout << "Operation Mode" << *operation_mode_ << ", Op_event:" << evt.op_mode << std::endl;
     boost::this_thread::sleep(boost::posix_time::milliseconds(100));
     if(*operation_mode_ != evt.op_mode)
       BOOST_THROW_EXCEPTION(std::invalid_argument("This operation mode can not be used"));
@@ -238,7 +256,7 @@ public:
 
   template <class enableMove> void move(enableMove const& evt)
   {
-//    std::cout << "OnSm::drive" << std::endl;
+    //    std::cout << "OnSm::drive" << std::endl;
     switch(evt.op_mode)
     {
     case Interpolated_Position:
@@ -275,8 +293,19 @@ public:
   // transition actions
   void start_machine(startMachine const&)
   {
-//    std::cout << "highLevelSm::turn_on\n";
+    //    std::cout << "highLevelSm::turn_on\n";
   }
+
+  void update_motor(updateMotor const&)
+  {
+    //    std::cout << "highLevelSm::turn_on\n";
+  }
+
+  void update_switch(updateSwitch const&)
+  {
+    //    std::cout << "highLevelSm::turn_on\n";
+  }
+
 
   void stop_machine(stopMachine const&)
   {
@@ -302,11 +331,14 @@ public:
       a_row < ModeSwitch   , runMotorSM, updateMotorSM   , &hl::motor_sm                     >,
       a_row < ModeSwitch   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < ModeSwitch   , stopMachine, machineStopped   , &hl::stop_machine                      >,
+      a_row < ModeSwitch   , updateSwitch, ModeSwitch   , &hl::update_switch                      >,
+
 
       a_row < updateMotorSM   , checkModeSwitch    , ModeSwitch   , &hl::mode_switch                       >,
       a_row < updateMotorSM   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < updateMotorSM   , enableMove, Move   , &hl::move                     >,
       a_row < updateMotorSM   , stopMachine, machineStopped   , &hl::stop_machine                      >,
+      a_row < updateMotorSM   , updateMotor, updateMotorSM   , &hl::update_motor                      >,
 
       a_row < Move   , enterStandBy, Standby   , &hl::standby                      >,
       a_row < Move   , stopMachine, machineStopped   , &hl::stop_machine                      >
