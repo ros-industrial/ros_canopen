@@ -179,20 +179,28 @@ void Node_402::additionalInfo()
 }
 
 
-void Node_402::read()
+void Node_402::handleRead()
 {
   processSW();
   additionalInfo();
 }
 
-void Node_402::read(LayerStatus &status)
+void Node_402::handleRead(LayerStatus &status, const LayerState &current_state)
 {
+  if(current_state == Init || current_state == Recover)
+  {
+    pending(status);
+  }
   processSW(status);
   additionalInfo(status);
 }
 
-void Node_402::write(LayerStatus &status)
+void Node_402::handleWrite(LayerStatus &status, const LayerState &current_state)
 {
+  if(current_state == Init || current_state == Recover)
+  {
+    return;
+  }
   move(status);
   processCW(status);
   motorEvent(highLevelSM::enterStandBy());
@@ -244,23 +252,23 @@ void Node_402::move(LayerStatus &status)
 }
 
 // Temp function,for the purpose of testing the State Machines without the real HW
-void Node_402::write()
+void Node_402::handleWrite()
 {
   move();
   processCW();
   motorEvent(highLevelSM::enterStandBy());
 }
 
-void Node_402::shutdown(LayerStatus &status)
+void Node_402::handleShutdown(LayerStatus &status)
 {
   turnOff();
 }
 
-void Node_402::diag(LayerReport &report)
+void Node_402::handleDiag(LayerReport &report)
 {
 }
 
-void Node_402::halt(LayerStatus &status)
+void Node_402::handleHalt(LayerStatus &status)
 {
   bool transition_success;
 
@@ -273,7 +281,7 @@ void Node_402::halt(LayerStatus &status)
 }
 
 
-void Node_402::recover(LayerStatus &status)
+void Node_402::handleRecover(LayerStatus &status)
 {
   bool recover_success;
 
@@ -416,6 +424,8 @@ void Node_402::configureModeSpecificEntries()
 bool Node_402::turnOn(LayerStatus &s)
 {
   boost::mutex::scoped_lock cond_lock(cond_mutex_);
+  if(!cond_lock)
+    return false;
 
   *target_pos_ = ac_pos_;
   *target_vel_ = 0;
@@ -489,7 +499,7 @@ bool Node_402::turnOn(LayerStatus &s)
     motorEvent(highLevelSM::enterStandBy());
   }
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown, EVENT_TIMEOUT));
+  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor, EVENT_TIMEOUT));
   motorEvent(highLevelSM::enterStandBy());
 
   while(!transition_success)
@@ -500,7 +510,7 @@ bool Node_402::turnOn(LayerStatus &s)
       s.error("Could not prepare the device");
       return false;
     }
-    transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown, EVENT_TIMEOUT));
+    transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor, EVENT_TIMEOUT));
     motorEvent(highLevelSM::enterStandBy());
     //return false;
   }
@@ -572,7 +582,7 @@ bool Node_402::turnOn()
   if(*state_ == Fault)
     transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset, EVENT_TIMEOUT));
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown, EVENT_TIMEOUT));
+  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor, EVENT_TIMEOUT));
   if(!transition_success)
     return false;
   motorEvent(highLevelSM::enterStandBy());
@@ -595,7 +605,7 @@ bool Node_402::turnOn()
 
 bool Node_402::turnOff(LayerStatus &s)
 {
-  motorEvent(highLevelSM::runMotorSM(Shutdown));
+  motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
 
   motorEvent(highLevelSM::stopMachine());
 
@@ -607,7 +617,7 @@ bool Node_402::turnOff()
 {
   bool transition_success;
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(Shutdown));
+  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
   if(!transition_success)
     return false;
 
@@ -618,7 +628,7 @@ bool Node_402::turnOff()
   return true;
 }
 
-void Node_402::init(LayerStatus &s)
+void Node_402::handleInit(LayerStatus &s)
 {
   Node_402::configureModeSpecificEntries();
 
@@ -635,7 +645,7 @@ void Node_402::init(LayerStatus &s)
     s.error("Could not properly initialize the module");
 }
 
-void Node_402::init()
+void Node_402::handleInit()
 {
 
   if (Node_402::turnOn())

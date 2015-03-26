@@ -193,31 +193,30 @@ public:
     {
     case QuickStop:
       motorStateMachine.process_event(motorSM::quick_stop());
-
       if(*state_ != Quick_Stop_Active)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
+
     case FaultReset:
       motorStateMachine.process_event(motorSM::fault_reset());
-
       if(*state_ != Switch_On_Disabled)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
-    case Shutdown:
-      motorStateMachine.process_event(motorSM::shutdown());
 
+    case ShutdownMotor:
+      motorStateMachine.process_event(motorSM::shutdown());
       if(*state_ != Ready_To_Switch_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
+
     case SwitchOn:
       motorStateMachine.process_event(motorSM::switch_on());
-
       if(*state_ != Switched_On)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
+
     case EnableOp:
       motorStateMachine.process_event(motorSM::enable_op());
-
       if(*state_ != Operation_Enable)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
