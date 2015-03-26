@@ -203,18 +203,16 @@ public:
         return getStorage()->entry<T>(k).get();
     }
 
-    
-    virtual void diag(LayerReport &report);
-    
-    virtual void init(LayerStatus &status);
-    virtual void recover(LayerStatus &status);
-    virtual void read(LayerStatus &status);
-    virtual void write(LayerStatus &status);
-    virtual void pending(LayerStatus &status);
-    virtual void halt(LayerStatus &status);
-    virtual void shutdown(LayerStatus &status);
-    
 private:
+    virtual void handleDiag(LayerReport &report);
+
+    virtual void handleInit(LayerStatus &status);
+    virtual void handleRecover(LayerStatus &status);
+    virtual void handleRead(LayerStatus &status, const LayerState &current_state);
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
+    virtual void handleHalt(LayerStatus &status);
+    virtual void handleShutdown(LayerStatus &status);
+
     template<typename T> int wait_for(const State &s, const T &timeout);
     
     boost::timed_mutex mutex;

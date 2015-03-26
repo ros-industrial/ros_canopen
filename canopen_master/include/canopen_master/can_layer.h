@@ -23,14 +23,19 @@ class CANLayer: public Layer{
 public:
     CANLayer(const boost::shared_ptr<can::DriverInterface> &driver, const std::string &device, bool loopback)
     : Layer(device + " Layer"), driver_(driver), device_(device), loopback_(loopback) { assert(driver_); }
-    virtual void read(LayerStatus &status){
-        if(!driver_->getState().isReady()) status.error("CAN not ready");
+
+    virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            if(!driver_->getState().isReady()) status.error("CAN not ready");
+        }
     }
-    virtual void write(LayerStatus &status){
-        if(!driver_->getState().isReady()) status.error("CAN not ready");
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            if(!driver_->getState().isReady()) status.error("CAN not ready");
+        }
     }
 
-    virtual void diag(LayerReport &report){
+    virtual void handleDiag(LayerReport &report){
         can::State s = driver_->getState();
         if(!s.isReady()){
             report.error("CAN layer not ready");
@@ -57,7 +62,7 @@ public:
 
     }
     
-    virtual void init(LayerStatus &status){
+    virtual void handleInit(LayerStatus &status){
 	if(thread_){
             status.warn("CAN thread already running");
         } else if(!driver_->init(device_, loopback_)) {
@@ -74,7 +79,7 @@ public:
 	  status.error("CAN is not ready");
 	}
     }
-    virtual void shutdown(LayerStatus &status){
+    virtual void handleShutdown(LayerStatus &status){
         error_listener_.reset();
         driver_->shutdown();
         if(thread_){
@@ -84,10 +89,9 @@ public:
         }
     }
 
-    virtual void halt(LayerStatus &status) { /* nothing to do */ }
-    virtual void pending(LayerStatus &status) { /* nothing to do */ }
+    virtual void handleHalt(LayerStatus &status) { /* nothing to do */ }
     
-    virtual void recover(LayerStatus &status){
+    virtual void handleRecover(LayerStatus &status){
         if(!driver_->recover()) status.error("driver recover failed"); // TODO: implement logging for driver
     }
 

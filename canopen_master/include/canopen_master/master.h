@@ -200,34 +200,38 @@ class IPCSyncLayer: public SyncLayer {
     
     boost::mutex mutex_;
     boost::unordered_set<void const *> nodes_;
-public:
-    IPCSyncLayer(const SyncProperties &p, boost::shared_ptr<can::CommInterface> interface, boost::shared_ptr<IPCSyncMaster> sync_master) 
-    : SyncLayer(p), interface_(interface), sync_master_(sync_master)
-    {
+    virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            boost::mutex::scoped_lock lock(mutex_);
+            sync_master_->wait(status);
+        }
     }
-    virtual void read(LayerStatus &status) {
-        boost::mutex::scoped_lock lock(mutex_);
-        sync_master_->wait(status);
-    }
-    virtual void write(LayerStatus &status) {
-        sync_master_->notify(status);
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            sync_master_->notify(status);
+        }
     }
 
-    virtual void init(LayerStatus &status);
-    virtual void shutdown(LayerStatus &status) {
+    virtual void handleInit(LayerStatus &status);
+    virtual void handleShutdown(LayerStatus &status) {
         boost::mutex::scoped_lock lock(mutex_);
-        
+
         if(!nodes_.empty()){
             sync_master_->disableSync();
         }
         nodes_.clear();
         sync_master_->stop(status);
     }
-    
-    virtual void pending(LayerStatus &status)  { /* nothing to do */ }
-    virtual void halt(LayerStatus &status)  { /* nothing to do */ }
-    virtual void diag(LayerReport &report)  { /* TODO */ }
-    virtual void recover(LayerStatus &status)  { /* TODO */ }
+
+    virtual void handleHalt(LayerStatus &status)  { /* nothing to do */ }
+    virtual void handleDiag(LayerReport &report)  { /* TODO */ }
+    virtual void handleRecover(LayerStatus &status)  { /* TODO */ }
+
+public:
+    IPCSyncLayer(const SyncProperties &p, boost::shared_ptr<can::CommInterface> interface, boost::shared_ptr<IPCSyncMaster> sync_master) 
+    : SyncLayer(p), interface_(interface), sync_master_(sync_master)
+    {
+    }
     
     virtual void addNode(void * const ptr) {
         boost::mutex::scoped_lock lock(mutex_);

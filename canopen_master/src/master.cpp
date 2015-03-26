@@ -30,7 +30,7 @@ void IPCSyncMaster::run() {
 }
 
 
-void IPCSyncLayer::init(LayerStatus &status) {
+void IPCSyncLayer::handleInit(LayerStatus &status) {
     boost::mutex::scoped_lock lock(mutex_);
     if(!nodes_.empty()){
         status.warn("Nodes list was not empty");

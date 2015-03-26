@@ -144,23 +144,27 @@ bool Node::checkHeartbeat(){
 }
 
 
-void Node::read(LayerStatus &status){
-    if(!checkHeartbeat()){
-        status.error("heartbeat problem");
-    } else if(getState() != Operational){
-        status.error("not operational");
-    } else{
-        pdo_.read(status);
-        emcy_.read(status);
+void Node::handleRead(LayerStatus &status, const LayerState &current_state) {
+    if(current_state > Init){
+        if(!checkHeartbeat()){
+            status.error("heartbeat problem");
+        } else if(getState() != Operational){
+            status.error("not operational");
+        } else{
+            pdo_.read(status);
+            emcy_.read(status);
+        }
     }
 }
-void Node::write(LayerStatus &status){
-    if(getState() != Operational)  status.error("not operational");
-    else if(! pdo_.write())  status.error("PDO write problem");
+void Node::handleWrite(LayerStatus &status, const LayerState &current_state) {
+    if(current_state > Init){
+        if(getState() != Operational)  status.error("not operational");
+        else if(! pdo_.write())  status.error("PDO write problem");
+    }
 }
 
 
-void Node::diag(LayerReport &report){
+void Node::handleDiag(LayerReport &report){
     State state = getState();
     if(state != Operational){
         report.error("Mode not operational");
@@ -170,7 +174,7 @@ void Node::diag(LayerReport &report){
     }
     if(state != Unknown) emcy_.diag(report);
 }
-void Node::init(LayerStatus &status){
+void Node::handleInit(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( can::MsgHeader(0x700 + node_id_), can::CommInterface::FrameDelegate(this, &Node::handleNMT));
 
     sdo_.init();
@@ -195,7 +199,8 @@ void Node::init(LayerStatus &status){
     }
     emcy_.init();
 }
-void Node::recover(LayerStatus &status){
+void Node::handleRecover(LayerStatus &status){
+    emcy_.recover();
     if(getState() != Operational){
         try{
             start();
@@ -204,16 +209,13 @@ void Node::recover(LayerStatus &status){
             status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
         }
     }
-    emcy_.recover();
 }
-void Node::shutdown(LayerStatus &status){
+void Node::handleShutdown(LayerStatus &status){
     if(getHeartbeatInterval()> 0) heartbeat_.set(0);
     stop();
     nmt_listener_.reset();
     switchState(Unknown);
 }
-void Node::halt(LayerStatus &status){
+void Node::handleHalt(LayerStatus &status){
     // do nothing
-}
-void Node::pending(LayerStatus &status){
 }

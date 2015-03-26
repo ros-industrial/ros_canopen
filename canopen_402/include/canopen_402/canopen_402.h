@@ -125,12 +125,12 @@ public:
   bool isModeMaskRunning(const uint32_t &mask);
 
 
-  virtual void read(LayerStatus &status);
+  virtual void handleRead(LayerStatus &status, const LayerState &current_state);
   virtual void pending(LayerStatus &status);
-  virtual void write(LayerStatus &status);
+  virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
 
-  virtual void read();
-  virtual void write();
+  virtual void handleRead();
+  virtual void handleWrite();
 
   virtual void processCW(LayerStatus &status);
   virtual void processCW();
@@ -144,14 +144,14 @@ public:
   virtual void additionalInfo(LayerStatus &status);
   virtual void additionalInfo();
 
-  virtual void diag(LayerReport &report);
+  virtual void handleDiag(LayerReport &report);
 
-  virtual void init(LayerStatus &status);
-  virtual void init();
-  virtual void shutdown(LayerStatus &status);
+  virtual void handleInit(LayerStatus &status);
+  virtual void handleInit();
+  virtual void handleShutdown(LayerStatus &status);
 
-  virtual void halt(LayerStatus &status);
-  virtual void recover(LayerStatus &status);
+  virtual void handleHalt(LayerStatus &status);
+  virtual void handleRecover(LayerStatus &status);
 
   const double getActualPos();
   const double getActualInternalPos();

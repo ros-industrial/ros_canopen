@@ -140,7 +140,7 @@ enum InternalState
 
 enum InternalActions
 {
-  Shutdown=0,
+  ShutdownMotor=0,
   DisableVoltage=1,
   SwitchOn=2,
   EnableOp=3,
