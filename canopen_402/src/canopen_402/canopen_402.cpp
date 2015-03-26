@@ -380,12 +380,12 @@ void Node_402::configureEntries()
   n_->getStorage()->entry(actual_vel, 0x606C);
 
   n_->getStorage()->entry(actual_pos, 0x6064);
-
-  supported_modes = supported_drive_modes.get_cached();
 }
 
 void Node_402::configureModeSpecificEntries()
 {
+  supported_modes = supported_drive_modes.get_cached();
+
   if (isModeSupported(Profiled_Position))
   {
     n_->getStorage()->entry(target_position, 0x607A);
