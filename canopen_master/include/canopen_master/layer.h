@@ -68,15 +68,12 @@ public:
 
     void read(LayerStatus &status) {
         if(state > Off) handleRead(status, state);
-        else LOG("cannot read in state " << int(state));
     }
     void write(LayerStatus &status) {
         if(state > Off) handleWrite(status, state);
-        else LOG("cannot write in state " << int(state));
     }
     void diag(LayerReport &report) {
         if(state > Shutdown) handleDiag(report);
-        else LOG("cannot diag in state " << int(state));
     }
     void init(LayerStatus &status) {
         if(state == Off){
@@ -86,8 +83,6 @@ public:
             }
             if(!status.bounded<LayerStatus::Warn>()) shutdown(status);
             else state = Ready;
-        }else{
-            LOG("cannot init in state " << int(state));
         }
     }
     void shutdown(LayerStatus &status) {
@@ -95,18 +90,13 @@ public:
             state = Shutdown;
             handleShutdown(status);
             state = Off;
-        }else{
-            LOG("cannot shutdown in state " << int(state));
         }
     }
     void halt(LayerStatus &status) {
         if(state > Halt){
-            LOG(name << " state: " << (int)state);
             state = Halt;
             handleHalt(status);
             state = Error;
-        }else{
-            LOG("cannot halt in state " << int(state));
         }
     }
     void recover(LayerStatus &status) {
@@ -117,10 +107,9 @@ public:
             }
             if(!status.bounded<LayerStatus::Warn>()){
                 halt(status);
+            }else{
+                state = Ready;
             }
-            else { state = Ready; LOG(name << "READY"); }
-        }else{
-            LOG("cannot recover in state " << int(state));
         }
 
     }
