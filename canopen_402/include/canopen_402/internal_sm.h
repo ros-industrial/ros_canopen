@@ -161,7 +161,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    control_word_->reset(CW_Halt);
   }
   void turn_on(switch_on const&)
   {
@@ -173,7 +172,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    control_word_->reset(CW_Halt);
   }
   void turn_off(disable_voltage const&)
   {
@@ -185,7 +183,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    control_word_->reset(CW_Halt);
   }
   void activate_QS(quick_stop const&)
   {
@@ -197,7 +194,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    control_word_->set(CW_Halt);
   }
   void operate(enable_op const&)
   {
@@ -209,7 +205,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    control_word_->reset(CW_Halt);
   }
   void stop_operation(disable_op const&)
   {
@@ -221,7 +216,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    control_word_->reset(CW_Halt);
   }
 
   void reset_fault(fault_reset const&)
@@ -234,7 +228,6 @@ public:
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-    control_word_->reset(CW_Halt);
   }
 
   // guard conditions

@@ -63,8 +63,6 @@
 #include <string>
 #include <vector>
 
-#define EVENT_TIMEOUT 100
-
 namespace canopen
 {
 class Node_402 : public canopen::Layer

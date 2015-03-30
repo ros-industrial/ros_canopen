@@ -128,7 +128,7 @@ public:
     control_word_->set(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
     control_word_->reset(CW_Operation_mode_specific2);
-//    std::cout << "IPMode::enable_ip\n";
+    //    std::cout << "IPMode::enable_ip\n";
   }
   void disable_ip(disableIP const&)
   {
@@ -139,11 +139,13 @@ public:
 
   void select_mode(selectMode const&)
   {
-//    std::cout << "IPMode::selectMode\n";
+    //    std::cout << "IPMode::selectMode\n";
   }
   void deselect_mode(deselectMode const&)
   {
-//    std::cout << "IPMode::deselectMode\n";
+    control_word_->reset(CW_Operation_mode_specific0);
+    control_word_->reset(CW_Operation_mode_specific1);
+    control_word_->reset(CW_Operation_mode_specific2);
   }
   // guard conditions
 
@@ -168,8 +170,8 @@ public:
   template <class FSM,class Event>
   void no_transition(Event const& e, FSM&,int state)
   {
-//    std::cout << "no transition from state " << state
-//              << " on event " << typeid(e).name() << std::endl;
+    //    std::cout << "no transition from state " << state
+    //              << " on event " << typeid(e).name() << std::endl;
   }
 private:
   boost::shared_ptr<cw_word> control_word_;

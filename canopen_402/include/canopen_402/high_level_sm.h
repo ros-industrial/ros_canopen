@@ -196,6 +196,7 @@ public:
     switch(evt.action)
     {
     case QuickStop:
+      ipModeMachine.process_event(IPMode::deselectMode());
       motorStateMachine.process_event(motorSM::quick_stop());
       if(*state_ != Quick_Stop_Active)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
@@ -203,7 +204,7 @@ public:
 
     case FaultReset:
       motorStateMachine.process_event(motorSM::fault_reset());
-      if(*state_ != Switch_On_Disabled)
+      if(*state_ == Fault)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));
       break;
 
@@ -226,6 +227,7 @@ public:
       break;
 
     case FaultEnable:
+      ipModeMachine.process_event(IPMode::deselectMode());
       motorStateMachine.process_event(motorSM::fault());
       if(*state_ != Fault)
         BOOST_THROW_EXCEPTION(std::invalid_argument("The transition was not successful"));

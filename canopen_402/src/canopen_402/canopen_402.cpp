@@ -74,7 +74,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var, bool wait)
 
   if (isModeSupported(op_mode_var))
   {
-    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var, EVENT_TIMEOUT));
+    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
 
     if(transition_success == boost::msm::back::HANDLED_FALSE)
     {
@@ -103,7 +103,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
   {
     op_mode.set_cached(op_mode_var);
 
-    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var, EVENT_TIMEOUT));
+    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
 
     while(transition_success == boost::msm::back::HANDLED_FALSE)
     {
@@ -112,7 +112,7 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
       {
         return false;
       }
-      transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var, EVENT_TIMEOUT));
+      transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
 
       motorEvent(highLevelSM::enterStandBy());
       //return false;
@@ -149,7 +149,7 @@ void Node_402::processSW(LayerStatus &status)
   //  if(*state_ == Fault)
   //  {
   //    bool transition_success;
-  //    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultEnable, EVENT_TIMEOUT)); //this is the timeout in milliseconds
+  //    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultEnable)); //this is the timeout in milliseconds
   //  }
 }
 
@@ -272,10 +272,10 @@ void Node_402::handleHalt(LayerStatus &status)
 {
   bool transition_success;
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(QuickStop, EVENT_TIMEOUT));
+  transition_success = motorEvent(highLevelSM::runMotorSM(QuickStop));
 
-  if(!transition_success)
-    status.error("Could not halt the module");
+//  if(!transition_success)
+//    status.error("Could not halt the module");
 
   motorEvent(highLevelSM::enterStandBy());
 }
@@ -445,29 +445,9 @@ bool Node_402::turnOn(LayerStatus &s)
     boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
   }
 
-  if(*state_==Quick_Stop_Active)
-  {
-    transition_success = motorEvent(highLevelSM::runMotorSM(DisableQuickStop, EVENT_TIMEOUT));
-    motorEvent(highLevelSM::enterStandBy());
-
-    while(!transition_success)
-    {
-      actual_point = boost::chrono::high_resolution_clock::now();
-      if( boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
-      {
-        s.error("Could not disable the quick stop");
-        return false;
-      }
-      transition_success = motorEvent(highLevelSM::runMotorSM(DisableQuickStop, EVENT_TIMEOUT));
-      motorEvent(highLevelSM::enterStandBy());
-      //return false;
-    }
-    motorEvent(highLevelSM::enterStandBy());
-  }
-
   if(*state_ == Fault)
   {
-    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultEnable, EVENT_TIMEOUT)); //this is the timeout in milliseconds
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultEnable)); //this is the timeout in milliseconds
     motorEvent(highLevelSM::enterStandBy());
     if(!transition_success)
     {
@@ -475,7 +455,7 @@ bool Node_402::turnOn(LayerStatus &s)
       return false;
     }
 
-    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset, EVENT_TIMEOUT)); //this is the timeout in milliseconds
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset)); //this is the timeout in milliseconds
 
     motorEvent(highLevelSM::enterStandBy());
 
@@ -489,7 +469,7 @@ bool Node_402::turnOn(LayerStatus &s)
         return false;
       }
 
-      transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset, EVENT_TIMEOUT)); //this is the timeout in milliseconds
+      transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset)); //this is the timeout in milliseconds
 
       motorEvent(highLevelSM::enterStandBy());
     }
@@ -497,7 +477,31 @@ bool Node_402::turnOn(LayerStatus &s)
     motorEvent(highLevelSM::enterStandBy());
   }
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor, EVENT_TIMEOUT));
+
+  if(*state_==Quick_Stop_Active)
+  {
+    transition_success = motorEvent(highLevelSM::runMotorSM(DisableQuickStop));
+    motorEvent(highLevelSM::enterStandBy());
+
+    while(!transition_success)
+    {
+      actual_point = boost::chrono::high_resolution_clock::now();
+      if( boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+      {
+        s.error("Could not disable the quick stop");
+        return false;
+      }
+      transition_success = motorEvent(highLevelSM::runMotorSM(DisableQuickStop));
+      motorEvent(highLevelSM::enterStandBy());
+      //return false;
+    }
+    motorEvent(highLevelSM::enterStandBy());
+  }
+
+
+  boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
+
+  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
   motorEvent(highLevelSM::enterStandBy());
 
   while(!transition_success)
@@ -508,12 +512,12 @@ bool Node_402::turnOn(LayerStatus &s)
       s.error("Could not prepare the device");
       return false;
     }
-    transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor, EVENT_TIMEOUT));
+    transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
     motorEvent(highLevelSM::enterStandBy());
   }
   motorEvent(highLevelSM::enterStandBy());
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn, EVENT_TIMEOUT));
+  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
   motorEvent(highLevelSM::enterStandBy());
 
 
@@ -525,12 +529,12 @@ bool Node_402::turnOn(LayerStatus &s)
       s.error("Could not switch on");
       return false;
     }
-    transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn, EVENT_TIMEOUT));
+    transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
     motorEvent(highLevelSM::enterStandBy());
   }
   motorEvent(highLevelSM::enterStandBy());
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp, EVENT_TIMEOUT));
+  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
   motorEvent(highLevelSM::enterStandBy());
 
   while(!transition_success)
@@ -541,7 +545,7 @@ bool Node_402::turnOn(LayerStatus &s)
       s.error("Could not enable op");
       return false;
     }
-    transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp, EVENT_TIMEOUT));
+    transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
     motorEvent(highLevelSM::enterStandBy());
     //return false;
   }
@@ -577,21 +581,21 @@ bool Node_402::turnOn()
   enterModeAndWait(OperationMode(7), true);
 
   if(*state_ == Fault)
-    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset, EVENT_TIMEOUT));
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset));
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor, EVENT_TIMEOUT));
+  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
   if(!transition_success)
     return false;
   motorEvent(highLevelSM::enterStandBy());
 
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn, EVENT_TIMEOUT));
+  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
 
   if(!transition_success)
     return false;
   motorEvent(highLevelSM::enterStandBy());
 
-  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp, EVENT_TIMEOUT));
+  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
 
   if(!transition_success)
     return false;
