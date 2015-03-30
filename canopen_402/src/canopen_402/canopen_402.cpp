@@ -444,8 +444,6 @@ bool Node_402::turnOn(LayerStatus &s)
   {
     boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
   }
-  //  default_operation_mode_ = OperationMode(op_mode.get_cached());
-  //  enterModeAndWait(default_operation_mode_);
 
   if(*state_==Quick_Stop_Active)
   {
@@ -512,7 +510,6 @@ bool Node_402::turnOn(LayerStatus &s)
     }
     transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor, EVENT_TIMEOUT));
     motorEvent(highLevelSM::enterStandBy());
-    //return false;
   }
   motorEvent(highLevelSM::enterStandBy());
 
@@ -650,7 +647,6 @@ void Node_402::handleInit(LayerStatus &s)
        s.error("Failed to do the homing procedure");
       }
     }
-    enterModeAndWait(Interpolated_Position);
   }
   else
     s.error("Could not properly initialize the module");
