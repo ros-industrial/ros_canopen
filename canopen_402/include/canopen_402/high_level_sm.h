@@ -68,6 +68,7 @@
 #include <canopen_402/internal_sm.h>
 #include <canopen_402/status_and_control.h>
 #include <canopen_402/ip_mode.h>
+#include <canopen_402/homing.h>
 #include <boost/thread/thread.hpp>
 
 namespace msm = boost::msm;
@@ -82,13 +83,15 @@ class highLevelSM_ : public msm::front::state_machine_def<highLevelSM_>
 {
 public:
   highLevelSM_(){}
-  highLevelSM_(const boost::shared_ptr<cw_word> &control_word, boost::shared_ptr<double> target_pos
-               , boost::shared_ptr<double> target_vel, boost::shared_ptr<OperationMode> operation_mode, const boost::shared_ptr<InternalState> &actual_state)
-    : control_word_(control_word) , target_vel_(target_vel), target_pos_(target_pos), operation_mode_(operation_mode), state_(actual_state)
+  highLevelSM_(const boost::shared_ptr<cw_word> &control_word,const boost::shared_ptr<sw_word> &status_word,  boost::shared_ptr<StatusandControl::commandTargets> target, boost::shared_ptr<OperationMode> operation_mode, const boost::shared_ptr<InternalState> &actual_state)
+    : control_word_(control_word) , status_word_(status_word), targets_(target), operation_mode_(operation_mode), state_(actual_state), previous_mode_(No_Mode)
   {
     motorStateMachine = motorSM(control_word_, state_);
     motorStateMachine.start();
     motorStateMachine.process_event(motorSM::boot());
+
+    homingMachine = HomingSM(control_word_, status_word_);
+    homingMachine.start();
 
     ipModeMachine = IPMode(control_word_);
     ipModeMachine.start();
@@ -131,6 +134,7 @@ public:
 
   motorSM motorStateMachine;
   IPMode ipModeMachine;
+  HomingSM homingMachine;
 
   // The list of FSM states
   struct StartUp : public msm::front::state<>
@@ -240,16 +244,25 @@ public:
 
   template <class checkModeSwitch> void mode_switch(checkModeSwitch const& evt)
   {
-    //    std::cout << "OnSm::switch_mode" << std::endl;
-    //    std::cout << "Operation Mode" << *operation_mode_ << ", Op_event:" << evt.op_mode << std::endl;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
     if(*operation_mode_ != evt.op_mode)
+    {
       BOOST_THROW_EXCEPTION(std::invalid_argument("This operation mode can not be used"));
+      previous_mode_ = *operation_mode_;
+    }
 
     switch(evt.op_mode)
     {
     case Interpolated_Position:
       ipModeMachine.process_event(IPMode::selectMode());
+      break;
+    case Homing:
+      homingMachine.process_event(HomingSM::selectMode());
+      bool transition_sucess = homingMachine.process_event(HomingSM::runHomingCheck());
+      if(!transition_sucess)
+      {
+        BOOST_THROW_EXCEPTION(std::invalid_argument("Homing still not completed"));
+      }
+      break;
     }
   }
 
@@ -362,10 +375,14 @@ private:
   boost::shared_ptr<InternalState> target_state_;
 
   boost::shared_ptr<cw_word> control_word_;
+  boost::shared_ptr<cw_word> status_word_;
 
   boost::shared_ptr<double> target_pos_;
   boost::shared_ptr<double> target_vel_;
   boost::shared_ptr<OperationMode> operation_mode_;
+
+  boost::shared_ptr<StatusandControl::commandTargets> targets_;
+  OperationMode previous_mode_;
 
 };
 // back-end

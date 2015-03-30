@@ -3029,7 +3029,7 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=ro
 PDOMapping=0
-;DefaultValue=0x3CD ; prevent homing
+DefaultValue=0x3ED ; prevent homing
 
 [ManufacturerObjects]
 SupportedObjects=44

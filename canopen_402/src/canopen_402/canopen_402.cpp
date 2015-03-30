@@ -63,8 +63,8 @@ void Node_402::pending(LayerStatus &status)
   processCW(status);
   additionalInfo(status);
 
-  *target_pos_ = ac_pos_;
-  *target_vel_ = 0;
+  (*target_values_).target_pos = ac_pos_;
+  (*target_values_).target_vel = 0;
 }
 
 
@@ -233,7 +233,7 @@ void Node_402::move()
 {
   if(*state_ == Operation_Enable)
   {
-    bool transition_sucess = motorEvent(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
+    bool transition_sucess = motorEvent(highLevelSM::enableMove(*operation_mode_, (*target_values_).target_pos, (*target_values_).target_vel));
   }
 }
 
@@ -241,12 +241,12 @@ void Node_402::move(LayerStatus &status)
 {
   if(*state_ == Operation_Enable)
   {
-    bool transition_success = motorEvent(highLevelSM::enableMove(*operation_mode_, *target_pos_, *target_vel_));
+    bool transition_success = motorEvent(highLevelSM::enableMove(*operation_mode_, (*target_values_).target_pos, (*target_values_).target_vel));
     if(transition_success)
     {
-      target_interpolated_position.set(*target_pos_);
+      target_interpolated_position.set((*target_values_).target_pos);
       if (ip_mode_sub_mode.get_cached() == -1)
-        target_interpolated_velocity.set(*target_vel_);
+        target_interpolated_velocity.set((*target_values_).target_vel);
     }
   }
 }
@@ -295,11 +295,11 @@ void Node_402::handleRecover(LayerStatus &status)
 
 const double Node_402::getTargetPos()
 {
-  return *target_pos_;
+  return (*target_values_).target_pos;
 }
 const double Node_402::getTargetVel()
 {
-  return *target_vel_;
+  return (*target_values_).target_vel;
 }
 
 
@@ -360,20 +360,20 @@ void Node_402::setTargetVel(const double &target_vel)
 {
   if (*state_ == Operation_Enable)
   {
-    *target_vel_ = target_vel;
+    (*target_values_).target_vel = target_vel;
   }
   else
-    *target_vel_ = 0;
+    (*target_values_).target_vel = 0;
 }
 
 void Node_402::setTargetPos(const double &target_pos)
 {
   if (*state_ == Operation_Enable)
   {
-    *target_pos_ = target_pos;
+    (*target_values_).target_pos = target_pos;
   }
   else
-    *target_pos_ = ac_pos_;
+    (*target_values_).target_pos = ac_pos_;
 }
 
 void Node_402::configureEntries()
@@ -427,8 +427,8 @@ bool Node_402::turnOn(LayerStatus &s)
   if(!cond_lock)
     return false;
 
-  *target_pos_ = ac_pos_;
-  *target_vel_ = 0;
+  (*target_values_).target_pos = ac_pos_;
+  (*target_values_).target_vel = 0;
 
   canopen::time_point abs_time = canopen::get_abs_time(boost::chrono::seconds(2));
   canopen::time_point actual_point;
@@ -640,6 +640,17 @@ void Node_402::handleInit(LayerStatus &s)
   if (turn_on)
   {
     running = true;
+    if (homing_method.valid() && homing_method.get() != 0)
+    {
+      bool transition_success;
+
+      transition_success = enterModeAndWait(Homing);
+      if(!transition_success)
+      {
+       s.error("Failed to do the homing procedure");
+      }
+    }
+    enterModeAndWait(Interpolated_Position);
   }
   else
     s.error("Could not properly initialize the module");
@@ -651,6 +662,17 @@ void Node_402::handleInit()
   if (Node_402::turnOn())
   {
     running = true;
+
+    if (homing_method.valid() && homing_method.get() != 0)
+    {
+      bool transition_success;
+
+      transition_success = enterModeAndWait(Homing);
+      if(!transition_success)
+      {
+       std::cout << "Failed to homing" << std::endl;
+      }
+    }
   }
   else
     LOG("Could not properly initialize the module");

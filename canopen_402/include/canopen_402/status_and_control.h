@@ -93,6 +93,16 @@ public:
     status_word_mask_.set(Switch_On_Disabled);
   }
 
+  struct commandTargets
+  {
+    double target_pos;
+    double target_vel;
+    commandTargets() : target_pos(0), target_vel(0) {}
+    commandTargets(double pos) : target_pos(pos), target_vel(0) {}
+    commandTargets(double pos, double vel) : target_pos(pos), target_vel(vel) {}
+  };
+
+
   struct newStatusWord {};
   struct newControlWord {};
 
@@ -196,8 +206,8 @@ public:
   template <class FSM,class Event>
   void no_transition(Event const& e, FSM&,int state)
   {
-//    std::cout << "no transition from state " << state
-//              << " on event " << typeid(e).name() << std::endl;
+    //    std::cout << "no transition from state " << state
+    //              << " on event " << typeid(e).name() << std::endl;
   }
 
 private:

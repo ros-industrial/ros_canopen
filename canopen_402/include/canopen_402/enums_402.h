@@ -138,6 +138,15 @@ enum InternalState
   Fault = 8,
 };
 
+enum HomingState
+{
+  Progress = 0,
+  NotStarted = 1,
+  Attained=2,
+  HomingSuccess = 3,
+  HomingError = 4,
+};
+
 enum InternalActions
 {
   ShutdownMotor=0,

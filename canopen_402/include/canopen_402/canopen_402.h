@@ -82,13 +82,12 @@ public:
     status_word_bitset = boost::make_shared<sw_word>();
     control_word_bitset = boost::make_shared<cw_word>();
 
-    target_pos_ = boost::make_shared<double>();
-    target_vel_ = boost::make_shared<double>();
+    target_values_ = boost::make_shared<StatusandControl::commandTargets>();
 
     state_ = boost::make_shared<InternalState>(Start);
 
     SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_, operation_mode_, state_);
+    motorAbstraction = highLevelSM(control_word_bitset, status_word_bitset, target_values_, operation_mode_, state_);
     SwCwSM.start();
     motorAbstraction.start();
     SwCwSM.process_event(StatusandControl::readStatus());
@@ -102,15 +101,14 @@ public:
     homing_mask.set(SW_Operation_specific0);
     homing_mask.set(SW_Operation_specific1);
 
-    target_pos_ = boost::make_shared<double>();
-    target_vel_ = boost::make_shared<double>();
+    target_values_ = boost::make_shared<StatusandControl::commandTargets>();
 
     status_word_bitset = boost::make_shared<sw_word>();
     control_word_bitset = boost::make_shared<cw_word>();
     state_ = boost::make_shared<InternalState>(Start);
 
     SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-    motorAbstraction = highLevelSM(control_word_bitset, target_pos_, target_vel_, operation_mode_, state_);
+    motorAbstraction = highLevelSM(control_word_bitset, status_word_bitset, target_values_, operation_mode_, state_);
     SwCwSM.start();
     motorAbstraction.start();
     SwCwSM.process_event(StatusandControl::readStatus());
@@ -258,6 +256,8 @@ private:
 
   StatusandControl SwCwSM;
   highLevelSM motorAbstraction;
+
+  boost::shared_ptr<StatusandControl::commandTargets> target_values_;
 };
 }  //  namespace canopen
 #endif  // CANOPEN_402_CANOPEN_402_H
