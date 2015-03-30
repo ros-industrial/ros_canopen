@@ -41,7 +41,7 @@ struct EMCYmsg{
 
 void EMCYHandler::handleEMCY(const can::Frame & msg){
     EMCYmsg::Frame em(msg);
-    has_error_ = em.data.error_register != 0;
+    has_error_ = (em.data.error_register & ~32) != 0;
 }
 
 void EMCYHandler::init(){
