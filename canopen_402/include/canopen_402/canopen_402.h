@@ -177,6 +177,8 @@ public:
   template <class Event>
   bool motorEvent(Event const&);
 
+  void clearTargetEntries();
+
 private:
 
   template<typename T> int wait_for(const bool &condition, const T &timeout);

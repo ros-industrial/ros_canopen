@@ -62,9 +62,6 @@ void Node_402::pending(LayerStatus &status)
   processSW(status);
   processCW(status);
   additionalInfo(status);
-
-  (*target_values_).target_pos = ac_pos_;
-  (*target_values_).target_vel = 0;
 }
 
 
@@ -420,6 +417,16 @@ void Node_402::configureModeSpecificEntries()
     n_->getStorage()->entry(homing_method, 0x6098);
   }
 }
+void Node_402::clearTargetEntries()
+{
+  (*target_values_).target_pos = ac_pos_;
+  (*target_values_).target_vel = 0;
+
+  target_interpolated_position.set((*target_values_).target_pos);
+  if (ip_mode_sub_mode.get_cached() == -1)
+    target_interpolated_velocity.set((*target_values_).target_vel);
+}
+
 //TODO: Implement a smaller state machine for On, Off, Fault, Halt
 bool Node_402::turnOn(LayerStatus &s)
 {
@@ -427,8 +434,7 @@ bool Node_402::turnOn(LayerStatus &s)
   if(!cond_lock)
     return false;
 
-  (*target_values_).target_pos = ac_pos_;
-  (*target_values_).target_vel = 0;
+  clearTargetEntries();
 
   canopen::time_point abs_time = canopen::get_abs_time(boost::chrono::seconds(2));
   canopen::time_point actual_point;
@@ -633,14 +639,10 @@ void Node_402::handleInit(LayerStatus &s)
 {
   Node_402::configureModeSpecificEntries();
 
-  if (homing_method.valid() && homing_method.get() != 0)
-    homing_needed_ = true;
-
   bool turn_on = Node_402::turnOn(s);
 
   if (turn_on)
   {
-    running = true;
     if (homing_method.valid() && homing_method.get() != 0)
     {
       bool transition_success;
@@ -648,7 +650,7 @@ void Node_402::handleInit(LayerStatus &s)
       transition_success = enterModeAndWait(Homing);
       if(!transition_success)
       {
-       s.error("Failed to do the homing procedure");
+        s.error("Failed to do the homing procedure");
       }
     }
   }
@@ -670,7 +672,7 @@ void Node_402::handleInit()
       transition_success = enterModeAndWait(Homing);
       if(!transition_success)
       {
-       std::cout << "Failed to homing" << std::endl;
+        std::cout << "Failed to homing" << std::endl;
       }
     }
   }
