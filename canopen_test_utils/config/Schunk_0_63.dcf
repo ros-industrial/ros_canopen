@@ -452,7 +452,7 @@ PDOMapping=0
 LowLimit=0
 HighLimit=8
 ObjFlags=0
-ParameterValue=3
+ParameterValue=2
 
 [1600sub1]
 ParameterName=1. mapped Object
@@ -481,7 +481,6 @@ DataType=0x0007
 AccessType=rw
 PDOMapping=0
 ObjFlags=0
-ParameterValue=0x60c10120
 
 [1600sub4]
 ParameterName=4. mapped Object
@@ -557,7 +556,7 @@ DataType=0x0007
 AccessType=rw
 PDOMapping=0
 ObjFlags=0
-ParameterValue=0x60810020
+ParameterValue=0x60c10120
 
 [1601sub3]
 ParameterName=3. mapped Object
@@ -1439,7 +1438,7 @@ DataType=0x0005
 AccessType=rw
 DefaultValue=8
 PDOMapping=0
-ParameterValue=50
+ParameterValue=10
 
 [60C2sub2]
 ParameterName=interpolation_time_period_index
@@ -1592,7 +1591,7 @@ ParameterName=supported_drive_modes
 ObjectType=0x7
 DataType=0x0007
 AccessType=ro
-DefaultValue=0x00000062
+DefaultValue=0x00000063
 PDOMapping=0
 
 [ManufacturerObjects]

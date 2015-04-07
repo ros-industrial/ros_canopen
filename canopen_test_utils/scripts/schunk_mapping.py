@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-import pdo
-import sys
 
-fname = sys.argv[1]
+PDOs={
+"RPDO1": [1, ('6040',     "control_word",                 2), ('6042',     "target_velocity",              2)],
+"RPDO2": [1, ('607A',     "target_position",              4), ('60C1sub1', "target_interpolated_position", 4)],
 
-pdo.patch(fname, fname, True,  0, ['6040','6042','60C1sub1'], 1) # control_word target_velocity target_interpolated_position
-pdo.patch(fname, fname, True,  1, ['607A','6081'], 1) # target_position profile_velocity
+"TPDO1": [1, ('6041',     "status_word",                  2), ('6061',     "op_mode_display",              1)],
+"TPDO3": [1, ('6064',     "actual_position",              4), ('606C',     "actual_velocity",              4)],
+}
 
-pdo.patch(fname, fname, False, 0, ['6041','6061'], 1) # status_word op_mode_display
-pdo.patch(fname, fname, False, 2, ['6064','606C'], 1)  # actual_position actual_velocity
+if __name__ == "__main__":
+    import pdo, sys
+
+    fname = sys.argv[1]
+    pdo.patch_all(fname, fname, PDOs)

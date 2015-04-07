@@ -41,47 +41,60 @@ struct EMCYmsg{
 
 void EMCYHandler::handleEMCY(const can::Frame & msg){
     EMCYmsg::Frame em(msg);
-    error_register_ = em.data.error_register;
-}
-const uint8_t EMCYHandler::error_register(){
-    if(!emcy_listener_) error_register_ = error_register_obj_.get();
-    return error_register_;
+    has_error_ = (em.data.error_register & ~32) != 0;
 }
 
-void EMCYHandler::init(LayerStatus &status){
-    read(status);
+void EMCYHandler::init(){
+    recover();
 }
 void EMCYHandler::recover(){
-    error_register_ = 0;
     if(num_errors_.valid()) num_errors_.set(0);
+    has_error_ = false;
 }
 
 void EMCYHandler::read(LayerStatus &status){
-    if(error_register() & (~32)){ // mask device specific error
+    if(has_error_){
         status.error("Node has emergency error");
     }
 }
 void EMCYHandler::diag(LayerReport &report){
-    read(report);
+    uint8_t error_register = 0;
+    if(!error_register_.get(error_register)){
+        report.error("Could not read error error_register");
+        return;
+    }
 
-    if(error_register_){
-        report.add("error_register", (uint32_t) error_register_);
+    if(error_register & ~32){
+        report.error("Node has emergency error");
+        report.add("error_register", (uint32_t) error_register);
 
         uint8_t num = num_errors_.valid() ? num_errors_.get() : 0;
         std::stringstream buf;
-        for(size_t i= 0; i <num; ++i) {
+        for(size_t i = 0; i < num; ++i) {
             if( i!= 0){
                 buf << ", ";
             }
-            EMCYfield field(storage_->entry<uint32_t>(0x1003,i+1).get());
-            buf << std::hex << field.error_code << "#" << field.addition_info;
+            try{
+                ObjectStorage::Entry<uint32_t> error;
+                storage_->entry(error, 0x1003,i+1);
+                EMCYfield field(error.get());
+                buf << std::hex << field.error_code << "#" << field.addition_info;
+            }
+            catch (const std::out_of_range & e){
+                buf << "NOT_IN_DICT!";
+            }
+            catch (const TimeoutException & e){
+                buf << "LIST_UNDERFLOW!";
+                continue;
+            }
+
         }
         report.add("errors", buf.str());
 
     }
 }
-EMCYHandler::EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): storage_ (storage), error_register_(0){
-    storage_->entry(error_register_obj_, 0x1001);
+EMCYHandler::EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): storage_(storage), has_error_(true){
+    storage_->entry(error_register_, 0x1001);
     try{
         storage_->entry(num_errors_, 0x1003,0);
         

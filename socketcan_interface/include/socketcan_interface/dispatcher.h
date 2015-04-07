@@ -7,6 +7,7 @@
 #include <boost/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <boost/foreach.hpp>
+#include <boost/weak_ptr.hpp>
 
 namespace can{
 

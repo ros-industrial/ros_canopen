@@ -91,8 +91,7 @@ public:
         boost::posix_time::ptime  abs_time = boost::get_system_time() + d;
         return done_one(abs_time);
     }
-    template <typename DT> bool sync(const DT &d){
-        boost::posix_time::ptime  abs_time = boost::get_system_time() + d;
+    template <typename AT> bool sync(const AT &abs_time){
         scoped_mutex_lock lock_sync(sync_mutex, abs_time);
         return lock_sync && start_sync(abs_time) && wait_done(abs_time);
     }
@@ -151,7 +150,7 @@ public:
     }
     void stop(LayerStatus &status){
         if(!thread_){
-            status.error();
+            status.error("!thread");
             return;
         }
         thread_->interrupt();
@@ -171,14 +170,14 @@ public:
     void wait(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.wait(sync_obj_->properties.period_);
-            if(!ok) status.warn();
-        }else status.error();
+            if(!ok) status.warn("wait failed");
+        }else status.error("!sync_obj");
     }
     void notify(LayerStatus &status){
         if(sync_obj_){
             bool ok = sync_obj_->waiter.done(sync_obj_->properties.period_);
-            if(!ok) status.warn();
-        }else status.error();
+            if(!ok) status.warn("notify failed");
+        }else status.error("!sync_obj");
     }
 
 private:
@@ -194,7 +193,6 @@ private:
 
 
 class IPCSyncLayer: public SyncLayer {
-    can::CommInterface::FrameListener::Ptr sync_listener_;
     boost::shared_ptr<can::CommInterface> interface_;
 
     boost::shared_ptr<IPCSyncMaster> sync_master_;
@@ -202,66 +200,38 @@ class IPCSyncLayer: public SyncLayer {
     
     boost::mutex mutex_;
     boost::unordered_set<void const *> nodes_;
-    
-    uint8_t last_sync_;
-    boost::condition_variable sync_cond_;
-    boost::mutex sync_mutex_;
-
-    void handleFrame(const can::Frame & msg){
-        boost::mutex::scoped_lock lock(sync_mutex_);
-        last_sync_ = msg.dlc == 1 ?  msg.data[0] : 1;
-        sync_cond_.notify_all();
-        
-    }
-    bool waitSync(){
-        boost::posix_time::ptime  abs_time = boost::get_system_time() + properties.period_;
-        boost::mutex::scoped_lock lock(sync_mutex_);
-        while(last_sync_ == 0){
-            if(!sync_cond_.timed_wait(lock, abs_time)) return false;
+    virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            boost::mutex::scoped_lock lock(mutex_);
+            sync_master_->wait(status);
         }
-        return true;
     }
-    
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            sync_master_->notify(status);
+        }
+    }
+
+    virtual void handleInit(LayerStatus &status);
+    virtual void handleShutdown(LayerStatus &status) {
+        boost::mutex::scoped_lock lock(mutex_);
+
+        if(!nodes_.empty()){
+            sync_master_->disableSync();
+        }
+        nodes_.clear();
+        sync_master_->stop(status);
+    }
+
+    virtual void handleHalt(LayerStatus &status)  { /* nothing to do */ }
+    virtual void handleDiag(LayerReport &report)  { /* TODO */ }
+    virtual void handleRecover(LayerStatus &status)  { /* TODO */ }
+
 public:
     IPCSyncLayer(const SyncProperties &p, boost::shared_ptr<can::CommInterface> interface, boost::shared_ptr<IPCSyncMaster> sync_master) 
     : SyncLayer(p), interface_(interface), sync_master_(sync_master)
     {
     }
-    virtual void read(LayerStatus &status) {
-        boost::mutex::scoped_lock lock(mutex_);
-        if(!nodes_.empty()){
-            if(!waitSync()){
-                status.warn();
-            }
-        }
-        sync_master_->wait(status);
-        
-    }
-    virtual void write(LayerStatus &status) {
-        boost::mutex::scoped_lock lock(mutex_);
-        {
-            boost::mutex::scoped_lock lock(sync_mutex_);
-            last_sync_ = 0;
-        }
-        sync_master_->notify(status);
-    }
-
-    virtual void init(LayerStatus &status);
-    virtual void shutdown(LayerStatus &status) {
-        boost::mutex::scoped_lock lock(mutex_);
-        
-        if(!nodes_.empty()){
-            sync_master_->disableSync();
-        }
-        sync_listener_.reset();
-        nodes_.clear();
-        sync_master_->stop(status);
-    }
-    
-    virtual void pending(LayerStatus &status)  { /* nothing to do */ }
-    virtual void halt(LayerStatus &status)  { /* nothing to do */ }
-    virtual void diag(LayerReport &report)  { /* TODO */ }
-    virtual void recover(LayerStatus &status)  { /* TODO */ }
     
     virtual void addNode(void * const ptr) {
         boost::mutex::scoped_lock lock(mutex_);

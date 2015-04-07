@@ -15,12 +15,13 @@ void IPCSyncMaster::run() {
     can::Frame frame(sync_obj_->properties.header_, sync_obj_->properties.overflow_ ? 1 : 0);
     while(true){
         abs_time += sync_obj_->properties.period_;
-        if(abs_time > boost::get_system_time()){
-            if(!sync_obj_->waiter.sync(boost::posix_time::seconds(1))) break; // TODO: handle error
+        if(abs_time >= boost::get_system_time()){
+            if(!sync_obj_->waiter.sync(abs_time)) LOG("Slave timeout");
 
-            
-            if(sync_obj_->nextSync(frame.data[0]))
+            if(sync_obj_->nextSync(frame.data[0])){
+                boost::this_thread::sleep(sync_obj_->properties.silence_);
                 interface_->send(frame);
+            }
 
             boost::this_thread::sleep(abs_time);
         }
@@ -29,15 +30,13 @@ void IPCSyncMaster::run() {
 }
 
 
-void IPCSyncLayer::init(LayerStatus &status) {
+void IPCSyncLayer::handleInit(LayerStatus &status) {
     boost::mutex::scoped_lock lock(mutex_);
     if(!nodes_.empty()){
         status.warn("Nodes list was not empty");
         nodes_.clear();
     }
-    last_sync_ = 0;
     sync_master_->start(status);
-    sync_listener_ = interface_->createMsgListener( properties.header_, can::CommInterface::FrameDelegate(this, &IPCSyncLayer::handleFrame));
 }
 
 // TODO: unify/combine

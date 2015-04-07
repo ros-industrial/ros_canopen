@@ -29,7 +29,11 @@ struct NMTcommand{
 
 Node::Node(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync)
 : Layer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), emcy_(interface, getStorage()), pdo_(interface){
-    getStorage()->entry(heartbeat_, 0x1017);
+    try{
+        getStorage()->entry(heartbeat_, 0x1017);
+    }
+    catch(const std::out_of_range){
+    }
 }
     
 const Node::State Node::getState(){
@@ -37,49 +41,55 @@ const Node::State Node::getState(){
     return state_;
 }
 
-void Node::reset_com(){
+bool Node::reset_com(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     getStorage()->reset();
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset_Com));
-    wait_for(BootUp, boost::chrono::seconds(10));
+    if(wait_for(BootUp, boost::chrono::seconds(10)) != 1){
+        return false;
+    }
     state_ = PreOperational;
-    heartbeat_.set(heartbeat_.desc().value().get<uint16_t>());
-
+    setHeartbeatInterval();
+    return true;
 }
-void Node::reset(){
+bool Node::reset(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     getStorage()->reset();
     
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset));
-    wait_for(BootUp, boost::chrono::seconds(10));
+    interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset_Com));
+    if(wait_for(BootUp, boost::chrono::seconds(10)) != 1){
+        return false;
+    }
     state_ = PreOperational;
-    heartbeat_.set(heartbeat_.desc().value().get<uint16_t>());
+    setHeartbeatInterval();
+    return true;
 }
 
-void Node::prepare(){
+bool Node::prepare(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     if(state_ == BootUp){
         // ERROR
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Prepare));
-    wait_for(PreOperational, boost::chrono::milliseconds(heartbeat_.get_cached() * 3));
+    return 0 != wait_for(PreOperational, boost::chrono::seconds(2));
 }
-void Node::start(){
+bool Node::start(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     if(state_ == BootUp){
         // ERROR
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Start));
-    wait_for(Operational, boost::chrono::milliseconds(heartbeat_.get_cached() * 3));
+    return 0 != wait_for(Operational, boost::chrono::seconds(2));
 }
-void Node::stop(){
+bool Node::stop(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     if(sync_) sync_->removeNode(this);
     if(state_ == BootUp){
         // ERROR
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Stop));
-    wait_for(Stopped, boost::chrono::milliseconds(heartbeat_.get_cached() * 3));
+    return 0 != wait_for(Stopped, boost::chrono::seconds(2));
 }
 
 void Node::switchState(const uint8_t &s){
@@ -108,25 +118,24 @@ void Node::handleNMT(const can::Frame & msg){
     cond.notify_one();
     
 }
-template<typename T> void Node::wait_for(const State &s, const T &timeout){
+template<typename T> int Node::wait_for(const State &s, const T &timeout){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     time_point abs_time = get_abs_time(timeout);
-    
-    if(timeout == boost::chrono::milliseconds(0)){
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
-        switchState(s);
-        boost::this_thread::yield();
-    }
-    
-    while(s != state_)
-    {
+
+    while(s != state_) {
         if(cond.wait_until(cond_lock,abs_time) == boost::cv_status::timeout)
         {
-            if(s != state_){
-                BOOST_THROW_EXCEPTION( TimeoutException() );
-            }
+            break;
         }
-   }
+    }
+    if( s!= state_){
+        if(getHeartbeatInterval() == 0){
+            switchState(s);
+            return -1;
+        }
+        return 0;
+    }
+    return 1;
 }
 bool Node::checkHeartbeat(){
     if(!heartbeat_.get_cached()) return true; //disabled
@@ -135,19 +144,27 @@ bool Node::checkHeartbeat(){
 }
 
 
-void Node::read(LayerStatus &status){
-    if(!checkHeartbeat()) status.error("heartbeat problem");
-    else if(getState() != Operational)  status.error("not operational");
-    else if(!pdo_.read())  status.error("PDO read problem");
-    else emcy_.read(status);
+void Node::handleRead(LayerStatus &status, const LayerState &current_state) {
+    if(current_state > Init){
+        if(!checkHeartbeat()){
+            status.error("heartbeat problem");
+        } else if(getState() != Operational){
+            status.error("not operational");
+        } else{
+            pdo_.read(status);
+            emcy_.read(status);
+        }
+    }
 }
-void Node::write(LayerStatus &status){
-    if(getState() != Operational)  status.error("not operational");
-    else if(! pdo_.write())  status.error("PDO write problem");
+void Node::handleWrite(LayerStatus &status, const LayerState &current_state) {
+    if(current_state > Init){
+        if(getState() != Operational)  status.error("not operational");
+        else if(! pdo_.write())  status.error("PDO write problem");
+    }
 }
 
 
-void Node::diag(LayerReport &report){
+void Node::handleDiag(LayerReport &report){
     State state = getState();
     if(state != Operational){
         report.error("Mode not operational");
@@ -157,38 +174,33 @@ void Node::diag(LayerReport &report){
     }
     if(state != Unknown) emcy_.diag(report);
 }
-void Node::init(LayerStatus &status){
+void Node::handleInit(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( can::MsgHeader(0x700 + node_id_), can::CommInterface::FrameDelegate(this, &Node::handleNMT));
 
     sdo_.init();
     try{
-        reset();
-        //reset_com();
-        //emcy_.recover();
-        prepare();
+        if(!reset_com()) BOOST_THROW_EXCEPTION( TimeoutException() );
     }
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not reset node '%1%'") % (int)node_id_));
         return;
     }
-	emcy_.recover();
 
-	pdo_.init(getStorage());
-	getStorage()->init_all();
-	sdo_.init(); // reread SDO paramters;
-	// TODO: set SYNC data
+    pdo_.init(getStorage());
+    getStorage()->init_all();
+    sdo_.init(); // reread SDO paramters;
+    // TODO: set SYNC data
 
     try{
-        start();
+        if(!start()) BOOST_THROW_EXCEPTION( TimeoutException() );
     }
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
     }
-	emcy_.init(status);
+    emcy_.init();
 }
-void Node::recover(LayerStatus &status){
-	emcy_.recover();
-	prepare();
+void Node::handleRecover(LayerStatus &status){
+    emcy_.recover();
     if(getState() != Operational){
         try{
             start();
@@ -197,16 +209,13 @@ void Node::recover(LayerStatus &status){
             status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
         }
     }
-	emcy_.read(status);
 }
-void Node::shutdown(LayerStatus &status){
+void Node::handleShutdown(LayerStatus &status){
+    if(getHeartbeatInterval()> 0) heartbeat_.set(0);
     stop();
     nmt_listener_.reset();
     switchState(Unknown);
 }
-void Node::halt(LayerStatus &status){
+void Node::handleHalt(LayerStatus &status){
     // do nothing
-}
-void Node::pending(LayerStatus &status){
-    // TODO
 }

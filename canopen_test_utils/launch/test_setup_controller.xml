@@ -17,7 +17,7 @@
     
     <!--node name="$(arg name)_joint_position_controller_spawner" pkg="controller_manager" type="spawner" args="$(arg name)_joint_position_controller" /-->
     <node if="$(arg sim)"                      name="$(arg name)_controller_spawner" pkg="controller_manager" type="spawner" args="/$(arg name)/joint_trajectory_controller" />
-    <node unless="$(arg sim)" ns="$(arg name)" name="$(arg name)_controller_spawner" pkg="controller_manager" type="spawner" args="/$(arg name)/joint_trajectory_controller" />
+    <node unless="$(arg sim)" ns="$(arg name)" name="$(arg name)_controller_spawner" pkg="controller_manager" type="spawner" args="joint_trajectory_controller" />
 
     <!-- upload script server parameters -->
     <rosparam command="load" ns="/script_server/$(arg name)" file="$(find canopen_test_utils)/config/$(arg name)_joint_configurations.yaml"/>

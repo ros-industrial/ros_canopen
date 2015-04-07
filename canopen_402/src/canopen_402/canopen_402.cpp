@@ -59,589 +59,204 @@ using canopen::Node_402;
 
 void Node_402::pending(LayerStatus &status)
 {
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
+  processSW(status);
+  processCW(status);
+  additionalInfo(status);
 
-  if(configuring_node_)
-  {
-    default_operation_mode_ = OperationMode(op_mode.get_cached());
-    enterMode(default_operation_mode_);
-    configuring_node_ = false;
-  }
-  else
-  {
-    control_word_bitset.reset(CW_Halt);
-
-    getDeviceState(status);
-
-    operation_mode_ = (OperationMode) op_mode_display.get();
-
-    if (check_mode)
-    {
-      switchMode(status);
-    }
-
-    if (state_ != target_state_)
-    {
-      switch (state_)
-      {
-      case Fault:
-        motorFaultReset();
-        break;
-      case Not_Ready_To_Switch_On:
-      case Switch_On_Disabled:
-        switch (target_state_)
-        {
-        case Ready_To_Switch_On:
-        case Switched_On:
-        case Operation_Enable:
-          motorShutdown();
-          driveSettingsOnlyPos();
-          break;
-        }
-        break;
-      case Ready_To_Switch_On:
-        switch (target_state_)
-        {
-        case Switch_On_Disabled:
-          motorDisableVoltage();
-          break;
-        case Switched_On:
-        case Operation_Enable:
-          motorSwitchOn();
-          driveSettingsOnlyPos();
-          break;
-        }
-        break;
-      case Switched_On:
-        switch (target_state_)
-        {
-        case Switch_On_Disabled:
-          motorQuickStop();
-          break;
-        case Ready_To_Switch_On:
-          motorShutdown();
-          break;
-        case Operation_Enable:
-          motorEnableOp();
-          driveSettingsOnlyPos();
-          break;
-        }
-        break;
-      case Operation_Enable:
-        switch (target_state_)
-        {
-        case Switch_On_Disabled:
-          motorDisableVoltage();
-        case Ready_To_Switch_On:
-          motorShutdown();
-        case Quick_Stop_Active:
-          motorQuickStop();
-        case Switched_On:
-          motorDisableOp();
-        }
-        break;
-      case Quick_Stop_Active:
-        switch (target_state_)
-        {
-        case Switch_On_Disabled:
-          motorDisableVoltage();
-          break;
-        case Operation_Enable:
-          motorEnableOp();
-          driveSettingsOnlyPos();
-          break;
-        }
-        break;
-      }
-    }
-    else if (homing_needed_)
-    {
-      if (operation_mode_ != Homing)
-        op_mode.set(Homing);
-      else
-      {
-        control_word_bitset.set(CW_Operation_mode_specific0);
-
-        switch ((status_word_bitset & homing_mask).to_ulong())
-        {
-        //-------------------------------------------------------------//
-        // Op_specific1 | Op_specific0 | Target_reached | Description |
-        // ------------ | ------------ | -------------- | ----------- |
-        //       0      |       0      |         0      | In Progress |
-        //       0      |       0      |         1      | Hom.Started |
-        //       0      |       1      |         0      | Hom.Attained, target not reached|
-        //       0      |       1      |         1      | Hom.Succesful |
-        //       1      |       0      |         0      | Hom.Error, vel!=0 |
-        //       1      |       0      |         1      | Hom.Error, vel=0 |
-        //       1      |       1      |         0      | Hom.Reserved |
-        //       1      |       1      |         1      | Hom.Reserved |
-        //-------------------------------------------------------------//
-        case 0:
-          LOG("Homing in Progress");
-          break;
-        case (1<<SW_Target_reached):
-          LOG("Homing not started");
-          break;
-        case (1<<SW_Operation_specific0):
-          LOG("Homing attained, target not reached");
-          break;
-        case ((1<<SW_Operation_specific0) | (1<<SW_Target_reached)):
-          homing_needed_ = false;
-          enterMode(default_operation_mode_);
-          LOG("Homing succesful");
-          break;
-        case (1<<SW_Operation_specific1):
-          LOG("Homing error , vel!=0");
-          status.error("Homing error, vel!=0");
-          break;
-        case ((1<<SW_Operation_specific1) | (1<<SW_Target_reached)):
-          LOG("Homing error, vel=0");
-          status.error("Homing error, vel=0");
-          break;
-        case (1<<SW_Operation_specific1 | 1<<SW_Operation_specific0):
-        case (1<<SW_Operation_specific1 | 1<<SW_Operation_specific0 | 1<<SW_Target_reached):
-          LOG("Homing reserved");
-          break;
-        }
-      }
-    }
-    else if(state_ == Operation_Enable)
-    {
-      if(configure_drive_)
-      {
-        ac_pos_ = actual_pos.get();
-        ac_vel_ = 0;
-
-        oldpos_ = target_pos_ = ac_pos_;
-        target_vel_ = ac_vel_;
-        configure_drive_ = false;
-      }
-      else
-      {
-        driveSettings();
-        motor_ready_ = true;
-        cond_lock.unlock();
-        cond.notify_one();
-      }
-    }
-    int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
-    control_word.set(cw_set);
-  }
-}
-
-void Node_402::getDeviceState(LayerStatus &status)
-{
-  std::bitset<16> sw_new(status_word.get());
-
-  status_word_bitset = sw_new;
-
-  switch ((status_word_bitset & status_word_mask).to_ulong())
-  {
-  case 0b0000000:
-  case 0b0100000:
-    state_ = Not_Ready_To_Switch_On;
-    break;
-  case 0b1000000:
-  case 0b1100000:
-    state_ = Switch_On_Disabled;
-    break;
-  case 0b0100001:
-    state_ = Ready_To_Switch_On;
-    break;
-  case 0b0100011:
-    state_ = Switched_On;
-    break;
-  case 0b0100111:
-    state_ = Operation_Enable;
-    break;
-  case 0b0000111:
-    state_ = Quick_Stop_Active;
-    break;
-  case 0b0001111:
-  case 0b0101111:
-    state_ = Fault_Reaction_Active;
-    break;
-  case 0b0001000:
-  case 0b0101000:
-    state_ = Fault;
-    break;
-  default:
-    LOG("Motor currently in an unknown state");
-    status.error("Motor currently in an unknown state");
-  }
-}
-
-void Node_402::switchMode(LayerStatus &status)
-{
-  target_pos_ = ac_pos_;
-  target_vel_ = 0;
-
-  if (operation_mode_ == operation_mode_to_set_)
-  {
-    if(state_ == Operation_Enable)
-    {
-        control_word_bitset.reset(CW_Halt);
-        check_mode = false;
-        motor_ready_ = true;
-        cond.notify_all();
-    }
-    else
-    {
-        motorEnableOp();
-    }
-  }
-  else
-  {
-    op_mode.set(operation_mode_to_set_);
-  }
-}
-
-bool Node_402::enterMode(const OperationMode &op_mode_var)
-{
-  control_word_bitset.set(CW_Halt);
-  operation_mode_to_set_ = op_mode_var;
-  check_mode = true;
-
-  target_pos_ = ac_pos_;
-  target_vel_ = 0;
-
-  return true;
+  clearTargetEntries();
 }
 
 bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
 {
-    boost::mutex::scoped_lock cond_lock(cond_mutex);
+  boost::mutex::scoped_lock lock(mode_mutex_, boost::try_to_lock);
+  if(!lock) return false;
 
-    if(!isModeSupported(op_mode_var)){
-      LOG( "Mode " << (int)op_mode_var << " not supported");
-      return false;
-    }
+  motorEvent(highLevelSM::enterStandBy());
 
-    motor_ready_ = false;
-    enter_mode_failure_ = false;
+  canopen::time_point abs_time = canopen::get_abs_time(boost::chrono::seconds(1));
+  canopen::time_point actual_point;
 
-    LOG( "Enter mode" << (int)op_mode_var);
-    enterMode(op_mode_var);
-    time_point t0 = get_abs_time(boost::chrono::seconds(10));
+  valid_mode_state_ = false;
 
-    while (!motor_ready_)
+  if (isModeSupported(op_mode_var))
+  {
+    op_mode.set_cached(op_mode_var);
+
+    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
+
+    while(transition_success == boost::msm::back::HANDLED_FALSE)
     {
-      if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
+      actual_point = boost::chrono::high_resolution_clock::now();
+      if(boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
       {
-          enter_mode_failure_ = true;
-          break;
+        return false;
       }
-    }
+      transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
 
-    return motor_ready_;
+      motorEvent(highLevelSM::enterStandBy());
+      //return false;
+    }
+    valid_mode_state_ = true;
+    return true;
+  }
+  else
+    return false;
 }
 
-void Node_402::read(LayerStatus &status)
-{
-  getDeviceState(status);
 
-  operation_mode_ = (OperationMode) op_mode_display.get();
+void Node_402::processSW(LayerStatus &status)
+{
+  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
+  if(!lock) return;
+
+  std::bitset<16> sw_new(status_word.get());
+
+  *status_word_bitset = sw_new;
+
+  SwCwSM.process_event(StatusandControl::newStatusWord());
+
+  //  if(*state_ == Fault)
+  //  {
+  //    bool transition_success;
+  //    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultEnable)); //this is the timeout in milliseconds
+  //  }
+}
+
+void Node_402::additionalInfo(LayerStatus &s)
+{
+
+  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
+  if(!lock) return;
+
+  *operation_mode_ = (OperationMode) op_mode_display.get();
+
   ac_vel_ = actual_vel.get();
   ac_pos_ = actual_pos.get();
-  ac_eff_=0; //Currently no effort directly obtained from the HW
+  ac_eff_ = 0; //Currently,no effort value is directly obtained from the HW
 }
 
-void Node_402::shutdown(LayerStatus &status)
+void Node_402::handleRead(LayerStatus &status, const LayerState &current_state)
 {
-}
-
-void Node_402::diag(LayerReport &report)
-{
-}
-
-void Node_402::halt(LayerStatus &status)
-{
-  control_word_bitset.set(CW_Halt);
-}
-
-
-void Node_402::recover(LayerStatus &status)
-{
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
-
-  configure_drive_ = true;
-  motor_ready_ = false;
-  time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
-
-  while (!motor_ready_)
+  if(current_state == Init || current_state == Recover)
   {
-    if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
+    pending(status);
+  }
+  processSW(status);
+  additionalInfo(status);
+}
+
+void Node_402::handleWrite(LayerStatus &status, const LayerState &current_state)
+{
+  if(current_state == Init || current_state == Recover)
+  {
+    return;
+  }
+  move(status);
+  processCW(status);
+  motorEvent(highLevelSM::enterStandBy());
+}
+
+void Node_402::processCW(LayerStatus &status)
+{
+  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
+  if(!lock) return;
+
+  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
+
+  control_word.set(cw_set);
+
+  SwCwSM.process_event(StatusandControl::newControlWord());
+}
+
+void Node_402::move(LayerStatus &status)
+{
+  if(*state_ == Operation_Enable)
+  {
+    bool transition_success = motorEvent(highLevelSM::enableMove(*operation_mode_, (*target_values_).target_pos, (*target_values_).target_vel));
+    if(transition_success)
     {
-      if (!motor_ready_)
-      {
-       status.error("Could not properly recover the chain");
-       return;
-      }
+      target_interpolated_position.set((*target_values_).target_pos);
+      if (ip_mode_sub_mode.get_cached() == -1)
+        target_interpolated_velocity.set((*target_values_).target_vel);
     }
   }
+}
+
+void Node_402::handleShutdown(LayerStatus &status)
+{
+  turnOff(status);
+}
+
+void Node_402::handleDiag(LayerReport &report)
+{
+}
+
+void Node_402::handleHalt(LayerStatus &status)
+{
+  bool transition_success;
+
+  transition_success = motorEvent(highLevelSM::runMotorSM(QuickStop));
+
+  //  if(!transition_success)
+  //    status.error("Could not halt the module");
+
+  motorEvent(highLevelSM::enterStandBy());
+}
+
+
+void Node_402::handleRecover(LayerStatus &status)
+{
+  bool recover_success;
+
+  motorEvent(highLevelSM::stopMachine());
+
+  recover_success = turnOn(status);
+
+  if(!recover_success)
+    status.error("Failed to Recover the modules");
 }
 
 const double Node_402::getTargetPos()
 {
-  return target_pos_;
+  return (*target_values_).target_pos;
 }
 const double Node_402::getTargetVel()
 {
-  return target_vel_;
+  return (*target_values_).target_vel;
 }
 
-void Node_402::motorShutdown()
-{
-  control_word_bitset.reset(CW_Switch_On);
-  control_word_bitset.set(CW_Enable_Voltage);
-  control_word_bitset.set(CW_Quick_Stop);
-  control_word_bitset.reset(CW_Fault_Reset);
-  control_word_bitset.reset(CW_Enable_Operation);
-  control_word_bitset.reset(CW_Operation_mode_specific0);
-  control_word_bitset.reset(CW_Operation_mode_specific1);
-  control_word_bitset.reset(CW_Operation_mode_specific2);
-}
 
-void Node_402::motorSwitchOn()
+const OperationMode Node_402::getMode()
 {
-  control_word_bitset.set(CW_Switch_On);
-  control_word_bitset.set(CW_Enable_Voltage);
-  control_word_bitset.set(CW_Quick_Stop);
-  control_word_bitset.reset(CW_Fault_Reset);
-  control_word_bitset.reset(CW_Enable_Operation);
-  control_word_bitset.reset(CW_Operation_mode_specific0);
-  control_word_bitset.reset(CW_Operation_mode_specific1);
-  control_word_bitset.reset(CW_Operation_mode_specific2);
-}
-
-void Node_402::motorSwitchOnandEnableOp()
-{
-  control_word_bitset.set(CW_Switch_On);
-  control_word_bitset.set(CW_Enable_Voltage);
-  control_word_bitset.set(CW_Quick_Stop);
-  control_word_bitset.reset(CW_Fault_Reset);
-  control_word_bitset.set(CW_Enable_Operation);
-  control_word_bitset.reset(CW_Operation_mode_specific0);
-  control_word_bitset.reset(CW_Operation_mode_specific1);
-  control_word_bitset.reset(CW_Operation_mode_specific2);
-}
-
-void Node_402::motorDisableVoltage()
-{
-  control_word_bitset.reset(CW_Switch_On);
-  control_word_bitset.reset(CW_Enable_Voltage);
-  control_word_bitset.reset(CW_Quick_Stop);
-  control_word_bitset.reset(CW_Fault_Reset);
-  control_word_bitset.reset(CW_Enable_Operation);
-  control_word_bitset.reset(CW_Operation_mode_specific0);
-  control_word_bitset.reset(CW_Operation_mode_specific1);
-  control_word_bitset.reset(CW_Operation_mode_specific2);
-}
-
-void Node_402::motorQuickStop()
-{
-  control_word_bitset.reset(CW_Switch_On);
-  control_word_bitset.set(CW_Enable_Voltage);
-  control_word_bitset.reset(CW_Quick_Stop);
-  control_word_bitset.reset(CW_Fault_Reset);
-  control_word_bitset.reset(CW_Enable_Operation);
-  control_word_bitset.reset(CW_Operation_mode_specific0);
-  control_word_bitset.reset(CW_Operation_mode_specific1);
-  control_word_bitset.reset(CW_Operation_mode_specific2);
-}
-
-void Node_402::motorDisableOp()
-{
-  control_word_bitset.set(CW_Switch_On);
-  control_word_bitset.set(CW_Enable_Voltage);
-  control_word_bitset.set(CW_Quick_Stop);
-  control_word_bitset.reset(CW_Fault_Reset);
-  control_word_bitset.reset(CW_Enable_Operation);
-  control_word_bitset.reset(CW_Operation_mode_specific0);
-  control_word_bitset.reset(CW_Operation_mode_specific1);
-  control_word_bitset.reset(CW_Operation_mode_specific2);
-}
-
-void Node_402::motorEnableOp()
-{
-  control_word_bitset.set(CW_Switch_On);
-  control_word_bitset.set(CW_Enable_Voltage);
-  control_word_bitset.set(CW_Quick_Stop);
-  control_word_bitset.reset(CW_Fault_Reset);
-  control_word_bitset.set(CW_Enable_Operation);
-  control_word_bitset.reset(CW_Operation_mode_specific0);
-  control_word_bitset.reset(CW_Operation_mode_specific1);
-  control_word_bitset.reset(CW_Operation_mode_specific2);
-  control_word_bitset.reset(CW_Halt);
-}
-
-void Node_402::motorFaultReset()
-{
-  control_word_bitset.set(CW_Fault_Reset);
-  control_word_bitset.reset(CW_Switch_On);
-  control_word_bitset.reset(CW_Enable_Voltage);
-  control_word_bitset.set(CW_Quick_Stop);
-  control_word_bitset.reset(CW_Enable_Operation);
-  control_word_bitset.reset(CW_Operation_mode_specific0);
-  control_word_bitset.reset(CW_Operation_mode_specific1);
-  control_word_bitset.reset(CW_Operation_mode_specific2);
-}
-
-void Node_402::driveSettingsOnlyBits()
-{
-  switch (operation_mode_)
-  {
-  case Profiled_Position:
-    control_word_bitset.reset(CW_Operation_mode_specific0);
-    control_word_bitset.reset(CW_Operation_mode_specific1);
-    control_word_bitset.reset(CW_Operation_mode_specific2);
-    break;
-  case Profiled_Velocity:
-    control_word_bitset.reset(CW_Operation_mode_specific0);
-    control_word_bitset.reset(CW_Operation_mode_specific1);
-    control_word_bitset.reset(CW_Operation_mode_specific2);
-    break;
-  case Interpolated_Position:
-    control_word_bitset.set(CW_Operation_mode_specific0);
-    control_word_bitset.reset(CW_Operation_mode_specific1);
-    control_word_bitset.reset(CW_Operation_mode_specific2);
-    break;
-  case Velocity:
-    control_word_bitset.set(CW_Operation_mode_specific0);
-    control_word_bitset.set(CW_Operation_mode_specific1);
-    control_word_bitset.set(CW_Operation_mode_specific2);
-    break;
-  }
-}
-
-void Node_402::driveSettingsOnlyPos()
-{
-  switch (operation_mode_)
-  {
-  case Profiled_Position:
-    target_position.set(target_pos_);
-    break;
-  case Profiled_Velocity:
-    target_profiled_velocity.set(target_vel_);
-    break;
-  case Interpolated_Position:
-    target_interpolated_position.set(target_pos_);
-    if (ip_mode_sub_mode.get_cached() == -1)
-      target_interpolated_velocity.set(target_vel_);
-    break;
-  case Velocity:
-    target_velocity.set(target_vel_);
-    break;
-  }
-}
-
-void Node_402::driveSettings()
-{
-  switch (operation_mode_)
-  {
-  case Profiled_Position:
-    if (oldpos_ != target_pos_)
-    {
-      target_position.set(target_pos_);
-      control_word_bitset.set(CW_Operation_mode_specific0);
-      control_word_bitset.reset(CW_Operation_mode_specific1);
-      control_word_bitset.reset(CW_Operation_mode_specific2);
-      oldpos_ = target_pos_;
-    }
-    else
-    {
-      control_word_bitset.reset(CW_Operation_mode_specific0);
-      control_word_bitset.reset(CW_Operation_mode_specific1);
-      control_word_bitset.reset(CW_Operation_mode_specific2);
-    }
-    break;
-  case Profiled_Velocity:
-    target_profiled_velocity.set(target_vel_);
-    control_word_bitset.reset(CW_Operation_mode_specific0);
-    control_word_bitset.reset(CW_Operation_mode_specific1);
-    control_word_bitset.reset(CW_Operation_mode_specific2);
-    break;
-  case Interpolated_Position:
-    if (oldpos_ != target_pos_)
-    {
-      target_interpolated_position.set(target_pos_);
-      if (ip_mode_sub_mode.get_cached() == -1)
-        target_interpolated_velocity.set(target_vel_);
-      control_word_bitset.set(CW_Operation_mode_specific0);
-      control_word_bitset.reset(CW_Operation_mode_specific1);
-      control_word_bitset.reset(CW_Operation_mode_specific2);
-      oldpos_ = target_pos_;
-    }
-    else
-    {
-    //  control_word_bitset.reset(CW_Operation_mode_specific0);
-      control_word_bitset.reset(CW_Operation_mode_specific1);
-      control_word_bitset.reset(CW_Operation_mode_specific2);
-    }
-    break;
-  case Velocity:
-    target_velocity.set(target_vel_);
-    control_word_bitset.set(CW_Operation_mode_specific0);
-    control_word_bitset.set(CW_Operation_mode_specific1);
-    control_word_bitset.set(CW_Operation_mode_specific2);
-    break;
-  }
-}
-void Node_402::write(LayerStatus &status)
-{
-  if (check_mode)
-  {
-    switchMode(status);
-  }
-  else if(enter_mode_failure_)
-    status.error("Failed to enter mode");
-  else if (state_ == Operation_Enable)
-  {
-    driveSettings();
-  }
-  else
-    status.error("Motor not in operation enabled state");
-
-  int16_t cw_set = static_cast<int>(control_word_bitset.to_ulong());
-  control_word.set(cw_set);
-}
-
-const Node_402::State& Node_402::getState()
-{
-  return state_;
-}
-
-const Node_402::OperationMode Node_402::getMode()
-{
-  if(operation_mode_ == Homing) return No_Mode; // TODO: remove after mode switch is handled properly in init
-  return operation_mode_;
+  if(*operation_mode_ == Homing) return No_Mode; // TODO: remove after mode switch is handled properly in init
+  return *operation_mode_;
 }
 
 bool Node_402::isModeSupported(const OperationMode &op_mode)
 {
-  return supported_drive_modes.get_cached() & getModeMask(op_mode);
+  return supported_modes & getModeMask(op_mode);
 }
 uint32_t Node_402::getModeMask(const OperationMode &op_mode)
 {
-    switch(op_mode){
-        case Profiled_Position:
-        case Velocity:
-        case Profiled_Velocity:
-        case Profiled_Torque:
-        case Interpolated_Position:
-        case Cyclic_Synchronous_Position:
-        case Cyclic_Synchronous_Velocity:
-        case Cyclic_Synchronous_Torque:
-        case Homing:
-            return (1<<(op_mode-1));
-        case No_Mode:
-            return 0;
-    }
+  switch(op_mode){
+  case Profiled_Position:
+  case Velocity:
+  case Profiled_Velocity:
+  case Profiled_Torque:
+  case Interpolated_Position:
+  case Cyclic_Synchronous_Position:
+  case Cyclic_Synchronous_Velocity:
+  case Cyclic_Synchronous_Torque:
+  case Homing:
+    return (1<<(op_mode-1));
+  case No_Mode:
     return 0;
+  }
+  return 0;
 }
 bool Node_402::isModeMaskRunning(const uint32_t &mask)
 {
-  return mask & getModeMask(operation_mode_);
+  return mask & getModeMask(*operation_mode_);
 }
 
 const double Node_402::getActualVel()
@@ -666,18 +281,22 @@ const double Node_402::getActualInternalPos()
 
 void Node_402::setTargetVel(const double &target_vel)
 {
-  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
+  if (*state_ == Operation_Enable)
   {
-    target_vel_ = target_vel;
+    (*target_values_).target_vel = target_vel;
   }
+  else
+    (*target_values_).target_vel = 0;
 }
 
 void Node_402::setTargetPos(const double &target_pos)
 {
-  if (state_ == Operation_Enable && operation_mode_ == operation_mode_to_set_)
+  if (*state_ == Operation_Enable)
   {
-    target_pos_ = target_pos;
+    (*target_values_).target_pos = target_pos;
   }
+  else
+    (*target_values_).target_pos = ac_pos_;
 }
 
 void Node_402::configureEntries()
@@ -696,6 +315,8 @@ void Node_402::configureEntries()
 
 void Node_402::configureModeSpecificEntries()
 {
+  supported_modes = supported_drive_modes.get_cached();
+
   if (isModeSupported(Profiled_Position))
   {
     n_->getStorage()->entry(target_position, 0x607A);
@@ -722,81 +343,189 @@ void Node_402::configureModeSpecificEntries()
     n_->getStorage()->entry(homing_method, 0x6098);
   }
 }
-
-bool Node_402::turnOn()
+void Node_402::clearTargetEntries()
 {
-  target_state_ = Operation_Enable;
-  return true;
+  (*target_values_).target_pos = ac_pos_;
+  (*target_values_).target_vel = 0;
+
+  target_interpolated_position.set((*target_values_).target_pos);
+  if (ip_mode_sub_mode.get_cached() == -1)
+    target_interpolated_velocity.set((*target_values_).target_vel);
 }
 
-bool Node_402::turnOff()
+//TODO: Implement a smaller state machine for On, Off, Fault, Halt
+bool Node_402::turnOn(LayerStatus &s)
 {
-  target_state_ = Switch_On_Disabled;
-  return true;
-}
+  boost::mutex::scoped_lock cond_lock(cond_mutex_);
+  if(!cond_lock)
+    return false;
 
-void Node_402::init(LayerStatus &s)
-{
-  boost::mutex::scoped_lock cond_lock(cond_mutex);
+  clearTargetEntries();
 
-  motor_ready_ = false;
-  configure_drive_ = true;
+  canopen::time_point abs_time = canopen::get_abs_time(boost::chrono::seconds(2));
+  canopen::time_point actual_point;
 
-  time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
+  bool transition_success;
 
-  Node_402::configureModeSpecificEntries();
+  motorEvent(highLevelSM::startMachine());
 
-  if (homing_method.get() != 0)
-    homing_needed_ = true;
-
-  if (Node_402::turnOn())
+  while(*state_ == Start)
   {
-    running = true;
+    boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
   }
-  else
-    s.error();
 
-  while (!motor_ready_)
+  if(*state_ == Fault)
   {
-    if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultEnable)); //this is the timeout in milliseconds
+    motorEvent(highLevelSM::enterStandBy());
+    if(!transition_success)
     {
-      if (!motor_ready_)
-      {
-        s.error("Could not properly initialize the chain");
-        return;
-      }
+      s.error("Could not properly set the device to a fault state");
+      return false;
     }
+
+    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset)); //this is the timeout in milliseconds
+
+    motorEvent(highLevelSM::enterStandBy());
+
+
+    while(!transition_success)
+    {
+      actual_point = boost::chrono::high_resolution_clock::now();
+      if(boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+      {
+        s.error("Could not reset fault");
+        return false;
+      }
+
+      transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset)); //this is the timeout in milliseconds
+
+      motorEvent(highLevelSM::enterStandBy());
+    }
+
+    motorEvent(highLevelSM::enterStandBy());
   }
+
+
+  if(*state_==Quick_Stop_Active)
+  {
+    transition_success = motorEvent(highLevelSM::runMotorSM(DisableQuickStop));
+    motorEvent(highLevelSM::enterStandBy());
+
+    while(!transition_success)
+    {
+      actual_point = boost::chrono::high_resolution_clock::now();
+      if( boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+      {
+        s.error("Could not disable the quick stop");
+        return false;
+      }
+      transition_success = motorEvent(highLevelSM::runMotorSM(DisableQuickStop));
+      motorEvent(highLevelSM::enterStandBy());
+      //return false;
+    }
+    motorEvent(highLevelSM::enterStandBy());
+  }
+
+
   boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
 
-  if(state_!=Operation_Enable)
+  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
+  motorEvent(highLevelSM::enterStandBy());
+
+  while(!transition_success)
   {
-    if(status_word_bitset.test(SW_Quick_stop))
+    actual_point = boost::chrono::high_resolution_clock::now();
+    if( boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
     {
-      motor_ready_ = false;
+      s.error("Could not prepare the device");
+      return false;
+    }
+    transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
+    motorEvent(highLevelSM::enterStandBy());
+  }
+  motorEvent(highLevelSM::enterStandBy());
 
-      time_point t0 = boost::chrono::high_resolution_clock::now() + boost::chrono::seconds(10);
+  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
+  motorEvent(highLevelSM::enterStandBy());
 
-      while (!motor_ready_)
+
+  while(!transition_success)
+  {
+    actual_point = boost::chrono::high_resolution_clock::now();
+    if(boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+    {
+      s.error("Could not switch on");
+      return false;
+    }
+    transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
+    motorEvent(highLevelSM::enterStandBy());
+  }
+  motorEvent(highLevelSM::enterStandBy());
+
+  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
+  motorEvent(highLevelSM::enterStandBy());
+
+  while(!transition_success)
+  {
+    actual_point = boost::chrono::high_resolution_clock::now();
+    if(boost::chrono::duration_cast<boost::chrono::milliseconds>(actual_point - abs_time).count() >= 0 )
+    {
+      s.error("Could not enable op");
+      return false;
+    }
+    transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
+    motorEvent(highLevelSM::enterStandBy());
+    //return false;
+  }
+  motorEvent(highLevelSM::enterStandBy());
+
+  return true;
+}
+
+template<class Event>
+bool Node_402::motorEvent(Event const& evt)
+{
+  boost::mutex::scoped_lock lock(motor_mutex_, boost::try_to_lock);
+  if(!lock) return false;
+
+  bool transition_success;
+
+  transition_success = motorAbstraction.process_event(evt);
+
+  return transition_success;
+}
+
+bool Node_402::turnOff(LayerStatus &s)
+{
+  motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
+
+  motorEvent(highLevelSM::stopMachine());
+
+
+  return true;
+}
+
+
+void Node_402::handleInit(LayerStatus &s)
+{
+  Node_402::configureModeSpecificEntries();
+
+  bool turn_on = Node_402::turnOn(s);
+
+  if (turn_on)
+  {
+    if (homing_method.valid() && homing_method.get() != 0)
+    {
+      bool transition_success;
+
+      transition_success = enterModeAndWait(Homing);
+      if(!transition_success)
       {
-        if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
-        {
-          if (!motor_ready_)
-          {
-              s.error("Could not properly initialize the chain");
-              return;
-          }
-        }
+        s.error("Failed to do the homing procedure");
       }
     }
-
-
-    else
-    {
-      s.error("Could not properly initialize the chain");
-      return;
-      }
   }
   else
-    LOG("Propertly initialized module");
+    s.error("Could not properly initialize the module");
 }

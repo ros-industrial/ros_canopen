@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
   boost::shared_ptr<canopen::ObjectDict>  dict = canopen::ObjectDict::fromFile(argv[2]);
 
   LocalMaster master(argv[1], driver);
-  boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), 0));
+  boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), boost::posix_time::microseconds(250), 0));
 
   boost::shared_ptr<canopen::Node> node (new Node(driver, dict, id, sync));
 
@@ -140,14 +140,12 @@ int main(int argc, char *argv[])
     if(count==1)
     {
       motor->setTargetPos((motor->getActualPos()));
-      motor->enterMode(motor->Interpolated_Position);
+      motor->enterModeAndWait(Interpolated_Position);
     }
     motor->setTargetPos((motor->getActualPos()-100));
     //motor->setTargetPos((motor->getActualPos()+10));
     count++;
   }
-
-  motor->turnOff();
 
   stack.shutdown(s);
 

@@ -1,4 +1,5 @@
 #include <canopen_master/objdict.h>
+#include <socketcan_interface/string.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/foreach.hpp>
@@ -29,7 +30,10 @@ template<> String & ObjectStorage::Data::allocate(){
 
 void ObjectStorage::Data::init(){
     boost::mutex::scoped_lock lock(mutex);
-    if(!valid || (!entry->init_val.is_empty() && buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
+
+    if(entry->init_val.is_empty()) return;
+
+    if(!valid || (buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
         buffer = entry->init_val.data();
         valid = true;
         if(entry->writable)
@@ -63,9 +67,6 @@ bool ObjectDict::iterate(boost::unordered_map<Key, boost::shared_ptr<const Entry
         ++it;
     }else it = dict_.begin();
     return it != dict_.end();
-}
-template<typename T> void read_optional(T& var, boost::property_tree::ptree &pt, const std::string &key){
-    var = pt.get(key, T());
 }
 void set_access( ObjectDict::Entry &entry, const std::string &access){
     entry.constant = false;
@@ -121,7 +122,7 @@ template<> uint64_t int_from_string(const std::string &s){
     return strtoull(s.c_str(), 0, 0);
 }
 
-template<typename T> HoldAny parse_int(boost::property_tree::ptree &pt, const std::string &key){
+template<typename T> HoldAny parse_int(boost::property_tree::iptree &pt, const std::string &key){
     if(pt.count(key) == 0) return HoldAny(TypeGuard::create<T>());
                                           
     std::string str = pt.get<std::string>(key);
@@ -130,63 +131,62 @@ template<typename T> HoldAny parse_int(boost::property_tree::ptree &pt, const st
     }else return HoldAny(int_from_string<T>(boost::trim_copy(str)));
 }
 
-uint8_t get_dec(char d){
-    if( '0' >= d && d <='9') return d - '0';
-    else if( 'a' >= d && d <='f') return d - 'a' + 10;
-    else if( 'A' >= d && d <='F') return d - 'A' + 10;
-    else throw ParseException();
-}
-template<typename T> HoldAny parse_octets(boost::property_tree::ptree &pt, const std::string &key){
-    if(pt.count(key) == 0) return HoldAny(TypeGuard::create<T>());
-
-    std::string in = pt.get<std::string>(key);
-    
-    if( (in.size() % 2) != 0) throw ParseException();
-    std::string out(in.size()/2,0);
-    for(size_t i=0; i < out.size(); ++i){
-        out[i] = (get_dec(in[i<<1]) << 4) | get_dec(in[(i<<1) +1]);
-    }
+template<typename T> HoldAny parse_octets(boost::property_tree::iptree &pt, const std::string &key){
+    std::string out;
+    if(pt.count(key) == 0 || can::hex2buffer(out,pt.get<std::string>(key), true)) return HoldAny(TypeGuard::create<T>());
     return HoldAny(T(out));
 }
 
-template<typename T> HoldAny parse_typed_value(boost::property_tree::ptree &pt, const std::string &key){
+template<typename T> HoldAny parse_typed_value(boost::property_tree::iptree &pt, const std::string &key){
     if(pt.count(key) == 0) return HoldAny(TypeGuard::create<T>());
     return HoldAny(pt.get<T>(key));
 }
-template<> HoldAny parse_typed_value<String>(boost::property_tree::ptree &pt, const std::string &key){
+template<> HoldAny parse_typed_value<String>(boost::property_tree::iptree &pt, const std::string &key){
     if(pt.count(key) == 0) return HoldAny(TypeGuard::create<String>());
     return HoldAny(String(pt.get<std::string>(key)));
 }
 
 struct ReadAnyValue{
-    template<const ObjectDict::DataTypes dt> static HoldAny func(boost::property_tree::ptree &pt, const std::string &key);
-    static HoldAny read_value(boost::property_tree::ptree &pt, uint16_t data_type, const std::string &key){
-        return branch_type<ReadAnyValue, HoldAny (boost::property_tree::ptree &, const std::string &)>(data_type)(pt, key);
+    template<const ObjectDict::DataTypes dt> static HoldAny func(boost::property_tree::iptree &pt, const std::string &key);
+    static HoldAny read_value(boost::property_tree::iptree &pt, uint16_t data_type, const std::string &key){
+        return branch_type<ReadAnyValue, HoldAny (boost::property_tree::iptree &, const std::string &)>(data_type)(pt, key);
     }
 };
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER8>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<int8_t>(pt,key); }
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER16>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<int16_t>(pt,key); }
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER32>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<int32_t>(pt,key); }
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER64>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<int64_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER8>(boost::property_tree::iptree &pt, const std::string &key){  return parse_int<int8_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER16>(boost::property_tree::iptree &pt, const std::string &key){  return parse_int<int16_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER32>(boost::property_tree::iptree &pt, const std::string &key){  return parse_int<int32_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_INTEGER64>(boost::property_tree::iptree &pt, const std::string &key){  return parse_int<int64_t>(pt,key); }
 
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED8>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<uint8_t>(pt,key); }
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED16>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<uint16_t>(pt,key); }
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED32>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<uint32_t>(pt,key); }
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED64>(boost::property_tree::ptree &pt, const std::string &key){  return parse_int<uint64_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED8>(boost::property_tree::iptree &pt, const std::string &key){  return parse_int<uint8_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED16>(boost::property_tree::iptree &pt, const std::string &key){  return parse_int<uint16_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED32>(boost::property_tree::iptree &pt, const std::string &key){  return parse_int<uint32_t>(pt,key); }
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_UNSIGNED64>(boost::property_tree::iptree &pt, const std::string &key){  return parse_int<uint64_t>(pt,key); }
 
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_DOMAIN>(boost::property_tree::ptree &pt, const std::string &key)
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_DOMAIN>(boost::property_tree::iptree &pt, const std::string &key)
 { return parse_octets<ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN>::type>(pt,key); }
 
-template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_OCTET_STRING>(boost::property_tree::ptree &pt, const std::string &key)
+template<> HoldAny ReadAnyValue::func<ObjectDict::DEFTYPE_OCTET_STRING>(boost::property_tree::iptree &pt, const std::string &key)
 { return parse_octets<ObjectStorage::DataType<ObjectDict::DEFTYPE_OCTET_STRING>::type>(pt,key); }
 
-template<const ObjectDict::DataTypes dt> HoldAny ReadAnyValue::func(boost::property_tree::ptree &pt, const std::string &key){
+template<const ObjectDict::DataTypes dt> HoldAny ReadAnyValue::func(boost::property_tree::iptree &pt, const std::string &key){
     return parse_typed_value<typename ObjectStorage::DataType<dt>::type>(pt, key);
 }
 
+template<typename T> void read_optional(T& var, boost::property_tree::iptree &pt, const std::string &key){
+    var = pt.get(key, T());
+}
 
-void read_var(ObjectDict::Entry &entry, boost::property_tree::ptree &object){
-        entry.data_type = int_from_string<uint16_t>(object.get<std::string>("DataType"));
+template<typename T> void read_integer(T& var, boost::property_tree::iptree &pt, const std::string &key){
+    var = int_from_string<T>(pt.get<std::string>(key));
+}
+
+template<typename T> T read_integer(boost::property_tree::iptree &pt, const std::string &key){
+    return int_from_string<T>(pt.get<std::string>(key, std::string()));
+}
+
+
+void read_var(ObjectDict::Entry &entry, boost::property_tree::iptree &object){
+        read_integer<uint16_t>(entry.data_type, object, "DataType");
         entry.mappable = object.get<bool>("PDOMapping", false);
         set_access(entry, object.get<std::string>("AccessType"));
         
@@ -194,8 +194,8 @@ void read_var(ObjectDict::Entry &entry, boost::property_tree::ptree &object){
         entry.init_val = ReadAnyValue::read_value(object, entry.data_type, "ParameterValue");
 }
 
-void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptree &pt, const std::string &name, const uint8_t* sub_index = 0){
-        boost::optional<boost::property_tree::ptree&> object =  pt.get_child_optional(name.substr(2));
+void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptree &pt, const std::string &name, const uint8_t* sub_index = 0){
+        boost::optional<boost::property_tree::iptree&> object =  pt.get_child_optional(name.substr(2));
         if(!object) return;
 
         boost::shared_ptr<ObjectDict::Entry> entry = boost::make_shared<ObjectDict::Entry>();
@@ -209,7 +209,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptre
             read_var(*entry, *object);
             dict->insert(sub_index != 0, entry);
         }else if(entry->obj_code == ObjectDict::ARRAY || entry->obj_code == ObjectDict::RECORD){
-            uint8_t subs = object->get<uint8_t>("CompactSubObj",0);
+            uint8_t subs = read_integer<uint8_t>(*object, "CompactSubObj");
             if(subs){ // compact
                 dict->insert(true, boost::make_shared<const canopen::ObjectDict::Entry>(entry->index, 0, ObjectDict::DEFTYPE_UNSIGNED8, "NrOfObjects", true, false, false, HoldAny(subs)));
 
@@ -223,23 +223,23 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptre
                        ReadAnyValue::read_value(pt, entry->data_type, name.substr(2)+"Value." + boost::lexical_cast<std::string>((int)i))));
                 }
             }else{
-                subs = object->get<uint8_t>("SubNumber");
+                read_integer(subs, *object, "SubNumber");
                 for(uint8_t i=0; i< subs; ++i){
-                   
-                   parse_object(dict, pt, name + "sub" + boost::lexical_cast<std::string>((int)i), &i);
+                   std::stringstream buf;
+                   buf << name << "sub" << std::hex << int(i);
+                   // std::cout << "added " << buf.str() <<  "  " << int(i) << std::endl;
+                   parse_object(dict, pt, buf.str(), &i);
                 }
             }
         }else{
             throw ParseException();
         }
 }
-void parse_objects(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptree &pt, const std::string &key){
+void parse_objects(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptree &pt, const std::string &key){
     if(!pt.count(key)) return;
     
-    boost::property_tree::ptree objects = pt.get_child(key);
-    
-    uint16_t count;
-    read_optional(count, objects, "SupportedObjects");
+    boost::property_tree::iptree objects = pt.get_child(key);
+    uint16_t count = read_integer<uint16_t>(objects, "SupportedObjects");
     for(uint16_t i=0; i < count; ++i){
         std::string name = objects.get<std::string>(boost::lexical_cast<std::string>(i+1));
         parse_object(dict, pt, name);
@@ -247,12 +247,12 @@ void parse_objects(boost::shared_ptr<ObjectDict> dict, boost::property_tree::ptr
 }
 boost::shared_ptr<ObjectDict> ObjectDict::fromFile(const std::string &path, const ObjectDict::Overlay &overlay){
     DeviceInfo info;
-    boost::property_tree::ptree pt;
+    boost::property_tree::iptree pt;
     boost::shared_ptr<ObjectDict> dict;
     
     boost::property_tree::read_ini(path, pt);
     
-    boost::property_tree::ptree di = pt.get_child("DeviceInfo");
+    boost::property_tree::iptree di = pt.get_child("DeviceInfo");
     
     read_optional(info.vendor_name, di, "VendorName");
     read_optional(info.vendor_number, di, "VendorNumber");
@@ -272,7 +272,7 @@ boost::shared_ptr<ObjectDict> ObjectDict::fromFile(const std::string &path, cons
     boost::unordered_set<uint32_t> baudrates;
     boost::unordered_set<uint16_t> dummy_usage;
 
-    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, di){
+    BOOST_FOREACH(boost::property_tree::iptree::value_type &v, di){
         if(v.first.find("BaudRate_") == 0){
             uint16_t rate = int_from_string<uint16_t>(v.first.substr(9));
             if(v.second.get_value<bool>())
@@ -281,7 +281,7 @@ boost::shared_ptr<ObjectDict> ObjectDict::fromFile(const std::string &path, cons
     }
 
     if(pt.count("DummyUsage")){
-        BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("DummyUsage")){
+        BOOST_FOREACH(boost::property_tree::iptree::value_type &v, pt.get_child("DummyUsage")){
             if(v.first.find("Dummy") == 0){
                 // std::cout << ("0x"+v.first.substr(5)) << std::endl;
                 uint16_t dummy = int_from_string<uint16_t>("0x"+v.first.substr(5));
@@ -381,9 +381,7 @@ void ObjectStorage::init_all(){
 
     boost::unordered_map<ObjectDict::Key, boost::shared_ptr<const ObjectDict::Entry> >::const_iterator entry_it;
     while(dict_->iterate(entry_it)){
-       if(!entry_it->second->init_val.is_empty() && !entry_it->second->def_val.is_empty() && entry_it->second->init_val.data() != entry_it->second->def_val.data()){
-           init_nolock(entry_it->first, entry_it->second);
-       }
+        init_nolock(entry_it->first, entry_it->second);
     }
 }
 

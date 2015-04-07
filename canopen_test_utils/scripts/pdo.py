@@ -50,7 +50,7 @@ def set_pdo(ini, writable, nr, objs, transmission):
     mapobj = to_hex(nr + (0x1600 if writable else 0x1A00), 4).upper()
 
     if not comobj in ini or not mapobj in ini:
-        print (pdo , nr , " is invalid")
+        print (writable , nr , " is invalid")
         exit(1)
     mapping = []
     bits = 0
@@ -68,6 +68,11 @@ def set_pdo(ini, writable, nr, objs, transmission):
     ini[mapobj+"sub0"]["ParameterValue"]=str(len(mapping))
     for i in range(len(mapping)):
         ini[mapobj+"sub%x" % (i+1)]["ParameterValue"]=mapping[i]
+    for i in range(len(mapping),8):
+        try:
+            del ini[mapobj+"sub%x" % (i+1)]["ParameterValue"]
+        except:
+            pass
 
 def patch(fname,out, writable, nr, objs, transmission):
     ini = configparser.RawConfigParser(dict_type=OrderedDict,allow_no_value=True)
@@ -76,6 +81,18 @@ def patch(fname,out, writable, nr, objs, transmission):
 
     set_pdo(ini, writable, nr, objs, transmission)
     ini.write(open(out,'w'), False)
+
+def patch_all(fname,out, pdos):
+    ini = configparser.RawConfigParser(dict_type=OrderedDict,allow_no_value=True)
+    ini.optionxform = lambda option: option
+    ini.readfp(open(fname))
+
+    for (k,v) in pdos.items():
+        parts = k.split("PDO");
+        objs =  [ o[0] for o in v[1:] ]
+        set_pdo(ini, parts[0] == "R", int(parts[1])-1, objs, v[0])
+    ini.write(open(out,'w'), False)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

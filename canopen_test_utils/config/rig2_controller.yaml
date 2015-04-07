@@ -10,7 +10,7 @@ joint_trajectory_controller:
   stop_trajectory_duration: 0.5
   state_publish_rate:  25
   action_monitor_rate: 10
-  required_drive_mode: 1
+  required_drive_mode: 7
 
 joint_trajectory_pid_controller:
   type: position_controllers/JointTrajectoryController

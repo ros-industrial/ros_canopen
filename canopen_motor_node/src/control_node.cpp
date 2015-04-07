@@ -3,6 +3,7 @@
 #include <canopen_chain_node/chain_ros.h>
 
 #include <canopen_402/canopen_402.h>
+#include <canopen_402/enums_402.h>
 
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
@@ -53,11 +54,11 @@ class HandleLayer: public Layer{
     
     hardware_interface::JointStateHandle jsh_;
     hardware_interface::JointHandle jph_, jvh_, jeh_, *jh_;
-    
-    typedef boost::unordered_map< MotorNode::OperationMode,hardware_interface::JointHandle* > CommandMap;
+
+    typedef boost::unordered_map< OperationMode,hardware_interface::JointHandle* > CommandMap;
     CommandMap commands_;
 
-    template <typename T> hardware_interface::JointHandle* addHandle( T &iface, hardware_interface::JointHandle *jh,  const std::vector<MotorNode::OperationMode> & modes){
+    template <typename T> hardware_interface::JointHandle* addHandle( T &iface, hardware_interface::JointHandle *jh,  const std::vector<OperationMode> & modes){
 
         uint32_t mode_mask = 0;
         for(size_t i=0; i < modes.size(); ++i){
@@ -67,13 +68,13 @@ class HandleLayer: public Layer{
         if(mode_mask == 0) return 0;
 
         iface.registerHandle(*jh);
-        
+
         for(size_t i=0; i < modes.size(); ++i){
             commands_[modes[i]] = jh;
         }
         return jh;
     }
-    bool select(const MotorNode::OperationMode &m){
+    bool select(const OperationMode &m){
         CommandMap::iterator it = commands_.find(m);
         if(it == commands_.end()) return false;
         jh_ = it->second;
@@ -83,12 +84,12 @@ public:
     HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor)
     : Layer(name + " Handle"), motor_(motor), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {}
 
-    int canSwitch(const MotorNode::OperationMode &m){
+    int canSwitch(const OperationMode &m){
        if(motor_->getMode() == m) return -1;
        if(commands_.find(m) != commands_.end()) return 1;
        return 0;
     }
-    bool switchMode(const MotorNode::OperationMode &m){
+    bool switchMode(const OperationMode &m){
         CommandMap::iterator it = commands_.find(m);
         if(it == commands_.end()) return false;
 
@@ -99,67 +100,70 @@ public:
         iface.registerHandle(jsh_);
     }
     hardware_interface::JointHandle* registerHandle(hardware_interface::PositionJointInterface &iface){
-        std::vector<MotorNode::OperationMode> modes;
-        modes.push_back(MotorNode::Profiled_Position);
-        modes.push_back(MotorNode::Interpolated_Position);
-        modes.push_back(MotorNode::Cyclic_Synchronous_Position);
+        std::vector<OperationMode> modes;
+        modes.push_back(Profiled_Position);
+        modes.push_back(Interpolated_Position);
+        modes.push_back(Cyclic_Synchronous_Position);
         return addHandle(iface, &jph_, modes);
     }
     hardware_interface::JointHandle* registerHandle(hardware_interface::VelocityJointInterface &iface){
-        std::vector<MotorNode::OperationMode> modes;
-        modes.push_back(MotorNode::Velocity);
-        modes.push_back(MotorNode::Profiled_Velocity);
-        modes.push_back(MotorNode::Cyclic_Synchronous_Velocity);
+        std::vector<OperationMode> modes;
+        modes.push_back(Velocity);
+        modes.push_back(Profiled_Velocity);
+        modes.push_back(Cyclic_Synchronous_Velocity);
         return addHandle(iface, &jvh_, modes);
     }
     hardware_interface::JointHandle* registerHandle(hardware_interface::EffortJointInterface &iface){
-        std::vector<MotorNode::OperationMode> modes;
-        modes.push_back(MotorNode::Profiled_Torque);
-        modes.push_back(MotorNode::Cyclic_Synchronous_Torque);
+        std::vector<OperationMode> modes;
+        modes.push_back(Profiled_Torque);
+        modes.push_back(Cyclic_Synchronous_Torque);
         return addHandle(iface, &jeh_, modes);
-    }
-    
-    virtual void read(LayerStatus &status){
-        cmd_pos_ = pos_ = motor_->getActualPos();
-        cmd_vel_ = vel_ = motor_->getActualVel();
-        cmd_eff_ = eff_ = motor_->getActualEff();
-        if(!jh_){
-            MotorNode::OperationMode m = motor_->getMode();
-            if(m != MotorNode::No_Mode && !select(m)){
-                status.error("No mode selected");
+    }    
+private:
+    virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            cmd_pos_ = pos_ = motor_->getActualPos();
+            cmd_vel_ = vel_ = motor_->getActualVel();
+            cmd_eff_ = eff_ = motor_->getActualEff();
+            if(!jh_){
+                OperationMode m = motor_->getMode();
+                if(m != No_Mode && !select(m)){
+                    status.error("No mode selected");
+                }
             }
-        }
-        if(jh_ == &jph_){
-            cmd_pos_ = motor_->getTargetPos();
-        }else if(jh_ == &jvh_){
-            cmd_vel_ = motor_->getTargetVel();
-        }else if(jh_ == &jeh_){
-            cmd_eff_ = motor_->getTargetEff();
-        }
-    }
-    virtual void write(LayerStatus &status){
-        if(jh_){
             if(jh_ == &jph_){
-                motor_->setTargetPos(cmd_pos_);
+                cmd_pos_ = motor_->getTargetPos();
             }else if(jh_ == &jvh_){
-                motor_->setTargetVel(cmd_vel_);
+                cmd_vel_ = motor_->getTargetVel();
             }else if(jh_ == &jeh_){
-                motor_->setTargetEff(cmd_eff_);
+                cmd_eff_ = motor_->getTargetEff();
             }
-        }else if (motor_->getMode() != MotorNode::No_Mode){
-            status.warn("unsupported mode active");
         }
     }
-    virtual void init(LayerStatus &status){
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
+        if(current_state == Ready){
+            if(jh_){
+                if(jh_ == &jph_){
+                    motor_->setTargetPos(cmd_pos_);
+                }else if(jh_ == &jvh_){
+                    motor_->setTargetVel(cmd_vel_);
+                }else if(jh_ == &jeh_){
+                    motor_->setTargetEff(cmd_eff_);
+                }
+            }else if (motor_->getMode() != No_Mode){
+                status.warn("unsupported mode active");
+            }
+        }
+    }
+    virtual void handleInit(LayerStatus &status){
         // TODO: implement proper init
-        read(status);
+        handleRead(status, Layer::Ready);
     }
     
-    virtual void pending(LayerStatus &status) { /* nothing to do */ }
-    virtual void diag(LayerReport &report) { /* nothing to do */ }
-    virtual void shutdown(LayerStatus &status) { /* nothing to do */ }
-    virtual void halt(LayerStatus &status) { /* TODO */ }
-    virtual void recover(LayerStatus &status) { /* nothing to do */ }
+    virtual void handleDiag(LayerReport &report) { /* nothing to do */ }
+    virtual void handleShutdown(LayerStatus &status) { /* nothing to do */ }
+    virtual void handleHalt(LayerStatus &status) { /* TODO */ }
+    virtual void handleRecover(LayerStatus &status) { LOG("RECOVER"); handleRead(status, Layer::Ready); }
     
 };
 
@@ -178,11 +182,12 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
     joint_limits_interface::EffortJointSaturationInterface eff_saturation_interface_;
 
     ros::NodeHandle nh_;
+    urdf::Model urdf_;
 
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
 public:
-    typedef std::vector<std::pair <boost::shared_ptr<HandleLayer>, MotorNode::OperationMode> >  SwitchContainer;
+    typedef std::vector<std::pair <boost::shared_ptr<HandleLayer>, OperationMode> >  SwitchContainer;
 
     virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &info_list, SwitchContainer &to_switch) {
         to_switch.reserve(handles_.size());
@@ -199,8 +204,8 @@ public:
                     ROS_ERROR_STREAM(*res_it << " not found");
                     return false;
                 }
-                if(int res = h_it->second->canSwitch((MotorNode::OperationMode)mode)){
-                    if(res > 0) to_switch.push_back(std::make_pair(h_it->second, MotorNode::OperationMode(mode)));
+                if(int res = h_it->second->canSwitch((OperationMode)mode)){
+                    if(res > 0) to_switch.push_back(std::make_pair(h_it->second, OperationMode(mode)));
                 }else{
                     ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
                     return false;
@@ -214,7 +219,8 @@ public:
         LayerGroupNoDiag::add(handle);
         handles_.insert(std::make_pair(name, handle));
     }
-    RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh) {
+    RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh)
+    {
         registerInterface(&state_interface_);
         registerInterface(&pos_interface_);
         registerInterface(&vel_interface_);
@@ -228,10 +234,12 @@ public:
         registerInterface(&eff_saturation_interface_);
         registerInterface(&eff_soft_limits_interface_);
 
-        
+        urdf_.initParam("robot_description");
     }
 
-    virtual void init(LayerStatus &status){
+    boost::shared_ptr<const urdf::Joint> getJoint(const std::string &n) const { return urdf_.getJoint(n); }
+
+    virtual void handleInit(LayerStatus &status){
         urdf::Model urdf;
         urdf.initParam("robot_description");
 
@@ -239,7 +247,7 @@ public:
             joint_limits_interface::JointLimits limits;
             joint_limits_interface::SoftJointLimits soft_limits;
 
-            boost::shared_ptr<const urdf::Joint> joint = urdf.getJoint(it->first);
+            boost::shared_ptr<const urdf::Joint> joint = getJoint(it->first);
             
             if(!joint){
                 status.error("joint " + it->first + " not found");
@@ -259,7 +267,7 @@ public:
             it->second->registerHandle(state_interface_);
 
             const hardware_interface::JointHandle *h  = 0;
-            
+
             h = it->second->registerHandle(pos_interface_);
             if(h && has_joint_limits){
                 joint_limits_interface::PositionJointSaturationHandle sathandle(*h, limits);
@@ -289,7 +297,7 @@ public:
             }
 
         }
-        LayerGroupNoDiag::init(status);
+        LayerGroupNoDiag::handleInit(status);
     }
 
     void enforce(const ros::Duration &period, bool reset){
@@ -327,6 +335,7 @@ public:
             recover_ = true;
         }
 
+        controller_manager::ControllerManager::notifyHardwareInterface(info_list); //compile-time check for ros_control notifyHardwareInterface support
         return true;
 
     }
@@ -340,7 +349,7 @@ public:
 
         last_time_ = now;
         controller_manager::ControllerManager::update(now, period, recover_);
-        robot_->enforce(period, recover_);
+        // robot_->enforce(period, recover_);
         recover_ = false;
    }
 
@@ -353,24 +362,27 @@ class ControllerManagerLayer : public Layer {
     boost::shared_ptr<ControllerManager> cm_;
     boost::shared_ptr<RobotLayer> robot_;
     ros::NodeHandle nh_;
-    
+
 public:
     ControllerManagerLayer(const boost::shared_ptr<RobotLayer> robot, const ros::NodeHandle &nh)
     :Layer("ControllerManager"), robot_(robot), nh_(nh) {
     }
 
-    virtual void read(LayerStatus &status) {
-        if(!cm_) status.error("controller_manager is not intialized");
+    virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            if(!cm_) status.error("controller_manager is not intialized");
+        }
     }
-    virtual void write(LayerStatus &status) {
-        if(!cm_) status.error("controller_manager is not intialized");
-        else cm_->update();
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
+        if(current_state > Init){
+            if(!cm_) status.error("controller_manager is not intialized");
+            else cm_->update();
+        }
     }
-    virtual void diag(LayerReport &report) { /* nothing to do */ }
-    virtual void pending(LayerStatus &status) { /* nothing to do */ }
-    virtual void halt(LayerStatus &status) { /* nothing to do (?) */ }
+    virtual void handleDiag(LayerReport &report) { /* nothing to do */ }
+    virtual void handleHalt(LayerStatus &status) { /* nothing to do (?) */ }
 
-    virtual void init(LayerStatus &status) {
+    virtual void handleInit(LayerStatus &status) {
         if(cm_){
             status.warn("controller_manager is already intialized");
         }else{
@@ -378,30 +390,38 @@ public:
         }
         cm_->recover();
     }
-    virtual void recover(LayerStatus &status) {
+    virtual void handleRecover(LayerStatus &status) {
         if(!cm_) status.error("controller_manager is not intialized");
         else cm_->recover();
     }
-    virtual void shutdown(LayerStatus &status) {
+    virtual void handleShutdown(LayerStatus &status) {
         cm_.reset();
     }
 };
 
-class MotorChain : RosChain{
-    boost::shared_ptr< LayerGroupNoDiag<MotorNode> > motors_;
+template<typename MotorNodeType> class MotorChain : public RosChain{
+    boost::shared_ptr< LayerGroupNoDiag<MotorNodeType> > motors_;
     boost::shared_ptr<RobotLayer> robot_layer_;
 
     boost::shared_ptr< ControllerManagerLayer> cm_;
 
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &module, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger)
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger)
     {
-        std::string name = module["name"];
-        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor", module));
+        std::string name = params["name"];
+        std::string &joint = name;
+        if(params.hasMember("joint")) joint.assign(params["joint"]);
+
+        if(!robot_layer_->getJoint(joint)){
+            ROS_ERROR_STREAM("joint " + joint + " was not found in URDF");
+            return false;
+        }
+
+        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor", params));
         motors_->add(motor);
         logger->add(motor);
 
-        boost::shared_ptr<HandleLayer> handle( new HandleLayer(name, motor));
-        robot_layer_->add(name, handle);
+        boost::shared_ptr<HandleLayer> handle( new HandleLayer(joint, motor));
+        robot_layer_->add(joint, handle);
         logger->add(handle);
 
         return true;
@@ -409,7 +429,7 @@ class MotorChain : RosChain{
 
 public:
     MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv){}
-    
+
     virtual bool setup() {
         motors_.reset( new LayerGroupNoDiag<MotorNode>("402 Layer"));
         robot_layer_.reset( new RobotLayer(nh_));
@@ -436,7 +456,7 @@ int main(int argc, char** argv){
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv("~");
 
-  MotorChain chain(nh, nh_priv);
+  MotorChain<MotorNode> chain(nh, nh_priv);
 
   if(!chain.setup()){
       return -1;

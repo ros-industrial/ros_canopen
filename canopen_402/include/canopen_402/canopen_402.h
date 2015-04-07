@@ -57,6 +57,9 @@
 #define CANOPEN_402_CANOPEN_402_H
 
 #include <canopen_master/canopen.h>
+#include <canopen_402/status_and_control.h>
+#include <canopen_402/ip_mode.h>
+#include <canopen_402/high_level_sm.h>
 #include <string>
 #include <vector>
 
@@ -65,143 +68,35 @@ namespace canopen
 class Node_402 : public canopen::Layer
 {
 public:
-  Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), state_(Start), operation_mode_(No_Mode), operation_mode_to_set_(No_Mode), n_(n), check_mode(false)
+  Node_402(boost::shared_ptr <canopen::Node> n, const std::string &name) : Layer(name), n_(n), check_mode(false)
   {
+    operation_mode_ = boost::make_shared<OperationMode>(No_Mode);
     configureEntries();
-    status_word_mask.set(SW_Ready_To_Switch_On);
-    status_word_mask.set(SW_Switched_On);
-    status_word_mask.set(SW_Operation_enabled);
-    status_word_mask.set(SW_Fault);
-    status_word_mask.reset(SW_Voltage_enabled);
-    status_word_mask.set(SW_Quick_stop);
-    status_word_mask.set(Switch_On_Disabled);
 
     homing_mask.set(SW_Target_reached);
     homing_mask.set(SW_Operation_specific0);
     homing_mask.set(SW_Operation_specific1);
 
-    homing_needed_ = false;
-    motor_ready_ = false;
-    configure_drive_ = false;
-    configuring_node_ = true;
+    status_word_bitset = boost::make_shared<sw_word>();
+    control_word_bitset = boost::make_shared<cw_word>();
+
+    target_values_ = boost::make_shared<StatusandControl::commandTargets>();
+
+    state_ = boost::make_shared<InternalState>(Start);
+
+    SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
+    motorAbstraction = highLevelSM(control_word_bitset, status_word_bitset, target_values_, operation_mode_, state_);
+    SwCwSM.start();
+    motorAbstraction.start();
+    SwCwSM.process_event(StatusandControl::readStatus());
   }
 
-  enum StatusWord
-  {
-    SW_Ready_To_Switch_On=0,
-    SW_Switched_On=1,
-    SW_Operation_enabled=2,
-    SW_Fault=3,
-    SW_Voltage_enabled=4,
-    SW_Quick_stop=5,
-    SW_Switch_on_disabled=6,
-    SW_Warning=7,
-    SW_Manufacturer_specific0=8,
-    SW_Remote=9,
-    SW_Target_reached=10,
-    SW_Internal_limit=11,
-    SW_Operation_specific0=12,
-    SW_Operation_specific1=13,
-    SW_Manufacturer_specific1=14,
-    SW_Manufacturer_specific2=15
-  };
-
-  enum ControlWord
-  {
-    CW_Switch_On=0,
-    CW_Enable_Voltage=1,
-    CW_Quick_Stop=2,
-    CW_Enable_Operation=3,
-    CW_Operation_mode_specific0=4,
-    CW_Operation_mode_specific1=5,
-    CW_Operation_mode_specific2=6,
-    CW_Fault_Reset=7,
-    CW_Halt=8,
-    CW_Reserved0=9,
-    CW_Reserved1=10,
-    CW_Manufacturer_specific0=11,
-    CW_Manufacturer_specific1=12,
-    CW_Manufacturer_specific2=13,
-    CW_Manufacturer_specific3=14,
-    CW_Manufacturer_specific4=15,
-  };
-
-  enum OperationMode
-  {
-    No_Mode = 0,
-    Profiled_Position = 1,
-    Velocity = 2,
-    Profiled_Velocity = 3,
-    Profiled_Torque = 4,
-    Reserved = 5,
-    Homing = 6,
-    Interpolated_Position = 7,
-    Cyclic_Synchronous_Position = 8,
-    Cyclic_Synchronous_Velocity = 9,
-    Cyclic_Synchronous_Torque = 10,
-  };
-
-  enum SupportedOperationMode
-  {
-    Sup_Profiled_Position = 0,
-    Sup_Velocity = 1,
-    Sup_Profiled_Velocity = 2,
-    Sup_Profiled_Torque = 3,
-    Sup_Reserved = 4,
-    Sup_Homing = 5,
-    Sup_Interpolated_Position = 6,
-    Sup_Cyclic_Synchronous_Position = 7,
-    Sup_Cyclic_Synchronous_Velocity = 8,
-    Sup_Cyclic_Synchronous_Torque = 9
-  };
-
-  enum State
-  {
-    Start = 0,
-    Not_Ready_To_Switch_On = 1,
-    Switch_On_Disabled = 2,
-    Ready_To_Switch_On = 3,
-    Switched_On = 4,
-    Operation_Enable = 5,
-    Quick_Stop_Active = 6,
-    Fault_Reaction_Active = 7,
-    Fault = 8,
-  };
-
   const OperationMode getMode();
-  bool enterMode(const OperationMode &op_mode);
+
   bool enterModeAndWait(const OperationMode &op_mode);
   bool isModeSupported(const OperationMode &op_mode);
   static uint32_t getModeMask(const OperationMode &op_mode);
   bool isModeMaskRunning(const uint32_t &mask);
-
-  const State& getState();
-  void enterState(const State &s);
-
-
-  virtual void read(LayerStatus &status);
-  virtual void pending(LayerStatus &status);
-  virtual void write(LayerStatus &status);
-
-  virtual void diag(LayerReport &report);
-
-  virtual void init(LayerStatus &status);
-  virtual void shutdown(LayerStatus &status);
-
-  void getDeviceState(LayerStatus &status);
-  void switchMode(LayerStatus &status);
-
-  void motorShutdown();
-  void motorSwitchOn();
-  void motorSwitchOnandEnableOp();
-  void motorDisableVoltage();
-  void motorQuickStop();
-  void motorDisableOp();
-  void motorEnableOp();
-  void motorFaultReset();
-
-  virtual void halt(LayerStatus &status);
-  virtual void recover(LayerStatus &status);
 
   const double getActualPos();
   const double getActualInternalPos();
@@ -211,34 +106,34 @@ public:
 
   void setTargetPos(const double &target_pos);
   void setTargetVel(const double &target_vel);
-  void setTargetEff(const double &v) {}  // TODO(thiagodefreitas)
+  void setTargetEff(const double &v) {}
 
   const double getTargetPos();
   const double getTargetVel();
   const double getTargetEff()
   {
-    return 0;  // TODO(thiagodefreitas)
+    return 0;
   }
 
-  bool turnOn();
-  bool turnOff();
-
-  void configureEntries();
-  void configureModeSpecificEntries();
-
 private:
+
+  template<typename T> int wait_for(const bool &condition, const T &timeout);
+
   boost::shared_ptr <canopen::Node> n_;
   volatile bool running;
-  State state_;
-  State target_state_;
+  boost::shared_ptr<InternalState> state_;
 
   bool new_target_pos_;
 
   bool motor_ready_;
   bool homing_needed_;
 
-  boost::mutex cond_mutex;
-  boost::condition_variable cond;
+  boost::mutex motor_mutex_;
+  boost::mutex word_mutex_;
+  boost::mutex cond_mutex_;
+  boost::mutex mode_mutex_;
+
+  boost::condition_variable cond_event_;
 
   canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  status_word;
   canopen::ObjectStorage::Entry<canopen::ObjectStorage::DataType<0x006>::type >  control_word;
@@ -260,30 +155,26 @@ private:
   canopen::ObjectStorage::Entry<int32_t> target_profiled_velocity;
 
 
+  uint32_t supported_modes;
   double ac_vel_;
   double ac_eff_;
 
-  OperationMode operation_mode_;
+  boost::shared_ptr<OperationMode> operation_mode_;
   OperationMode operation_mode_to_set_;
   bool check_mode;
+
+  bool valid_mode_state_;
 
   double ac_pos_;
   double internal_pos_;
   double oldpos_;
 
-  std::bitset<16> status_word_bitset;
-  std::bitset<16> control_word_bitset;
-  std::bitset<16> status_word_mask;
   std::bitset<16> homing_mask;
 
-  double target_vel_;
-  double target_pos_;
+  boost::shared_ptr<double> target_vel_;
+  boost::shared_ptr<double> target_pos_;
 
   std::vector<int> control_word_buffer;
-
-  void driveSettings();
-  void driveSettingsOnlyPos();
-  void driveSettingsOnlyBits();
 
   bool configure_drive_;
 
@@ -295,20 +186,46 @@ private:
 
   bool enter_mode_failure_;
 
-  /*template<typename Duration> bool waitMotorReady(const Duration &d){
-    time_point t0 = boost::chrono::high_resolution_clock::now() + d;
+  boost::shared_ptr<canopen::sw_word> status_word_bitset;
+  boost::shared_ptr<canopen::cw_word> control_word_bitset;
 
-    boost::mutex::scoped_lock cond_lock(cond_mutex);
-    motor_ready_ = false;
-    while (!motor_ready_)
-    {
-      if (cond.wait_until(cond_lock, t0) == boost::cv_status::timeout)
-      {
-          break;
-      }
-    }
-    return motor_ready_;
-  }*/
+
+  StatusandControl SwCwSM;
+  highLevelSM motorAbstraction;
+
+  boost::shared_ptr<StatusandControl::commandTargets> target_values_;
+
+  void configureEntries();
+  void configureModeSpecificEntries();
+
+  template <class Event>
+  bool motorEvent(Event const&);
+
+  void clearTargetEntries();
+
+  virtual void move(LayerStatus &status);
+
+  virtual void processSW(LayerStatus &status);
+
+
+  virtual void processCW(LayerStatus &status);
+
+  virtual void pending(LayerStatus &status);
+
+  virtual void additionalInfo(LayerStatus &status);
+
+  bool turnOn(LayerStatus &status);
+  bool turnOff(LayerStatus &status);
+
+protected:
+
+  virtual void handleRead(LayerStatus &status, const LayerState &current_state);
+  virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
+  virtual void handleDiag(LayerReport &report);
+  virtual void handleInit(LayerStatus &status);
+  virtual void handleShutdown(LayerStatus &status);
+  virtual void handleHalt(LayerStatus &status);
+  virtual void handleRecover(LayerStatus &status);
 
 };
 }  //  namespace canopen

@@ -11,6 +11,7 @@ namespace can{
 
 /** Header for CAN id an meta data*/
 struct Header{
+    static const unsigned int ID_MASK = (1u << 29)-1;
     static const unsigned int ERROR_MASK = (1u << 29);
     static const unsigned int RTR_MASK = (1u << 30);
     static const unsigned int EXTENDED_MASK = (1u << 31);
