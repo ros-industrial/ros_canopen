@@ -142,6 +142,7 @@ private:
     }
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
         if(current_state > Init){
+        if(current_state == Ready){
             if(jh_){
                 if(jh_ == &jph_){
                     motor_->setTargetPos(cmd_pos_);
@@ -163,7 +164,7 @@ private:
     virtual void handleDiag(LayerReport &report) { /* nothing to do */ }
     virtual void handleShutdown(LayerStatus &status) { /* nothing to do */ }
     virtual void handleHalt(LayerStatus &status) { /* TODO */ }
-    virtual void handleRecover(LayerStatus &status) { /* nothing to do */ }
+    virtual void handleRecover(LayerStatus &status) { LOG("RECOVER"); handleRead(status, Layer::Ready); }
     
 };
 
@@ -349,7 +350,7 @@ public:
 
         last_time_ = now;
         controller_manager::ControllerManager::update(now, period, recover_);
-        robot_->enforce(period, recover_);
+        // robot_->enforce(period, recover_);
         recover_ = false;
    }
 
