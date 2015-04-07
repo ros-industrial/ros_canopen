@@ -64,7 +64,7 @@ void EMCYHandler::diag(LayerReport &report){
         return;
     }
 
-    if(error_register){
+    if(error_register & ~32){
         report.error("Node has emergency error");
         report.add("error_register", (uint32_t) error_register);
 
@@ -82,6 +82,10 @@ void EMCYHandler::diag(LayerReport &report){
             }
             catch (const std::out_of_range & e){
                 buf << "NOT_IN_DICT!";
+            }
+            catch (const TimeoutException & e){
+                buf << "LIST_UNDERFLOW!";
+                continue;
             }
 
         }

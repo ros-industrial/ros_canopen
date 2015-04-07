@@ -141,7 +141,6 @@ private:
         }
     }
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
-        if(current_state > Init){
         if(current_state == Ready){
             if(jh_){
                 if(jh_ == &jph_){
