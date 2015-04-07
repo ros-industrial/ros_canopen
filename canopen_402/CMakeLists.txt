@@ -41,9 +41,6 @@ target_link_libraries(canopen_402
   ${catkin_LIBRARIES}
 )
 
-add_executable(test_402 src/canopen_402/test.cpp)
-target_link_libraries(test_402 canopen_402 ${catkin_LIBRARIES})
-
 #############
 ## Install ##
 #############
