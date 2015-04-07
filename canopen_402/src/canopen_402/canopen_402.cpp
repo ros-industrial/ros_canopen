@@ -62,6 +62,8 @@ void Node_402::pending(LayerStatus &status)
   processSW(status);
   processCW(status);
   additionalInfo(status);
+  
+  clearTargetEntries();
 }
 
 
@@ -438,9 +440,6 @@ bool Node_402::turnOn(LayerStatus &s)
 
   canopen::time_point abs_time = canopen::get_abs_time(boost::chrono::seconds(2));
   canopen::time_point actual_point;
-
-
-  configure_drive_ = true;
 
   bool transition_success;
 
