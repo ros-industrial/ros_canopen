@@ -349,7 +349,7 @@ public:
 
         last_time_ = now;
         controller_manager::ControllerManager::update(now, period, recover_);
-        // robot_->enforce(period, recover_);
+        robot_->enforce(period, recover_);
         recover_ = false;
    }
 
