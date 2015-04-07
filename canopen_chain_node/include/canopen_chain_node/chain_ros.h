@@ -206,28 +206,24 @@ protected:
     virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
 	ROS_INFO("Shuting down XXX");
         boost::mutex::scoped_lock lock(mutex_);
+        res.success.data = true;
         if(thread_){
             LayerStatus s;
             shutdown(s);
-            res.success.data = s.bounded<LayerStatus::Warn>();
         }else{
-            res.success.data = false;
             res.error_message.data = "not running";
-            
         }
         return true;
     }
     virtual bool handle_halt(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
 	ROS_INFO("Halting down XXX");
         boost::mutex::scoped_lock lock(mutex_);
-        if(thread_){
+         res.success.data = true;
+         if(thread_){
             LayerStatus s;
             halt(s);
-            res.success.data = s.bounded<LayerStatus::Warn>();
         }else{
-            res.success.data = false;
             res.error_message.data = "not running";
-
         }
         return true;
     }
