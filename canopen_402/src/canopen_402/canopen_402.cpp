@@ -62,28 +62,8 @@ void Node_402::pending(LayerStatus &status)
   processSW(status);
   processCW(status);
   additionalInfo(status);
-  
+
   clearTargetEntries();
-}
-
-
-bool Node_402::enterModeAndWait(const OperationMode &op_mode_var, bool wait)
-{
-  valid_mode_state_ = false;
-
-  if (isModeSupported(op_mode_var))
-  {
-    bool transition_success = motorEvent(highLevelSM::checkModeSwitch(op_mode_var));
-
-    if(transition_success == boost::msm::back::HANDLED_FALSE)
-    {
-      return false;
-    }
-    valid_mode_state_ = true;
-    return true;
-  }
-  else
-    return false;
 }
 
 bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
@@ -123,16 +103,6 @@ bool Node_402::enterModeAndWait(const OperationMode &op_mode_var)
     return false;
 }
 
-void Node_402::processSW()
-{
-  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
-  if(!lock) return;
-
-  std::bitset<16> sw_new(7/*status_word.get()*/);
-  (*status_word_bitset.get()) = sw_new;
-
-  SwCwSM.process_event(StatusandControl::newStatusWord());
-}
 
 void Node_402::processSW(LayerStatus &status)
 {
@@ -165,25 +135,6 @@ void Node_402::additionalInfo(LayerStatus &s)
   ac_eff_ = 0; //Currently,no effort value is directly obtained from the HW
 }
 
-void Node_402::additionalInfo()
-{
-
-  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
-  if(!lock) return;
-
-  *operation_mode_ = OperationMode(7);
-  ac_vel_ = 10;
-  ac_pos_ = 10;
-  ac_eff_ = 0; //Currently,no effort value is directly obtained from the HW
-}
-
-
-void Node_402::handleRead()
-{
-  processSW();
-  additionalInfo();
-}
-
 void Node_402::handleRead(LayerStatus &status, const LayerState &current_state)
 {
   if(current_state == Init || current_state == Recover)
@@ -205,17 +156,6 @@ void Node_402::handleWrite(LayerStatus &status, const LayerState &current_state)
   motorEvent(highLevelSM::enterStandBy());
 }
 
-
-void Node_402::processCW()
-{
-  boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
-  if(!lock) return;
-
-  SwCwSM.process_event(StatusandControl::newControlWord());
-
-  int16_t cw_set = static_cast<int>((*control_word_bitset).to_ulong());
-}
-
 void Node_402::processCW(LayerStatus &status)
 {
   boost::mutex::scoped_lock lock(word_mutex_, boost::try_to_lock);
@@ -226,14 +166,6 @@ void Node_402::processCW(LayerStatus &status)
   control_word.set(cw_set);
 
   SwCwSM.process_event(StatusandControl::newControlWord());
-}
-
-void Node_402::move()
-{
-  if(*state_ == Operation_Enable)
-  {
-    bool transition_sucess = motorEvent(highLevelSM::enableMove(*operation_mode_, (*target_values_).target_pos, (*target_values_).target_vel));
-  }
 }
 
 void Node_402::move(LayerStatus &status)
@@ -250,17 +182,9 @@ void Node_402::move(LayerStatus &status)
   }
 }
 
-// Temp function,for the purpose of testing the State Machines without the real HW
-void Node_402::handleWrite()
-{
-  move();
-  processCW();
-  motorEvent(highLevelSM::enterStandBy());
-}
-
 void Node_402::handleShutdown(LayerStatus &status)
 {
-  turnOff();
+  turnOff(status);
 }
 
 void Node_402::handleDiag(LayerReport &report)
@@ -273,8 +197,8 @@ void Node_402::handleHalt(LayerStatus &status)
 
   transition_success = motorEvent(highLevelSM::runMotorSM(QuickStop));
 
-//  if(!transition_success)
-//    status.error("Could not halt the module");
+  //  if(!transition_success)
+  //    status.error("Could not halt the module");
 
   motorEvent(highLevelSM::enterStandBy());
 }
@@ -572,43 +496,6 @@ bool Node_402::motorEvent(Event const& evt)
   return transition_success;
 }
 
-bool Node_402::turnOn()
-{
-  motorEvent(highLevelSM::runMotorSM(FaultReset));
-
-  configure_drive_ = true;
-
-  LOG("Turn ON");
-  bool transition_success;
-
-  motorEvent(highLevelSM::startMachine());
-
-  enterModeAndWait(OperationMode(7), true);
-
-  if(*state_ == Fault)
-    transition_success =  motorEvent(highLevelSM::runMotorSM(FaultReset));
-
-  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
-  if(!transition_success)
-    return false;
-  motorEvent(highLevelSM::enterStandBy());
-
-
-  transition_success = motorEvent(highLevelSM::runMotorSM(SwitchOn));
-
-  if(!transition_success)
-    return false;
-  motorEvent(highLevelSM::enterStandBy());
-
-  transition_success = motorEvent(highLevelSM::runMotorSM(EnableOp));
-
-  if(!transition_success)
-    return false;
-  motorEvent(highLevelSM::enterStandBy());
-
-  return true;
-}
-
 bool Node_402::turnOff(LayerStatus &s)
 {
   motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
@@ -619,20 +506,6 @@ bool Node_402::turnOff(LayerStatus &s)
   return true;
 }
 
-bool Node_402::turnOff()
-{
-  bool transition_success;
-
-  transition_success = motorEvent(highLevelSM::runMotorSM(ShutdownMotor));
-  if(!transition_success)
-    return false;
-
-  transition_success = motorEvent(highLevelSM::stopMachine());
-  if(!transition_success)
-    return false;
-
-  return true;
-}
 
 void Node_402::handleInit(LayerStatus &s)
 {
@@ -655,26 +528,4 @@ void Node_402::handleInit(LayerStatus &s)
   }
   else
     s.error("Could not properly initialize the module");
-}
-
-void Node_402::handleInit()
-{
-
-  if (Node_402::turnOn())
-  {
-    running = true;
-
-    if (homing_method.valid() && homing_method.get() != 0)
-    {
-      bool transition_success;
-
-      transition_success = enterModeAndWait(Homing);
-      if(!transition_success)
-      {
-        std::cout << "Failed to homing" << std::endl;
-      }
-    }
-  }
-  else
-    LOG("Could not properly initialize the module");
 }

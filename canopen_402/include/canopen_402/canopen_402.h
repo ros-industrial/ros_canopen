@@ -91,63 +91,12 @@ public:
     SwCwSM.process_event(StatusandControl::readStatus());
   }
 
-  Node_402(const std::string &name) : Layer(name)
-  {
-    supported_modes = 255;
-    operation_mode_ = boost::make_shared<OperationMode>(No_Mode);
-    homing_mask.set(SW_Target_reached);
-    homing_mask.set(SW_Operation_specific0);
-    homing_mask.set(SW_Operation_specific1);
-
-    target_values_ = boost::make_shared<StatusandControl::commandTargets>();
-
-    status_word_bitset = boost::make_shared<sw_word>();
-    control_word_bitset = boost::make_shared<cw_word>();
-    state_ = boost::make_shared<InternalState>(Start);
-
-    SwCwSM = StatusandControl(status_word_bitset, control_word_bitset, state_);
-    motorAbstraction = highLevelSM(control_word_bitset, status_word_bitset, target_values_, operation_mode_, state_);
-    SwCwSM.start();
-    motorAbstraction.start();
-    SwCwSM.process_event(StatusandControl::readStatus());
-  }
-
   const OperationMode getMode();
 
   bool enterModeAndWait(const OperationMode &op_mode);
-  bool enterModeAndWait(const OperationMode &op_mode, bool wait);
   bool isModeSupported(const OperationMode &op_mode);
   static uint32_t getModeMask(const OperationMode &op_mode);
   bool isModeMaskRunning(const uint32_t &mask);
-
-
-  virtual void handleRead(LayerStatus &status, const LayerState &current_state);
-  virtual void pending(LayerStatus &status);
-  virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
-
-  virtual void handleRead();
-  virtual void handleWrite();
-
-  virtual void processCW(LayerStatus &status);
-  virtual void processCW();
-
-  virtual void move(LayerStatus &status);
-  virtual void move();
-
-  virtual void processSW(LayerStatus &status);
-  virtual void processSW();
-
-  virtual void additionalInfo(LayerStatus &status);
-  virtual void additionalInfo();
-
-  virtual void handleDiag(LayerReport &report);
-
-  virtual void handleInit(LayerStatus &status);
-  virtual void handleInit();
-  virtual void handleShutdown(LayerStatus &status);
-
-  virtual void handleHalt(LayerStatus &status);
-  virtual void handleRecover(LayerStatus &status);
 
   const double getActualPos();
   const double getActualInternalPos();
@@ -157,27 +106,14 @@ public:
 
   void setTargetPos(const double &target_pos);
   void setTargetVel(const double &target_vel);
-  void setTargetEff(const double &v) {}  // TODO(thiagodefreitas)
+  void setTargetEff(const double &v) {}
 
   const double getTargetPos();
   const double getTargetVel();
   const double getTargetEff()
   {
-    return 0;  // TODO(thiagodefreitas)
+    return 0;
   }
-
-  bool turnOn();
-  bool turnOff();
-  bool turnOn(LayerStatus &status);
-  bool turnOff(LayerStatus &status);
-
-  void configureEntries();
-  void configureModeSpecificEntries();
-
-  template <class Event>
-  bool motorEvent(Event const&);
-
-  void clearTargetEntries();
 
 private:
 
@@ -258,6 +194,39 @@ private:
   highLevelSM motorAbstraction;
 
   boost::shared_ptr<StatusandControl::commandTargets> target_values_;
+
+  void configureEntries();
+  void configureModeSpecificEntries();
+
+  template <class Event>
+  bool motorEvent(Event const&);
+
+  void clearTargetEntries();
+
+  virtual void move(LayerStatus &status);
+
+  virtual void processSW(LayerStatus &status);
+
+
+  virtual void processCW(LayerStatus &status);
+
+  virtual void pending(LayerStatus &status);
+
+  virtual void additionalInfo(LayerStatus &status);
+
+  bool turnOn(LayerStatus &status);
+  bool turnOff(LayerStatus &status);
+
+protected:
+
+  virtual void handleRead(LayerStatus &status, const LayerState &current_state);
+  virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
+  virtual void handleDiag(LayerReport &report);
+  virtual void handleInit(LayerStatus &status);
+  virtual void handleShutdown(LayerStatus &status);
+  virtual void handleHalt(LayerStatus &status);
+  virtual void handleRecover(LayerStatus &status);
+
 };
 }  //  namespace canopen
 #endif  // CANOPEN_402_CANOPEN_402_H

@@ -147,8 +147,6 @@ int main(int argc, char *argv[])
     count++;
   }
 
-  motor->turnOff();
-
   stack.shutdown(s);
 
   return 0;

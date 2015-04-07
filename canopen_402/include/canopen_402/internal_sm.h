@@ -223,7 +223,7 @@ public:
     control_word_->set(CW_Fault_Reset);
     control_word_->reset(CW_Switch_On);
     control_word_->reset(CW_Enable_Voltage);
-    control_word_->set(CW_Quick_Stop);
+    control_word_->reset(CW_Quick_Stop);
     control_word_->reset(CW_Enable_Operation);
     control_word_->reset(CW_Operation_mode_specific0);
     control_word_->reset(CW_Operation_mode_specific1);
