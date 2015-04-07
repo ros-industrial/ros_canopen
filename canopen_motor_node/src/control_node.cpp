@@ -163,7 +163,7 @@ private:
     virtual void handleDiag(LayerReport &report) { /* nothing to do */ }
     virtual void handleShutdown(LayerStatus &status) { /* nothing to do */ }
     virtual void handleHalt(LayerStatus &status) { /* TODO */ }
-    virtual void handleRecover(LayerStatus &status) { LOG("RECOVER"); handleRead(status, Layer::Ready); }
+    virtual void handleRecover(LayerStatus &status) { handleRead(status, Layer::Ready); }
     
 };
 
