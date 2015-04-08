@@ -35,6 +35,7 @@ class SDOClient{
     boost::timed_mutex mutex;
     boost::mutex cond_mutex;
     boost::condition_variable cond;
+    boost::mutex buffer_mutex;
     bool success;
     
     void handleFrame(const can::Frame & msg);
