@@ -108,7 +108,8 @@ protected:
 
     ros::Timer heartbeat_timer_;
 
-    
+    boost::atomic<bool> initialized_;
+
     void logState(const can::State &s){
         boost::shared_ptr<can::DriverInterface> interface = interface_;
         std::string msg;
@@ -138,7 +139,7 @@ protected:
     virtual bool handle_init(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
 	ROS_INFO("Initializing XXX");
         boost::mutex::scoped_lock lock(mutex_);
-        if(thread_){
+        if(initialized_){
             res.success.data = true;
             res.error_message.data = "already initialized";
             return true;
@@ -155,6 +156,7 @@ protected:
                 thread_.reset();
             }else{
                 heartbeat_timer_.start();
+                initialized_ = true;
             }
         }
         catch( const canopen::Exception &e){
@@ -171,7 +173,7 @@ protected:
     virtual bool handle_recover(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
 	ROS_INFO("Recovering XXX");
         boost::mutex::scoped_lock lock(mutex_);
-        if(thread_){
+        if(initialized_ && thread_){
             LayerReport status;
             try{
                 thread_->interrupt();
@@ -198,7 +200,7 @@ protected:
     }
     virtual void handleShutdown(LayerStatus &status){
         heartbeat_timer_.stop();
-        if(thread_){
+        if(initialized_ && thread_){
             halt(status);
             thread_->interrupt();
             thread_->join();
@@ -211,19 +213,20 @@ protected:
 	ROS_INFO("Shuting down XXX");
         boost::mutex::scoped_lock lock(mutex_);
         res.success.data = true;
-        if(thread_){
+        if(initialized_ && thread_){
             LayerStatus s;
             shutdown(s);
         }else{
             res.error_message.data = "not running";
         }
+        initialized_ = false;
         return true;
     }
     virtual bool handle_halt(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
 	ROS_INFO("Halting down XXX");
         boost::mutex::scoped_lock lock(mutex_);
          res.success.data = true;
-         if(thread_){
+         if(initialized_){
             LayerStatus s;
             halt(s);
         }else{
@@ -463,8 +466,10 @@ protected:
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         LayerReport r;
-        if(!thread_){
+        if(!initialized_){
             stat.summary(stat.WARN,"Not initailized");
+        }else if(!thread_){
+            stat.summary(stat.ERROR,"Rhread was not created");
         }else{
             diag(r);
             if(r.bounded<LayerStatus::Unbounded>()){ // valid
@@ -476,7 +481,7 @@ protected:
         }
     }
 public:
-    RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_){}
+    RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_), initialized_(false){}
     virtual bool setup(){
         boost::mutex::scoped_lock lock(mutex_);
 
