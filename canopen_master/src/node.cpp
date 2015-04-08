@@ -57,7 +57,6 @@ bool Node::reset(){
     getStorage()->reset();
     
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset));
-    interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset_Com));
     if(wait_for(BootUp, boost::chrono::seconds(10)) != 1){
         return false;
     }
