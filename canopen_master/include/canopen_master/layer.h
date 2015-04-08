@@ -132,7 +132,7 @@ protected:
     virtual void handleRecover(LayerStatus &status)  = 0;
 
 private:
-    LayerState state;
+    boost::atomic<LayerState> state;
 
 };
 
