@@ -211,8 +211,8 @@ void Node::handleRecover(LayerStatus &status){
     }
 }
 void Node::handleShutdown(LayerStatus &status){
-    if(getHeartbeatInterval()> 0) heartbeat_.set(0);
     stop();
+    if(getHeartbeatInterval()> 0) heartbeat_.set(0);
     nmt_listener_.reset();
     switchState(Unknown);
 }
