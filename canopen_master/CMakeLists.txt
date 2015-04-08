@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS chrono)
+find_package(Boost REQUIRED COMPONENTS chrono atomic)
 
 
 ###################################
