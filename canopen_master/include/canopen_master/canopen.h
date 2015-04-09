@@ -16,6 +16,7 @@ namespace canopen{
 typedef boost::chrono::high_resolution_clock::time_point time_point;
 typedef boost::chrono::high_resolution_clock::duration time_duration;
 inline time_point get_abs_time(const time_duration& timeout) { return boost::chrono::high_resolution_clock::now() + timeout; }
+inline time_point get_abs_time() { return boost::chrono::high_resolution_clock::now(); }
 
 
     
