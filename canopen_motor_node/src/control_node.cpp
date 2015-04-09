@@ -94,10 +94,11 @@ public:
        return 0;
     }
     bool switchMode(const OperationMode &m){
-        CommandMap::iterator it = commands_.find(m);
-        if(it == commands_.end()) return false;
-
-        return motor_->enterModeAndWait(m) && select(m);
+        jh_ = 0; // disconnect handle
+        if(!motor_->enterModeAndWait(m)){
+            ROS_ERROR_STREAM(jsh_.getName() << "could not enter mode " << (int)m);
+        }
+        return select(m);
     }
 
     void registerHandle(hardware_interface::JointStateInterface &iface){
@@ -126,35 +127,21 @@ public:
 private:
     virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
         if(current_state > Init){
-            cmd_pos_ = pos_ = motor_->getActualPos();
-            cmd_vel_ = vel_ = motor_->getActualVel();
-            cmd_eff_ = eff_ = motor_->getActualEff();
-            if(!jh_){
-                OperationMode m = motor_->getMode();
-                if(m != No_Mode && !select(m)){
-                    status.error("No mode selected");
-                }
-            }
-            if(jh_ == &jph_){
-                cmd_pos_ = motor_->getTargetPos();
-            }else if(jh_ == &jvh_){
-                cmd_vel_ = motor_->getTargetVel();
-            }else if(jh_ == &jeh_){
-                cmd_eff_ = motor_->getTargetEff();
-            }
+            pos_ = motor_->getActualPos();
+            vel_ = motor_->getActualVel();
+            eff_ = motor_->getActualEff();
         }
     }
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
         if(current_state == Ready){
-            if(jh_){
-                if(jh_ == &jph_){
-                    motor_->setTargetPos(cmd_pos_);
-                }else if(jh_ == &jvh_){
-                    motor_->setTargetVel(cmd_vel_);
-                }else if(jh_ == &jeh_){
-                    motor_->setTargetEff(cmd_eff_);
-                }
-            }else if (motor_->getMode() != No_Mode){
+            hardware_interface::JointHandle* jh = jh_;
+            if(jh_ == &jph_){
+                motor_->setTargetPos(cmd_pos_);
+            }else if(jh_ == &jvh_){
+                motor_->setTargetVel(cmd_vel_);
+            }else if(jh_ == &jeh_){
+                motor_->setTargetEff(cmd_eff_);
+            }else if(jh_){
                 status.warn("unsupported mode active");
             }
         }
@@ -190,34 +177,11 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
 
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
+    typedef std::vector<std::pair<boost::shared_ptr<HandleLayer>, OperationMode> >  SwitchContainer;
+    typedef boost::unordered_map<std::string, SwitchContainer>  SwitchMap;
+    mutable SwitchMap switch_map_;
+
 public:
-    typedef std::vector<std::pair <boost::shared_ptr<HandleLayer>, OperationMode> >  SwitchContainer;
-
-    virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &info_list, SwitchContainer &to_switch) {
-        to_switch.reserve(handles_.size());
-
-        for (std::list<hardware_interface::ControllerInfo>::const_iterator info_it = info_list.begin(); info_it != info_list.end(); ++info_it){
-            ros::NodeHandle nh(nh_,info_it->name);
-            int mode;
-            if(!nh.getParam("required_drive_mode", mode)) continue;
-
-            for (std::set<std::string>::const_iterator res_it = info_it->resources.begin(); res_it != info_it->resources.end(); ++res_it){
-                boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
-
-                if(h_it == handles_.end()){
-                    ROS_ERROR_STREAM(*res_it << " not found");
-                    return false;
-                }
-                if(int res = h_it->second->canSwitch((OperationMode)mode)){
-                    if(res > 0) to_switch.push_back(std::make_pair(h_it->second, OperationMode(mode)));
-                }else{
-                    ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
     void add(const std::string &name, boost::shared_ptr<HandleLayer> handle){
         LayerGroupNoDiag::add(handle);
@@ -316,56 +280,77 @@ public:
         eff_saturation_interface_.enforceLimits(period);
         eff_soft_limits_interface_.enforceLimits(period);
     }
+    virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) const {
+        assert(hardware_interface::RobotHW::canSwitch(start_list, stop_list));
+
+        // stop handles
+        for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
+
+            if(switch_map_.find(controller_it->name) == switch_map_.end()){
+                ROS_ERROR_STREAM(controller_it->name << " was not started before");
+                return false;
+            }
+        }
+
+        // start handles
+        for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
+            if(switch_map_.find(controller_it->name) != switch_map_.end()) continue;
+
+            SwitchContainer to_switch;
+            ros::NodeHandle nh(nh_,controller_it->name);
+            int mode;
+            if(nh.getParam("required_drive_mode", mode)){
+
+
+                for (std::set<std::string>::const_iterator res_it = controller_it->resources.begin(); res_it != controller_it->resources.end(); ++res_it){
+                    boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
+
+                    if(h_it == handles_.end()){
+                        ROS_ERROR_STREAM(*res_it << " not found");
+                        return false;
+                    }
+                    if(int res = h_it->second->canSwitch((OperationMode)mode)){
+                        if(res > 0) to_switch.push_back(std::make_pair(h_it->second, OperationMode(mode)));
+                    }else{
+                        ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
+                        return false;
+                    }
+                }
+            }
+            switch_map_.insert(std::make_pair(controller_it->name, to_switch));
+        }
+        return true;
+    }
+
+    virtual void doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) {
+        boost::unordered_set<boost::shared_ptr<HandleLayer> > to_stop;
+        for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
+            SwitchContainer &to_switch = switch_map_.at(controller_it->name);
+            for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
+                to_stop.insert(it->first);
+            }
+        }
+        for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
+            SwitchContainer &to_switch = switch_map_.at(controller_it->name);
+            for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
+                it->first->switchMode(it->second);
+                to_stop.erase(it->first);
+            }
+        }
+        for(boost::unordered_set<boost::shared_ptr<HandleLayer> >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
+            (*it)->switchMode(No_Mode);
+        }
+    }
 
 };
 
- class ControllerManager : public controller_manager::ControllerManager{
-    boost::shared_ptr<RobotLayer> robot_;
-
-    bool recover_;
-    ros::Time last_time_;
-    boost::mutex mutex_;
- public:
-    virtual bool notifyHardwareInterface(const std::list<hardware_interface::ControllerInfo> &info_list) {
-        RobotLayer::SwitchContainer to_switch;
-
-        if(!robot_->canSwitch(info_list, to_switch)) return false;
-
-        if(!to_switch.empty()){
-            boost::mutex::scoped_lock lock(mutex_);
-            for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-                if(!it->first->switchMode(it->second)) return false;
-            }
-            recover_ = true;
-        }
-
-        controller_manager::ControllerManager::notifyHardwareInterface(info_list); //compile-time check for ros_control notifyHardwareInterface support
-        return true;
-
-    }
-
-    void update(){
-        boost::mutex::scoped_lock lock(mutex_, boost::try_to_lock);
-        if(!lock) return;
-
-        ros::Time now = ros::Time::now();
-        ros::Duration period(now -last_time_);
-
-        last_time_ = now;
-        controller_manager::ControllerManager::update(now, period, recover_);
-        robot_->enforce(period, recover_);
-        recover_ = false;
-   }
-
-    void recover() { boost::mutex::scoped_lock lock(mutex_); recover_ = true; }
-
-    ControllerManager(boost::shared_ptr<RobotLayer> robot, ros::NodeHandle nh)  : controller_manager::ControllerManager(robot.get(), nh), robot_(robot), recover_(false), last_time_(ros::Time::now()) {}
- };
-
 class ControllerManagerLayer : public Layer {
-    boost::shared_ptr<ControllerManager> cm_;
+    boost::shared_ptr<controller_manager::ControllerManager> cm_;
     boost::shared_ptr<RobotLayer> robot_;
     ros::NodeHandle nh_;
+
+    canopen::time_point last_time_;
+    boost::atomic<bool> recover_;
 
 public:
     ControllerManagerLayer(const boost::shared_ptr<RobotLayer> robot, const ros::NodeHandle &nh)
@@ -379,8 +364,19 @@ public:
     }
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
         if(current_state > Init){
-            if(!cm_) status.error("controller_manager is not intialized");
-            else cm_->update();
+            if(!cm_){
+                status.error("controller_manager is not intialized");
+            }else{
+                time_point abs_now = get_abs_time();
+                ros::Time now = ros::Time::now();
+
+                ros::Duration period(boost::chrono::duration<double>(abs_now -last_time_).count());
+                last_time_ = abs_now;
+
+                bool recover = recover_.exchange(false);
+                cm_->update(now, period, recover);
+                robot_->enforce(period, recover);
+            }
         }
     }
     virtual void handleDiag(LayerReport &report) { /* nothing to do */ }
@@ -390,13 +386,13 @@ public:
         if(cm_){
             status.warn("controller_manager is already intialized");
         }else{
-            cm_.reset(new ControllerManager(robot_, nh_));
+            recover_ = true;
+            cm_.reset(new controller_manager::ControllerManager(robot_.get(), nh_));
         }
-        cm_->recover();
     }
     virtual void handleRecover(LayerStatus &status) {
         if(!cm_) status.error("controller_manager is not intialized");
-        else cm_->recover();
+        else recover_ = true;
     }
     virtual void handleShutdown(LayerStatus &status) {
         cm_.reset();
