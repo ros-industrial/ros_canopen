@@ -82,9 +82,12 @@ class HandleLayer: public Layer{
     }
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor)
-    : Layer(name + " Handle"), motor_(motor), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {}
+    : Layer(name + " Handle"), motor_(motor), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {
+        commands_[No_Mode] = 0;
+    }
 
     int canSwitch(const OperationMode &m){
+       if(!motor_->isModeSupported(m)) return 0;
        if(motor_->getMode() == m) return -1;
        if(commands_.find(m) != commands_.end()) return 1;
        return 0;
