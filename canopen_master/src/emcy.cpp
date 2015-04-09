@@ -64,8 +64,12 @@ void EMCYHandler::diag(LayerReport &report){
         return;
     }
 
-    if(error_register & ~32){
-        report.error("Node has emergency error");
+    if(error_register){
+        if(error_register & 1){ // first bit should be set on all errors
+            report.error("Node has emergency error");
+        }else{
+            report.warn("Error register is not zero");
+        }
         report.add("error_register", (uint32_t) error_register);
 
         uint8_t num = num_errors_.valid() ? num_errors_.get() : 0;

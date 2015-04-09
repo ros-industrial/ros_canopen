@@ -61,12 +61,16 @@ public:
     }
 
     virtual void log(diagnostic_updater::DiagnosticStatusWrapper &stat){
-        LayerReport r;
-        diag(r);
-        if(r.bounded<LayerStatus::Unbounded>()){ // valid
-            stat.summary(r.get(), r.reason());
-            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
-                stat.add(it->first, it->second);
+        if(node_->getState() == canopen::Node::Unknown){
+            stat.summary(stat.WARN,"Not initailized");
+        }else{
+            LayerReport r;
+            diag(r);
+            if(r.bounded<LayerStatus::Unbounded>()){ // valid
+                stat.summary(r.get(), r.reason());
+                for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
+                    stat.add(it->first, it->second);
+                }
             }
         }
         // for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat); TODO
@@ -459,11 +463,15 @@ protected:
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
         LayerReport r;
-        diag(r);
-        if(r.bounded<LayerStatus::Unbounded>()){ // valid
-            stat.summary(r.get(), r.reason());
-            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
-                stat.add(it->first, it->second);
+        if(!thread_){
+            stat.summary(stat.WARN,"Not initailized");
+        }else{
+            diag(r);
+            if(r.bounded<LayerStatus::Unbounded>()){ // valid
+                stat.summary(r.get(), r.reason());
+                for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
+                    stat.add(it->first, it->second);
+                }
             }
         }
     }

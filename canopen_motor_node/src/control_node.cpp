@@ -163,7 +163,7 @@ private:
     virtual void handleDiag(LayerReport &report) { /* nothing to do */ }
     virtual void handleShutdown(LayerStatus &status) { /* nothing to do */ }
     virtual void handleHalt(LayerStatus &status) { /* TODO */ }
-    virtual void handleRecover(LayerStatus &status) { LOG("RECOVER"); handleRead(status, Layer::Ready); }
+    virtual void handleRecover(LayerStatus &status) { handleRead(status, Layer::Ready); }
     
 };
 
@@ -349,7 +349,7 @@ public:
 
         last_time_ = now;
         controller_manager::ControllerManager::update(now, period, recover_);
-        // robot_->enforce(period, recover_);
+        robot_->enforce(period, recover_);
         recover_ = false;
    }
 
