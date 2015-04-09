@@ -53,7 +53,8 @@ class HandleLayer: public Layer{
 
     
     hardware_interface::JointStateHandle jsh_;
-    hardware_interface::JointHandle jph_, jvh_, jeh_, *jh_;
+    hardware_interface::JointHandle jph_, jvh_, jeh_;
+    boost::atomic<hardware_interface::JointHandle*> jh_;
 
     typedef boost::unordered_map< OperationMode,hardware_interface::JointHandle* > CommandMap;
     CommandMap commands_;
