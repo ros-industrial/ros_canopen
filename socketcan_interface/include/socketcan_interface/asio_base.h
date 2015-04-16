@@ -23,6 +23,7 @@ template<typename Socket> class AsioDriver : public DriverInterface{
     
 protected:
     boost::asio::io_service io_service_;
+    boost::asio::strand strand_;
     Socket socket_;
     Frame input_;
     
@@ -30,7 +31,7 @@ protected:
     virtual bool enqueue(const Frame & msg) = 0;
     
     void dispatchFrame(const Frame &msg){
-        io_service_.post(boost::bind(&FrameDispatcher::dispatch, &frame_dispatcher_, msg)); // copies msg
+        strand_.post(boost::bind(&FrameDispatcher::dispatch, &frame_dispatcher_, msg)); // copies msg
     }
     void setErrorCode(const boost::system::error_code& error){
         boost::mutex::scoped_lock lock(state_mutex_);
@@ -65,7 +66,7 @@ protected:
     }
 
     AsioDriver()
-    : socket_(io_service_)
+    : strand_(io_service_), socket_(io_service_)
     {}
 
 public:
