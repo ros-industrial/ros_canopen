@@ -335,7 +335,7 @@ public:
             recover_ = true;
         }
 
-        controller_manager::ControllerManager::notifyHardwareInterface(info_list); //compile-time check for ros_control notifyHardwareInterface support
+        controller_manager::ControllerManager::notifyHardwareInterface(info_list); //compile-time check for ros_control notifyHardwareInterface support, please use https://github.com/ipa320/ros_control until #89 was merged
         return true;
 
     }
