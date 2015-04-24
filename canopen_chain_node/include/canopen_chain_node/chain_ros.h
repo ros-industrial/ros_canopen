@@ -13,7 +13,66 @@
 #include <boost/weak_ptr.hpp>
 #include <pluginlib/class_loader.h>
 
+#include <std_msgs/Int8.h>
+#include <std_msgs/Int16.h>
+#include <std_msgs/Int32.h>
+#include <std_msgs/Int64.h>
+#include <std_msgs/UInt8.h>
+#include <std_msgs/UInt16.h>
+#include <std_msgs/UInt32.h>
+#include <std_msgs/UInt64.h>
+
+#include <std_msgs/Float32.h>
+#include <std_msgs/Float64.h>
+
 namespace canopen{
+
+class PublishFunc{
+public:
+    typedef boost::function<void()> func_type;
+
+    static func_type create(ros::NodeHandle &nh,  const std::string &name, boost::shared_ptr<canopen::Node> node, const std::string &key, bool force){
+        boost::shared_ptr<ObjectStorage> s = node->getStorage();
+
+        switch(ObjectDict::DataTypes(s->dict_->get(key)->data_type)){
+            case ObjectDict::DEFTYPE_INTEGER8:       return create< std_msgs::Int8    >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER8>::type>(key), force);
+            case ObjectDict::DEFTYPE_INTEGER16:      return create< std_msgs::Int16   >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER16>::type>(key), force);
+            case ObjectDict::DEFTYPE_INTEGER32:      return create< std_msgs::Int32   >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER32>::type>(key), force);
+            case ObjectDict::DEFTYPE_INTEGER64:      return create< std_msgs::Int64   >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER64>::type>(key), force);
+
+            case ObjectDict::DEFTYPE_UNSIGNED8:      return create< std_msgs::UInt8   >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED8>::type>(key), force);
+            case ObjectDict::DEFTYPE_UNSIGNED16:     return create< std_msgs::UInt16  >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16>::type>(key), force);
+            case ObjectDict::DEFTYPE_UNSIGNED32:     return create< std_msgs::UInt32  >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED32>::type>(key), force);
+            case ObjectDict::DEFTYPE_UNSIGNED64:     return create< std_msgs::UInt64  >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED64>::type>(key), force);
+
+            case ObjectDict::DEFTYPE_REAL32:         return create< std_msgs::Float32 >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL32>::type>(key), force);
+            case ObjectDict::DEFTYPE_REAL64:         return create< std_msgs::Float64 >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_REAL64>::type>(key), force);
+
+            case ObjectDict::DEFTYPE_VISIBLE_STRING: return create< std_msgs::String  >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_VISIBLE_STRING>::type>(key), force);
+            case ObjectDict::DEFTYPE_OCTET_STRING:   return create< std_msgs::String  >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN>::type>(key), force);
+            case ObjectDict::DEFTYPE_UNICODE_STRING: return create< std_msgs::String  >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNICODE_STRING>::type>(key), force);
+            case ObjectDict::DEFTYPE_DOMAIN:         return create< std_msgs::String  >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_DOMAIN>::type>(key), force);
+
+            default: return 0;
+        }
+    }
+private:
+    template <typename Tpub, typename Tobj> static void publish_cached(ros::Publisher &pub, ObjectStorage::Entry<Tobj> &entry){
+        pub.publish<typename Tpub::_data_type>(entry.get_cached());
+    }
+    template <typename Tpub, typename Tobj> static void publish(ros::Publisher &pub, ObjectStorage::Entry<Tobj> &entry){
+        pub.publish<typename Tpub::_data_type>(entry.get());
+    }
+    template<typename Tpub, typename Tobj> static func_type create(ros::NodeHandle &nh,  const std::string &name, ObjectStorage::Entry<Tobj> entry, bool force){
+        if(!entry.valid()) return 0;
+        ros::Publisher pub = nh.advertise<Tpub>(name, 1);
+        if(force){
+            return boost::bind(PublishFunc::publish<Tpub, Tobj>, pub, entry);
+        }else{
+            return boost::bind(PublishFunc::publish_cached<Tpub, Tobj>, pub, entry);
+        }
+    }
+};
 
 class MergedXmlRpcStruct : public XmlRpc::XmlRpcValue{
     MergedXmlRpcStruct(const XmlRpc::XmlRpcValue& a) :XmlRpc::XmlRpcValue(a){ assertStruct(); }
@@ -86,7 +145,7 @@ protected:
     boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::Node> > nodes_;
     boost::shared_ptr<canopen::SyncLayer> sync_;
     std::vector<boost::shared_ptr<Logger > > loggers_;
-
+    std::vector<PublishFunc::func_type> publishers_;
 
     can::StateInterface::StateListener::Ptr state_listener_;
     
@@ -131,6 +190,7 @@ protected:
                 ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
             }
             abs_time += update_duration_;
+
             boost::this_thread::sleep_until(abs_time);
         }
     }
@@ -195,6 +255,13 @@ protected:
             res.error_message.data = "not running";
         }
         return true;
+    }
+
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
+        LayerStack::handleWrite(status, current_state);
+        if(current_state > Init){
+            for(std::vector<boost::function<void() > >::iterator it = publishers_.begin(); it != publishers_.end(); ++it) (*it)();
+        }
     }
     virtual void handleShutdown(LayerStatus &status){
         heartbeat_timer_.stop();
@@ -455,7 +522,29 @@ protected:
             //logger->add(4,"pos", canopen::ObjectDict::Key(0x6064));
             loggers_.push_back(logger);
             diag_updater_.add(it->first, boost::bind(&Logger::log, logger, _1));
-            
+
+            if(merged.hasMember("publish")){
+                try{
+                    XmlRpc::XmlRpcValue objs = merged["publish"];
+                    for(int i = 0; i < objs.size(); ++i){
+                        std::string obj_name = objs[i];
+                        size_t pos = obj_name.find('!');
+                        bool force = pos != std::string::npos;
+                        if(force) obj_name.erase(pos);
+
+                        boost::function<void()> pub = PublishFunc::create(nh_, std::string(merged["name"])+"_"+obj_name, node, obj_name, force);
+                        if(!pub){
+                            ROS_ERROR_STREAM("Could not create publisher for '" << obj_name << "'");
+                            return false;
+                        }
+                        publishers_.push_back(pub);
+                    }
+                }
+                catch(...){
+                    ROS_ERROR("Could not parse publish parameter");
+                    return false;
+                }
+            }
             nodes_->add(node);
         }
         return true;
@@ -498,6 +587,7 @@ public:
         return setup_bus() && setup_sync() && setup_heartbeat() && setup_nodes();
     }
     virtual ~RosChain(){
+        publishers_.clear();
         try{
             LayerStatus s;
             shutdown(s);
