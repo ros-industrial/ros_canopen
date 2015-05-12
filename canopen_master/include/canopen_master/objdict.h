@@ -114,14 +114,17 @@ class ObjectDict{
 protected:
 public:
     class Key{
+        static size_t fromString(const std::string &str);
     public:
         const size_t hash;
         Key(const uint16_t i) : hash((i<<16)| 0xFFFF) {}
         Key(const uint16_t i, const uint8_t s): hash((i<<16)| s) {}
+        Key(const std::string &str): hash(fromString(str)) {}
         bool hasSub() const { return (hash & 0xFFFF) != 0xFFFF; }
         uint8_t sub_index() const { return hash & 0xFFFF; }
         uint16_t index() const { return hash  >> 16;}
         bool operator==(const Key &other) const { return hash == other.hash; }
+        operator std::string() const;
     };
     enum Code{
         NULL_DATA = 0x00,
