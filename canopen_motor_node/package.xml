@@ -18,6 +18,7 @@
   <depend>joint_limits_interface</depend>
   <depend>canopen_402</depend>
   <depend>urdf</depend>
+  <depend>muparser</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
