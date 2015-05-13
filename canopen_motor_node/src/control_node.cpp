@@ -24,27 +24,14 @@ using namespace canopen;
 
 class UnitConverter{
 public:
-    class shared_variables_list {
-    protected:
-        boost::unordered_map<std::string, double*> shared_;
-    public:
-        shared_variables_list &add(const std::string &n, double *p){
-            shared_.insert(std::make_pair(n,p));
-            return *this;
-        }
-        virtual double * operator [] (const std::string &n) const {
-             boost::unordered_map<std::string, double*>::const_iterator it = shared_.find(n);
-             return it != shared_.end() ? it->second : 0;
-        }
-        boost::shared_ptr<UnitConverter> createConverter(const std::string &expression) const { return boost::make_shared<UnitConverter>(expression, *this); }
-    };
-    UnitConverter(const std::string &expression, const shared_variables_list &shared_variables){
-        VarUserData vud = { var_list_, shared_variables };
+    typedef boost::function<double * (const std::string &) > get_var_func_type;
 
-        parser_.SetVarFactory(UnitConverter::createVariable, &vud);
+    UnitConverter(const std::string &expression, get_var_func_type var_func = get_var_func_type()){
+        parser_.SetVarFactory(UnitConverter::createVariable, this);
 
         parser_.DefineConst("pi", M_PI);
         parser_.DefineConst("nan", std::numeric_limits<double>::quiet_NaN());
+
         parser_.DefineFun("rad2deg", UnitConverter::rad2deg);
         parser_.DefineFun("deg2rad", UnitConverter::deg2rad);
         parser_.DefineFun("norm", UnitConverter::norm);
@@ -59,38 +46,21 @@ public:
         }
     }
     double evaluate() { int num; return parser_.Eval(num)[0]; }
-    void dump(){
-        // Get the map with the variables
-        mu::varmap_type variables = parser_.GetVar();
-
-        // Get the number of variables
-        mu::varmap_type::const_iterator item = variables.begin();
-
-        // Query the variables
-        for (; item!=variables.end(); ++item)
-        {
-            std::cout << std::setprecision(20) << item->first << " [0x" << item->second << "]: " << *item->second << " ";
-        }
-        std::cout << std::endl;
-    }
 private:
     typedef boost::shared_ptr<double> variable_ptr;
     typedef std::list<variable_ptr> variable_ptr_list;
 
-    struct VarUserData{
-        variable_ptr_list &private_list;
-        const shared_variables_list &shared_list;
-    };
     static double* createVariable(const char *name, void * userdata){
-        VarUserData * vud = static_cast<VarUserData*>(userdata);
-        double *p = vud->shared_list[name];
+        UnitConverter * uc = static_cast<UnitConverter*>(userdata);
+        double *p = uc->var_func_ ? uc->var_func_(name) : 0;
         if(!p){
             p = new double(std::numeric_limits<double>::quiet_NaN());
-            vud->private_list.push_back(variable_ptr(p));
+            uc->var_list_.push_back(variable_ptr(p));
         }
         return p;
     }
     variable_ptr_list var_list_;
+    get_var_func_type var_func_;
 
     mu::Parser parser_;
 
@@ -100,16 +70,9 @@ private:
     static double deg2rad(double d){
         return d*M_PI/180.0;
     }
-    static double copy(double val){
-        return val;
-    }
     static double norm(double val, double min, double max){
-        while(val >= max){
-            val -= (max-min);
-        }
-        while(val < min){
-            val += (max-min);
-        }
+        while(val >= max) val -= (max-min);
+        while(val < min) val += (max-min);
         return val;
     }
     static double smooth(double val, double old_val, double alpha){
@@ -122,7 +85,7 @@ private:
         double s = 0.0;
         int i=0;
         for (; i<num; ++i){
-            double val = vals[i];
+            const double &val = vals[i];
             if(isnan(val)) break;
             s += val;
         }
@@ -130,7 +93,7 @@ private:
     }
 };
 
-class ObjectList : public UnitConverter::shared_variables_list{
+class ObjectVariables {
     const boost::shared_ptr<ObjectStorage> storage_;
     struct Getter {
         boost::shared_ptr<double> val_ptr;
@@ -146,26 +109,12 @@ class ObjectList : public UnitConverter::shared_variables_list{
         operator double*() const { return val_ptr.get(); }
     };
     boost::unordered_map<ObjectDict::Key, Getter> getters_;
-
 public:
-    template<const uint16_t dt> static double* func(ObjectList &list, const ObjectDict::Key &key){
+    template<const uint16_t dt> static double* func(ObjectVariables &list, const ObjectDict::Key &key){
         typedef typename ObjectStorage::DataType<dt>::type type;
-        try{
-            return list.getters_.insert(std::make_pair(key, Getter(list.storage_->entry<type>(key)))).first->second;
-        }
-        catch(...){
-            return 0;
-        }
+        return list.getters_.insert(std::make_pair(key, Getter(list.storage_->entry<type>(key)))).first->second;
     }
-    ObjectList(const boost::shared_ptr<ObjectStorage> storage) : storage_(storage) {}
-    double* create(const ObjectDict::Key &key) {
-        try{
-            return branch_type<ObjectList, double * (ObjectList &list, const ObjectDict::Key &k)>(storage_->dict_->get(key)->data_type)(*this, key);
-        }
-        catch(...){
-            return 0;
-        }
-    }
+    ObjectVariables(const boost::shared_ptr<ObjectStorage> storage) : storage_(storage) {}
     bool sync(){
         bool ok = true;
         for(boost::unordered_map<ObjectDict::Key, Getter>::iterator it = getters_.begin(); it != getters_.end(); ++it){
@@ -173,34 +122,39 @@ public:
         }
         return ok;
     }
-    virtual double * operator [] (const std::string &n) const {
-        if(n.find("obj") == 0){
-            ObjectDict::Key key(n.substr(3));
-            boost::unordered_map<ObjectDict::Key, Getter>::const_iterator it = getters_.find(key);
-            if(it != getters_.end()) return it->second;
-            return const_cast<ObjectList*>(this)->create(key);
-        }else{
-            return UnitConverter::shared_variables_list::operator [](n);
+    double * getVariable(const std::string &n) {
+        try{
+            if(n.find("obj") == 0){
+                ObjectDict::Key key(n.substr(3));
+                boost::unordered_map<ObjectDict::Key, Getter>::const_iterator it = getters_.find(key);
+                if(it != getters_.end()) return it->second;
+                return branch_type<ObjectVariables, double * (ObjectVariables &list, const ObjectDict::Key &k)>(storage_->dict_->get(key)->data_type)(*this, key);
+            }
         }
+        catch( const std::exception &e){
+            ROS_ERROR_STREAM("Could not find variable '" << n << "', reason: " << boost::diagnostic_information(e));
+        }
+        return 0;
     }
 };
 
-template<> double* ObjectList::func<ObjectDict::DEFTYPE_VISIBLE_STRING >(ObjectList &, const ObjectDict::Key &){ return 0; }
-template<> double* ObjectList::func<ObjectDict::DEFTYPE_OCTET_STRING >(ObjectList &, const ObjectDict::Key &){ return 0; }
-template<> double* ObjectList::func<ObjectDict::DEFTYPE_UNICODE_STRING >(ObjectList &, const ObjectDict::Key &){ return 0; }
-template<> double* ObjectList::func<ObjectDict::DEFTYPE_DOMAIN >(ObjectList &, const ObjectDict::Key &){ return 0; }
+template<> double* ObjectVariables::func<ObjectDict::DEFTYPE_VISIBLE_STRING >(ObjectVariables &, const ObjectDict::Key &){ return 0; }
+template<> double* ObjectVariables::func<ObjectDict::DEFTYPE_OCTET_STRING >(ObjectVariables &, const ObjectDict::Key &){ return 0; }
+template<> double* ObjectVariables::func<ObjectDict::DEFTYPE_UNICODE_STRING >(ObjectVariables &, const ObjectDict::Key &){ return 0; }
+template<> double* ObjectVariables::func<ObjectDict::DEFTYPE_DOMAIN >(ObjectVariables &, const ObjectDict::Key &){ return 0; }
 
 typedef Node_402 MotorNode;
 
 class HandleLayer: public Layer{
     boost::shared_ptr<MotorNode> motor_;
     double pos_, vel_, eff_;
+
     double cmd_pos_, cmd_vel_, cmd_eff_;
 
-    boost::shared_ptr<UnitConverter>  conv_target_pos_, conv_target_vel_, conv_target_eff_;
-    boost::shared_ptr<UnitConverter>  conv_pos_, conv_vel_, conv_eff_;
-    ObjectList objlist_;
-    
+    ObjectVariables variables_;
+    boost::scoped_ptr<UnitConverter>  conv_target_pos_, conv_target_vel_, conv_target_eff_;
+    boost::scoped_ptr<UnitConverter>  conv_pos_, conv_vel_, conv_eff_;
+
     hardware_interface::JointStateHandle jsh_;
     hardware_interface::JointHandle jph_, jvh_, jeh_;
     boost::atomic<hardware_interface::JointHandle*> jh_;
@@ -230,9 +184,10 @@ class HandleLayer: public Layer{
         jh_ = it->second;
         return true;
     }
+    static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options)
-    : Layer(name + " Handle"), motor_(motor), objlist_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {
+    : Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {
        commands_[No_Mode] = 0;
 
        std::string p2d("rint(rad2deg(pos)*1000"), v2d("rint(rad2deg(vel)*1000"), e2d("rint(eff)");
@@ -247,13 +202,13 @@ public:
        if(options.hasMember("eff_to_device")) e2d = (const std::string&) options["eff_to_device"];
        if(options.hasMember("eff_from_device")) e2r = (const std::string&) options["eff_from_device"];
 
-       conv_target_pos_.reset(new UnitConverter(p2d, UnitConverter::shared_variables_list().add("pos", &cmd_pos_)));
-       conv_target_vel_.reset(new UnitConverter(v2d, UnitConverter::shared_variables_list().add("vel", &cmd_vel_)));
-       conv_target_eff_.reset(new UnitConverter(e2d, UnitConverter::shared_variables_list().add("eff", &cmd_eff_)));
+       conv_target_pos_.reset(new UnitConverter(p2d, boost::bind(assignVariable, "pos", &cmd_pos_, _1)));
+       conv_target_vel_.reset(new UnitConverter(v2d, boost::bind(assignVariable, "vel", &cmd_vel_, _1)));
+       conv_target_eff_.reset(new UnitConverter(e2d, boost::bind(assignVariable, "eff", &cmd_eff_, _1)));
 
-       conv_pos_ = objlist_.createConverter(p2r);
-       conv_vel_ = objlist_.createConverter(v2r);
-       conv_eff_ = objlist_.createConverter(e2r);
+       conv_pos_.reset(new UnitConverter(p2r, boost::bind(&ObjectVariables::getVariable, &variables_, _1)));
+       conv_vel_.reset(new UnitConverter(v2r, boost::bind(&ObjectVariables::getVariable, &variables_, _1)));
+       conv_eff_.reset(new UnitConverter(e2r, boost::bind(&ObjectVariables::getVariable, &variables_, _1)));
     }
 
     int canSwitch(const OperationMode &m){
@@ -296,7 +251,7 @@ public:
 private:
     virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
         if(current_state > Shutdown){
-            objlist_.sync();
+            variables_.sync();
             pos_ = conv_pos_->evaluate();
             vel_ = conv_vel_->evaluate();
             eff_ = conv_eff_->evaluate();
