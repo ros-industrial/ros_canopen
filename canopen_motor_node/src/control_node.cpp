@@ -17,40 +17,189 @@
 
 #include <controller_manager/controller_manager.h>
 
+#include "muParser.h"
+
 using namespace can;
 using namespace canopen;
 
-
-//typedef Node_402 MotorNode;
-
-class MotorNode : public Node_402{
-    double pos_unit_factor;
-    double vel_unit_factor;
-    double eff_unit_factor;
+class UnitConverter{
 public:
-   MotorNode(boost::shared_ptr <canopen::Node> n, const std::string &name, XmlRpc::XmlRpcValue & options) : Node_402(n, name), pos_unit_factor(360*1000/(2*M_PI)),vel_unit_factor(360*1000/(2*M_PI)), eff_unit_factor(1) {
-       if(options.hasMember("pos_unit_factor")) pos_unit_factor = options["pos_unit_factor"];
-       if(options.hasMember("vel_unit_factor")) vel_unit_factor = options["vel_unit_factor"];
-       if(options.hasMember("eff_unit_factor")) eff_unit_factor = options["eff_unit_factor"];
-   }
-   const double getActualPos() { return Node_402::getActualPos() / pos_unit_factor; }
-   const double getActualVel() { return Node_402::getActualVel() / vel_unit_factor; }
-   const double getActualEff() { return Node_402::getActualEff() / eff_unit_factor; }
-   
-   void setTargetPos(const double &v) { Node_402::setTargetPos(v*pos_unit_factor); }
-   void setTargetVel(const double &v) { Node_402::setTargetVel(v*vel_unit_factor); }
-   void setTargetEff(const double &v) { Node_402::setTargetEff(v*eff_unit_factor); }
-   
-   const double getTargetPos() { return Node_402::getTargetPos() / pos_unit_factor; }
-   const double getTargetVel() { return Node_402::getTargetVel() / vel_unit_factor; }
-   const double getTargetEff() { return Node_402::getTargetEff() / eff_unit_factor; }
+    class shared_variables_list {
+    protected:
+        boost::unordered_map<std::string, double*> shared_;
+    public:
+        shared_variables_list &add(const std::string &n, double *p){
+            shared_.insert(std::make_pair(n,p));
+            return *this;
+        }
+        virtual double * operator [] (const std::string &n) const {
+             boost::unordered_map<std::string, double*>::const_iterator it = shared_.find(n);
+             return it != shared_.end() ? it->second : 0;
+        }
+        boost::shared_ptr<UnitConverter> createConverter(const std::string &expression) const { return boost::make_shared<UnitConverter>(expression, *this); }
+    };
+    UnitConverter(const std::string &expression, const shared_variables_list &shared_variables){
+        VarUserData vud = { var_list_, shared_variables };
+
+        parser_.SetVarFactory(UnitConverter::createVariable, &vud);
+
+        parser_.DefineConst("pi", M_PI);
+        parser_.DefineConst("nan", std::numeric_limits<double>::quiet_NaN());
+        parser_.DefineFun("rad2deg", UnitConverter::rad2deg);
+        parser_.DefineFun("deg2rad", UnitConverter::deg2rad);
+        parser_.DefineFun("norm", UnitConverter::norm);
+        parser_.DefineFun("smooth", UnitConverter::smooth);
+        parser_.DefineFun("avg", UnitConverter::avg);
+
+        parser_.SetExpr(expression);
+    }
+    void reset(){
+        for(variable_ptr_list::iterator it = var_list_.begin(); it != var_list_.end(); ++it){
+            **it = std::numeric_limits<double>::quiet_NaN();
+        }
+    }
+    double evaluate() { int num; return parser_.Eval(num)[0]; }
+    void dump(){
+        // Get the map with the variables
+        mu::varmap_type variables = parser_.GetVar();
+
+        // Get the number of variables
+        mu::varmap_type::const_iterator item = variables.begin();
+
+        // Query the variables
+        for (; item!=variables.end(); ++item)
+        {
+            std::cout << std::setprecision(20) << item->first << " [0x" << item->second << "]: " << *item->second << " ";
+        }
+        std::cout << std::endl;
+    }
+private:
+    typedef boost::shared_ptr<double> variable_ptr;
+    typedef std::list<variable_ptr> variable_ptr_list;
+
+    struct VarUserData{
+        variable_ptr_list &private_list;
+        const shared_variables_list &shared_list;
+    };
+    static double* createVariable(const char *name, void * userdata){
+        VarUserData * vud = static_cast<VarUserData*>(userdata);
+        double *p = vud->shared_list[name];
+        if(!p){
+            p = new double(std::numeric_limits<double>::quiet_NaN());
+            vud->private_list.push_back(variable_ptr(p));
+        }
+        return p;
+    }
+    variable_ptr_list var_list_;
+
+    mu::Parser parser_;
+
+    static double rad2deg(double r){
+        return r*180.0/M_PI;
+    }
+    static double deg2rad(double d){
+        return d*M_PI/180.0;
+    }
+    static double copy(double val){
+        return val;
+    }
+    static double norm(double val, double min, double max){
+        while(val >= max){
+            val -= (max-min);
+        }
+        while(val < min){
+            val += (max-min);
+        }
+        return val;
+    }
+    static double smooth(double val, double old_val, double alpha){
+        if(isnan(val)) return 0;
+        if(isnan(old_val)) return val;
+        return alpha*val + (1.0-alpha)*old_val;
+    }
+    static double avg(const double *vals, int num)
+    {
+        double s = 0.0;
+        int i=0;
+        for (; i<num; ++i){
+            double val = vals[i];
+            if(isnan(val)) break;
+            s += val;
+        }
+        return s / double(i+1);
+    }
 };
+
+class ObjectList : public UnitConverter::shared_variables_list{
+    const boost::shared_ptr<ObjectStorage> storage_;
+    struct Getter {
+        boost::shared_ptr<double> val_ptr;
+        boost::function<bool(double&)> func;
+        bool operator ()() { return func(*val_ptr); }
+        template<typename T> Getter(const ObjectStorage::Entry<T> &entry): func(boost::bind(&Getter::readObject<T>, entry, _1)), val_ptr(new double) { }
+        template<typename T> static bool readObject(ObjectStorage::Entry<T> &entry, double &res){
+            T val;
+            if(!entry.get(val)) return false;
+            res = val;
+            return true;
+        }
+        operator double*() const { return val_ptr.get(); }
+    };
+    boost::unordered_map<ObjectDict::Key, Getter> getters_;
+
+public:
+    template<const uint16_t dt> static double* func(ObjectList &list, const ObjectDict::Key &key){
+        typedef typename ObjectStorage::DataType<dt>::type type;
+        try{
+            return list.getters_.insert(std::make_pair(key, Getter(list.storage_->entry<type>(key)))).first->second;
+        }
+        catch(...){
+            return 0;
+        }
+    }
+    ObjectList(const boost::shared_ptr<ObjectStorage> storage) : storage_(storage) {}
+    double* create(const ObjectDict::Key &key) {
+        try{
+            return branch_type<ObjectList, double * (ObjectList &list, const ObjectDict::Key &k)>(storage_->dict_->get(key)->data_type)(*this, key);
+        }
+        catch(...){
+            return 0;
+        }
+    }
+    bool sync(){
+        bool ok = true;
+        for(boost::unordered_map<ObjectDict::Key, Getter>::iterator it = getters_.begin(); it != getters_.end(); ++it){
+            ok = it->second() && ok;
+        }
+        return ok;
+    }
+    virtual double * operator [] (const std::string &n) const {
+        if(n.find("obj") == 0){
+            ObjectDict::Key key(n.substr(3));
+            boost::unordered_map<ObjectDict::Key, Getter>::const_iterator it = getters_.find(key);
+            if(it != getters_.end()) return it->second;
+            return const_cast<ObjectList*>(this)->create(key);
+        }else{
+            return UnitConverter::shared_variables_list::operator [](n);
+        }
+    }
+};
+
+template<> double* ObjectList::func<ObjectDict::DEFTYPE_VISIBLE_STRING >(ObjectList &, const ObjectDict::Key &){ return 0; }
+template<> double* ObjectList::func<ObjectDict::DEFTYPE_OCTET_STRING >(ObjectList &, const ObjectDict::Key &){ return 0; }
+template<> double* ObjectList::func<ObjectDict::DEFTYPE_UNICODE_STRING >(ObjectList &, const ObjectDict::Key &){ return 0; }
+template<> double* ObjectList::func<ObjectDict::DEFTYPE_DOMAIN >(ObjectList &, const ObjectDict::Key &){ return 0; }
+
+typedef Node_402 MotorNode;
 
 class HandleLayer: public Layer{
     boost::shared_ptr<MotorNode> motor_;
     double pos_, vel_, eff_;
     double cmd_pos_, cmd_vel_, cmd_eff_;
 
+    boost::shared_ptr<UnitConverter>  conv_target_pos_, conv_target_vel_, conv_target_eff_;
+    boost::shared_ptr<UnitConverter>  conv_pos_, conv_vel_, conv_eff_;
+    ObjectList objlist_;
     
     hardware_interface::JointStateHandle jsh_;
     hardware_interface::JointHandle jph_, jvh_, jeh_;
@@ -82,9 +231,29 @@ class HandleLayer: public Layer{
         return true;
     }
 public:
-    HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor)
-    : Layer(name + " Handle"), motor_(motor), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {
-        commands_[No_Mode] = 0;
+    HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options)
+    : Layer(name + " Handle"), motor_(motor), objlist_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {
+       commands_[No_Mode] = 0;
+
+       std::string p2d("rint(rad2deg(pos)*1000"), v2d("rint(rad2deg(vel)*1000"), e2d("rint(eff)");
+       std::string p2r("deg2rad(obj6064)/1000"), v2r("deg2rad(obj606C)/1000"), e2r("0");
+
+       if(options.hasMember("pos_to_device")) p2d = (const std::string&) options["pos_to_device"];
+       if(options.hasMember("pos_from_device")) p2r = (const std::string&) options["pos_from_device"];
+
+       if(options.hasMember("vel_to_device")) v2d = (const std::string&) options["vel_to_device"];
+       if(options.hasMember("vel_from_device")) v2r = (const std::string&) options["vel_from_device"];
+
+       if(options.hasMember("eff_to_device")) e2d = (const std::string&) options["eff_to_device"];
+       if(options.hasMember("eff_from_device")) e2r = (const std::string&) options["eff_from_device"];
+
+       conv_target_pos_.reset(new UnitConverter(p2d, UnitConverter::shared_variables_list().add("pos", &cmd_pos_)));
+       conv_target_vel_.reset(new UnitConverter(v2d, UnitConverter::shared_variables_list().add("vel", &cmd_vel_)));
+       conv_target_eff_.reset(new UnitConverter(e2d, UnitConverter::shared_variables_list().add("eff", &cmd_eff_)));
+
+       conv_pos_ = objlist_.createConverter(p2r);
+       conv_vel_ = objlist_.createConverter(v2r);
+       conv_eff_ = objlist_.createConverter(e2r);
     }
 
     int canSwitch(const OperationMode &m){
@@ -126,21 +295,22 @@ public:
     }    
 private:
     virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
-        if(current_state > Init){
-            pos_ = motor_->getActualPos();
-            vel_ = motor_->getActualVel();
-            eff_ = motor_->getActualEff();
+        if(current_state > Shutdown){
+            objlist_.sync();
+            pos_ = conv_pos_->evaluate();
+            vel_ = conv_vel_->evaluate();
+            eff_ = conv_eff_->evaluate();
         }
     }
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
         if(current_state == Ready){
             hardware_interface::JointHandle* jh = jh_;
             if(jh_ == &jph_){
-                motor_->setTargetPos(cmd_pos_);
+                motor_->setTargetPos(conv_target_pos_->evaluate());
             }else if(jh_ == &jvh_){
-                motor_->setTargetVel(cmd_vel_);
+                motor_->setTargetVel(conv_target_vel_->evaluate());
             }else if(jh_ == &jeh_){
-                motor_->setTargetEff(cmd_eff_);
+                motor_->setTargetEff(conv_target_eff_->evaluate());
             }else if(jh_){
                 status.warn("unsupported mode active");
             }
@@ -148,6 +318,12 @@ private:
     }
     virtual void handleInit(LayerStatus &status){
         // TODO: implement proper init
+        conv_pos_->reset();
+        conv_vel_->reset();
+        conv_eff_->reset();
+        conv_target_pos_->reset();
+        conv_target_vel_->reset();
+        conv_target_eff_->reset();
         handleRead(status, Layer::Ready);
     }
     
@@ -416,11 +592,11 @@ template<typename MotorNodeType> class MotorChain : public RosChain{
             return false;
         }
 
-        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor", params));
+        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor"));
         motors_->add(motor);
         logger->add(motor);
 
-        boost::shared_ptr<HandleLayer> handle( new HandleLayer(joint, motor));
+        boost::shared_ptr<HandleLayer> handle( new HandleLayer(joint, motor, node->getStorage(), params));
         robot_layer_->add(joint, handle);
         logger->add(handle);
 
