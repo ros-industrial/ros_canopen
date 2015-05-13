@@ -57,19 +57,18 @@ public:
         }
     }
 private:
-    template <typename Tpub, typename Tobj> static void publish_cached(ros::Publisher &pub, ObjectStorage::Entry<Tobj> &entry){
-        pub.publish<typename Tpub::_data_type>(entry.get_cached());
-    }
-    template <typename Tpub, typename Tobj> static void publish(ros::Publisher &pub, ObjectStorage::Entry<Tobj> &entry){
-        pub.publish<typename Tpub::_data_type>(entry.get());
+    template <typename Tpub, typename Tobj, bool forced> static void publish(ros::Publisher &pub, ObjectStorage::Entry<Tobj> &entry){
+		Tpub msg;
+		msg.data = (const typename Tpub::_data_type &)(forced? entry.get() : entry.get_cached());
+        pub.publish(msg);
     }
     template<typename Tpub, typename Tobj> static func_type create(ros::NodeHandle &nh,  const std::string &name, ObjectStorage::Entry<Tobj> entry, bool force){
         if(!entry.valid()) return 0;
         ros::Publisher pub = nh.advertise<Tpub>(name, 1);
         if(force){
-            return boost::bind(PublishFunc::publish<Tpub, Tobj>, pub, entry);
+            return boost::bind(PublishFunc::publish<Tpub, Tobj, true>, pub, entry);
         }else{
-            return boost::bind(PublishFunc::publish_cached<Tpub, Tobj>, pub, entry);
+            return boost::bind(PublishFunc::publish<Tpub, Tobj, false>, pub, entry);
         }
     }
 };
