@@ -26,7 +26,9 @@ class UnitConverter{
 public:
     typedef boost::function<double * (const std::string &) > get_var_func_type;
 
-    UnitConverter(const std::string &expression, get_var_func_type var_func = get_var_func_type()){
+    UnitConverter(const std::string &expression, get_var_func_type var_func = get_var_func_type())
+    : var_func_(var_func)
+    {
         parser_.SetVarFactory(UnitConverter::createVariable, this);
 
         parser_.DefineConst("pi", M_PI);
