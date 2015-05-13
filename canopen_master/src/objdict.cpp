@@ -37,7 +37,7 @@ size_t ObjectDict::Key::fromString(const std::string &str){
 ObjectDict::Key::operator std::string() const{
     std::stringstream sstr;
     sstr << std::hex << index();
-    if(hasSub()) sstr << 'sub' << (int) sub_index();
+    if(hasSub()) sstr << "sub" << (int) sub_index();
     return sstr.str();
 }
 void ObjectStorage::Data::init(){
