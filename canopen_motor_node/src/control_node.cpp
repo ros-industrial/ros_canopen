@@ -192,7 +192,7 @@ public:
     : Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {
        commands_[No_Mode] = 0;
 
-       std::string p2d("rint(rad2deg(pos)*1000"), v2d("rint(rad2deg(vel)*1000"), e2d("rint(eff)");
+       std::string p2d("rint(rad2deg(pos)*1000)"), v2d("rint(rad2deg(vel)*1000)"), e2d("rint(eff)");
        std::string p2r("deg2rad(obj6064)/1000"), v2r("deg2rad(obj606C)/1000"), e2r("0");
 
        if(options.hasMember("pos_to_device")) p2d = (const std::string&) options["pos_to_device"];
