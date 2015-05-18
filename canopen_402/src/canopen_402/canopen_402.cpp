@@ -175,8 +175,9 @@ void Node_402::move(LayerStatus &status)
     bool transition_success = motorEvent(highLevelSM::enableMove(*operation_mode_, (*target_values_).target_pos, (*target_values_).target_vel));
     if(transition_success)
     {
-      target_interpolated_position.set((*target_values_).target_pos);
-      if (ip_mode_sub_mode.get_cached() == -1)
+      if (target_interpolated_position.valid())
+        target_interpolated_position.set((*target_values_).target_pos);
+      if (target_interpolated_velocity.valid() && ip_mode_sub_mode.get_cached() == -1)
         target_interpolated_velocity.set((*target_values_).target_vel);
     }
   }
@@ -348,8 +349,9 @@ void Node_402::clearTargetEntries()
   (*target_values_).target_pos = ac_pos_;
   (*target_values_).target_vel = 0;
 
-  target_interpolated_position.set((*target_values_).target_pos);
-  if (ip_mode_sub_mode.get_cached() == -1)
+  if (target_interpolated_position.valid())
+    target_interpolated_position.set((*target_values_).target_pos);
+  if (target_interpolated_velocity.valid() && ip_mode_sub_mode.get_cached() == -1)
     target_interpolated_velocity.set((*target_values_).target_vel);
 }
 
