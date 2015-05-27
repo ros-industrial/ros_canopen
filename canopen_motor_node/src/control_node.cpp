@@ -166,12 +166,14 @@ class HandleLayer: public Layer{
 
     template <typename T> hardware_interface::JointHandle* addHandle( T &iface, hardware_interface::JointHandle *jh,  const std::vector<OperationMode> & modes){
 
-        uint32_t mode_mask = 0;
+        bool supported = false;
         for(size_t i=0; i < modes.size(); ++i){
-            if(motor_->isModeSupported(modes[i]))
-                mode_mask |= MotorNode::getModeMask(modes[i]);
+            if(motor_->isModeSupported(modes[i])){
+                supported = true;
+                break;
+            }
         }
-        if(mode_mask == 0) return 0;
+        if(!supported) return 0;
 
         iface.registerHandle(*jh);
 
