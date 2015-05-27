@@ -270,7 +270,6 @@ protected:
         LayerStack::handleShutdown(status);
         heartbeat_timer_.stop();
         if(initialized_ &&  thread_){
-            halt(status);
             thread_->interrupt();
             thread_->join();
             thread_.reset();
@@ -284,6 +283,7 @@ protected:
         res.success.data = true;
         if(initialized_ && thread_){
             LayerStatus s;
+            halt(s);
             shutdown(s);
         }else{
             res.error_message.data = "not running";
@@ -608,8 +608,9 @@ public:
         publishers_.clear();
         try{
             LayerStatus s;
+            halt(s);
             shutdown(s);
-        }catch(...){ }
+        }catch(...){ LOG("CATCH"); }
         destroy();
     }
 };
