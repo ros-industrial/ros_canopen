@@ -4,7 +4,7 @@
   <version>0.6.2</version>
   <description>This implements the CANopen device profile for drives and motion control. CiA(r) 402</description>
 
-  <maintainer email="tdf@ipa.fhg.de">Thiago de Freitas</maintainer>
+  <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
   <author email="tdf@ipa.fhg.de">Thiago de Freitas</author>
   <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
 
