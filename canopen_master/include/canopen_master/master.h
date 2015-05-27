@@ -80,7 +80,9 @@ class IPCSyncWaiter{
         scoped_mutex_lock number_lock(number_mutex, abs_time);
         if(!number_lock) return false;
         while(number != 0 && number_cond.timed_wait(number_lock, abs_time)) {}
-        return number == 0;
+        bool done = number == 0;
+        number = 0;
+        return done;
     }
 public:
     template <typename DT> bool wait(const DT &d){
