@@ -271,13 +271,22 @@ private:
         if(current_state == Ready){
             hardware_interface::JointHandle* jh = jh_;
             if(jh_ == &jph_){
-                motor_->setTargetPos(conv_target_pos_->evaluate());
+                motor_->setTarget(conv_target_pos_->evaluate());
+                cmd_vel_ = vel_;
+                cmd_eff_ = eff_;
             }else if(jh_ == &jvh_){
-                motor_->setTargetVel(conv_target_vel_->evaluate());
+                motor_->setTarget(conv_target_vel_->evaluate());
+                cmd_pos_ = pos_;
+                cmd_eff_ = eff_;
             }else if(jh_ == &jeh_){
-                motor_->setTargetEff(conv_target_eff_->evaluate());
-            }else if(jh_){
-                status.warn("unsupported mode active");
+                motor_->setTarget(conv_target_eff_->evaluate());
+                cmd_pos_ = pos_;
+                cmd_vel_ = vel_;
+            }else{
+                cmd_pos_ = pos_;
+                cmd_vel_ = vel_;
+                cmd_eff_ = eff_;
+                if(jh_) status.warn("unsupported mode active");
             }
         }
     }
