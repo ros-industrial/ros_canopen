@@ -506,12 +506,12 @@ public:
     }
 
     virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
-        if(current_state > Init){
+        if(current_state > Shutdown){
             if(!cm_) status.error("controller_manager is not intialized");
         }
     }
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
-        if(current_state > Init){
+        if(current_state > Shutdown){
             if(!cm_){
                 status.error("controller_manager is not intialized");
             }else{
