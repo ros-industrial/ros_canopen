@@ -35,7 +35,7 @@ catkin_package(
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 add_library(canopen_402
-  src/canopen_402/canopen_402.cpp src/motor.cpp
+  src/motor.cpp
 )
 target_link_libraries(canopen_402
   ${catkin_LIBRARIES}
