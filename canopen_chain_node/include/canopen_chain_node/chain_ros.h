@@ -164,7 +164,7 @@ protected:
 
     time_duration update_duration_;
 
-    ros::Timer heartbeat_timer_;
+    Timer heartbeat_timer_;
 
     boost::atomic<bool> initialized_;
     boost::mutex diag_mutex_;
@@ -216,7 +216,7 @@ protected:
                 shutdown(status);
                 thread_.reset();
             }else{
-                heartbeat_timer_.start();
+                heartbeat_timer_.restart();
             }
         }
         catch( const canopen::Exception &e){
@@ -401,6 +401,14 @@ protected:
         }
         return true;
     }
+    struct HeartbeatSender{
+      can::Frame frame;
+      boost::shared_ptr<can::DriverInterface> interface;
+      bool send(){
+          return interface && interface->send(frame);
+      }
+    } hb_sender_;
+
     bool setup_heartbeat(){
             ros::NodeHandle hb_nh(nh_priv_,"heartbeat");
             std::string msg;
@@ -416,15 +424,17 @@ protected:
                 return false;
             }
 
-            can::Frame frame = can::toframe(msg);
+            hb_sender_.frame = can::toframe(msg);
 
 
-            if(!frame.isValid()){
+            if(!hb_sender_.frame.isValid()){
                 ROS_ERROR_STREAM("Message '"<< msg << "' is invalid");
                 return false;
             }
 
-            heartbeat_timer_ = hb_nh.createTimer(ros::Duration(1.0/rate), boost::bind(&can::DriverInterface::send,interface_, frame), false, false);
+            hb_sender_.interface = interface_;
+
+            heartbeat_timer_.start(Timer::TimerDelegate(&hb_sender_, &HeartbeatSender::send) , boost::chrono::duration<double>(1.0/rate), false);
 
             return true;
 
