@@ -216,6 +216,7 @@ protected:
             if(!status.bounded<LayerStatus::Warn>()){
                 diag(status);
                 shutdown(status);
+                initialized_ = false;
                 thread_.reset();
             }else{
                 heartbeat_timer_.restart();
