@@ -195,6 +195,12 @@ public:
        std::string p2d("rint(rad2deg(pos)*1000)"), v2d("rint(rad2deg(vel)*1000)"), e2d("rint(eff)");
        std::string p2r("deg2rad(obj6064)/1000"), v2r("deg2rad(obj606C)/1000"), e2r("0");
 
+       if(options.hasMember("pos_unit_factor") || options.hasMember("vel_unit_factor") || options.hasMember("eff_unit_factor")){
+           const std::string reason("*_unit_factor parameters are not supported anymore, please migrate to conversion functions.");
+           ROS_FATAL_STREAM(reason);
+           throw std::invalid_argument(reason);
+       }
+
        if(options.hasMember("pos_to_device")) p2d = (const std::string&) options["pos_to_device"];
        if(options.hasMember("pos_from_device")) p2r = (const std::string&) options["pos_from_device"];
 
