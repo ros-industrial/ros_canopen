@@ -431,7 +431,8 @@ public:
         eff_soft_limits_interface_.enforceLimits(period);
     }
     virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) const {
-        assert(hardware_interface::RobotHW::canSwitch(start_list, stop_list));
+
+        (void) &hardware_interface::RobotHW::canSwitch; // compile-time check for recent ros-controls version of ros_control
 
         // stop handles
         for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
