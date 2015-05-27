@@ -7,7 +7,7 @@
 #include <socketcan_interface/string.h>
 #include <ros/ros.h>
 #include <ros/package.h>
-#include <cob_srvs/Trigger.h>
+#include <std_srvs/Trigger.h>
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <boost/filesystem/path.hpp>
 #include <boost/weak_ptr.hpp>
@@ -196,12 +196,12 @@ protected:
         }
     }
     
-    virtual bool handle_init(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+    virtual bool handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
 	ROS_INFO("Initializing XXX");
         boost::mutex::scoped_lock lock(mutex_);
         if(initialized_){
-            res.success.data = true;
-            res.error_message.data = "already initialized";
+            res.success = true;
+            res.message = "already initialized";
             return true;
         }
         thread_.reset(new boost::thread(&RosChain::run, this));
@@ -209,8 +209,8 @@ protected:
         try{
             init(status);
             initialized_ = true;
-            res.success.data = status.bounded<LayerStatus::Ok>();
-            res.error_message.data = status.reason();
+            res.success = status.bounded<LayerStatus::Ok>();
+            res.message = status.reason();
             if(!status.bounded<LayerStatus::Warn>()){
                 diag(status);
                 shutdown(status);
@@ -222,15 +222,15 @@ protected:
         catch( const canopen::Exception &e){
             std::string info = boost::diagnostic_information(e);
             ROS_ERROR_STREAM(info);
-            res.success.data = false;
-            res.error_message.data = info;
+            res.success = false;
+            res.message = info;
             status.error(info);
             shutdown(status);
             thread_.reset();
         }
         return true;
     }
-    virtual bool handle_recover(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+    virtual bool handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
 	ROS_INFO("Recovering XXX");
         boost::mutex::scoped_lock lock(mutex_);
         if(initialized_ && thread_){
@@ -243,18 +243,18 @@ protected:
                 if(!status.bounded<LayerStatus::Warn>()){
                     diag(status);
                 }
-                res.success.data = status.bounded<LayerStatus::Warn>();
-                res.error_message.data = status.reason();
+                res.success = status.bounded<LayerStatus::Warn>();
+                res.message = status.reason();
             }
             catch( const canopen::Exception &e){
                 std::string info = boost::diagnostic_information(e);
                 ROS_ERROR_STREAM(info);
-                res.success.data = false;
-                res.error_message.data = info;
+                res.success = false;
+                res.message = info;
             }
         }else{
-            res.success.data = false;
-            res.error_message.data = "not running";
+            res.success = false;
+            res.message = "not running";
         }
         return true;
     }
@@ -277,28 +277,28 @@ protected:
         initialized_ = false;
     }
 
-    virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+    virtual bool handle_shutdown(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
 	ROS_INFO("Shuting down XXX");
         boost::mutex::scoped_lock lock(mutex_);
-        res.success.data = true;
+        res.success = true;
         if(initialized_ && thread_){
             LayerStatus s;
             halt(s);
             shutdown(s);
         }else{
-            res.error_message.data = "not running";
+            res.message = "not running";
         }
         return true;
     }
-    virtual bool handle_halt(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
+    virtual bool handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
 	ROS_INFO("Halting down XXX");
         boost::mutex::scoped_lock lock(mutex_);
-         res.success.data = true;
+         res.success = true;
          if(initialized_){
             LayerStatus s;
             halt(s);
         }else{
-            res.error_message.data = "not running";
+            res.message = "not running";
         }
         return true;
     }
