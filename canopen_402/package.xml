@@ -12,4 +12,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>canopen_master</depend>
+  <depend>class_loader</depend>
+
+  <export>
+     <canopen_402 plugin="${prefix}/canopen_402_plugin.xml" />
+  </export>
 </package>
