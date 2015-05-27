@@ -179,7 +179,7 @@ protected:
     void run(){
 
         time_point abs_time = boost::chrono::high_resolution_clock::now();
-        while(ros::ok()){
+        while(true){
             LayerStatus s;
             try{
                 read(s);
