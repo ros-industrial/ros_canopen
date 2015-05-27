@@ -414,7 +414,7 @@ void SDOClient::wait_for_response(){
         }
     }
     if(offset == 0 || offset != total){
-        BOOST_THROW_EXCEPTION( TimeoutException() ); // TODO
+        BOOST_THROW_EXCEPTION( TimeoutException("SDO: " + std::string(ObjectDict::Key(*current_entry))));
     }
 }
 void SDOClient::read(const canopen::ObjectDict::Entry &entry, String &data){
@@ -434,7 +434,7 @@ void SDOClient::read(const canopen::ObjectDict::Entry &entry, String &data){
         
         data = buffer;
     }else{
-        BOOST_THROW_EXCEPTION( TimeoutException() );
+        BOOST_THROW_EXCEPTION( TimeoutException("SDO read: " + std::string(ObjectDict::Key(entry))));
     }
 }
 void SDOClient::write(const canopen::ObjectDict::Entry &entry, const String &data){
@@ -450,6 +450,6 @@ void SDOClient::write(const canopen::ObjectDict::Entry &entry, const String &dat
         }
         wait_for_response();
     }else{
-        BOOST_THROW_EXCEPTION( TimeoutException() );
+        BOOST_THROW_EXCEPTION( TimeoutException("SDO write: " + std::string(ObjectDict::Key(entry))));
     }
 }

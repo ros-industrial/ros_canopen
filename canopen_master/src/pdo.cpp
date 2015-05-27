@@ -352,7 +352,7 @@ void PDOMapper::Buffer::read(const canopen::ObjectDict::Entry &entry, String &da
     while(empty){
         if(cond.wait_until(lock,abs_time)  == boost::cv_status::timeout)
         {
-            BOOST_THROW_EXCEPTION( TimeoutException() );
+            BOOST_THROW_EXCEPTION( TimeoutException("PDO read: " + std::string(ObjectDict::Key(entry))));
         }
     }
     if(dirty){

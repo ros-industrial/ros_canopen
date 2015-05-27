@@ -178,7 +178,7 @@ void Node::handleInit(LayerStatus &status){
 
     sdo_.init();
     try{
-        if(!reset_com()) BOOST_THROW_EXCEPTION( TimeoutException() );
+        if(!reset_com()) BOOST_THROW_EXCEPTION( TimeoutException("reset_timeout") );
     }
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not reset node '%1%'") % (int)node_id_));
@@ -191,7 +191,7 @@ void Node::handleInit(LayerStatus &status){
     // TODO: set SYNC data
 
     try{
-        if(!start()) BOOST_THROW_EXCEPTION( TimeoutException() );
+        if(!start()) BOOST_THROW_EXCEPTION( TimeoutException("start timeout") );
     }
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));

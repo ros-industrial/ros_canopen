@@ -172,6 +172,7 @@ public:
         Entry(const uint16_t i, const uint8_t s, const uint16_t t, const std::string & d, const bool r = true, const bool w = true, bool m = false, const HoldAny def = HoldAny(), const HoldAny init = HoldAny()):
         obj_code(VAR), index(i), sub_index(s),data_type(t),readable(r), writable(w), mappable(m), desc(d), def_val(def), init_val(init) {}
         
+        operator Key() const { return Key(index, sub_index); }
         const HoldAny & value() const { return !init_val.is_empty() ? init_val : def_val; }
             
     };
