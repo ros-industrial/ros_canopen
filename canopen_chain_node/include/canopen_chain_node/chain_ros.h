@@ -167,6 +167,7 @@ protected:
     ros::Timer heartbeat_timer_;
 
     boost::atomic<bool> initialized_;
+    boost::mutex diag_mutex_;
 
     void logState(const can::State &s){
         boost::shared_ptr<can::DriverInterface> interface = interface_;
@@ -207,6 +208,7 @@ protected:
         LayerReport status;
         try{
             init(status);
+            initialized_ = true;
             res.success.data = status.bounded<LayerStatus::Ok>();
             res.error_message.data = status.reason();
             if(!status.bounded<LayerStatus::Warn>()){
@@ -215,7 +217,6 @@ protected:
                 thread_.reset();
             }else{
                 heartbeat_timer_.start();
-                initialized_ = true;
             }
         }
         catch( const canopen::Exception &e){
@@ -265,14 +266,16 @@ protected:
         }
     }
     virtual void handleShutdown(LayerStatus &status){
+        boost::mutex::scoped_lock lock(diag_mutex_);
         heartbeat_timer_.stop();
-        if(initialized_ && thread_){
+        LayerStack::handleShutdown(status);
+        if(initialized_ &&  thread_){
             halt(status);
             thread_->interrupt();
             thread_->join();
-            LayerStack::handleShutdown(status);
             thread_.reset();
         }
+        initialized_ = false;
     }
 
     virtual bool handle_shutdown(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
@@ -285,7 +288,6 @@ protected:
         }else{
             res.error_message.data = "not running";
         }
-        initialized_ = false;
         return true;
     }
     virtual bool handle_halt(cob_srvs::Trigger::Request  &req, cob_srvs::Trigger::Response &res){
@@ -552,7 +554,9 @@ protected:
         return true;
     }
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger) { return true; }
+
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
+        boost::mutex::scoped_lock lock(diag_mutex_);
         LayerReport r;
         if(!initialized_){
             stat.summary(stat.WARN,"Not initailized");
