@@ -2,8 +2,7 @@
 #include <socketcan_interface/socketcan.h>
 #include <canopen_chain_node/chain_ros.h>
 
-#include <canopen_402/canopen_402.h>
-#include <canopen_402/enums_402.h>
+#include <canopen_402/base.h>
 
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
@@ -145,10 +144,8 @@ template<> double* ObjectVariables::func<ObjectDict::DEFTYPE_OCTET_STRING >(Obje
 template<> double* ObjectVariables::func<ObjectDict::DEFTYPE_UNICODE_STRING >(ObjectVariables &, const ObjectDict::Key &){ return 0; }
 template<> double* ObjectVariables::func<ObjectDict::DEFTYPE_DOMAIN >(ObjectVariables &, const ObjectDict::Key &){ return 0; }
 
-typedef Node_402 MotorNode;
-
 class HandleLayer: public Layer{
-    boost::shared_ptr<MotorNode> motor_;
+    boost::shared_ptr<MotorBase> motor_;
     double pos_, vel_, eff_;
 
     double cmd_pos_, cmd_vel_, cmd_eff_;
@@ -161,10 +158,10 @@ class HandleLayer: public Layer{
     hardware_interface::JointHandle jph_, jvh_, jeh_;
     boost::atomic<hardware_interface::JointHandle*> jh_;
 
-    typedef boost::unordered_map< OperationMode,hardware_interface::JointHandle* > CommandMap;
+    typedef boost::unordered_map< MotorBase::OperationMode,hardware_interface::JointHandle* > CommandMap;
     CommandMap commands_;
 
-    template <typename T> hardware_interface::JointHandle* addHandle( T &iface, hardware_interface::JointHandle *jh,  const std::vector<OperationMode> & modes){
+    template <typename T> hardware_interface::JointHandle* addHandle( T &iface, hardware_interface::JointHandle *jh,  const std::vector<MotorBase::OperationMode> & modes){
 
         bool supported = false;
         for(size_t i=0; i < modes.size(); ++i){
@@ -182,7 +179,7 @@ class HandleLayer: public Layer{
         }
         return jh;
     }
-    bool select(const OperationMode &m){
+    bool select(const MotorBase::OperationMode &m){
         CommandMap::iterator it = commands_.find(m);
         if(it == commands_.end()) return false;
         jh_ = it->second;
@@ -190,9 +187,9 @@ class HandleLayer: public Layer{
     }
     static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
 public:
-    HandleLayer(const std::string &name, const boost::shared_ptr<MotorNode> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options)
+    HandleLayer(const std::string &name, const boost::shared_ptr<MotorBase> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options)
     : Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {
-       commands_[No_Mode] = 0;
+       commands_[MotorBase::No_Mode] = 0;
 
        std::string p2d("rint(rad2deg(pos)*1000)"), v2d("rint(rad2deg(vel)*1000)"), e2d("rint(eff)");
        std::string p2r("deg2rad(obj6064)/1000"), v2r("deg2rad(obj606C)/1000"), e2r("0");
@@ -221,13 +218,13 @@ public:
        conv_eff_.reset(new UnitConverter(e2r, boost::bind(&ObjectVariables::getVariable, &variables_, _1)));
     }
 
-    int canSwitch(const OperationMode &m){
+    int canSwitch(const MotorBase::OperationMode &m){
        if(!motor_->isModeSupported(m)) return 0;
        if(motor_->getMode() == m) return -1;
        if(commands_.find(m) != commands_.end()) return 1;
        return 0;
     }
-    bool switchMode(const OperationMode &m){
+    bool switchMode(const MotorBase::OperationMode &m){
         jh_ = 0; // disconnect handle
         if(!motor_->enterModeAndWait(m)){
             ROS_ERROR_STREAM(jsh_.getName() << "could not enter mode " << (int)m);
@@ -239,25 +236,25 @@ public:
         iface.registerHandle(jsh_);
     }
     hardware_interface::JointHandle* registerHandle(hardware_interface::PositionJointInterface &iface){
-        std::vector<OperationMode> modes;
-        modes.push_back(Profiled_Position);
-        modes.push_back(Interpolated_Position);
-        modes.push_back(Cyclic_Synchronous_Position);
+        std::vector<MotorBase::OperationMode> modes;
+        modes.push_back(MotorBase::Profiled_Position);
+        modes.push_back(MotorBase::Interpolated_Position);
+        modes.push_back(MotorBase::Cyclic_Synchronous_Position);
         return addHandle(iface, &jph_, modes);
     }
     hardware_interface::JointHandle* registerHandle(hardware_interface::VelocityJointInterface &iface){
-        std::vector<OperationMode> modes;
-        modes.push_back(Velocity);
-        modes.push_back(Profiled_Velocity);
-        modes.push_back(Cyclic_Synchronous_Velocity);
+        std::vector<MotorBase::OperationMode> modes;
+        modes.push_back(MotorBase::Velocity);
+        modes.push_back(MotorBase::Profiled_Velocity);
+        modes.push_back(MotorBase::Cyclic_Synchronous_Velocity);
         return addHandle(iface, &jvh_, modes);
     }
     hardware_interface::JointHandle* registerHandle(hardware_interface::EffortJointInterface &iface){
-        std::vector<OperationMode> modes;
-        modes.push_back(Profiled_Torque);
-        modes.push_back(Cyclic_Synchronous_Torque);
+        std::vector<MotorBase::OperationMode> modes;
+        modes.push_back(MotorBase::Profiled_Torque);
+        modes.push_back(MotorBase::Cyclic_Synchronous_Torque);
         return addHandle(iface, &jeh_, modes);
-    }    
+    }
 private:
     virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
         if(current_state > Shutdown){
@@ -327,7 +324,7 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
 
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
-    typedef std::vector<std::pair<boost::shared_ptr<HandleLayer>, OperationMode> >  SwitchContainer;
+    typedef std::vector<std::pair<boost::shared_ptr<HandleLayer>, MotorBase::OperationMode> >  SwitchContainer;
     typedef boost::unordered_map<std::string, SwitchContainer>  SwitchMap;
     mutable SwitchMap switch_map_;
 
@@ -460,8 +457,8 @@ public:
                         ROS_ERROR_STREAM(*res_it << " not found");
                         return false;
                     }
-                    if(int res = h_it->second->canSwitch((OperationMode)mode)){
-                        if(res > 0) to_switch.push_back(std::make_pair(h_it->second, OperationMode(mode)));
+                    if(int res = h_it->second->canSwitch((MotorBase::OperationMode)mode)){
+                        if(res > 0) to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
                     }else{
                         ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
                         return false;
@@ -489,7 +486,7 @@ public:
             }
         }
         for(boost::unordered_set<boost::shared_ptr<HandleLayer> >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
-            (*it)->switchMode(No_Mode);
+            (*it)->switchMode(MotorBase::No_Mode);
         }
     }
 
@@ -550,8 +547,9 @@ public:
     }
 };
 
-template<typename MotorNodeType> class MotorChain : public RosChain{
-    boost::shared_ptr< LayerGroupNoDiag<MotorNodeType> > motors_;
+class MotorChain : public RosChain{
+    pluginlib::ClassLoader<canopen::MotorBase::Allocator> allocator_loader_;
+    boost::shared_ptr< LayerGroupNoDiag<MotorBase> > motors_;
     boost::shared_ptr<RobotLayer> robot_layer_;
 
     boost::shared_ptr< ControllerManagerLayer> cm_;
@@ -567,7 +565,24 @@ template<typename MotorNodeType> class MotorChain : public RosChain{
             return false;
         }
 
-        boost::shared_ptr<MotorNode> motor( new MotorNode(node, name + "_motor"));
+        std::string alloc_name = "canopen::Motor402::Allocator";
+        if(params.hasMember("allocator")) alloc_name.assign(params["allocator"]);
+        boost::shared_ptr<canopen::MotorBase::Allocator> allocator;
+        try{
+            allocator =  allocator_loader_.createInstance(alloc_name);
+        }
+        catch(pluginlib::PluginlibException& ex){
+            ROS_ERROR_STREAM(ex.what());
+            return false;
+        }
+
+        boost::shared_ptr<MotorBase> motor = allocator->allocate(name + "_motor", node->getStorage());
+        if(!motor){
+            ROS_ERROR_STREAM("Could not allocate instance for " << name << " with " << alloc_name);
+            return false;
+        }
+
+        motor->registerDefaultModes(node->getStorage());
         motors_->add(motor);
         logger->add(motor);
 
@@ -579,10 +594,10 @@ template<typename MotorNodeType> class MotorChain : public RosChain{
     }
 
 public:
-    MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv){}
+    MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv), allocator_loader_("canopen_402", "canopen::MotorBase::Allocator"){}
 
     virtual bool setup() {
-        motors_.reset( new LayerGroupNoDiag<MotorNode>("402 Layer"));
+        motors_.reset( new LayerGroupNoDiag<MotorBase>("402 Layer"));
         robot_layer_.reset( new RobotLayer(nh_));
         cm_.reset(new ControllerManagerLayer(robot_layer_, nh_));
 
@@ -607,7 +622,7 @@ int main(int argc, char** argv){
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv("~");
 
-  MotorChain<MotorNode> chain(nh, nh_priv);
+  MotorChain chain(nh, nh_priv);
 
   if(!chain.setup()){
       return -1;
