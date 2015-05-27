@@ -89,7 +89,7 @@ void EMCYHandler::diag(LayerReport &report){
             }
             catch (const TimeoutException & e){
                 buf << "LIST_UNDERFLOW!";
-                continue;
+                break;
             }
 
         }
