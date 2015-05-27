@@ -68,12 +68,12 @@ State402::InternalState State402::read(uint16_t sw) {
     }
     return state_;
 }
-bool State402::waitForNewState(const time_point &abstime, State402::InternalState &new_state){
+bool State402::waitForNewState(const time_point &abstime, State402::InternalState &new_state, const State402::InternalState &test_state){
     boost::mutex::scoped_lock lock(mutex_);
     InternalState oldstate = state_;
-    while(state_ == oldstate && cond_.wait_until(lock, abstime) == boost::cv_status::no_timeout) {}
+    while(state_ == oldstate && state_ != test_state && cond_.wait_until(lock, abstime) == boost::cv_status::no_timeout) {}
     new_state = state_;
-    return oldstate != state_;
+    return oldstate != state_ || state_ == test_state;
 }
 
 const Command402::TransitionTable Command402::transitions_;
@@ -324,7 +324,7 @@ bool Motor402::enableMotor(LayerStatus &status){
             return false;
         }
         lock.unlock();
-        if(!state_handler_.waitForNewState(abstime, state)){
+        if(!state_handler_.waitForNewState(abstime, state, next)){
             status.error("Transition timeout");
             return false;
         }
@@ -469,7 +469,7 @@ void Motor402::handleShutdown(LayerStatus &status){
             boost::mutex::scoped_lock lock(cw_mutex_);
             Command402::setTransition(control_word_ ,state,  State402::Switch_On_Disabled);
         }
-        if(!state_handler_.waitForNewState(abstime, state)){
+        if(!state_handler_.waitForNewState(abstime, state, State402::Switch_On_Disabled)){
             status.error("Transition timeout");
             break;
         }
