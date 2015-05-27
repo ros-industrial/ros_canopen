@@ -332,6 +332,7 @@ private:
     boost::atomic<uint16_t> status_word_;
     uint16_t control_word_;
     boost::mutex cw_mutex_;
+    boost::atomic<State402::InternalState> target_state_;
 
 
     State402 state_handler_;

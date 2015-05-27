@@ -315,8 +315,8 @@ bool Motor402::switchMode(uint16_t mode) {
 bool Motor402::enableMotor(LayerStatus &status){
     time_point abstime = get_abs_time(boost::chrono::seconds(5));
     State402::InternalState state = state_handler_.getState();
-
-    while(state != State402::Operation_Enable){
+    target_state_ = State402::Operation_Enable;
+    while(state != target_state_){
         State402::InternalState next = Command402::nextStateForEnabling(state);
         boost::mutex::scoped_lock lock(cw_mutex_);
         if(!Command402::setTransition(control_word_ ,state, next)){
@@ -329,7 +329,7 @@ bool Motor402::enableMotor(LayerStatus &status){
             return false;
         }
     }
-    return true;
+    return state == State402::Operation_Enable;
 }
 bool Motor402::readState(LayerStatus &status){
     uint16_t sw = status_word_entry_.get(); // TODO: added error handling
@@ -463,6 +463,7 @@ void Motor402::handleShutdown(LayerStatus &status){
     time_point abstime = get_abs_time(boost::chrono::seconds(5));
 
     State402::InternalState state = state_handler_.getState();
+    target_state_ = State402::Switch_On_Disabled;
     while(state != State402::Switch_On_Disabled){
         {
             boost::mutex::scoped_lock lock(cw_mutex_);
@@ -477,8 +478,10 @@ void Motor402::handleShutdown(LayerStatus &status){
 void Motor402::handleHalt(LayerStatus &status){
     State402::InternalState state = state_handler_.getState();
     boost::mutex::scoped_lock lock(cw_mutex_);
+    target_state_ = State402::Quick_Stop_Active;
     if(!Command402::setTransition(control_word_ ,state, State402::Quick_Stop_Active)){
         status.warn("Could not quick stop");
+        target_state_ = State402::Switch_On_Disabled;
         if(!Command402::setTransition(control_word_ ,state, State402::Switch_On_Disabled)){
             status.warn("Could not hard stop");
         }
