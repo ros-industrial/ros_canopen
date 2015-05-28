@@ -280,7 +280,9 @@ bool Motor402::switchMode(uint16_t mode) {
     if(mode == MotorBase::No_Mode){
         boost::mutex::scoped_lock lock(mode_mutex_);
         selected_mode_.reset();
-        op_mode_.set(mode);
+        try{ // try to set mode
+            op_mode_.set(mode);
+        }catch(...){}
         return true;
     }
 
