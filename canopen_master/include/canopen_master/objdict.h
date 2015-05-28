@@ -185,6 +185,15 @@ public:
     const boost::shared_ptr<const Entry>& get(const Key &k) const{
         return at(k);
     }
+    bool has(uint16_t i, uint8_t s) const{
+        return dict_.find(Key(i,s)) != dict_.end();
+    }
+    bool has(uint16_t i) const{
+        return dict_.find(Key(i)) != dict_.end();
+    }
+    bool has(const Key &k) const{
+        return dict_.find(k) != dict_.end();
+    }
     bool insert(bool is_sub, boost::shared_ptr<const Entry> e){
         std::pair<boost::unordered_map<Key, boost::shared_ptr<const Entry> >::iterator, bool>  res = dict_.insert(std::make_pair(is_sub?Key(e->index,e->sub_index):Key(e->index),e));
         return res.second;
