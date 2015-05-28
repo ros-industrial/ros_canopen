@@ -397,7 +397,19 @@ public:
         Entry() {}
         Entry(boost::shared_ptr<Data> &d)
         : data(d){
-            assert(d);
+            assert(data);
+        }
+        Entry(boost::shared_ptr<ObjectStorage> storage, uint16_t index)
+        : data(storage->entry<type>(index).data) {
+            assert(data);
+        }
+        Entry(boost::shared_ptr<ObjectStorage> storage, uint16_t index, uint8_t sub_index)
+        : data(storage->entry<type>(index, sub_index).data) {
+            assert(data);
+        }
+        Entry(boost::shared_ptr<ObjectStorage> storage, const ObjectDict::Key &k)
+        : data(storage->entry<type>(k).data) {
+            assert(data);
         }
         const ObjectDict::Entry & desc() const{
             return *(data->entry);
@@ -457,11 +469,19 @@ public:
         return entry<T>(ObjectDict::Key(index,sub_index));
     }
     
-    template<typename T> void entry(Entry<T> &e, uint16_t index){
+    template<typename T> void entry(Entry<T> &e, uint16_t index){ // TODO: migrate to bool
         e = entry<T>(ObjectDict::Key(index));
     }
-     template<typename T> void entry(Entry<T> &e, uint16_t index, uint8_t sub_index){
+    template<typename T> void entry(Entry<T> &e, uint16_t index, uint8_t sub_index){  // TODO: migrate to bool
         e = entry<T>(ObjectDict::Key(index,sub_index));
+    }
+    template<typename T> bool entry(Entry<T> &e, const ObjectDict::Key &k){
+        try{
+            e = entry<T>(k);
+            return true;
+        }catch(...){
+            return false;
+        }
     }
 
     const boost::shared_ptr<const ObjectDict> dict_;
