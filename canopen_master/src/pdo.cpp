@@ -165,28 +165,40 @@ PDOMapper::PDOMapper(const boost::shared_ptr<can::CommInterface> interface)
 :interface_(interface)
 {
 }
-void PDOMapper::init(const boost::shared_ptr<ObjectStorage> storage){
+bool PDOMapper::init(const boost::shared_ptr<ObjectStorage> storage, LayerStatus &status){
     boost::mutex::scoped_lock lock(mutex_);
 
-    rpdos_.clear();
-    
-    const canopen::ObjectDict & dict = *storage->dict_;
-    for(uint8_t i=0; i < dict.device_info.nr_of_tx_pdo;++i){ // TPDOs of device
-        boost::shared_ptr<RPDO> rpdo = RPDO::create(interface_,storage, TPDO_COM_BASE + i, TPDO_MAP_BASE + i);
-        if(rpdo){
-            rpdos_.insert(rpdo);
+    try{
+        rpdos_.clear();
+
+        const canopen::ObjectDict & dict = *storage->dict_;
+        for(uint16_t i=0; i < 512 && rpdos_.size() < dict.device_info.nr_of_tx_pdo;++i){ // TPDOs of device
+            if(!dict.has(TPDO_COM_BASE + i,0) && !dict.has(TPDO_MAP_BASE + i,0)) continue;
+
+            boost::shared_ptr<RPDO> rpdo = RPDO::create(interface_,storage, TPDO_COM_BASE + i, TPDO_MAP_BASE + i);
+            if(rpdo){
+                rpdos_.insert(rpdo);
+            }
         }
-    }
-    // LOG("RPDOs: " << rpdos_.size());
-    
-    tpdos_.clear();
-    for(uint8_t i=0; i < dict.device_info.nr_of_rx_pdo;++i){ // RPDOs of device
-        boost::shared_ptr<TPDO> tpdo = TPDO::create(interface_,storage, RPDO_COM_BASE + i, RPDO_MAP_BASE + i);
-        if(tpdo){
-            tpdos_.insert(tpdo);
+        // LOG("RPDOs: " << rpdos_.size());
+
+        tpdos_.clear();
+        for(uint16_t i=0; i < 512 && tpdos_.size() <  dict.device_info.nr_of_rx_pdo;++i){ // RPDOs of device
+            if(!dict.has(RPDO_COM_BASE + i,0) && !dict.has(RPDO_MAP_BASE + i,0)) continue;
+
+            boost::shared_ptr<TPDO> tpdo = TPDO::create(interface_,storage, RPDO_COM_BASE + i, RPDO_MAP_BASE + i);
+            if(tpdo){
+                tpdos_.insert(tpdo);
+            }
         }
+        // LOG("TPDOs: " << tpdos_.size());
+
+        return true;
     }
-    // LOG("TPDOs: " << tpdos_.size());
+    catch(const std::out_of_range &e){
+        status.error(std::string("PDO error: ") + e.what());
+        return false;
+    }
 }
 
 

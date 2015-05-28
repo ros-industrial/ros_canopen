@@ -138,7 +138,7 @@ public:
     PDOMapper(const boost::shared_ptr<can::CommInterface> interface);
     void read(LayerStatus &status);
     bool write();
-    void init(const boost::shared_ptr<ObjectStorage> storage);
+    bool init(const boost::shared_ptr<ObjectStorage> storage, LayerStatus &status);
 };
 
 class EMCYHandler{

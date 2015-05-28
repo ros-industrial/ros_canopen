@@ -185,7 +185,9 @@ void Node::handleInit(LayerStatus &status){
         return;
     }
 
-    pdo_.init(getStorage());
+    if(!pdo_.init(getStorage(), status)){
+        return;
+    }
     getStorage()->init_all();
     sdo_.init(); // reread SDO paramters;
     // TODO: set SYNC data
