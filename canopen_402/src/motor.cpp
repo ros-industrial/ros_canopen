@@ -140,10 +140,15 @@ State402::InternalState Command402::nextStateForEnabling(State402::InternalState
     }
 }
 
-bool Command402::setTransition(uint16_t &cw, const State402::InternalState &from, const State402::InternalState &to){
+bool Command402::setTransition(uint16_t &cw, const State402::InternalState &from, const State402::InternalState &to, State402::InternalState *next){
     try{
         if(from != to){
-            transitions_.get(from, to)(cw);
+            State402::InternalState hop = to;
+            if(next){
+                if(to == State402::Operation_Enable) hop = nextStateForEnabling(from);
+                *next = hop;
+            }
+            transitions_.get(from, hop)(cw);
         }
         return true;
     }
@@ -319,9 +324,9 @@ bool Motor402::enableMotor(LayerStatus &status){
     State402::InternalState state = state_handler_.getState();
     target_state_ = State402::Operation_Enable;
     while(state != target_state_){
-        State402::InternalState next = Command402::nextStateForEnabling(state);
         boost::mutex::scoped_lock lock(cw_mutex_);
-        if(!Command402::setTransition(control_word_ ,state, next)){
+        State402::InternalState next = target_state_;
+        if(!Command402::setTransition(control_word_ ,state, next , &next)){
             status.error("Could not set transition");
             return false;
         }
@@ -469,7 +474,7 @@ void Motor402::handleShutdown(LayerStatus &status){
     while(state != State402::Switch_On_Disabled){
         {
             boost::mutex::scoped_lock lock(cw_mutex_);
-            Command402::setTransition(control_word_ ,state,  State402::Switch_On_Disabled);
+            Command402::setTransition(control_word_ ,state,  State402::Switch_On_Disabled, 0);
         }
         if(!state_handler_.waitForNewState(abstime, state, State402::Switch_On_Disabled)){
             status.error("Transition timeout");
@@ -481,7 +486,7 @@ void Motor402::handleHalt(LayerStatus &status){
     State402::InternalState state = state_handler_.getState();
     boost::mutex::scoped_lock lock(cw_mutex_);
     target_state_ = State402::Quick_Stop_Active;
-    if(!Command402::setTransition(control_word_ ,state, State402::Quick_Stop_Active)){
+    if(!Command402::setTransition(control_word_ ,state, State402::Quick_Stop_Active, 0)){
         status.warn("Could not quick stop");
     }
 }

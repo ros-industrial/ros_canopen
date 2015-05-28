@@ -74,6 +74,7 @@ class Command402 {
         }
     };
     static const TransitionTable transitions_;
+    static State402::InternalState nextStateForEnabling(State402::InternalState state);
     Command402();
 public:
     enum ControlWord
@@ -95,9 +96,7 @@ public:
         CW_Manufacturer_specific3=14,
         CW_Manufacturer_specific4=15,
     };
-    static State402::InternalState nextStateForEnabling(State402::InternalState state);
-
-    static bool setTransition(uint16_t &cw, const State402::InternalState &from, const State402::InternalState &to);
+    static bool setTransition(uint16_t &cw, const State402::InternalState &from, const State402::InternalState &to, State402::InternalState *next);
 };
 
 template<uint16_t MASK> class WordAccessor{
