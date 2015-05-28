@@ -177,13 +177,13 @@ public:
             
     };
     const Entry& operator()(uint16_t i) const{
-        return *dict_.at(Key(i));
+        return *at(Key(i));
     }
     const Entry& operator()(uint16_t i, uint8_t s) const{
-        return *dict_.at(Key(i,s));
+        return *at(Key(i,s));
     }
     const boost::shared_ptr<const Entry>& get(const Key &k) const{
-        return dict_.at(k);
+        return at(k);
     }
     bool insert(bool is_sub, boost::shared_ptr<const Entry> e){
         std::pair<boost::unordered_map<Key, boost::shared_ptr<const Entry> >::iterator, bool>  res = dict_.insert(std::make_pair(is_sub?Key(e->index,e->sub_index):Key(e->index),e));
@@ -196,6 +196,15 @@ public:
     
     ObjectDict(const DeviceInfo &info): device_info(info) {}
 protected:
+    const boost::shared_ptr<const Entry>& at(const Key &key) const{
+        try{
+            return dict_.at(key);
+        }
+        catch(std::out_of_range){
+            BOOST_THROW_EXCEPTION(std::out_of_range("Unable to find " +std::string(key) + " in dictionary"));
+        }
+    }
+
     boost::unordered_map<Key, boost::shared_ptr<const Entry> > dict_;
 };
 
