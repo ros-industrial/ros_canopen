@@ -81,7 +81,7 @@ const Command402::TransitionTable Command402::transitions_;
 Command402::TransitionTable::TransitionTable(){
     typedef State402 s;
 
-    transitions_.reserve(16);
+    transitions_.reserve(32);
 
     Op disable_voltage(0,(1<<CW_Fault_Reset) | (1<<CW_Enable_Voltage));
     /* 7*/ add(s::Ready_To_Switch_On, s::Switch_On_Disabled, disable_voltage);
@@ -107,8 +107,10 @@ Command402::TransitionTable::TransitionTable(){
     /* 4*/ add(s::Switched_On, s::Operation_Enable, enable_operation);
     /*16*/ add(s::Quick_Stop_Active, s::Operation_Enable, enable_operation);
 
-    // quick stop
-    /*11*/ add(s::Operation_Enable, s::Quick_Stop_Active, Op((1<<CW_Enable_Voltage), (1<<CW_Fault_Reset) | (1<<CW_Quick_Stop)));
+    Op quickstop((1<<CW_Enable_Voltage), (1<<CW_Fault_Reset) | (1<<CW_Quick_Stop));
+    /* 7*/ add(s::Ready_To_Switch_On, s::Quick_Stop_Active, quickstop); // transit to Switch_On_Disabled
+    /*10*/ add(s::Switched_On, s::Quick_Stop_Active, quickstop); // transit to Switch_On_Disabled
+    /*11*/ add(s::Operation_Enable, s::Quick_Stop_Active, quickstop);
 
     // fault reset
     /*15*/ add(s::Fault, s::Switch_On_Disabled, Op((1<<CW_Fault_Reset), 0));
@@ -481,10 +483,6 @@ void Motor402::handleHalt(LayerStatus &status){
     target_state_ = State402::Quick_Stop_Active;
     if(!Command402::setTransition(control_word_ ,state, State402::Quick_Stop_Active)){
         status.warn("Could not quick stop");
-        target_state_ = State402::Switch_On_Disabled;
-        if(!Command402::setTransition(control_word_ ,state, State402::Switch_On_Disabled)){
-            status.warn("Could not hard stop");
-        }
     }
 }
 void Motor402::handleRecover(LayerStatus &status){
