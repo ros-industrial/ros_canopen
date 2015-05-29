@@ -6,6 +6,7 @@ project(canopen_402)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   canopen_master
+  class_loader
 )
 
 ## System dependencies are found with CMake's conventions
