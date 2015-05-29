@@ -10,17 +10,6 @@
 
 namespace canopen{
 
-class SyncLayer: public Layer, public SyncCounter{
-public:
-    SyncLayer(const SyncProperties &p) : Layer("Sync layer"), SyncCounter(p) {}
-};
-
-class Master: boost::noncopyable{
-public:
-    virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties) = 0;
-    virtual ~Master() {}
-};
-
 class IPCSyncWaiter{
     typedef boost::interprocess::interprocess_mutex interprocess_mutex;
     typedef boost::interprocess::interprocess_condition interprocess_condition;

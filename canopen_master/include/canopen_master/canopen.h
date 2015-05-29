@@ -287,6 +287,17 @@ public:
     void prepare() { this->call(&T::prepare); }
 };
 
+class SyncLayer: public Layer, public SyncCounter{
+public:
+    SyncLayer(const SyncProperties &p) : Layer("Sync layer"), SyncCounter(p) {}
+};
+
+class Master: boost::noncopyable {
+public:
+    virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties) = 0;
+    virtual ~Master() {}
+
+};
 
 /*template<typename InterfaceType, typename MasterType, typename NodeType> class Bus: boost::noncopyable{
     boost::weak_ptr <InterfaceType> weak_interface_;
