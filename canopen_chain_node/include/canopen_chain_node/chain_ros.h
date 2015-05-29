@@ -2,7 +2,6 @@
 #define H_CANOPEN_CHAIN_ROS
 
 #include <canopen_master/canopen.h>
-#include <canopen_master/master.h>
 #include <canopen_master/can_layer.h>
 #include <socketcan_interface/string.h>
 #include <ros/ros.h>
@@ -138,8 +137,20 @@ public:
     virtual ~Logger() {}
 };
 
+template<typename T> class ClassAllocator : public pluginlib::ClassLoader<typename T::Allocator> {
+public:
+    ClassAllocator (const std::string& package, const std::string& allocator_base_class) : pluginlib::ClassLoader<typename T::Allocator>(package, allocator_base_class) {}
+    template<typename T1> boost::shared_ptr<T> allocateInstance(const std::string& lookup_name, const T1 & t1){
+        return this->createInstance(lookup_name)->allocate(t1);
+    }
+    template<typename T1, typename T2> boost::shared_ptr<T> allocateInstance(const std::string& lookup_name, const T1 & t1, const T2 & t2){
+        return this->createInstance(lookup_name)->allocate(t1, t2);
+    }
+};
+
 class RosChain : public canopen::LayerStack {
       pluginlib::ClassLoader<can::DriverInterface> driver_loader_;
+      ClassAllocator<canopen::Master> master_allocator_;
 protected:
     boost::shared_ptr<can::DriverInterface> interface_;
     boost::shared_ptr<Master> master_;
@@ -309,7 +320,7 @@ protected:
         ros::NodeHandle bus_nh(nh_priv_,"bus");
         std::string can_device;
         std::string driver_plugin;
-        std::string master_type;
+        std::string master_alloc;
         bool loopback;
         
         if(!bus_nh.getParam("device",can_device)){
@@ -332,28 +343,27 @@ protected:
         
 	state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
         
-        bus_nh.param("master_type",master_type, std::string("shared"));
+        if(bus_nh.getParam("master_type",master_alloc)){
+            ROS_ERROR("please migrate to master allocators");
+            return false;
+        }
+
+        bus_nh.param("master_allocator",master_alloc, std::string("canopen::LocalMaster::Allocator"));
 
         try{
-            if(master_type == "exclusive"){
-                master_ = boost::make_shared<SharedMaster>(can_device, interface_);
-            }else if (master_type == "shared"){
-                boost::interprocess::permissions perm;
-                perm.set_unrestricted();
-                master_ = boost::make_shared<SharedMaster>(can_device, interface_, perm);
-            }else if (master_type == "local"){
-                master_ = boost::make_shared<LocalMaster>(can_device, interface_);
-            }else{
-                ROS_ERROR_STREAM("Master type  "<< master_type << " is not supported");
-                return false;
-            }
+            master_= master_allocator_.allocateInstance(master_alloc, can_device, interface_);
         }
         catch( const std::exception &e){
             std::string info = boost::diagnostic_information(e);
             ROS_ERROR_STREAM(info);
             return false;
         }
-        
+
+        if(!master_){
+            ROS_ERROR_STREAM("Could not allocate master.");
+            return false;
+        }
+
         add(boost::make_shared<CANLayer>(interface_, can_device, loopback));
         
         return true;
@@ -586,7 +596,8 @@ protected:
         }
     }
 public:
-    RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_), initialized_(false){}
+    RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv)
+    : LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"), master_allocator_("canopen_master", "canopen::Master::Allocator"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_), initialized_(false){}
     virtual bool setup(){
         boost::mutex::scoped_lock lock(mutex_);
 

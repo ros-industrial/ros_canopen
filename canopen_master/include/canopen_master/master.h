@@ -258,7 +258,12 @@ class LocalMaster: public Master{
     boost::shared_ptr<can::CommInterface> interface_;
 public:
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
-    LocalMaster(const std::string &name, boost::shared_ptr<can::CommInterface> interface, const boost::interprocess::permissions & perm = boost::interprocess::permissions()) : interface_(interface)  {}
+    LocalMaster(boost::shared_ptr<can::CommInterface> interface) : interface_(interface)  {}
+
+    class Allocator : public Master::Allocator{
+    public:
+        virtual boost::shared_ptr<Master> allocate(const std::string &name,  boost::shared_ptr<can::CommInterface> interface);
+    };
 };
 
 class SharedIPCSyncMaster : public IPCSyncMaster{
@@ -289,6 +294,26 @@ public:
         managed_shm_(boost::interprocess::open_or_create, name_.c_str(), 4096, 0, perm),
         interface_(interface)  {}
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
+
+    class Allocator : public Master::Allocator{
+    public:
+        virtual boost::shared_ptr<Master> allocate(const std::string &name, boost::shared_ptr<can::CommInterface> interface);
+    };
+};
+
+class UnrestrictedMaster: public SharedMaster {
+    class unrestricted : public boost::interprocess::permissions {
+    public:
+        unrestricted() { set_unrestricted(); }
+    };
+public:
+    UnrestrictedMaster(const std::string &name, boost::shared_ptr<can::CommInterface> interface)
+    : SharedMaster(name, interface, unrestricted()) {}
+
+    class Allocator : public Master::Allocator{
+    public:
+        virtual boost::shared_ptr<Master> allocate(const std::string &name, boost::shared_ptr<can::CommInterface> interface);
+    };
 };
 
 } // canopen

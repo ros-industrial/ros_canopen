@@ -297,6 +297,11 @@ public:
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties) = 0;
     virtual ~Master() {}
 
+    class Allocator {
+    public:
+        virtual boost::shared_ptr<Master> allocate(const std::string &name, boost::shared_ptr<can::CommInterface> interface) = 0;
+        virtual ~Allocator() {}
+    };
 };
 
 /*template<typename InterfaceType, typename MasterType, typename NodeType> class Bus: boost::noncopyable{
