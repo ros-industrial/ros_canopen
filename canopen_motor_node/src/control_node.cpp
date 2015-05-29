@@ -548,7 +548,7 @@ public:
 };
 
 class MotorChain : public RosChain{
-    pluginlib::ClassLoader<canopen::MotorBase::Allocator> allocator_loader_;
+    ClassAllocator<canopen::MotorBase> motor_allocator_;
     boost::shared_ptr< LayerGroupNoDiag<MotorBase> > motors_;
     boost::shared_ptr<RobotLayer> robot_layer_;
 
@@ -567,18 +567,20 @@ class MotorChain : public RosChain{
 
         std::string alloc_name = "canopen::Motor402::Allocator";
         if(params.hasMember("allocator")) alloc_name.assign(params["allocator"]);
-        boost::shared_ptr<canopen::MotorBase::Allocator> allocator;
+
+        boost::shared_ptr<MotorBase> motor;
+
         try{
-            allocator =  allocator_loader_.createInstance(alloc_name);
+            motor = motor_allocator_.allocateInstance(alloc_name, name + "_motor", node->getStorage());
         }
-        catch(pluginlib::PluginlibException& ex){
-            ROS_ERROR_STREAM(ex.what());
+        catch( const std::exception &e){
+            std::string info = boost::diagnostic_information(e);
+            ROS_ERROR_STREAM(info);
             return false;
         }
 
-        boost::shared_ptr<MotorBase> motor = allocator->allocate(name + "_motor", node->getStorage());
         if(!motor){
-            ROS_ERROR_STREAM("Could not allocate instance for " << name << " with " << alloc_name);
+            ROS_ERROR_STREAM("Could not allocate motor.");
             return false;
         }
 
@@ -594,7 +596,7 @@ class MotorChain : public RosChain{
     }
 
 public:
-    MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv), allocator_loader_("canopen_402", "canopen::MotorBase::Allocator"){}
+    MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv), motor_allocator_("canopen_402", "canopen::MotorBase::Allocator"){}
 
     virtual bool setup() {
         motors_.reset( new LayerGroupNoDiag<MotorBase>("402 Layer"));
