@@ -45,10 +45,12 @@ void ObjectStorage::Data::init(){
 
     if(entry->init_val.is_empty()) return;
 
-    if(!valid || (buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
+    if(valid && !entry->def_val.is_empty() && buffer != entry->def_val.data()) return; // buffer was changed
+
+    if(!valid || buffer != entry->init_val.data()){
         buffer = entry->init_val.data();
         valid = true;
-        if(entry->writable)
+        if(entry->writable && (entry->def_val.is_empty() || entry->init_val.data() != entry->def_val.data()))
             write_delegate(*entry, buffer);
     }
 }
