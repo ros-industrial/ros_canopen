@@ -199,11 +199,12 @@ public:
     virtual bool read(const uint16_t &sw) { sw_ = sw; return (sw & MASK_Error) == 0; }
     virtual bool write(OpModeAccesser& cw) {
         cw.set(CW_Immediate);
-        cw.reset(CW_NewPoint);
         if(hasTarget()){
-            if(sw_ & (MASK_Reached || MASK_Acknowledged)){
-                cw.set(CW_NewPoint);
+             if(!cw.get(CW_NewPoint)){
                 target_position_.set(getTarget<int32_t>());
+                cw.set(CW_NewPoint);
+            } else if (sw_ & (MASK_Acknowledged)){
+                cw.reset(CW_NewPoint);
             }
             return true;
         }
