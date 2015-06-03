@@ -54,7 +54,7 @@ int main(int argc, char *argv[]){
     boost::shared_ptr<canopen::ObjectDict>  dict = canopen::ObjectDict::fromFile(argv[2]);
 
     LocalMaster master(driver);
-    boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), boost::posix_time::microseconds(250), 0));
+    boost::shared_ptr<SyncLayer> sync = master.getSync(SyncProperties(can::MsgHeader(0x80), boost::posix_time::milliseconds(sync_ms), 0));
 
     Node node(driver, dict, 1, sync);
 

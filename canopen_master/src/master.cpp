@@ -19,7 +19,6 @@ void IPCSyncMaster::run() {
             if(!sync_obj_->waiter.sync(abs_time)) LOG("Slave timeout");
 
             if(sync_obj_->nextSync(frame.data[0])){
-                boost::this_thread::sleep(sync_obj_->properties.silence_);
                 interface_->send(frame);
             }
 
