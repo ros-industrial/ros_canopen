@@ -14,7 +14,7 @@ void IPCSyncMaster::run() {
     
     can::Frame frame(sync_obj_->properties.header_, sync_obj_->properties.overflow_ ? 1 : 0);
     while(true){
-        abs_time += sync_obj_->properties.period_;
+        abs_time += boost::posix_time::milliseconds(sync_obj_->properties.period_ms_);
         if(abs_time >= boost::get_system_time()){
             if(!sync_obj_->waiter.sync(abs_time)) LOG("Slave timeout");
 
@@ -93,7 +93,7 @@ IPCSyncMaster::SyncObject * SharedIPCSyncMaster::getSyncObject(LayerStatus &stat
     for(SyncList::iterator it = synclist->begin(); it != synclist->end(); ++it){
         if( it->properties.header_ == properties_.header_){
             
-            if(it->properties.overflow_ != properties_.overflow_ || it->properties.period_ != properties_.period_){
+            if(it->properties.overflow_ != properties_.overflow_ || it->properties.period_ms_ != properties_.period_ms_){
                 status.error("sync properties mismatch");
                 return 0;
             }

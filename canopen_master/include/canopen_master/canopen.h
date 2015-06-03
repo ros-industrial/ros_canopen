@@ -159,10 +159,10 @@ public:
 
 struct SyncProperties{
     const can::Header header_;
-    const boost::posix_time::time_duration period_;
+    const uint16_t period_ms_;
     const uint8_t overflow_;
-    SyncProperties(const can::Header &h, const boost::posix_time::time_duration &p, const uint8_t &o) : header_(h), period_(p), overflow_(o) {}
-    bool operator==(const SyncProperties &p) const { return p.header_ == (int) header_ && p.overflow_ == overflow_ && p.period_ == period_; }
+    SyncProperties(const can::Header &h, const uint16_t  &p, const uint8_t &o) : header_(h), period_ms_(p), overflow_(o) {}
+    bool operator==(const SyncProperties &p) const { return p.header_ == (int) header_ && p.overflow_ == overflow_ && p.period_ms_ == period_ms_; }
 
 };
 

@@ -160,13 +160,13 @@ public:
     }
     void wait(LayerStatus &status){
         if(sync_obj_){
-            bool ok = sync_obj_->waiter.wait(sync_obj_->properties.period_);
+            bool ok = sync_obj_->waiter.wait(boost::posix_time::milliseconds(sync_obj_->properties.period_ms_));
             if(!ok) status.warn("wait failed");
         }else status.error("!sync_obj");
     }
     void notify(LayerStatus &status){
         if(sync_obj_){
-            bool ok = sync_obj_->waiter.done(sync_obj_->properties.period_);
+            bool ok = sync_obj_->waiter.done(boost::posix_time::milliseconds(sync_obj_->properties.period_ms_));
             if(!ok) status.warn("notify failed");
         }else status.error("!sync_obj");
     }
