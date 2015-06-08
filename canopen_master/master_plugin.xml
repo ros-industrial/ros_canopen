@@ -8,4 +8,7 @@
   <class type="canopen::UnrestrictedMaster::Allocator" base_class_type="canopen::Master::Allocator">
     <description>Allocator for UnrestrictedMaster instances</description>
   </class>
+  <class type="canopen::SimpleMaster::Allocator" base_class_type="canopen::Master::Allocator">
+    <description>Allocator for SimpleMaster instances</description>
+  </class>
 </library>
