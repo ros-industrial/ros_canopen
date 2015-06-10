@@ -247,8 +247,15 @@ bool Motor402::setTarget(double val){
     }
     return false;
 }
-bool Motor402::enterModeAndWait(uint16_t mode) { return mode != MotorBase::Homing && switchMode(mode); }
 bool Motor402::isModeSupported(uint16_t mode) { return mode != MotorBase::Homing && allocMode(mode); }
+
+bool Motor402::enterModeAndWait(uint16_t mode) {
+    LayerStatus s; bool okay = mode != MotorBase::Homing && switchMode(s, mode);
+    if(!s.bounded<LayerStatus::Ok>()){
+        LOG("Could not switch to mode " << mode << ", reason: " << s.reason());
+    }
+    return okay;
+}
 
 uint16_t Motor402::getMode() {
     boost::mutex::scoped_lock lock(mode_mutex_);
@@ -453,7 +460,7 @@ void Motor402::handleInit(LayerStatus &status){
 
     uint16_t mode = getMode();
 
-    if(!switchMode(MotorBase::Homing)){
+    if(!switchMode(status, MotorBase::Homing)){
         status.error("Could not enter homing mode");
         return;
     }
@@ -463,12 +470,12 @@ void Motor402::handleInit(LayerStatus &status){
         return;
     }
 
-    if(!switchMode(mode)){
+    if(!switchMode(status, mode)){
         status.warn("Could not enter default mode");
     }
 }
 void Motor402::handleShutdown(LayerStatus &status){
-    switchMode(MotorBase::No_Mode);
+    switchMode(status, MotorBase::No_Mode);
     switchState(status, State402::Switch_On_Disabled);
 }
 void Motor402::handleHalt(LayerStatus &status){
@@ -481,13 +488,13 @@ void Motor402::handleHalt(LayerStatus &status){
 }
 void Motor402::handleRecover(LayerStatus &status){
     uint16_t mode = getMode();
-    switchMode(MotorBase::No_Mode);
+    switchMode(status, MotorBase::No_Mode);
 
     if(!switchState(status, State402::Operation_Enable)){
         status.error("Could not enable motor");
         return;
     }
-    if(!switchMode(mode)){
+    if(!switchMode(status, mode)){
         status.error("Could not enter mode again");
         return;
     }

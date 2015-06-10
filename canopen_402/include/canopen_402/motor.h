@@ -326,7 +326,7 @@ private:
     boost::shared_ptr<Mode> allocMode(uint16_t mode);
 
     bool readState(LayerStatus &status);
-    bool switchMode(uint16_t mode);
+    bool switchMode(LayerStatus &status, uint16_t mode);
     bool switchState(LayerStatus &status, const State402::InternalState &target);
 
     boost::atomic<uint16_t> status_word_;
