@@ -255,8 +255,8 @@ class Motor402 : public MotorBase
 {
 public:
 
-    Motor402(const std::string &name, boost::shared_ptr<ObjectStorage> storage)
-    : MotorBase(name), status_word_(0),control_word_(0)
+    Motor402(const std::string &name, boost::shared_ptr<ObjectStorage> storage, const canopen::Settings &settings)
+    : MotorBase(name), status_word_(0),control_word_(0), switching_state_(State402::InternalState(settings.get_optional<unsigned int>("switching_state", static_cast<unsigned int>(State402::Operation_Enable))))
     {
         storage->entry(status_word_entry_, 0x6041);
         storage->entry(control_word_entry_, 0x6040);
@@ -329,6 +329,8 @@ private:
     bool switchMode(LayerStatus &status, uint16_t mode);
     bool switchState(LayerStatus &status, const State402::InternalState &target);
 
+
+
     boost::atomic<uint16_t> status_word_;
     uint16_t control_word_;
     boost::mutex cw_mutex_;
@@ -345,6 +347,7 @@ private:
     uint16_t mode_id_;
     boost::condition_variable mode_cond_;
     boost::mutex mode_mutex_;
+    const State402::InternalState switching_state_;
 
     canopen::ObjectStorage::Entry<uint16_t>  status_word_entry_;
     canopen::ObjectStorage::Entry<uint16_t >  control_word_entry_;

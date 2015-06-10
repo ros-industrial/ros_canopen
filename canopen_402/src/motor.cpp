@@ -282,7 +282,7 @@ boost::shared_ptr<Mode> Motor402::allocMode(uint16_t mode){
     return res;
 }
 
-bool Motor402::switchMode(uint16_t mode) {
+bool Motor402::switchMode(LayerStatus &status, uint16_t mode) {
 
     if(mode == MotorBase::No_Mode){
         boost::mutex::scoped_lock lock(mode_mutex_);
@@ -295,37 +295,51 @@ bool Motor402::switchMode(uint16_t mode) {
 
     boost::shared_ptr<Mode> next_mode = allocMode(mode);
     if(!next_mode){
-        LOG("Mode " << mode << " is not supported");
+        status.error("Mode is not supported.");
         return false;
-    }
-    boost::mutex::scoped_lock lock(mode_mutex_);
-
-    if(mode_id_ == mode && selected_mode_ && selected_mode_->mode_id_ == mode){
-        // nothing to do
-        return true;
     }
 
     if(!next_mode->start()){
-        LOG("Could not start mode " << mode);
+        status.error("Could not start mode.");
         return false;
     }
 
-    selected_mode_.reset();
+    { // disable mode handler
+        boost::mutex::scoped_lock lock(mode_mutex_);
+
+        if(mode_id_ == mode && selected_mode_ && selected_mode_->mode_id_ == mode){
+            // nothing to do
+            return true;
+        }
+
+        selected_mode_.reset();
+    }
+
+    if(!switchState(status, switching_state_)) return false;
 
     op_mode_.set(mode);
 
-    time_point abstime = get_abs_time(boost::chrono::seconds(5));
-    while(mode_id_ != mode && mode_cond_.wait_until(lock, abstime) == boost::cv_status::no_timeout) {}
+    bool okay = false;
 
-    if(mode_id_ != mode){
-        LOG("could not switch mode " << mode);
-        op_mode_.set(mode_id_);
-        return false;
+    {  // wait for switch
+        boost::mutex::scoped_lock lock(mode_mutex_);
+
+        time_point abstime = get_abs_time(boost::chrono::seconds(5));
+        while(mode_id_ != mode && mode_cond_.wait_until(lock, abstime) == boost::cv_status::no_timeout) {}
+
+        if(mode_id_ == mode){
+            selected_mode_ = next_mode;
+            okay = true;
+        }else{
+            status.error("Mode switch timed out.");
+            op_mode_.set(mode_id_);
+        }
     }
 
-    selected_mode_ = next_mode;
+    if(!switchState(status, State402::Operation_Enable)) return false;
 
-    return true;
+    return okay;
+
 }
 
 bool Motor402::switchState(LayerStatus &status, const State402::InternalState &target){
