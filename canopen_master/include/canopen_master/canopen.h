@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/chrono/system_clocks.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace canopen{
 
@@ -302,6 +303,28 @@ public:
         virtual ~Allocator() {}
     };
 };
+
+class Settings
+{
+public:
+    template <typename T> T get_optional(const std::string &n, const T& def) const {
+        std::string repr;
+        if(!getRepr(n, repr)){
+            return def;
+        }
+        return boost::lexical_cast<T>(repr);
+    }
+    template <typename T> bool get(const std::string &n, T& val) const {
+        std::string repr;
+        if(!getRepr(n, repr)) return false;
+        val =  boost::lexical_cast<T>(repr);
+        return true;
+    }
+    virtual ~Settings() {}
+private:
+    virtual bool getRepr(const std::string &n, std::string & repr) const = 0;
+};
+
 
 /*template<typename InterfaceType, typename MasterType, typename NodeType> class Bus: boost::noncopyable{
     boost::weak_ptr <InterfaceType> weak_interface_;
