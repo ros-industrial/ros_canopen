@@ -327,7 +327,7 @@ private:
 
     bool readState(LayerStatus &status);
     bool switchMode(uint16_t mode);
-    bool enableMotor(LayerStatus &status);
+    bool switchState(LayerStatus &status, const State402::InternalState &target);
 
     boost::atomic<uint16_t> status_word_;
     uint16_t control_word_;

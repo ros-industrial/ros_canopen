@@ -321,10 +321,10 @@ bool Motor402::switchMode(uint16_t mode) {
     return true;
 }
 
-bool Motor402::enableMotor(LayerStatus &status){
+bool Motor402::switchState(LayerStatus &status, const State402::InternalState &target){
     time_point abstime = get_abs_time(boost::chrono::seconds(5));
     State402::InternalState state = state_handler_.getState();
-    target_state_ = State402::Operation_Enable;
+    target_state_ = target;
     while(state != target_state_){
         boost::mutex::scoped_lock lock(cw_mutex_);
         State402::InternalState next = target_state_;
@@ -338,8 +338,9 @@ bool Motor402::enableMotor(LayerStatus &status){
             return false;
         }
     }
-    return state == State402::Operation_Enable;
+    return state == target;
 }
+
 bool Motor402::readState(LayerStatus &status){
     uint16_t sw = status_word_entry_.get(); // TODO: added error handling
     status_word_ = sw;
@@ -433,7 +434,7 @@ void Motor402::handleInit(LayerStatus &status){
         status.error("Could not read motor state");
         return;
     }
-    if(!enableMotor(status)){
+    if(!switchState(status, State402::Operation_Enable)){
         status.error("Could not enable motor");
         return;
     }
@@ -468,21 +469,7 @@ void Motor402::handleInit(LayerStatus &status){
 }
 void Motor402::handleShutdown(LayerStatus &status){
     switchMode(MotorBase::No_Mode);
-
-    time_point abstime = get_abs_time(boost::chrono::seconds(5));
-
-    State402::InternalState state = state_handler_.getState();
-    target_state_ = State402::Switch_On_Disabled;
-    while(state != State402::Switch_On_Disabled){
-        {
-            boost::mutex::scoped_lock lock(cw_mutex_);
-            Command402::setTransition(control_word_ ,state,  State402::Switch_On_Disabled, 0);
-        }
-        if(!state_handler_.waitForNewState(abstime, state, State402::Switch_On_Disabled)){
-            status.error("Transition timeout");
-            break;
-        }
-    }
+    switchState(status, State402::Switch_On_Disabled);
 }
 void Motor402::handleHalt(LayerStatus &status){
     State402::InternalState state = state_handler_.getState();
@@ -496,7 +483,7 @@ void Motor402::handleRecover(LayerStatus &status){
     uint16_t mode = getMode();
     switchMode(MotorBase::No_Mode);
 
-    if(!enableMotor(status)){
+    if(!switchState(status, State402::Operation_Enable)){
         status.error("Could not enable motor");
         return;
     }
