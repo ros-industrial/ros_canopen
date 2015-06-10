@@ -1,8 +1,7 @@
 #ifndef CANOPEN_402_BASE_H
 #define CANOPEN_402_BASE_H
 
-#include <canopen_master/objdict.h>
-#include <canopen_master/layer.h>
+#include <canopen_master/canopen.h>
 
 namespace canopen
 {
@@ -33,7 +32,7 @@ public:
 
     class Allocator {
     public:
-        virtual boost::shared_ptr<MotorBase> allocate(const std::string &name, boost::shared_ptr<ObjectStorage> storage) = 0;
+        virtual boost::shared_ptr<MotorBase> allocate(const std::string &name, boost::shared_ptr<ObjectStorage> storage, const canopen::Settings &settings) = 0;
         virtual ~Allocator() {}
     };
 };

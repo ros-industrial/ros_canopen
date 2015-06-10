@@ -547,6 +547,25 @@ public:
     }
 };
 
+class XmlRpcSettings : public Settings{
+public:
+    XmlRpcSettings() {}
+    XmlRpcSettings(const XmlRpc::XmlRpcValue &v) : value_(v) {}
+    XmlRpcSettings& operator=(const XmlRpc::XmlRpcValue &v) { value_ = v; return *this; }
+private:
+    virtual bool getRepr(const std::string &n, std::string & repr) const {
+        if(value_.hasMember(n)){
+            std::stringstream sstr;
+            sstr << const_cast< XmlRpc::XmlRpcValue &>(value_)[n]; // does not write since already existing
+            repr = sstr.str();
+            return true;
+        }
+        return false;
+    }
+    XmlRpc::XmlRpcValue value_;
+
+};
+
 class MotorChain : public RosChain{
     ClassAllocator<canopen::MotorBase> motor_allocator_;
     boost::shared_ptr< LayerGroupNoDiag<MotorBase> > motors_;
@@ -568,10 +587,13 @@ class MotorChain : public RosChain{
         std::string alloc_name = "canopen::Motor402::Allocator";
         if(params.hasMember("allocator")) alloc_name.assign(params["allocator"]);
 
+        XmlRpcSettings settings;
+        if(params.hasMember("motor_layer")) settings = params["motor_layer"];
+
         boost::shared_ptr<MotorBase> motor;
 
         try{
-            motor = motor_allocator_.allocateInstance(alloc_name, name + "_motor", node->getStorage());
+            motor = motor_allocator_.allocateInstance(alloc_name, name + "_motor", node->getStorage(), settings);
         }
         catch( const std::exception &e){
             std::string info = boost::diagnostic_information(e);

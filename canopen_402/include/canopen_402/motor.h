@@ -298,7 +298,7 @@ public:
 
     class Allocator : public MotorBase::Allocator{
     public:
-        virtual boost::shared_ptr<MotorBase> allocate(const std::string &name, boost::shared_ptr<ObjectStorage> storage);
+        virtual boost::shared_ptr<MotorBase> allocate(const std::string &name, boost::shared_ptr<ObjectStorage> storage, const canopen::Settings &settings);
     };
 protected:
     virtual void handleRead(LayerStatus &status, const LayerState &current_state);

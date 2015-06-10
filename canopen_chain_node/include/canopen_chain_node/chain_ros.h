@@ -146,6 +146,9 @@ public:
     template<typename T1, typename T2> boost::shared_ptr<T> allocateInstance(const std::string& lookup_name, const T1 & t1, const T2 & t2){
         return this->createInstance(lookup_name)->allocate(t1, t2);
     }
+    template<typename T1, typename T2, typename T3> boost::shared_ptr<T> allocateInstance(const std::string& lookup_name, const T1 & t1, const T2 & t2, const T3 & t3){
+        return this->createInstance(lookup_name)->allocate(t1, t2, t3);
+    }
 };
 
 class RosChain : public canopen::LayerStack {
