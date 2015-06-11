@@ -472,8 +472,6 @@ void Motor402::handleInit(LayerStatus &status){
         return;
     }
 
-    uint16_t mode = getMode();
-
     if(!switchMode(status, MotorBase::Homing)){
         status.error("Could not enter homing mode");
         return;
@@ -484,9 +482,7 @@ void Motor402::handleInit(LayerStatus &status){
         return;
     }
 
-    if(!switchMode(status, mode)){
-        status.warn("Could not enter default mode");
-    }
+    switchMode(status, No_Mode);
 }
 void Motor402::handleShutdown(LayerStatus &status){
     switchMode(status, MotorBase::No_Mode);
