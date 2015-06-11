@@ -497,15 +497,15 @@ void Motor402::handleHalt(LayerStatus &status){
     }
 }
 void Motor402::handleRecover(LayerStatus &status){
-    uint16_t mode = getMode();
-    switchMode(status, MotorBase::No_Mode);
-
+    {
+        boost::mutex::scoped_lock lock(mode_mutex_);
+        if(selected_mode_ && !selected_mode_->start()){
+            status.error("Could not restart mode.");
+            return;
+        }
+    }
     if(!switchState(status, State402::Operation_Enable)){
         status.error("Could not enable motor");
-        return;
-    }
-    if(!switchMode(status, mode)){
-        status.error("Could not enter mode again");
         return;
     }
 }
