@@ -384,7 +384,7 @@ public:
             const hardware_interface::JointHandle *h  = 0;
 
             h = it->second->registerHandle(pos_interface_);
-            if(h && has_joint_limits){
+            if(h && limits.has_position_limits){
                 joint_limits_interface::PositionJointSaturationHandle sathandle(*h, limits);
                 pos_saturation_interface_.registerHandle(sathandle);
                 if(has_soft_limits){
@@ -393,7 +393,7 @@ public:
                 }
             }
             h = it->second->registerHandle(vel_interface_);
-            if(h && has_joint_limits){
+            if(h && limits.has_velocity_limits){
                 joint_limits_interface::VelocityJointSaturationHandle sathandle(*h, limits);
                 vel_saturation_interface_.registerHandle(sathandle);
                 if(has_soft_limits){
@@ -402,7 +402,7 @@ public:
                 }
             }
             h = it->second->registerHandle(eff_interface_);
-            if(h && has_joint_limits){
+            if(h && limits.has_effort_limits){
                 joint_limits_interface::EffortJointSaturationHandle sathandle(*h, limits);
                 eff_saturation_interface_.registerHandle(sathandle);
                 if(has_soft_limits){
