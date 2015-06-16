@@ -1,0 +1,14 @@
+<library path="lib/libcanopen_master_plugin">
+  <class type="canopen::LocalMaster::Allocator" base_class_type="canopen::Master::Allocator">
+    <description>Allocator for LocalMaster instances</description>
+  </class>
+  <class type="canopen::SharedMaster::Allocator" base_class_type="canopen::Master::Allocator">
+    <description>Allocator for SharedMaster instances</description>
+  </class>
+  <class type="canopen::UnrestrictedMaster::Allocator" base_class_type="canopen::Master::Allocator">
+    <description>Allocator for UnrestrictedMaster instances</description>
+  </class>
+  <class type="canopen::SimpleMaster::Allocator" base_class_type="canopen::Master::Allocator">
+    <description>Allocator for SimpleMaster instances</description>
+  </class>
+</library>

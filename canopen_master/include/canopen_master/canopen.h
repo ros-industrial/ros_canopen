@@ -10,12 +10,14 @@
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/chrono/system_clocks.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace canopen{
 
 typedef boost::chrono::high_resolution_clock::time_point time_point;
 typedef boost::chrono::high_resolution_clock::duration time_duration;
 inline time_point get_abs_time(const time_duration& timeout) { return boost::chrono::high_resolution_clock::now() + timeout; }
+inline time_point get_abs_time() { return boost::chrono::high_resolution_clock::now(); }
 
 
     
@@ -35,6 +37,7 @@ class SDOClient{
     boost::timed_mutex mutex;
     boost::mutex cond_mutex;
     boost::condition_variable cond;
+    boost::mutex buffer_mutex;
     bool success;
     
     void handleFrame(const can::Frame & msg);
@@ -136,7 +139,7 @@ public:
     PDOMapper(const boost::shared_ptr<can::CommInterface> interface);
     void read(LayerStatus &status);
     bool write();
-    void init(const boost::shared_ptr<ObjectStorage> storage);
+    bool init(const boost::shared_ptr<ObjectStorage> storage, LayerStatus &status);
 };
 
 class EMCYHandler{
@@ -157,11 +160,10 @@ public:
 
 struct SyncProperties{
     const can::Header header_;
-    const boost::posix_time::time_duration period_;
-    const boost::posix_time::time_duration silence_;
+    const uint16_t period_ms_;
     const uint8_t overflow_;
-    SyncProperties(const can::Header &h, const boost::posix_time::time_duration &p, const boost::posix_time::time_duration &s, const uint8_t &o) : header_(h), period_(p), silence_(s), overflow_(o) {}
-    bool operator==(const SyncProperties &p) const { return p.header_ == (int) header_ && p.overflow_ == overflow_ && p.period_ == period_ && p.silence_ == silence_; }
+    SyncProperties(const can::Header &h, const uint16_t  &p, const uint8_t &o) : header_(h), period_ms_(p), overflow_(o) {}
+    bool operator==(const SyncProperties &p) const { return p.header_ == (int) header_ && p.overflow_ == overflow_ && p.period_ms_ == period_ms_; }
 
 };
 
@@ -283,6 +285,44 @@ public:
     void reset() { this->call(&T::reset); }
     void reset_com() { this->call(&T::reset_com); }
     void prepare() { this->call(&T::prepare); }
+};
+
+class SyncLayer: public Layer, public SyncCounter{
+public:
+    SyncLayer(const SyncProperties &p) : Layer("Sync layer"), SyncCounter(p) {}
+};
+
+class Master: boost::noncopyable {
+public:
+    virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties) = 0;
+    virtual ~Master() {}
+
+    class Allocator {
+    public:
+        virtual boost::shared_ptr<Master> allocate(const std::string &name, boost::shared_ptr<can::CommInterface> interface) = 0;
+        virtual ~Allocator() {}
+    };
+};
+
+class Settings
+{
+public:
+    template <typename T> T get_optional(const std::string &n, const T& def) const {
+        std::string repr;
+        if(!getRepr(n, repr)){
+            return def;
+        }
+        return boost::lexical_cast<T>(repr);
+    }
+    template <typename T> bool get(const std::string &n, T& val) const {
+        std::string repr;
+        if(!getRepr(n, repr)) return false;
+        val =  boost::lexical_cast<T>(repr);
+        return true;
+    }
+    virtual ~Settings() {}
+private:
+    virtual bool getRepr(const std::string &n, std::string & repr) const = 0;
 };
 
 

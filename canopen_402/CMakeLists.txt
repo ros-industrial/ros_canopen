@@ -6,6 +6,7 @@ project(canopen_402)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   canopen_master
+  class_loader
 )
 
 ## System dependencies are found with CMake's conventions
@@ -35,11 +36,18 @@ catkin_package(
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 add_library(canopen_402
-  src/canopen_402/canopen_402.cpp
+  src/motor.cpp
 )
 target_link_libraries(canopen_402
   ${catkin_LIBRARIES}
 )
+
+add_library(canopen_402_plugin src/plugin.cpp)
+target_link_libraries(canopen_402_plugin
+   ${catkin_LIBRARIES}
+   canopen_402
+)
+
 
 #############
 ## Install ##
@@ -56,17 +64,20 @@ target_link_libraries(canopen_402
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS canopen_402
+install(TARGETS canopen_402 canopen_402_plugin
 ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 ## Mark cpp header files for installation
- install(DIRECTORY include/${PROJECT_NAME}/
-    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-    FILES_MATCHING PATTERN "*.h"
- )
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+)
+install(FILES canopen_402_plugin.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES

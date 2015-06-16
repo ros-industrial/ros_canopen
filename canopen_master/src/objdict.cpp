@@ -28,15 +28,29 @@ template<> String & ObjectStorage::Data::allocate(){
     return buffer;
 }
 
+size_t ObjectDict::Key::fromString(const std::string &str){
+    uint16_t index = 0;
+    uint8_t sub_index = 0;
+    int num = sscanf(str.c_str(),"%hxsub%hhx", &index, &sub_index);
+    return (index << 16) | (num==2?sub_index:0xFFFF);
+}
+ObjectDict::Key::operator std::string() const{
+    std::stringstream sstr;
+    sstr << std::hex << index();
+    if(hasSub()) sstr << "sub" << (int) sub_index();
+    return sstr.str();
+}
 void ObjectStorage::Data::init(){
     boost::mutex::scoped_lock lock(mutex);
 
     if(entry->init_val.is_empty()) return;
 
-    if(!valid || (buffer != entry->init_val.data() && (entry->def_val.is_empty() || buffer == entry->def_val.data()))){
+    if(valid && !entry->def_val.is_empty() && buffer != entry->def_val.data()) return; // buffer was changed
+
+    if(!valid || buffer != entry->init_val.data()){
         buffer = entry->init_val.data();
         valid = true;
-        if(entry->writable)
+        if(entry->writable && (entry->def_val.is_empty() || entry->init_val.data() != entry->def_val.data()))
             write_delegate(*entry, buffer);
     }
 }

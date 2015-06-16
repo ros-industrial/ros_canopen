@@ -10,17 +10,6 @@
 
 namespace canopen{
 
-class SyncLayer: public Layer, public SyncCounter{
-public:
-    SyncLayer(const SyncProperties &p) : Layer("Sync layer"), SyncCounter(p) {}
-};
-
-class Master: boost::noncopyable{
-public:
-    virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties) = 0;
-    virtual ~Master() {}
-};
-
 class IPCSyncWaiter{
     typedef boost::interprocess::interprocess_mutex interprocess_mutex;
     typedef boost::interprocess::interprocess_condition interprocess_condition;
@@ -80,7 +69,9 @@ class IPCSyncWaiter{
         scoped_mutex_lock number_lock(number_mutex, abs_time);
         if(!number_lock) return false;
         while(number != 0 && number_cond.timed_wait(number_lock, abs_time)) {}
-        return number == 0;
+        bool done = number == 0;
+        number = 0;
+        return done;
     }
 public:
     template <typename DT> bool wait(const DT &d){
@@ -169,13 +160,13 @@ public:
     }
     void wait(LayerStatus &status){
         if(sync_obj_){
-            bool ok = sync_obj_->waiter.wait(sync_obj_->properties.period_);
+            bool ok = sync_obj_->waiter.wait(boost::posix_time::milliseconds(sync_obj_->properties.period_ms_));
             if(!ok) status.warn("wait failed");
         }else status.error("!sync_obj");
     }
     void notify(LayerStatus &status){
         if(sync_obj_){
-            bool ok = sync_obj_->waiter.done(sync_obj_->properties.period_);
+            bool ok = sync_obj_->waiter.done(boost::posix_time::milliseconds(sync_obj_->properties.period_ms_));
             if(!ok) status.warn("notify failed");
         }else status.error("!sync_obj");
     }
@@ -267,7 +258,12 @@ class LocalMaster: public Master{
     boost::shared_ptr<can::CommInterface> interface_;
 public:
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
-    LocalMaster(const std::string &name, boost::shared_ptr<can::CommInterface> interface, const boost::interprocess::permissions & perm = boost::interprocess::permissions()) : interface_(interface)  {}
+    LocalMaster(boost::shared_ptr<can::CommInterface> interface) : interface_(interface)  {}
+
+    class Allocator : public Master::Allocator{
+    public:
+        virtual boost::shared_ptr<Master> allocate(const std::string &name,  boost::shared_ptr<can::CommInterface> interface);
+    };
 };
 
 class SharedIPCSyncMaster : public IPCSyncMaster{
@@ -298,6 +294,26 @@ public:
         managed_shm_(boost::interprocess::open_or_create, name_.c_str(), 4096, 0, perm),
         interface_(interface)  {}
     virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties);
+
+    class Allocator : public Master::Allocator{
+    public:
+        virtual boost::shared_ptr<Master> allocate(const std::string &name, boost::shared_ptr<can::CommInterface> interface);
+    };
+};
+
+class UnrestrictedMaster: public SharedMaster {
+    class unrestricted : public boost::interprocess::permissions {
+    public:
+        unrestricted() { set_unrestricted(); }
+    };
+public:
+    UnrestrictedMaster(const std::string &name, boost::shared_ptr<can::CommInterface> interface)
+    : SharedMaster(name, interface, unrestricted()) {}
+
+    class Allocator : public Master::Allocator{
+    public:
+        virtual boost::shared_ptr<Master> allocate(const std::string &name, boost::shared_ptr<can::CommInterface> interface);
+    };
 };
 
 } // canopen

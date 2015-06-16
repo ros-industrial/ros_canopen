@@ -6,10 +6,11 @@ project(canopen_master)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   socketcan_interface
+  class_loader
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS chrono)
+find_package(Boost REQUIRED COMPONENTS chrono atomic)
 
 
 ###################################
@@ -48,6 +49,16 @@ target_link_libraries(canopen_master
   ${Boost_LIBRARIES}
 )
 
+add_library(canopen_master_plugin
+  src/master_plugin.cpp
+)
+
+target_link_libraries(canopen_master_plugin
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
+  canopen_master
+)
+
 ## Declare a cpp executable
 # add_executable(canopen_master_node src/canopen_master_node.cpp)
 
@@ -71,7 +82,7 @@ target_link_libraries(canopen_master
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS canopen_master
+install(TARGETS canopen_master canopen_master_plugin
 ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -81,6 +92,10 @@ RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 install(DIRECTORY include/${PROJECT_NAME}/
    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
    FILES_MATCHING PATTERN "*.h"
+)
+
+install(FILES master_plugin.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)

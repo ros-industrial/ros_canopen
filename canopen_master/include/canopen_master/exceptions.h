@@ -10,8 +10,13 @@ namespace canopen{
 class Exception : public std::exception {};
 
 class PointerInvalid : public Exception{};
-class TimeoutException : public Exception{};
 class ParseException : public Exception{};
+
+class TimeoutException : public std::runtime_error{
+public:
+    TimeoutException(const std::string &w) : std::runtime_error(w) {}
+};
+
 
 } // canopen
 

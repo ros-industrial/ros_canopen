@@ -1,0 +1,5 @@
+<library path="lib/libcanopen_402_plugin">
+  <class type="canopen::Motor402::Allocator" base_class_type="canopen::MotorBase::Allocator">
+    <description>Allocator for Motor402 instances</description>
+  </class>
+</library>

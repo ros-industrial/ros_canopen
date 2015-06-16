@@ -2,6 +2,7 @@
 #define H_CANOPEN_LAYER
 
 #include <vector>
+#include <boost/thread/shared_mutex.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
 
@@ -131,13 +132,14 @@ protected:
     virtual void handleRecover(LayerStatus &status)  = 0;
 
 private:
-    LayerState state;
+    boost::atomic<LayerState> state;
 
 };
 
 template<typename T> class VectorHelper{
     typedef std::vector<boost::shared_ptr<T> > vector_type ;
     vector_type layers;
+    boost::shared_mutex mutex;
 
     template<typename Bound, typename Iterator, typename Data> Iterator call(void(Layer::*func)(Data&), Data &status, const Iterator &begin, const Iterator &end){
         bool okay_on_start = status.template bounded<Bound>();
@@ -155,20 +157,24 @@ template<typename T> class VectorHelper{
     }
 protected:
     template<typename Bound, typename Data> typename vector_type::iterator call(void(Layer::*func)(Data&), Data &status){
+        boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<Bound>(func, status, layers.begin(), layers.end());
     }
     template<typename Data> typename vector_type::iterator call(void(Layer::*func)(Data&), Data &status){
+        boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<LayerStatus::Unbounded>(func, status, layers.begin(), layers.end());
     }
     template<typename Bound, typename Data> typename vector_type::reverse_iterator call_rev(void(Layer::*func)(Data&), Data &status){
+        boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<Bound>(func, status, layers.rbegin(), layers.rend());
     }
     template<typename Data> typename vector_type::reverse_iterator call_rev(void(Layer::*func)(Data&), Data &status){
+        boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<LayerStatus::Unbounded>(func, status, layers.rbegin(), layers.rend());
     }
-    void destroy() { layers.clear(); }
+    void destroy() { boost::unique_lock<boost::shared_mutex> lock(mutex); layers.clear(); }
 public:
-    virtual void add(const boost::shared_ptr<T> &l) { layers.push_back(l); }
+    virtual void add(const boost::shared_ptr<T> &l) { boost::unique_lock<boost::shared_mutex> lock(mutex); layers.push_back(l); }
 };
 
 template<typename T=Layer> class LayerGroup : public Layer, public VectorHelper<T> {

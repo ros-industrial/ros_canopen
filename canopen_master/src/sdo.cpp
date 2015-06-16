@@ -296,6 +296,7 @@ void SDOClient::abort(uint32_t reason){
 }
 
 void SDOClient::handleFrame(const can::Frame & msg){
+    boost::mutex::scoped_lock buffer_lock(buffer_mutex);
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     assert(msg.dlc == 8);
     
@@ -413,38 +414,42 @@ void SDOClient::wait_for_response(){
         }
     }
     if(offset == 0 || offset != total){
-        BOOST_THROW_EXCEPTION( TimeoutException() ); // TODO
+        BOOST_THROW_EXCEPTION( TimeoutException("SDO: " + std::string(ObjectDict::Key(*current_entry))));
     }
 }
 void SDOClient::read(const canopen::ObjectDict::Entry &entry, String &data){
     boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
 
+        boost::mutex::scoped_lock buffer_lock(buffer_mutex);
         buffer = data;
         offset = 0;
         total = buffer.size();
         current_entry = &entry;
-
         interface_->send(last_msg = UploadInitiateRequest(client_id, entry));
 
+        buffer_lock.unlock();
         wait_for_response();
+        buffer_lock.lock();
+        
         data = buffer;
     }else{
-        BOOST_THROW_EXCEPTION( TimeoutException() );
+        BOOST_THROW_EXCEPTION( TimeoutException("SDO read: " + std::string(ObjectDict::Key(entry))));
     }
 }
 void SDOClient::write(const canopen::ObjectDict::Entry &entry, const String &data){
     boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
-        buffer = data;
-        offset = 0;
-        total = buffer.size();
-        current_entry = &entry;
-
-        interface_->send(last_msg = DownloadInitiateRequest(client_id, entry, buffer, offset));
-
+        {
+            boost::mutex::scoped_lock buffer_lock(buffer_mutex);
+            buffer = data;
+            offset = 0;
+            total = buffer.size();
+            current_entry = &entry;
+            interface_->send(last_msg = DownloadInitiateRequest(client_id, entry, buffer, offset));
+        }
         wait_for_response();
     }else{
-        BOOST_THROW_EXCEPTION( TimeoutException() );
+        BOOST_THROW_EXCEPTION( TimeoutException("SDO write: " + std::string(ObjectDict::Key(entry))));
     }
 }

@@ -114,14 +114,17 @@ class ObjectDict{
 protected:
 public:
     class Key{
+        static size_t fromString(const std::string &str);
     public:
         const size_t hash;
         Key(const uint16_t i) : hash((i<<16)| 0xFFFF) {}
         Key(const uint16_t i, const uint8_t s): hash((i<<16)| s) {}
+        Key(const std::string &str): hash(fromString(str)) {}
         bool hasSub() const { return (hash & 0xFFFF) != 0xFFFF; }
         uint8_t sub_index() const { return hash & 0xFFFF; }
         uint16_t index() const { return hash  >> 16;}
         bool operator==(const Key &other) const { return hash == other.hash; }
+        operator std::string() const;
     };
     enum Code{
         NULL_DATA = 0x00,
@@ -169,17 +172,27 @@ public:
         Entry(const uint16_t i, const uint8_t s, const uint16_t t, const std::string & d, const bool r = true, const bool w = true, bool m = false, const HoldAny def = HoldAny(), const HoldAny init = HoldAny()):
         obj_code(VAR), index(i), sub_index(s),data_type(t),readable(r), writable(w), mappable(m), desc(d), def_val(def), init_val(init) {}
         
+        operator Key() const { return Key(index, sub_index); }
         const HoldAny & value() const { return !init_val.is_empty() ? init_val : def_val; }
             
     };
     const Entry& operator()(uint16_t i) const{
-        return *dict_.at(Key(i));
+        return *at(Key(i));
     }
     const Entry& operator()(uint16_t i, uint8_t s) const{
-        return *dict_.at(Key(i,s));
+        return *at(Key(i,s));
     }
     const boost::shared_ptr<const Entry>& get(const Key &k) const{
-        return dict_.at(k);
+        return at(k);
+    }
+    bool has(uint16_t i, uint8_t s) const{
+        return dict_.find(Key(i,s)) != dict_.end();
+    }
+    bool has(uint16_t i) const{
+        return dict_.find(Key(i)) != dict_.end();
+    }
+    bool has(const Key &k) const{
+        return dict_.find(k) != dict_.end();
     }
     bool insert(bool is_sub, boost::shared_ptr<const Entry> e){
         std::pair<boost::unordered_map<Key, boost::shared_ptr<const Entry> >::iterator, bool>  res = dict_.insert(std::make_pair(is_sub?Key(e->index,e->sub_index):Key(e->index),e));
@@ -192,6 +205,15 @@ public:
     
     ObjectDict(const DeviceInfo &info): device_info(info) {}
 protected:
+    const boost::shared_ptr<const Entry>& at(const Key &key) const{
+        try{
+            return dict_.at(key);
+        }
+        catch(std::out_of_range){
+            BOOST_THROW_EXCEPTION(std::out_of_range("Unable to find " +std::string(key) + " in dictionary"));
+        }
+    }
+
     boost::unordered_map<Key, boost::shared_ptr<const Entry> > dict_;
 };
 
@@ -384,7 +406,19 @@ public:
         Entry() {}
         Entry(boost::shared_ptr<Data> &d)
         : data(d){
-            assert(d);
+            assert(data);
+        }
+        Entry(boost::shared_ptr<ObjectStorage> storage, uint16_t index)
+        : data(storage->entry<type>(index).data) {
+            assert(data);
+        }
+        Entry(boost::shared_ptr<ObjectStorage> storage, uint16_t index, uint8_t sub_index)
+        : data(storage->entry<type>(index, sub_index).data) {
+            assert(data);
+        }
+        Entry(boost::shared_ptr<ObjectStorage> storage, const ObjectDict::Key &k)
+        : data(storage->entry<type>(k).data) {
+            assert(data);
         }
         const ObjectDict::Entry & desc() const{
             return *(data->entry);
@@ -444,11 +478,19 @@ public:
         return entry<T>(ObjectDict::Key(index,sub_index));
     }
     
-    template<typename T> void entry(Entry<T> &e, uint16_t index){
+    template<typename T> void entry(Entry<T> &e, uint16_t index){ // TODO: migrate to bool
         e = entry<T>(ObjectDict::Key(index));
     }
-     template<typename T> void entry(Entry<T> &e, uint16_t index, uint8_t sub_index){
+    template<typename T> void entry(Entry<T> &e, uint16_t index, uint8_t sub_index){  // TODO: migrate to bool
         e = entry<T>(ObjectDict::Key(index,sub_index));
+    }
+    template<typename T> bool entry(Entry<T> &e, const ObjectDict::Key &k){
+        try{
+            e = entry<T>(k);
+            return true;
+        }catch(...){
+            return false;
+        }
     }
 
     const boost::shared_ptr<const ObjectDict> dict_;

@@ -4,7 +4,7 @@
   <version>0.6.2</version>
   <description>This implements the CANopen device profile for drives and motion control. CiA(r) 402</description>
 
-  <maintainer email="tdf@ipa.fhg.de">Thiago de Freitas</maintainer>
+  <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
   <author email="tdf@ipa.fhg.de">Thiago de Freitas</author>
   <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
 
@@ -12,4 +12,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>canopen_master</depend>
+  <depend>class_loader</depend>
+
+  <export>
+     <canopen_402 plugin="${prefix}/canopen_402_plugin.xml" />
+  </export>
 </package>

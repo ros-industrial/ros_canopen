@@ -18,12 +18,14 @@ public:
         boost::mutex::scoped_lock lock(mutex);
         timer.cancel();
     }
-    void start(const TimerDelegate &del, const  boost::chrono::high_resolution_clock::duration &dur){
+    template<typename T> void start(const TimerDelegate &del, const  T &dur, bool start_now = true){
         boost::mutex::scoped_lock lock(mutex);
         delegate = del;
-        period = dur;
-        timer.expires_from_now(period);
-        timer.async_wait(fastdelegate::FastDelegate1<const boost::system::error_code&>(this, &Timer::handler));
+        period = boost::chrono::duration_cast<boost::chrono::high_resolution_clock::duration>(dur);
+        if(start_now){
+            timer.expires_from_now(period);
+            timer.async_wait(fastdelegate::FastDelegate1<const boost::system::error_code&>(this, &Timer::handler));
+        }
     }
     void restart(){
         boost::mutex::scoped_lock lock(mutex);
@@ -39,7 +41,7 @@ private:
     boost::asio::io_service io;
     boost::asio::io_service::work work;
     boost::asio::high_resolution_timer timer;
-     boost::chrono::high_resolution_clock::duration period;
+    boost::chrono::high_resolution_clock::duration period;
     boost::mutex mutex;
     boost::thread thread;
     

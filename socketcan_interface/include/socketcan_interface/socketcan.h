@@ -82,7 +82,7 @@ public:
                 }
             }
             
-            struct sockaddr_can addr;
+            struct sockaddr_can addr = {0};
             addr.can_family = AF_CAN;
             addr.can_ifindex = ifr.ifr_ifindex;
             ret = bind( sc, (struct sockaddr*)&addr, sizeof(addr) );            
@@ -164,7 +164,7 @@ protected:
     virtual bool enqueue(const Frame & msg){
         boost::mutex::scoped_lock lock(send_mutex_); //TODO: timed try lock
 
-        can_frame frame;
+        can_frame frame = {0};
         frame.can_id = msg.id | (msg.is_extended?CAN_EFF_FLAG:0) | (msg.is_rtr?CAN_RTR_FLAG:0);;
         frame.can_dlc = msg.dlc;
         

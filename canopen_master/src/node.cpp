@@ -57,7 +57,6 @@ bool Node::reset(){
     getStorage()->reset();
     
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset));
-    interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset_Com));
     if(wait_for(BootUp, boost::chrono::seconds(10)) != 1){
         return false;
     }
@@ -179,20 +178,22 @@ void Node::handleInit(LayerStatus &status){
 
     sdo_.init();
     try{
-        if(!reset_com()) BOOST_THROW_EXCEPTION( TimeoutException() );
+        if(!reset_com()) BOOST_THROW_EXCEPTION( TimeoutException("reset_timeout") );
     }
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not reset node '%1%'") % (int)node_id_));
         return;
     }
 
-    pdo_.init(getStorage());
+    if(!pdo_.init(getStorage(), status)){
+        return;
+    }
     getStorage()->init_all();
     sdo_.init(); // reread SDO paramters;
     // TODO: set SYNC data
 
     try{
-        if(!start()) BOOST_THROW_EXCEPTION( TimeoutException() );
+        if(!start()) BOOST_THROW_EXCEPTION( TimeoutException("start timeout") );
     }
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
@@ -211,8 +212,8 @@ void Node::handleRecover(LayerStatus &status){
     }
 }
 void Node::handleShutdown(LayerStatus &status){
-    if(getHeartbeatInterval()> 0) heartbeat_.set(0);
     stop();
+    if(getHeartbeatInterval()> 0) heartbeat_.set(0);
     nmt_listener_.reset();
     switchState(Unknown);
 }
