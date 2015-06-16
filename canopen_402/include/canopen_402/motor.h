@@ -179,6 +179,10 @@ typedef ModeForwardHelper<MotorBase::Velocity, int16_t, 0x6042, 0, (1<<Command40
 typedef ModeForwardHelper<MotorBase::Interpolated_Position, int32_t, 0x60C1, 0x01, (1<<Command402::CW_Operation_mode_specific0)> InterpolatedPositionMode;
 
 class ProfiledPositionMode : public ModeTargetHelper {
+    canopen::ObjectStorage::Entry<int32_t> target_position_;
+    int32_t last_target_;
+    uint16_t sw_;
+public:
     enum SW_masks {
         MASK_Reached = (1<<State402::SW_Target_reached),
         MASK_Acknowledged = (1<<State402::SW_Operation_mode_specific0),
@@ -189,21 +193,24 @@ class ProfiledPositionMode : public ModeTargetHelper {
         CW_Immediate =  Command402::CW_Operation_mode_specific1,
         CW_Blending =  Command402::CW_Operation_mode_specific3,
     };
-    canopen::ObjectStorage::Entry<int32_t> target_position_;
-    uint16_t sw_;
-public:
     ProfiledPositionMode(boost::shared_ptr<ObjectStorage> storage) : ModeTargetHelper(MotorBase::Profiled_Position) {
         storage->entry(target_position_, 0x607A);
     }
-    virtual bool start() { sw_ = 0; return ModeTargetHelper::start(); }
+    virtual bool start() { sw_ = 0; last_target_= std::numeric_limits<double>::quiet_NaN(); return ModeTargetHelper::start(); }
     virtual bool read(const uint16_t &sw) { sw_ = sw; return (sw & MASK_Error) == 0; }
     virtual bool write(OpModeAccesser& cw) {
         cw.set(CW_Immediate);
         if(hasTarget()){
-             if(!cw.get(CW_NewPoint)){
-                target_position_.set(getTarget<int32_t>());
-                cw.set(CW_NewPoint);
-            } else if (sw_ & (MASK_Acknowledged)){
+            int32_t target = getTarget<int32_t>();
+            if((sw_ & MASK_Acknowledged) == 0 && target != last_target_){
+                if(cw.get(CW_NewPoint)){
+                    cw.reset(CW_NewPoint); // reset if needed
+                }else{
+                    target_position_.set(target);
+                    cw.set(CW_NewPoint);
+                    last_target_ = target;
+                }
+            } else if (sw_ & MASK_Acknowledged){
                 cw.reset(CW_NewPoint);
             }
             return true;
