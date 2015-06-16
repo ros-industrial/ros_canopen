@@ -20,6 +20,7 @@
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>gazebo_ros_control</exec_depend>
   <exec_depend>controller_manager</exec_depend>
+  <exec_depend>xacro</exec_depend>
 
   <export>
     <!-- You can specify that this package is a metapackage here: -->
