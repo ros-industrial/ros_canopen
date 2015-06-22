@@ -585,7 +585,7 @@ class MotorChain : public RosChain{
         }
 
         std::string alloc_name = "canopen::Motor402::Allocator";
-        if(params.hasMember("allocator")) alloc_name.assign(params["allocator"]);
+        if(params.hasMember("motor_allocator")) alloc_name.assign(params["motor_allocator"]);
 
         XmlRpcSettings settings;
         if(params.hasMember("motor_layer")) settings = params["motor_layer"];
