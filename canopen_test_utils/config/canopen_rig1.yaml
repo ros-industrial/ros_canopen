@@ -1,16 +1,31 @@
-name: rig1_controller
+# hardware_id: none # used for diagnostics
 
-defaults:
-  eds_pkg: canopen_test_utils
-  eds_file: "config/Elmo.dcf"
-  # pos_unit_factor: 0.1
-  # eff_unit_factor: 1000000000000.0
+defaults: # optional, all defaults can be overwritten per node
+  ### 301
+  eds_pkg: canopen_test_utils # optionals package  name for relative path
+  eds_file: "config/Elmo.dcf" # path to EDS/DCF file
+  dcf_overlay: # "ObjectID": "ParameterValue" (both as strings)
+    "6098": "35" #  homing method
+    "1016sub1" : "0x7F0064" # heartbeat timeout of 100 ms for master at 127
+    "1017": "100" # heartbeat producer
+  ### 402
+  # motor_allocator: canopen::Motor402::Allocator # select allocator for motor layer plugin
+  # motor_layer: settings passed to motor layer (plugin-specific)
+  #   switching_state: 5 # (Operation_Enable), state for mode switching
+  ### ROS:
+  # publish: ["60C1sub1", "6060!"] # list of objects to be published (one topic per node and entry), ! diables caching and forces read from device
+  ### ros_control: conversion functions
+  # pos_to_device: "rint(rad2deg(pos)*1000)" # rad -> mdeg
+  # pos_from_device: "deg2rad(obj6064)/1000" # actual position [mdeg] -> rad
+  # vel_to_device: "rint(rad2deg(vel)*1000)" # rad/s -> mdeg/s
+  # vel_from_device: "deg2rad(obj606C)/1000" # actual velocity [mdeg/s] -> rad/s
+  # eff_to_device: "rint(eff)" # just round to integer
+  # eff_from_device: "0" # unset
 
 nodes:
   rig1_plate_joint:
-    id: 1
-    # vel_unit_factor: 0.01
-    dcf_overlay: # "ObjectID": "ParameterValue" (both as strings)
-      "6098": "35" #  homing method
-      "1016sub1" : "0x7F0064" # heartbeat timeout of 100 ms for master at 127
-      "1017": "100" # heartbeat producer
+    ### node settings
+    id: 1 # node id
+    # name: must be set for array-styled format, defaults to entry name
+    # joint: <name> # set motor joint name
+    ### defaults will be merged recursively (only structs), node settings have precedence
