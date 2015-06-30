@@ -2,6 +2,9 @@
 Changelog for package ros_canopen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.6.2 (2014-12-18)
 ------------------
 * remove canopen_test_utils from metapackage
