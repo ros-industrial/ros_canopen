@@ -2,8 +2,8 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.3 (2015-06-30)
+------------------
 * added motor prefix to allocator entry
 * only register limit interfaces with actual limits
 * added motor_layer settings

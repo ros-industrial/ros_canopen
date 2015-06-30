@@ -2,8 +2,8 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.3 (2015-06-30)
+------------------
 * added Settings class
 * added SimpleMaster
 * remove boost::posix_time::milliseconds from SyncProperties

@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.3 (2015-06-30)
+------------------
 * dependencies revised
 * reordering fix for `#87 <https://github.com/ros-industrial/ros_canopen/issues/87>`_
 * intialize structs

@@ -2,8 +2,8 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.3 (2015-06-30)
+------------------
 * improved PP mode
 * do not quickstop in fault states
 * do not diable selected mode on recover, just restart it

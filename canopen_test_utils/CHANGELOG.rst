@@ -2,8 +2,8 @@
 Changelog for package canopen_test_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.3 (2015-06-30)
+------------------
 * added missing dependency on cob_description
 * added remarks for all configuration options
 * depend on xacro was missing

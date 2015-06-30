@@ -2,8 +2,8 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.3 (2015-06-30)
+------------------
 * added motor_layer settings
 * remove boost::posix_time::milliseconds from SyncProperties
 * removed support for silence_us since bus timing cannot be guaranteed
