@@ -2,6 +2,10 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* added missing include, revised depends etc.
+
 0.6.3 (2015-06-30)
 ------------------
 * added Settings class

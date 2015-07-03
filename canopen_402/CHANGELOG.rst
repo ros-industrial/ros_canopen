@@ -2,6 +2,9 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.6.3 (2015-06-30)
 ------------------
 * improved PP mode
@@ -58,8 +61,8 @@ Changelog for package canopen_402
 * Schunk does not set operation mode via synchronized RPDO
 * initialize homing_needed to false
 * Working with the guard handling and some scoped_locks to prevent unwanted access
-* Passing state_ to motor machine
-* Fixes crash for unitialized boost pointer for target_vel_ and target_pos_
+* Passing ``state_`` to motor machine
+* Fixes crash for unitialized boost pointer for ``target_vel_`` and ``target_pos_``
 * Thread running
 * Separates the hw with the SM test
   Advance on the Mode Switching Machine
@@ -75,7 +78,7 @@ Changelog for package canopen_402
 * Ip mode sub-machine
 * Organizing the status and control machine
 * do not read homing method if homing mode is not supported
-* inti enter_mode_failure_ to false
+* inti ``enter_mode_failure_`` to false
 * require message strings for error indicators, added missing strings, added ROS logging in sync loop
 * Merge pull request `#75 <https://github.com/ros-industrial/ros_canopen/issues/75>`_ from mistoll/indigo_release_candidate
   Move ip_mode_sub_mode to configureModeSpecificEntries

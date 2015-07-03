@@ -2,6 +2,11 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* added missing include, revised depends etc.
+
+
 0.6.3 (2015-06-30)
 ------------------
 * dependencies revised

@@ -2,6 +2,9 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.6.3 (2015-06-30)
 ------------------
 * added motor prefix to allocator entry
@@ -33,7 +36,7 @@ Changelog for package canopen_motor_node
   canopen_402/src/canopen_402/canopen_402.cpp
   canopen_motor_node/src/control_node.cpp
 * refactored Layer mechanisms
-* Fixes crash for unitialized boost pointer for target_vel_ and target_pos_
+* Fixes crash for unitialized boost pointer for ``target_vel_`` and ``target_pos_``
 * MotorChain is now a template
 * early check if joint is listed in URDF
 * introduced 'joint' parameter (defaults to 'name')
