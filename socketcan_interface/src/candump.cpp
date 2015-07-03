@@ -1,8 +1,8 @@
 #include <iostream>
 #include <boost/unordered_set.hpp>
-
+#include <boost/exception/diagnostic_information.hpp>
 #include <boost/make_shared.hpp>
-#include <pluginlib/class_loader.h>
+#include <class_loader/class_loader.h>
 #include <socketcan_interface/socketcan.h>
 
 using namespace can;

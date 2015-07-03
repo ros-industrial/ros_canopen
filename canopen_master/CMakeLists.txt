@@ -24,7 +24,7 @@ find_package(Boost REQUIRED COMPONENTS chrono atomic)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES canopen_master ${RT_LIBRARY}
+  LIBRARIES canopen_master
   CATKIN_DEPENDS socketcan_interface
   DEPENDS Boost
 )
