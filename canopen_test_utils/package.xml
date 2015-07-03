@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>canopen_test_utils</name>
-  <version>0.6.3</version>
+  <version>0.6.4</version>
   <description>Various helper scripts and test setups for testing and maintaining CANopen chains.</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>

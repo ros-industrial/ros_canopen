@@ -2,8 +2,8 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.4 (2015-07-03)
+------------------
 * added missing include, revised depends etc.
 
 0.6.3 (2015-06-30)
