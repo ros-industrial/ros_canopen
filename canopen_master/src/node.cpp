@@ -110,7 +110,8 @@ void Node::switchState(const uint8_t &s){
 }
 void Node::handleNMT(const can::Frame & msg){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
-    heartbeat_timeout_ = boost::chrono::high_resolution_clock::now() + boost::chrono::milliseconds(3*heartbeat_.get_cached());
+    if (heartbeat_.valid())
+      heartbeat_timeout_ = boost::chrono::high_resolution_clock::now() + boost::chrono::milliseconds(3*heartbeat_.get_cached());
     assert(msg.dlc == 1);
     switchState(msg.data[0]);
     cond_lock.unlock();
@@ -137,7 +138,7 @@ template<typename T> int Node::wait_for(const State &s, const T &timeout){
     return 1;
 }
 bool Node::checkHeartbeat(){
-    if(!heartbeat_.get_cached()) return true; //disabled
+    if(!heartbeat_.valid() || !heartbeat_.get_cached()) return true; //disabled
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     return heartbeat_timeout_ >= boost::chrono::high_resolution_clock::now();
 }
@@ -213,7 +214,7 @@ void Node::handleRecover(LayerStatus &status){
 }
 void Node::handleShutdown(LayerStatus &status){
     stop();
-    if(getHeartbeatInterval()> 0) heartbeat_.set(0);
+    if(heartbeat_.valid() && getHeartbeatInterval()> 0) heartbeat_.set(0);
     nmt_listener_.reset();
     switchState(Unknown);
 }
