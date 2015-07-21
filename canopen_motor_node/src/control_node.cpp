@@ -429,7 +429,9 @@ public:
     }
     virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) const {
 
-        (void) &hardware_interface::RobotHW::canSwitch; // compile-time check for recent ros-controls version of ros_control
+        // compile-time check for mode switching support in ros_control 
+        // if the following line fails, please upgrade to ros_control/contoller_manager 0.9.2 or newer
+        (void) &hardware_interface::RobotHW::canSwitch;
 
         // stop handles
         for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
