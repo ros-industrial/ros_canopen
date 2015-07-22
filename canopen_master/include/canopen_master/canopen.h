@@ -238,7 +238,7 @@ private:
     PDOMapper pdo_;
 
     boost::chrono::high_resolution_clock::time_point heartbeat_timeout_;
-    double getHeartbeatInterval() { return heartbeat_.valid()?heartbeat_.get_cached() : 0; }
+    uint16_t getHeartbeatInterval() { return heartbeat_.valid()?heartbeat_.get_cached() : 0; }
     void setHeartbeatInterval() { if(heartbeat_.valid()) heartbeat_.set(heartbeat_.desc().value().get<uint16_t>()); }
     bool checkHeartbeat();
 };
