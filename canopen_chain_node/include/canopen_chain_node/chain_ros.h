@@ -137,9 +137,36 @@ public:
     virtual ~Logger() {}
 };
 
-template<typename T> class ClassAllocator : public pluginlib::ClassLoader<typename T::Allocator> {
+class GuardedClassLoaderList {
+    static std::vector< boost::shared_ptr<pluginlib::ClassLoaderBase> >& guarded_loaders(){
+        static std::vector< boost::shared_ptr<pluginlib::ClassLoaderBase> > loaders;
+        return loaders;
+    }
 public:
-    ClassAllocator (const std::string& package, const std::string& allocator_base_class) : pluginlib::ClassLoader<typename T::Allocator>(package, allocator_base_class) {}
+    static void addLoader(boost::shared_ptr<pluginlib::ClassLoaderBase> b){
+        guarded_loaders().push_back(b);
+    }
+   ~GuardedClassLoaderList(){
+       guarded_loaders().clear();
+   }
+};
+
+template<typename T> class GuardedClassLoader {
+    typedef pluginlib::ClassLoader<T> Loader;
+    boost::shared_ptr<Loader> loader_;
+public:
+    GuardedClassLoader(const std::string& package, const std::string& allocator_base_class)
+    : loader_(new Loader(package, allocator_base_class)) {
+        GuardedClassLoaderList::addLoader(loader_);
+    }
+    boost::shared_ptr<T> createInstance(const std::string& lookup_name){
+        return loader_->createInstance(lookup_name);
+    }
+};
+
+template<typename T> class ClassAllocator : public GuardedClassLoader<typename T::Allocator> {
+public:
+    ClassAllocator (const std::string& package, const std::string& allocator_base_class) : GuardedClassLoader<typename T::Allocator>(package, allocator_base_class) {}
     template<typename T1> boost::shared_ptr<T> allocateInstance(const std::string& lookup_name, const T1 & t1){
         return this->createInstance(lookup_name)->allocate(t1);
     }
@@ -150,10 +177,9 @@ public:
         return this->createInstance(lookup_name)->allocate(t1, t2, t3);
     }
 };
-
-class RosChain : public canopen::LayerStack {
-      pluginlib::ClassLoader<can::DriverInterface> driver_loader_;
-      ClassAllocator<canopen::Master> master_allocator_;
+class RosChain : GuardedClassLoaderList, public canopen::LayerStack {
+    GuardedClassLoader<can::DriverInterface> driver_loader_;
+    ClassAllocator<canopen::Master> master_allocator_;
 protected:
     boost::shared_ptr<can::DriverInterface> interface_;
     boost::shared_ptr<Master> master_;
@@ -168,7 +194,7 @@ protected:
 
     ros::NodeHandle nh_;
     ros::NodeHandle nh_priv_;
-    
+
     diagnostic_updater::Updater diag_updater_;
     ros::Timer diag_timer_;
 
