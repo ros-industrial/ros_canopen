@@ -180,6 +180,13 @@ protected:
 
     time_duration update_duration_;
 
+    struct HeartbeatSender{
+      can::Frame frame;
+      boost::shared_ptr<can::DriverInterface> interface;
+      bool send(){
+          return interface && interface->send(frame);
+      }
+    } hb_sender_;
     Timer heartbeat_timer_;
 
     boost::atomic<bool> initialized_;
@@ -278,7 +285,7 @@ protected:
 
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
         LayerStack::handleWrite(status, current_state);
-        if(current_state > Init){
+        if(current_state > Shutdown){
             for(std::vector<boost::function<void() > >::iterator it = publishers_.begin(); it != publishers_.end(); ++it) (*it)();
         }
     }
@@ -418,13 +425,6 @@ protected:
         }
         return true;
     }
-    struct HeartbeatSender{
-      can::Frame frame;
-      boost::shared_ptr<can::DriverInterface> interface;
-      bool send(){
-          return interface && interface->send(frame);
-      }
-    } hb_sender_;
 
     bool setup_heartbeat(){
             ros::NodeHandle hb_nh(nh_priv_,"heartbeat");
@@ -623,7 +623,6 @@ public:
         return setup_bus() && setup_sync() && setup_heartbeat() && setup_nodes();
     }
     virtual ~RosChain(){
-        publishers_.clear();
         try{
             LayerStatus s;
             halt(s);

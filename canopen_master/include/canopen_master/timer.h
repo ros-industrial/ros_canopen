@@ -36,6 +36,10 @@ public:
         boost::mutex::scoped_lock lock(mutex);
         return period;
     }
+    ~Timer(){
+        io.stop();
+        thread.join();
+    }
     
 private:
     boost::asio::io_service io;
