@@ -654,7 +654,6 @@ public:
             halt(s);
             shutdown(s);
         }catch(...){ LOG("CATCH"); }
-        destroy();
     }
 };
 
