@@ -36,10 +36,6 @@ public:
         }
         return true;
     }
-    template<typename InterfaceType, typename DurationType> static bool wait_for(const can::State::DriverState &s, InterfaceType *interface, const DurationType &duration){
-        StateWaiter waiter(interface);
-        return waiter.wait(s,duration);
-    }
 };
 
 template<typename WrappedInterface> class ThreadedInterface : public WrappedInterface{
@@ -50,8 +46,9 @@ template<typename WrappedInterface> class ThreadedInterface : public WrappedInte
 public:
     virtual bool init(const std::string &device, bool loopback) {
         if(!thread_ && WrappedInterface::init(device, loopback)){
+            StateWaiter waiter(this);
             thread_.reset(new boost::thread(&ThreadedInterface::run_thread, this));
-            return StateWaiter::wait_for(can::State::ready, this, boost::posix_time::seconds(1));
+            return waiter.wait(can::State::ready, boost::posix_time::seconds(1));
         }
         return WrappedInterface::getState().isReady();
     }

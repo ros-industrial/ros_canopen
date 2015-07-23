@@ -68,10 +68,12 @@ public:
         } else if(!driver_->init(device_, loopback_)) {
             status.error("CAN init failed");
         } else {
+            can::StateWaiter waiter(driver_.get());
+
             thread_.reset(new boost::thread(&can::DriverInterface::run, driver_));
             error_listener_ = driver_->createMsgListener(can::ErrorHeader(), can::CommInterface::FrameDelegate(this, &CANLayer::handleFrame));
 	    
-	    if(!can::StateWaiter::wait_for(can::State::ready, driver_.get(), boost::posix_time::seconds(1))){
+	    if(!waiter.wait(can::State::ready, boost::posix_time::seconds(1))){
 		status.error("CAN init timed out");
 	    }
         }
