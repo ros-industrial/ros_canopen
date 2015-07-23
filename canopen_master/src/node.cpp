@@ -88,7 +88,7 @@ bool Node::stop(){
         // ERROR
     }
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Stop));
-    return 0 != wait_for(Stopped, boost::chrono::seconds(2));
+    return true;
 }
 
 void Node::switchState(const uint8_t &s){
@@ -212,8 +212,8 @@ void Node::handleRecover(LayerStatus &status){
     }
 }
 void Node::handleShutdown(LayerStatus &status){
-    stop();
     if(getHeartbeatInterval()> 0) heartbeat_.set(0);
+    stop();
     nmt_listener_.reset();
     switchState(Unknown);
 }
