@@ -173,6 +173,7 @@ public:
     SyncCounter(const SyncProperties &p) : properties(p) {}
     virtual void addNode(void * const ptr)  = 0;
     virtual  void removeNode(void * const ptr) = 0;
+    virtual ~SyncCounter() {}
 };
 
 class Node : public Layer{
