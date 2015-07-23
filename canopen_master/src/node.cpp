@@ -110,7 +110,9 @@ void Node::switchState(const uint8_t &s){
 }
 void Node::handleNMT(const can::Frame & msg){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
-    heartbeat_timeout_ = boost::chrono::high_resolution_clock::now() + boost::chrono::milliseconds(3*heartbeat_.get_cached());
+    uint16_t interval = getHeartbeatInterval();
+    if (interval != 0)
+      heartbeat_timeout_ = boost::chrono::high_resolution_clock::now() + boost::chrono::milliseconds(3*interval);
     assert(msg.dlc == 1);
     switchState(msg.data[0]);
     cond_lock.unlock();
@@ -137,7 +139,7 @@ template<typename T> int Node::wait_for(const State &s, const T &timeout){
     return 1;
 }
 bool Node::checkHeartbeat(){
-    if(!heartbeat_.get_cached()) return true; //disabled
+    if(getHeartbeatInterval() == 0) return true; //disabled
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     return heartbeat_timeout_ >= boost::chrono::high_resolution_clock::now();
 }
