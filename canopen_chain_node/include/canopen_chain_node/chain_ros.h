@@ -268,21 +268,30 @@ protected:
             }else{
                 heartbeat_timer_.restart();
             }
+            return true;
         }
         catch( const std::exception &e){
             std::string info = boost::diagnostic_information(e);
             ROS_ERROR_STREAM(info);
-            res.success = false;
             res.message = info;
-            status.error(info);
-            shutdown(status);
-            thread_.reset();
         }
+        catch(...){
+            res.message = "Unknown exception";
+        }
+
+        res.success = false;
+        status.error(res.message);
+        shutdown(status);
+        thread_.reset();
+        initialized_ = false;
+
         return true;
     }
     virtual bool handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
 	ROS_INFO("Recovering XXX");
         boost::mutex::scoped_lock lock(mutex_);
+        res.success = false;
+
         if(initialized_ && thread_){
             LayerReport status;
             try{
@@ -299,11 +308,12 @@ protected:
             catch( const std::exception &e){
                 std::string info = boost::diagnostic_information(e);
                 ROS_ERROR_STREAM(info);
-                res.success = false;
                 res.message = info;
             }
+            catch(...){
+                res.message = "Unknown exception";
+            }
         }else{
-            res.success = false;
             res.message = "not running";
         }
         return true;

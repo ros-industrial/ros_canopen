@@ -7,14 +7,24 @@
 
 namespace canopen{
 
-class Exception : public std::exception {};
-
-class PointerInvalid : public Exception{};
-class ParseException : public Exception{};
-
-class TimeoutException : public std::runtime_error{
+class Exception : public std::runtime_error {
 public:
-    TimeoutException(const std::string &w) : std::runtime_error(w) {}
+    Exception(const std::string &w) : std::runtime_error(w) {}
+};
+
+class PointerInvalid : public Exception{
+public:
+    PointerInvalid(const std::string &w) : Exception("Pointer invalid") {}
+};
+
+class ParseException : public Exception{
+public:
+    ParseException(const std::string &w) : Exception(w) {}
+};
+
+class TimeoutException : public Exception{
+public:
+    TimeoutException(const std::string &w) : Exception(w) {}
 };
 
 

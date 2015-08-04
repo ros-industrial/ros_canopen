@@ -104,7 +104,7 @@ void set_access( ObjectDict::Entry &entry, const std::string &access){
         entry.writable = false;
         entry.constant = true;
     }else{
-        throw ParseException();
+        throw ParseException("Cannot determine access for" + std::string(ObjectDict::Key(entry)));
     }
 }
 
@@ -246,7 +246,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptr
                 }
             }
         }else{
-            throw ParseException();
+            throw ParseException("ObjectType of " + entry->desc + " not supported") ;
         }
 }
 void parse_objects(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptree &pt, const std::string &key){
