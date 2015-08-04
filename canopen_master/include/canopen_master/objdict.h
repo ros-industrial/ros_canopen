@@ -250,9 +250,8 @@ template<typename T> std::ostream& operator<<(std::ostream& stream, const NodeId
  }
 
 class AccessException : public Exception{
-    const ObjectDict::Key k_;
 public:
-    AccessException(const ObjectDict::Key &k) : k_(k) {}
+    AccessException(const std::string &w) : Exception(w) {}
 };
  
  
@@ -313,7 +312,7 @@ protected:
             boost::mutex::scoped_lock lock(mutex);
             
             if(!entry->readable){
-                BOOST_THROW_EXCEPTION( AccessException(key) );
+                BOOST_THROW_EXCEPTION( AccessException(std::string(key) + " is not readable") );
             }
             
             if(entry->constant) cached = true;
@@ -329,7 +328,7 @@ protected:
             
             if(!entry->writable){
                 if(access<T>() != val){
-                    BOOST_THROW_EXCEPTION( AccessException(key) );
+                    BOOST_THROW_EXCEPTION( AccessException(std::string(key) + " is not readable") );
                 }
             }else{
                 allocate<T>() = val;
@@ -340,7 +339,7 @@ protected:
             boost::mutex::scoped_lock lock(mutex);
             if(!valid || val != access<T>() ){
                 if(!entry->writable){
-                        BOOST_THROW_EXCEPTION( AccessException(key) );
+                    BOOST_THROW_EXCEPTION( AccessException(std::string(key) + " is neither cached nor  writable") );
                 }else{
                     allocate<T>() = val;
                     write_delegate(*entry, buffer);
@@ -364,7 +363,7 @@ public:
         typedef T type;
         bool valid() const { return data != 0; }
         const T get() {
-            if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
+            if(!data) BOOST_THROW_EXCEPTION( PointerInvalid("ObjectStorage::Entry::get()") );
 
             return data->get<T>(false);
         }    
@@ -377,7 +376,7 @@ public:
             }
         }    
         const T get_cached() {
-            if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
+            if(!data) BOOST_THROW_EXCEPTION( PointerInvalid("ObjectStorage::Entry::get_cached()") );
 
             return data->get<T>(true);
         }        
@@ -390,7 +389,7 @@ public:
             }
         }    
         void set(const T &val) {
-            if(!data) BOOST_THROW_EXCEPTION( PointerInvalid() );
+            if(!data) BOOST_THROW_EXCEPTION( PointerInvalid("ObjectStorage::Entry::set(val)") );
             data->set(val);
         }
         bool set_cached(const T &val) {
