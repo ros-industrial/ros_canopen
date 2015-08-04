@@ -236,7 +236,7 @@ protected:
                 heartbeat_timer_.restart();
             }
         }
-        catch( const canopen::Exception &e){
+        catch( const std::exception &e){
             std::string info = boost::diagnostic_information(e);
             ROS_ERROR_STREAM(info);
             res.success = false;
@@ -263,7 +263,7 @@ protected:
                 res.success = status.bounded<LayerStatus::Warn>();
                 res.message = status.reason();
             }
-            catch( const canopen::Exception &e){
+            catch( const std::exception &e){
                 std::string info = boost::diagnostic_information(e);
                 ROS_ERROR_STREAM(info);
                 res.success = false;
