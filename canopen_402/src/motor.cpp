@@ -395,6 +395,7 @@ void Motor402::handleRead(LayerStatus &status, const LayerState &current_state){
 void Motor402::handleWrite(LayerStatus &status, const LayerState &current_state){
     if(current_state > Off){
         boost::mutex::scoped_lock lock(cw_mutex_);
+        control_word_ |= (1<<Command402::CW_Halt);
         if(state_handler_.getState() == State402::Operation_Enable){
             boost::mutex::scoped_lock lock(mode_mutex_);
             Mode::OpModeAccesser cwa(control_word_);
@@ -406,8 +407,6 @@ void Motor402::handleWrite(LayerStatus &status, const LayerState &current_state)
             }
             if(okay) {
                 control_word_ &= ~(1<<Command402::CW_Halt);
-            }else{
-                control_word_ |= (1<<Command402::CW_Halt);
             }
         }
         control_word_entry_.set(control_word_);
