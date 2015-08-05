@@ -94,7 +94,8 @@ public:
     virtual void handleHalt(LayerStatus &status) { /* nothing to do */ }
     
     virtual void handleRecover(LayerStatus &status){
-        if(!driver_->recover()) status.error("driver recover failed"); // TODO: implement logging for driver
+		handleShutdown(status);
+		handleInit(status);
     }
 
 };

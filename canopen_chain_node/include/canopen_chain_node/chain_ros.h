@@ -262,25 +262,24 @@ protected:
             res.message = status.reason();
             if(!status.bounded<LayerStatus::Warn>()){
                 diag(status);
-                shutdown(status);
-                initialized_ = false;
-                thread_.reset();
+                res.message = status.reason();
             }else{
                 heartbeat_timer_.restart();
+                return true;
             }
-            return true;
         }
         catch( const std::exception &e){
             std::string info = boost::diagnostic_information(e);
             ROS_ERROR_STREAM(info);
             res.message = info;
+            status.error(res.message);
         }
         catch(...){
             res.message = "Unknown exception";
+            status.error(res.message);
         }
 
         res.success = false;
-        status.error(res.message);
         shutdown(status);
         thread_.reset();
         initialized_ = false;
@@ -327,8 +326,8 @@ protected:
     }
     virtual void handleShutdown(LayerStatus &status){
         boost::mutex::scoped_lock lock(diag_mutex_);
-        LayerStack::handleShutdown(status);
         heartbeat_timer_.stop();
+        LayerStack::handleShutdown(status);
         if(initialized_ &&  thread_){
             thread_->interrupt();
             thread_->join();
