@@ -57,13 +57,11 @@ void ObjectStorage::Data::init(){
 void ObjectStorage::Data::force_write(){
     boost::mutex::scoped_lock lock(mutex);
     
-    if(entry->writable){
-        if(!valid && entry->readable){
-            read_delegate(*entry, buffer);
-            valid = true;
-        }
-        if(valid) write_delegate(*entry, buffer);
+    if(!valid && entry->readable){
+        read_delegate(*entry, buffer);
+        valid = true;
     }
+    if(valid) write_delegate(*entry, buffer);
 }
 
 void ObjectStorage::Data::reset(){
@@ -337,12 +335,17 @@ size_t ObjectStorage::map(const boost::shared_ptr<const ObjectDict::Entry> &e, c
         it->second->reset();
 
     }
-    it->second->set_delegates(read_delegate ?read_delegate: read_delegate_, write_delegate ? write_delegate : write_delegate_);
-    if(write_delegate) it->second->force_write(); // update buffer
-    if(read_delegate){ // special case, reset write delegate
+
+    if(read_delegate && write_delegate){
+        it->second->set_delegates(read_delegate_, write_delegate);
+        it->second->force_write(); // update buffer
+        it->second->set_delegates(read_delegate, write_delegate_);
+    }else if(write_delegate) {
+        it->second->set_delegates(read_delegate_, write_delegate);
+        it->second->force_write(); // update buffer
+    }else if(read_delegate){
         it->second->set_delegates(read_delegate, write_delegate_);
     }
-
     return it->second->size();
 }
 
