@@ -58,7 +58,7 @@ std::string byte2hex(const uint8_t &d, bool pad, bool lc){
 std::string buffer2hex(const std::string &in, bool lc){
     std::string s; s.reserve(in.size()*2);
     for(size_t i=0; i < in.size(); ++i){
-        std::string b = byte2hex(in[i], i != 0 || 1 == in.size(), lc);
+        std::string b = byte2hex(in[i], true, lc);
         if(b.empty()) return b;
         s += b;
     }
