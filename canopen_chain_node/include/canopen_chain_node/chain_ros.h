@@ -326,8 +326,8 @@ protected:
     }
     virtual void handleShutdown(LayerStatus &status){
         boost::mutex::scoped_lock lock(diag_mutex_);
-        LayerStack::handleShutdown(status);
         heartbeat_timer_.stop();
+        LayerStack::handleShutdown(status);
         if(initialized_ &&  thread_){
             thread_->interrupt();
             thread_->join();
