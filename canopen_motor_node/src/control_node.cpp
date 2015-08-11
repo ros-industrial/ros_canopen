@@ -218,16 +218,15 @@ public:
        conv_eff_.reset(new UnitConverter(e2r, boost::bind(&ObjectVariables::getVariable, &variables_, _1)));
     }
 
-    int canSwitch(const MotorBase::OperationMode &m){
-       if(!motor_->isModeSupported(m)) return 0;
-       if(motor_->getMode() == m) return -1;
-       if(commands_.find(m) != commands_.end()) return 1;
-       return 0;
+    bool canSwitch(const MotorBase::OperationMode &m){
+       return motor_->isModeSupported(m) && commands_.find(m) != commands_.end();
     }
     bool switchMode(const MotorBase::OperationMode &m){
-        jh_ = 0; // disconnect handle
-        if(!motor_->enterModeAndWait(m)){
-            ROS_ERROR_STREAM(jsh_.getName() << "could not enter mode " << (int)m);
+        if(motor_->getMode() != m){
+            jh_ = 0; // disconnect handle
+            if(!motor_->enterModeAndWait(m)){
+                ROS_ERROR_STREAM(jsh_.getName() << "could not enter mode " << (int)m);
+            }
         }
         return select(m);
     }
@@ -459,8 +458,8 @@ public:
                         ROS_ERROR_STREAM(*res_it << " not found");
                         return false;
                     }
-                    if(int res = h_it->second->canSwitch((MotorBase::OperationMode)mode)){
-                        if(res > 0) to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
+                    if(h_it->second->canSwitch((MotorBase::OperationMode)mode)){
+                        to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
                     }else{
                         ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
                         return false;
