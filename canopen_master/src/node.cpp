@@ -92,32 +92,32 @@ bool Node::stop(){
 }
 
 void Node::switchState(const uint8_t &s){
+    bool changed = state_ != s;
     switch(s){
         case Operational:
-            if(sync_ && state_ != s) sync_->addNode(this);
+            if(changed && sync_) sync_->addNode(this);
             break;
         case BootUp:
         case PreOperational:
         case Stopped:
-            if(sync_ && state_ != s) sync_->removeNode(this);
+            if(changed && sync_) sync_->removeNode(this);
             break;
         default:
             //error
             ;
     }
-    state_ = (State) s;
-    state_dispatcher_.dispatch(state_);
+    if(changed){
+        state_ = (State) s;
+        state_dispatcher_.dispatch(state_);
+        cond.notify_one();
+    }
 }
 void Node::handleNMT(const can::Frame & msg){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
     uint16_t interval = getHeartbeatInterval();
-    if (interval != 0)
-      heartbeat_timeout_ = boost::chrono::high_resolution_clock::now() + boost::chrono::milliseconds(3*interval);
+    if(interval) heartbeat_timeout_ = get_abs_time(boost::chrono::milliseconds(3*interval));
     assert(msg.dlc == 1);
     switchState(msg.data[0]);
-    cond_lock.unlock();
-    cond.notify_one();
-    
 }
 template<typename T> int Node::wait_for(const State &s, const T &timeout){
     boost::mutex::scoped_lock cond_lock(cond_mutex);
