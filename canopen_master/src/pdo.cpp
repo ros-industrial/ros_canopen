@@ -352,8 +352,6 @@ void PDOMapper::Buffer::write(const uint8_t* b, const size_t len){
     empty = false;
     dirty = true;
     memcpy(&buffer[0], b, size);
-    lock.unlock();
-    cond.notify_all();
 }
 void PDOMapper::Buffer::read(const canopen::ObjectDict::Entry &entry, String &data){
     boost::mutex::scoped_lock lock(mutex);
@@ -362,10 +360,7 @@ void PDOMapper::Buffer::read(const canopen::ObjectDict::Entry &entry, String &da
         BOOST_THROW_EXCEPTION( std::bad_cast() );
     }
     if(empty){
-        if(cond.wait_until(lock,abs_time)  == boost::cv_status::timeout)
-        {
-            BOOST_THROW_EXCEPTION( TimeoutException("PDO data empty: " + std::string(ObjectDict::Key(entry))));
-        }
+        BOOST_THROW_EXCEPTION( TimeoutException("PDO data empty: " + std::string(ObjectDict::Key(entry))));
     }
     if(dirty){
         data.assign(buffer.begin(), buffer.end());

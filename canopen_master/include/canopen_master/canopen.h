@@ -82,7 +82,6 @@ class PDOMapper{
         
     private:
         boost::mutex mutex;
-        boost::condition_variable cond;
         bool dirty;
         bool empty;
         std::vector<char> buffer;
