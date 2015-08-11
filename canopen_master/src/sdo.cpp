@@ -297,7 +297,6 @@ void SDOClient::abort(uint32_t reason){
 
 void SDOClient::handleFrame(const can::Frame & msg){
     boost::mutex::scoped_lock buffer_lock(buffer_mutex);
-    boost::mutex::scoped_lock cond_lock(cond_mutex);
     assert(msg.dlc == 8);
     
     bool notify = false;
@@ -371,7 +370,6 @@ void SDOClient::handleFrame(const can::Frame & msg){
     }
     if(notify){
         done = true;
-        cond_lock.unlock();
         cond.notify_one();
     }
         
@@ -401,13 +399,26 @@ void SDOClient::init(){
     }
     listener_ = interface_->createMsgListener(server_id, can::CommInterface::FrameDelegate(this, &SDOClient::handleFrame));
 }
-void SDOClient::wait_for_response(){
-    boost::mutex::scoped_lock cond_lock(cond_mutex);
-    boost::this_thread::disable_interruption di;
+
+void SDOClient::transmitAndWait(const canopen::ObjectDict::Entry &entry, const String &data,  String *result){
+    boost::mutex::scoped_lock buffer_lock(buffer_mutex);
+
+    buffer = data;
+    offset = 0;
+    total = buffer.size();
+    current_entry = &entry;
     done = false;
+
+    if(result){
+        interface_->send(last_msg = UploadInitiateRequest(client_id, entry));
+    }else{
+        interface_->send(last_msg = DownloadInitiateRequest(client_id, entry, buffer, offset));
+    }
+
+    boost::this_thread::disable_interruption di;
     time_point abs_time = get_abs_time(boost::chrono::seconds(1));
     while(!done){
-        if(cond.wait_until(cond_lock,abs_time)  == boost::cv_status::timeout)
+        if(cond.wait_until(buffer_lock,abs_time)  == boost::cv_status::timeout)
         {
             abort(0x05040000); // SDO protocol timed out.
             break;
@@ -416,23 +427,15 @@ void SDOClient::wait_for_response(){
     if(offset == 0 || offset != total){
         BOOST_THROW_EXCEPTION( TimeoutException("SDO: " + std::string(ObjectDict::Key(*current_entry))));
     }
+
+    if(result) *result=buffer;
+
 }
+
 void SDOClient::read(const canopen::ObjectDict::Entry &entry, String &data){
     boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
-
-        boost::mutex::scoped_lock buffer_lock(buffer_mutex);
-        buffer = data;
-        offset = 0;
-        total = buffer.size();
-        current_entry = &entry;
-        interface_->send(last_msg = UploadInitiateRequest(client_id, entry));
-
-        buffer_lock.unlock();
-        wait_for_response();
-        buffer_lock.lock();
-        
-        data = buffer;
+        transmitAndWait(entry, data, &data);
     }else{
         BOOST_THROW_EXCEPTION( TimeoutException("SDO read: " + std::string(ObjectDict::Key(entry))));
     }
@@ -440,15 +443,7 @@ void SDOClient::read(const canopen::ObjectDict::Entry &entry, String &data){
 void SDOClient::write(const canopen::ObjectDict::Entry &entry, const String &data){
     boost::timed_mutex::scoped_lock lock(mutex, boost::chrono::seconds(2));
     if(lock){
-        {
-            boost::mutex::scoped_lock buffer_lock(buffer_mutex);
-            buffer = data;
-            offset = 0;
-            total = buffer.size();
-            current_entry = &entry;
-            interface_->send(last_msg = DownloadInitiateRequest(client_id, entry, buffer, offset));
-        }
-        wait_for_response();
+        transmitAndWait(entry, data, 0);
     }else{
         BOOST_THROW_EXCEPTION( TimeoutException("SDO write: " + std::string(ObjectDict::Key(entry))));
     }

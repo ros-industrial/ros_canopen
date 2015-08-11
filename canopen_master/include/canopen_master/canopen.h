@@ -35,7 +35,6 @@ class SDOClient{
     can::Header client_id;
     
     boost::timed_mutex mutex;
-    boost::mutex cond_mutex;
     boost::condition_variable cond;
     boost::mutex buffer_mutex;
     bool success;
@@ -49,7 +48,7 @@ class SDOClient{
     can::Frame last_msg;
     const canopen::ObjectDict::Entry * current_entry;
     
-    void wait_for_response();
+    void transmitAndWait(const canopen::ObjectDict::Entry &entry, const String &data, String *result);
     void abort(uint32_t reason);
 
     const boost::shared_ptr<can::CommInterface> interface_;
