@@ -17,7 +17,7 @@ class StateWaiter{
         boost::mutex::scoped_lock lock(mutex_);
         state_ = s;
         lock.unlock();
-        cond_.notify_one();
+        cond_.notify_all();
     }
 public:
     template<typename InterfaceType> StateWaiter(InterfaceType *interface){
