@@ -15,6 +15,7 @@
 #include <urdf/model.h>
 
 #include <controller_manager/controller_manager.h>
+#include <controller_manager_msgs/SwitchController.h>
 
 #include "muParser.h"
 
@@ -347,6 +348,12 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
 
     boost::atomic<bool> first_init_;
 
+    void stopControllers(const std::vector<std::string> controllers){
+        controller_manager_msgs::SwitchController srv;
+        srv.request.stop_controllers = controllers;
+        boost::thread call(boost::bind(ros::service::call<controller_manager_msgs::SwitchController>, "controller_manager/switch_controller", srv));
+        call.detach();
+    }
 public:
     void add(const std::string &name, boost::shared_ptr<HandleLayer> handle){
         LayerGroupNoDiag::add(handle);
@@ -495,6 +502,7 @@ public:
 
     virtual void doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) {
         boost::unordered_set<boost::shared_ptr<HandleLayer> > to_stop;
+        std::vector<std::string> failed_controllers;
         for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
             SwitchContainer &to_switch = switch_map_.at(controller_it->name);
             for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
@@ -505,6 +513,7 @@ public:
             SwitchContainer &to_switch = switch_map_.at(controller_it->name);
             for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
                 if(!it->first->switchMode(it->second)){
+                    failed_controllers.push_back(controller_it->name);
                     ROS_ERROR_STREAM("Could not switch one joint for " << controller_it->name << ", will stop all for this controller.");
                     for(RobotLayer::SwitchContainer::iterator stop_it = to_switch.begin(); stop_it != to_switch.end(); ++stop_it){
                         to_stop.insert(stop_it->first);
@@ -517,6 +526,7 @@ public:
         for(boost::unordered_set<boost::shared_ptr<HandleLayer> >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
             (*it)->switchMode(MotorBase::No_Mode);
         }
+        if(!failed_controllers.empty()) stopControllers(failed_controllers);
     }
 
 };
