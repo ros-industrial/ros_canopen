@@ -330,13 +330,14 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
     typedef boost::unordered_map<std::string, SwitchContainer>  SwitchMap;
     mutable SwitchMap switch_map_;
 
-public:
+    boost::atomic<bool> first_init_;
 
+public:
     void add(const std::string &name, boost::shared_ptr<HandleLayer> handle){
         LayerGroupNoDiag::add(handle);
         handles_.insert(std::make_pair(name, handle));
     }
-    RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh)
+    RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh), first_init_(true)
     {
         registerInterface(&state_interface_);
         registerInterface(&pos_interface_);
@@ -357,62 +358,62 @@ public:
     boost::shared_ptr<const urdf::Joint> getJoint(const std::string &n) const { return urdf_.getJoint(n); }
 
     virtual void handleInit(LayerStatus &status){
-        urdf::Model urdf;
-        urdf.initParam("robot_description");
+        if(first_init_){
+            for(HandleMap::iterator it = handles_.begin(); it != handles_.end(); ++it){
+                joint_limits_interface::JointLimits limits;
+                joint_limits_interface::SoftJointLimits soft_limits;
 
-        for(HandleMap::iterator it = handles_.begin(); it != handles_.end(); ++it){
-            joint_limits_interface::JointLimits limits;
-            joint_limits_interface::SoftJointLimits soft_limits;
+                boost::shared_ptr<const urdf::Joint> joint = getJoint(it->first);
 
-            boost::shared_ptr<const urdf::Joint> joint = getJoint(it->first);
-            
-            if(!joint){
-                status.error("joint " + it->first + " not found");
-                return;
-            }
-
-            bool has_joint_limits = joint_limits_interface::getJointLimits(joint, limits);
-
-            has_joint_limits = joint_limits_interface::getJointLimits(it->first, nh_, limits) || has_joint_limits;
-
-            bool has_soft_limits = has_joint_limits && joint_limits_interface::getSoftJointLimits(joint, soft_limits);
-
-            if(!has_joint_limits){
-                ROS_WARN_STREAM("No limits found for " << it->first);
-            }
-
-            it->second->registerHandle(state_interface_);
-
-            const hardware_interface::JointHandle *h  = 0;
-
-            h = it->second->registerHandle(pos_interface_);
-            if(h && limits.has_position_limits){
-                joint_limits_interface::PositionJointSaturationHandle sathandle(*h, limits);
-                pos_saturation_interface_.registerHandle(sathandle);
-                if(has_soft_limits){
-                    joint_limits_interface::PositionJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
-                    pos_soft_limits_interface_.registerHandle(softhandle);
+                if(!joint){
+                    status.error("joint " + it->first + " not found");
+                    return;
                 }
-            }
-            h = it->second->registerHandle(vel_interface_);
-            if(h && limits.has_velocity_limits){
-                joint_limits_interface::VelocityJointSaturationHandle sathandle(*h, limits);
-                vel_saturation_interface_.registerHandle(sathandle);
-                if(has_soft_limits){
-                    joint_limits_interface::VelocityJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
-                    vel_soft_limits_interface_.registerHandle(softhandle);
-                }
-            }
-            h = it->second->registerHandle(eff_interface_);
-            if(h && limits.has_effort_limits){
-                joint_limits_interface::EffortJointSaturationHandle sathandle(*h, limits);
-                eff_saturation_interface_.registerHandle(sathandle);
-                if(has_soft_limits){
-                    joint_limits_interface::EffortJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
-                    eff_soft_limits_interface_.registerHandle(softhandle);
-                }
-            }
 
+                bool has_joint_limits = joint_limits_interface::getJointLimits(joint, limits);
+
+                has_joint_limits = joint_limits_interface::getJointLimits(it->first, nh_, limits) || has_joint_limits;
+
+                bool has_soft_limits = has_joint_limits && joint_limits_interface::getSoftJointLimits(joint, soft_limits);
+
+                if(!has_joint_limits){
+                    ROS_WARN_STREAM("No limits found for " << it->first);
+                }
+
+                it->second->registerHandle(state_interface_);
+
+                const hardware_interface::JointHandle *h  = 0;
+
+                h = it->second->registerHandle(pos_interface_);
+                if(h && limits.has_position_limits){
+                    joint_limits_interface::PositionJointSaturationHandle sathandle(*h, limits);
+                    pos_saturation_interface_.registerHandle(sathandle);
+                    if(has_soft_limits){
+                        joint_limits_interface::PositionJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
+                        pos_soft_limits_interface_.registerHandle(softhandle);
+                    }
+                }
+                h = it->second->registerHandle(vel_interface_);
+                if(h && limits.has_velocity_limits){
+                    joint_limits_interface::VelocityJointSaturationHandle sathandle(*h, limits);
+                    vel_saturation_interface_.registerHandle(sathandle);
+                    if(has_soft_limits){
+                        joint_limits_interface::VelocityJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
+                        vel_soft_limits_interface_.registerHandle(softhandle);
+                    }
+                }
+                h = it->second->registerHandle(eff_interface_);
+                if(h && limits.has_effort_limits){
+                    joint_limits_interface::EffortJointSaturationHandle sathandle(*h, limits);
+                    eff_saturation_interface_.registerHandle(sathandle);
+                    if(has_soft_limits){
+                        joint_limits_interface::EffortJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
+                        eff_soft_limits_interface_.registerHandle(softhandle);
+                    }
+                }
+
+            }
+            first_init_ = false;
         }
         LayerGroupNoDiag::handleInit(status);
     }
