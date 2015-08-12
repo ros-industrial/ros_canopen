@@ -504,7 +504,13 @@ public:
         for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
             SwitchContainer &to_switch = switch_map_.at(controller_it->name);
             for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-                it->first->switchMode(it->second);
+                if(!it->first->switchMode(it->second)){
+                    ROS_ERROR_STREAM("Could not switch one joint for " << controller_it->name << ", will stop all for this controller.");
+                    for(RobotLayer::SwitchContainer::iterator stop_it = to_switch.begin(); stop_it != to_switch.end(); ++stop_it){
+                        to_stop.insert(stop_it->first);
+                    }
+                    break;
+                }
                 to_stop.erase(it->first);
             }
         }
