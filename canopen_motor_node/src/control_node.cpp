@@ -226,6 +226,9 @@ public:
             jh_ = 0; // disconnect handle
             if(!motor_->enterModeAndWait(m)){
                 ROS_ERROR_STREAM(jsh_.getName() << "could not enter mode " << (int)m);
+                LayerStatus s;
+                motor_->halt(s);
+                return false;
             }
         }
         return select(m);
