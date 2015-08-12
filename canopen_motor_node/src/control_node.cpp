@@ -218,9 +218,24 @@ public:
        conv_eff_.reset(new UnitConverter(e2r, boost::bind(&ObjectVariables::getVariable, &variables_, _1)));
     }
 
-    bool canSwitch(const MotorBase::OperationMode &m){
-       return motor_->isModeSupported(m) && commands_.find(m) != commands_.end();
+    enum CanSwitchResult{
+        NotSupported,
+        NotReadyToSwitch,
+        ReadyToSwitch,
+        NoNeedToSwitch
+    };
+    CanSwitchResult canSwitch(const MotorBase::OperationMode &m){
+        if(!motor_->isModeSupported(m) || commands_.find(m) == commands_.end()){
+            return NotSupported;
+        }else if(motor_->getMode() == m){
+            return NoNeedToSwitch;
+        }else if(motor_->getLayerState() == Ready){
+            return ReadyToSwitch;
+        }else{
+            return NotReadyToSwitch;
+        }
     }
+
     bool switchMode(const MotorBase::OperationMode &m){
         if(motor_->getMode() != m){
             jh_ = 0; // disconnect handle
@@ -447,14 +462,10 @@ public:
 
         // start handles
         for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
-            if(switch_map_.find(controller_it->name) != switch_map_.end()) continue;
-
             SwitchContainer to_switch;
             ros::NodeHandle nh(nh_,controller_it->name);
             int mode;
             if(nh.getParam("required_drive_mode", mode)){
-
-
                 for (std::set<std::string>::const_iterator res_it = controller_it->resources.begin(); res_it != controller_it->resources.end(); ++res_it){
                     boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
 
@@ -462,11 +473,18 @@ public:
                         ROS_ERROR_STREAM(*res_it << " not found");
                         return false;
                     }
-                    if(h_it->second->canSwitch((MotorBase::OperationMode)mode)){
-                        to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
-                    }else{
-                        ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
-                        return false;
+                    HandleLayer::CanSwitchResult res = h_it->second->canSwitch((MotorBase::OperationMode)mode);
+
+                    switch(res){
+                        case HandleLayer::NotSupported:
+                            ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
+                            return false;
+                        case HandleLayer::NotReadyToSwitch:
+                            ROS_ERROR_STREAM(*res_it << " is not ready to switch mode");
+                            return false;
+                        case HandleLayer::ReadyToSwitch:
+                        case HandleLayer::NoNeedToSwitch:
+                            to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
                     }
                 }
             }
