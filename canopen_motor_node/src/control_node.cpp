@@ -269,15 +269,15 @@ private:
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
         if(current_state == Ready){
             hardware_interface::JointHandle* jh = jh_;
-            if(jh_ == &jph_){
+            if(jh == &jph_){
                 motor_->setTarget(conv_target_pos_->evaluate());
                 cmd_vel_ = vel_;
                 cmd_eff_ = eff_;
-            }else if(jh_ == &jvh_){
+            }else if(jh == &jvh_){
                 motor_->setTarget(conv_target_vel_->evaluate());
                 cmd_pos_ = pos_;
                 cmd_eff_ = eff_;
-            }else if(jh_ == &jeh_){
+            }else if(jh == &jeh_){
                 motor_->setTarget(conv_target_eff_->evaluate());
                 cmd_pos_ = pos_;
                 cmd_vel_ = vel_;
@@ -285,7 +285,7 @@ private:
                 cmd_pos_ = pos_;
                 cmd_vel_ = vel_;
                 cmd_eff_ = eff_;
-                if(jh_) status.warn("unsupported mode active");
+                if(jh) status.warn("unsupported mode active");
             }
         }
     }
