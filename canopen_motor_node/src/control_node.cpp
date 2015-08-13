@@ -351,6 +351,7 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
     void stopControllers(const std::vector<std::string> controllers){
         controller_manager_msgs::SwitchController srv;
         srv.request.stop_controllers = controllers;
+        srv.request.strictness = srv.request.BEST_EFFORT;
         boost::thread call(boost::bind(ros::service::call<controller_manager_msgs::SwitchController>, "controller_manager/switch_controller", srv));
         call.detach();
     }
@@ -514,7 +515,7 @@ public:
             for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
                 if(!it->first->switchMode(it->second)){
                     failed_controllers.push_back(controller_it->name);
-                    ROS_ERROR_STREAM("Could not switch one joint for " << controller_it->name << ", will stop all for this controller.");
+                    ROS_ERROR_STREAM("Could not switch one joint for " << controller_it->name << ", will stop all related joints and the controller.");
                     for(RobotLayer::SwitchContainer::iterator stop_it = to_switch.begin(); stop_it != to_switch.end(); ++stop_it){
                         to_stop.insert(stop_it->first);
                     }
