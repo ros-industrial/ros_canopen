@@ -6,6 +6,9 @@
 #include <boost/function.hpp>
 #include <boost/container/flat_map.hpp>
 
+#include <limits>
+#include <algorithm>
+
 namespace canopen
 {
 
@@ -143,7 +146,18 @@ public:
     bool hasTarget() { return has_target_; }
     T getTarget() { return target_; }
     virtual bool setTarget(const double &val) {
-        target_ = val;
+        if(isnan(val)){
+            LOG("target command is not a number");
+            return false;
+        }else if(val <  std::numeric_limits<T>::min()){
+            LOG("Command " << val << " does not fit into target, clamping to min limit");
+            target_= std::numeric_limits<T>::min();
+        }else if(val >  std::numeric_limits<T>::max()){
+            LOG("Command " << val << " does not fit into target, clamping to max limit");
+            target_= std::numeric_limits<T>::max();
+        }else{
+            target_= val;
+        }
         has_target_ = true;
         return true;
     }
