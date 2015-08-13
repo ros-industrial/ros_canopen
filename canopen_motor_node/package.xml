@@ -15,6 +15,7 @@
   <depend>canopen_chain_node</depend>
   <depend>hardware_interface</depend>
   <depend>controller_manager</depend>
+  <depend>controller_manager_msgs</depend>
   <depend>joint_limits_interface</depend>
   <depend>canopen_402</depend>
   <depend>urdf</depend>

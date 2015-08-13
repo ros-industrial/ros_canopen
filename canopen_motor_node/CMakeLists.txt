@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   hardware_interface
   joint_limits_interface
   controller_manager
+  controller_manager_msgs
   canopen_402
   joint_limits_interface
   urdf

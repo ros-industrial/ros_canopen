@@ -250,7 +250,8 @@ bool Motor402::setTarget(double val){
 bool Motor402::isModeSupported(uint16_t mode) { return mode != MotorBase::Homing && allocMode(mode); }
 
 bool Motor402::enterModeAndWait(uint16_t mode) {
-    LayerStatus s; bool okay = mode != MotorBase::Homing && switchMode(s, mode);
+    LayerStatus s;
+    bool okay = mode != MotorBase::Homing && switchMode(s, mode);
     if(!s.bounded<LayerStatus::Ok>()){
         LOG("Could not switch to mode " << mode << ", reason: " << s.reason());
     }

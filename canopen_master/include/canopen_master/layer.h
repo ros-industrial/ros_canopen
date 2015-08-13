@@ -114,7 +114,9 @@ public:
         }
 
     }
-    
+
+    LayerState getLayerState() { return state; }
+
     Layer(const std::string &n) : name(n), state(Off) {}
     
     virtual ~Layer() {}
