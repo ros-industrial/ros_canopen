@@ -295,21 +295,19 @@ void SDOClient::abort(uint32_t reason){
     }
 }
 
-void SDOClient::handleFrame(const can::Frame & msg){
-    boost::mutex::scoped_lock buffer_lock(buffer_mutex);
-    assert(msg.dlc == 8);
+bool SDOClient::processFrame(const can::Frame & msg){
+    if(msg.dlc != 8) return false;
     
-    bool notify = false;
     uint32_t reason = 0;
     switch(msg.data[0] >> 5){
         case DownloadInitiateResponse::command:
         {
             DownloadInitiateResponse resp(msg);
-            if( resp.test(last_msg, reason) ){
+            if(resp.test(last_msg, reason) ){
                 if(offset < total){
                     interface_->send(last_msg = DownloadSegmentRequest(client_id, false, buffer, offset));
                 }else{
-                    notify = true;
+                    done = true;
                 }
             }
             break;
@@ -321,7 +319,7 @@ void SDOClient::handleFrame(const can::Frame & msg){
                 if(offset < total){
                     interface_->send(last_msg = DownloadSegmentRequest(client_id, !resp.data.toggle, buffer, offset));
                 }else{
-                    notify = true;
+                    done = true;
                 }
             }
             break;
@@ -332,7 +330,7 @@ void SDOClient::handleFrame(const can::Frame & msg){
             UploadInitiateResponse resp(msg);
             if( resp.test(last_msg, total, reason) ){
                 if(resp.read_data(buffer, offset, total)){
-                    notify = true;
+                    done = true;
                 }else{
                     interface_->send(last_msg = UploadSegmentRequest(client_id, false));
                 }
@@ -345,7 +343,7 @@ void SDOClient::handleFrame(const can::Frame & msg){
             if( resp.test(last_msg, reason) ){
                 if(resp.read_data(buffer, offset, total)){
                     if(resp.data.done || offset == total){
-                    notify = true;
+                        done = true;
                     }else{
                         interface_->send(last_msg = UploadSegmentRequest(client_id, !resp.data.toggle));
                     }
@@ -360,19 +358,16 @@ void SDOClient::handleFrame(const can::Frame & msg){
         case AbortTranserRequest::command:
             LOG("abort" << std::hex << (uint32_t) AbortTranserRequest(msg).data.index << "#"<< std::dec << (uint32_t) AbortTranserRequest(msg).data.sub_index << ", reason: " << AbortTranserRequest(msg).data.text());
             offset = 0;
-            notify = true;
+            return false;
             break;
     }
     if(reason){
         abort(reason);
         offset = 0;
-        notify = true;
+        return false;
     }
-    if(notify){
-        done = true;
-        cond.notify_one();
-    }
-        
+    return true;
+
 }    
     
 void SDOClient::init(){
@@ -397,17 +392,17 @@ void SDOClient::init(){
     catch(...){
         server_id = can::MsgHeader(0x580+ storage_->node_id_);
     }
-    listener_ = interface_->createMsgListener(server_id, can::CommInterface::FrameDelegate(this, &SDOClient::handleFrame));
+    reader_.listen(interface_, server_id);
 }
 
 void SDOClient::transmitAndWait(const canopen::ObjectDict::Entry &entry, const String &data,  String *result){
-    boost::mutex::scoped_lock buffer_lock(buffer_mutex);
-
     buffer = data;
     offset = 0;
     total = buffer.size();
     current_entry = &entry;
     done = false;
+
+    can::BufferedReader::ScopedEnabler enabler(reader_);
 
     if(result){
         interface_->send(last_msg = UploadInitiateRequest(client_id, entry));
@@ -416,11 +411,18 @@ void SDOClient::transmitAndWait(const canopen::ObjectDict::Entry &entry, const S
     }
 
     boost::this_thread::disable_interruption di;
-    time_point abs_time = get_abs_time(boost::chrono::seconds(1));
+    can::Frame msg;
+
     while(!done){
-        if(cond.wait_until(buffer_lock,abs_time)  == boost::cv_status::timeout)
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+        if(!reader_.read(&msg,boost::chrono::seconds(1)))
         {
             abort(0x05040000); // SDO protocol timed out.
+            break;
+        }
+        if(!processFrame(msg)){
+            LOG("Could not prcoess message");
+            abort(0x08000000);
             break;
         }
     }
