@@ -96,5 +96,10 @@ install(FILES canopen_402_plugin.xml
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_gtest(${PROJECT_NAME}-test_clamping test/clamping.cpp)
+  target_link_libraries(${PROJECT_NAME}-test_clamping ${catkin_LIBRARIES})
+endif(CATKIN_ENABLE_TESTING)
+
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
