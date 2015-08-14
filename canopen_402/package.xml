@@ -14,6 +14,8 @@
   <depend>canopen_master</depend>
   <depend>class_loader</depend>
 
+  <test_depend>rosunit</test_depend>
+
   <export>
      <canopen_402 plugin="${prefix}/canopen_402_plugin.xml" />
   </export>
