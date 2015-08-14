@@ -6,6 +6,7 @@
 #include <boost/function.hpp>
 #include <boost/container/flat_map.hpp>
 
+#include <boost/numeric/conversion/cast.hpp>
 #include <limits>
 #include <algorithm>
 
@@ -141,6 +142,7 @@ public:
 template<typename T> class ModeTargetHelper : public Mode {
     T target_;
     boost::atomic<bool> has_target_;
+
 public:
     ModeTargetHelper(uint16_t mode) : Mode (mode) {}
     bool hasTarget() { return has_target_; }
@@ -149,15 +151,29 @@ public:
         if(isnan(val)){
             LOG("target command is not a number");
             return false;
-        }else if(val <  std::numeric_limits<T>::min()){
+        }
+
+        using boost::numeric_cast;
+        using boost::numeric::positive_overflow;
+        using boost::numeric::negative_overflow;
+
+        try
+        {
+            target_= numeric_cast<T>(val);
+        }
+        catch(negative_overflow&) {
             LOG("Command " << val << " does not fit into target, clamping to min limit");
             target_= std::numeric_limits<T>::min();
-        }else if(val >  std::numeric_limits<T>::max()){
+        }
+        catch(positive_overflow&) {
             LOG("Command " << val << " does not fit into target, clamping to max limit");
             target_= std::numeric_limits<T>::max();
-        }else{
-            target_= val;
         }
+        catch(...){
+            LOG("Was not able to cast command " << val);
+            return false;
+        }
+
         has_target_ = true;
         return true;
     }
