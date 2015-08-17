@@ -280,8 +280,18 @@ protected:
         }
 
         res.success = false;
-        shutdown(status);
-        thread_.reset();
+        try {
+            shutdown(status);
+            thread_.reset();
+        }
+        catch( const std::exception &e){
+            std::string info = boost::diagnostic_information(e);
+            ROS_ERROR_STREAM(info);
+        }
+        catch(...){
+            res.message = "Unknown exception";
+            status.error(res.message);
+        }
         initialized_ = false;
 
         return true;
