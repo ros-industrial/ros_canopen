@@ -429,9 +429,9 @@ protected:
         }
         
         int update_ms = sync_ms;
-        if(sync_ms == 0) nh_priv_.getParam("update_ms", update_ms);
+        nh_priv_.param("update_ms", update_ms, sync_ms);
         if(update_ms == 0){
-            ROS_ERROR_STREAM("Update interval  "<< sync_ms << " is invalid");
+            ROS_ERROR_STREAM("Update interval "<< update_ms << " is invalid");
             return false;
         }else{
             update_duration_ = boost::chrono::milliseconds(update_ms);
