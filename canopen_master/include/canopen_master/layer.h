@@ -5,6 +5,7 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
+#include <boost/exception/diagnostic_information.hpp>
 
 namespace canopen{
 
@@ -53,6 +54,11 @@ public:
         values_.push_back(std::make_pair(key,str.str()));
     }
 };
+
+#define CATCH_LAYER_HANDLER_EXCEPTIONS(command, status)                           \
+    try{ command; }                                                             \
+    catch(std::exception &e) {status.error(boost::diagnostic_information(e)); }
+  
 class Layer{
 public:
     enum LayerState{
@@ -68,19 +74,19 @@ public:
     const std::string name;
 
     void read(LayerStatus &status) {
-        if(state > Off) handleRead(status, state);
+        if(state > Off) CATCH_LAYER_HANDLER_EXCEPTIONS(handleRead(status, state), status);
     }
     void write(LayerStatus &status) {
-        if(state > Off) handleWrite(status, state);
+        if(state > Off) CATCH_LAYER_HANDLER_EXCEPTIONS(handleWrite(status, state), status);
     }
     void diag(LayerReport &report) {
-        if(state > Shutdown) handleDiag(report);
+        if(state > Shutdown) CATCH_LAYER_HANDLER_EXCEPTIONS(handleDiag(report), report);
     }
     void init(LayerStatus &status) {
         if(state == Off){
             if(status.bounded<LayerStatus::Warn>()){
                 state = Init;
-                handleInit(status);
+                CATCH_LAYER_HANDLER_EXCEPTIONS(handleInit(status), status);
             }
             if(!status.bounded<LayerStatus::Warn>()) shutdown(status);
             else state = Ready;
@@ -89,14 +95,14 @@ public:
     void shutdown(LayerStatus &status) {
         if(state != Off){
             state = Shutdown;
-            handleShutdown(status);
+            CATCH_LAYER_HANDLER_EXCEPTIONS(handleShutdown(status), status);
             state = Off;
         }
     }
     void halt(LayerStatus &status) {
         if(state > Halt){
             state = Halt;
-            handleHalt(status);
+            CATCH_LAYER_HANDLER_EXCEPTIONS(handleHalt(status), status);
             state = Error;
         }
     }
@@ -104,7 +110,7 @@ public:
         if(state == Error){
             if(status.bounded<LayerStatus::Warn>()){
                 state = Recover;
-                handleRecover(status);
+                CATCH_LAYER_HANDLER_EXCEPTIONS(handleRecover(status), status);
             }
             if(!status.bounded<LayerStatus::Warn>()){
                 halt(status);
