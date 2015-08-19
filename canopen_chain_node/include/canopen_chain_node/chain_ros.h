@@ -280,9 +280,9 @@ protected:
         }
 
         res.success = false;
+        initialized_ = false;
         shutdown(status);
         thread_.reset();
-        initialized_ = false;
 
         return true;
     }
