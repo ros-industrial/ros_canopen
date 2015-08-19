@@ -116,7 +116,7 @@ target_link_libraries(canopen_ros_chain
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(canopen_ros_chain cob_srvs_gencpp) # TODO: workaround needed?
+add_dependencies(canopen_ros_chain ${catkin_EXPORTED_TARGETS})
 
 ## Declare a cpp executable
 add_executable(canopen_chain_node src/chain_node.cpp)
@@ -144,7 +144,7 @@ target_link_libraries(canopen_chain_node
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS canopen_chain_node
+install(TARGETS canopen_chain_node canopen_ros_chain
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
