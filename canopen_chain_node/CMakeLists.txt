@@ -86,7 +86,7 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES canopen_chain_node
+  LIBRARIES canopen_ros_chain
   CATKIN_DEPENDS canopen_master roslib roscpp std_srvs diagnostic_updater pluginlib socketcan_interface std_msgs
 #  DEPENDS system_lib
 )
@@ -106,19 +106,25 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(canopen_chain_node
-#   src/${PROJECT_NAME}/canopen_chain_node.cpp
-# )
+add_library(canopen_ros_chain
+  src/ros_chain.cpp
+)
+target_link_libraries(canopen_ros_chain
+  ${Boost_LIBRARIES}
+  ${catkin_LIBRARIES}
+)
+
+## Add cmake target dependencies of the executable/library
+## as an example, message headers may need to be generated before nodes
+add_dependencies(canopen_ros_chain ${catkin_EXPORTED_TARGETS})
 
 ## Declare a cpp executable
 add_executable(canopen_chain_node src/chain_node.cpp)
 
-## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
-add_dependencies(canopen_chain_node cob_srvs_gencpp) # TODO: workaround needed?
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(canopen_chain_node
+  canopen_ros_chain
   ${Boost_LIBRARIES}
   ${catkin_LIBRARIES}
 )
@@ -138,7 +144,7 @@ target_link_libraries(canopen_chain_node
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS canopen_chain_node
+install(TARGETS canopen_chain_node canopen_ros_chain
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
