@@ -38,9 +38,10 @@ class BufferedReader {
 public:
     class ScopedEnabler{
         BufferedReader &reader_;
+        bool before_;
     public:
-        ScopedEnabler(BufferedReader &reader) : reader_(reader) { reader_.enable(); }
-        ~ScopedEnabler() { reader_.disable(); }
+        ScopedEnabler(BufferedReader &reader) : reader_(reader), before_(reader_.setEnabled(true)) {}
+        ~ScopedEnabler() { reader_.setEnabled(before_); }
     };
 
     BufferedReader() : enabled_(true), max_len_(0) {}
@@ -54,6 +55,16 @@ public:
         boost::mutex::scoped_lock lock(mutex_);
         max_len_ = max_len;
         trim();
+    }
+    bool isEnabled(){
+        boost::mutex::scoped_lock lock(mutex_);
+        return enabled_;
+    }
+    bool setEnabled(bool enabled){
+        boost::mutex::scoped_lock lock(mutex_);
+        bool  before = enabled_;
+        enabled_ = enabled;
+        return before;
     }
     void enable(){
         boost::mutex::scoped_lock lock(mutex_);
