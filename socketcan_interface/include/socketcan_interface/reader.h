@@ -15,11 +15,21 @@ class BufferedReader {
     boost::condition_variable cond_;
     CommInterface::FrameListener::Ptr listener_;
     bool enabled_;
+    size_t max_len_;
 
+    void trim(){
+        if(max_len_ > 0){
+            while(buffer_.size() > max_len_){
+                LOG("buffer overflow, discarded oldest message " /*<< tostring(buffer_.front())*/); // enable message printing
+                buffer_.pop_front();
+            }
+        }
+    }
     void handleFrame(const can::Frame & msg){
         boost::mutex::scoped_lock lock(mutex_);
         if(enabled_){
             buffer_.push_back(msg);
+            trim();
             cond_.notify_one();
         }else{
             LOG("discarded message " /*<< tostring(msg)*/); // enable message printing
@@ -33,16 +43,18 @@ public:
         ~ScopedEnabler() { reader_.disable(); }
     };
 
-    BufferedReader() : enabled_(true) {}
-    BufferedReader(bool enable) : enabled_(enable) {}
+    BufferedReader() : enabled_(true), max_len_(0) {}
+    BufferedReader(bool enable, size_t max_len = 0) : enabled_(enable), max_len_(max_len) {}
 
-    BufferedReader(boost::shared_ptr<CommInterface> interface, const Frame::Header& h){
-        listen(interface,h);
+    void flush(){
+        boost::mutex::scoped_lock lock(mutex_);
+        buffer_.clear();
     }
-    BufferedReader(bool enable, boost::shared_ptr<CommInterface> interface, const Frame::Header& h) : enabled_(enable) {
-        listen(interface,h);
+    void setMaxLen(size_t max_len){
+        boost::mutex::scoped_lock lock(mutex_);
+        max_len_ = max_len;
+        trim();
     }
-
     void enable(){
         boost::mutex::scoped_lock lock(mutex_);
         enabled_ = true;
