@@ -49,7 +49,7 @@ public:
     };
     InternalState getState();
     InternalState read(uint16_t sw);
-    bool waitForNewState(const time_point &abstime, InternalState &new_state, const State402::InternalState &test_state);
+    bool waitForNewState(const time_point &abstime, InternalState &state);
     State402() : state_(Unknown) {}
 private:
     boost::condition_variable cond_;

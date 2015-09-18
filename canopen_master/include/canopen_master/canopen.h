@@ -3,6 +3,7 @@
 
 #include <socketcan_interface/interface.h>
 #include <socketcan_interface/dispatcher.h>
+#include <socketcan_interface/reader.h>
 #include "exceptions.h"
 #include "layer.h"
 #include "objdict.h"
@@ -20,7 +21,6 @@ inline time_point get_abs_time(const time_duration& timeout) { return boost::chr
 inline time_point get_abs_time() { return boost::chrono::high_resolution_clock::now(); }
 
 
-    
 template<typename T> struct FrameOverlay: public can::Frame{
     T &data;
     FrameOverlay(const Header &h) : can::Frame(h,sizeof(T)), data(*(T*) can::Frame::data.c_array()) {
@@ -31,16 +31,12 @@ template<typename T> struct FrameOverlay: public can::Frame{
 
 class SDOClient{
     
-    can::CommInterface::FrameListener::Ptr listener_;
     can::Header client_id;
     
     boost::timed_mutex mutex;
-    boost::mutex cond_mutex;
-    boost::condition_variable cond;
-    boost::mutex buffer_mutex;
-    bool success;
-    
-    void handleFrame(const can::Frame & msg);
+
+    can::BufferedReader reader_;
+    bool processFrame(const can::Frame & msg);
     
     String buffer;
     size_t offset;
@@ -49,7 +45,7 @@ class SDOClient{
     can::Frame last_msg;
     const canopen::ObjectDict::Entry * current_entry;
     
-    void wait_for_response();
+    void transmitAndWait(const canopen::ObjectDict::Entry &entry, const String &data, String *result);
     void abort(uint32_t reason);
 
     const boost::shared_ptr<can::CommInterface> interface_;
@@ -62,7 +58,7 @@ public:
     void init();
     
     SDOClient(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id)
-    : interface_(interface), storage_(boost::make_shared<ObjectStorage>(dict, node_id, ObjectStorage::ReadDelegate(this, &SDOClient::read), ObjectStorage::WriteDelegate(this, &SDOClient::write)))
+    : interface_(interface), storage_(boost::make_shared<ObjectStorage>(dict, node_id, ObjectStorage::ReadDelegate(this, &SDOClient::read), ObjectStorage::WriteDelegate(this, &SDOClient::write))), reader_(false, 1)
     {
     }
 };
@@ -82,7 +78,6 @@ class PDOMapper{
         
     private:
         boost::mutex mutex;
-        boost::condition_variable cond;
         bool dirty;
         bool empty;
         std::vector<char> buffer;
