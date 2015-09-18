@@ -55,6 +55,9 @@ protected:
             state_dispatcher_.dispatch(state_);
         }
     }
+    void setNotReady(){
+        setDriverState(socket_.is_open()?State::open : State::closed);
+    }
     
     void frameReceived(const boost::system::error_code& error){
         if(!error){
@@ -77,7 +80,7 @@ public:
         return state_;
     }
     virtual void run(){
-        setDriverState(socket_.is_open()?State::open : State::closed);
+        setNotReady();
         
         if(getState().driver_state == State::open){
             io_service_.reset();
@@ -92,7 +95,7 @@ public:
             io_service_.run(ec);
             setErrorCode(ec);
             
-            setDriverState(socket_.is_open()?State::open : State::closed);
+            setNotReady();
         }   
         state_dispatcher_.dispatch(getState());
     }
