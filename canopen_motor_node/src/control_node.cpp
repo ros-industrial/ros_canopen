@@ -1,6 +1,6 @@
 #include <socketcan_interface/dispatcher.h>
 #include <socketcan_interface/socketcan.h>
-#include <canopen_chain_node/chain_ros.h>
+#include <canopen_chain_node/ros_chain.h>
 
 #include <canopen_402/base.h>
 

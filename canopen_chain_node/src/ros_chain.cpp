@@ -1,5 +1,5 @@
 
-#include <canopen_chain_node/chain_ros.h>
+#include <canopen_chain_node/ros_chain.h>
 
 #include <std_msgs/Int8.h>
 #include <std_msgs/Int16.h>

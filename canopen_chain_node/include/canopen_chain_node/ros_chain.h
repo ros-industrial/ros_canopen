@@ -1,5 +1,5 @@
-#ifndef H_CANOPEN_CHAIN_ROS
-#define H_CANOPEN_CHAIN_ROS
+#ifndef H_CANOPEN_ROS_CHAIN
+#define H_CANOPEN_ROS_CHAIN
 
 #include <canopen_master/canopen.h>
 #include <canopen_master/can_layer.h>
