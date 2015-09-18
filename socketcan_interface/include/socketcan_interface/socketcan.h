@@ -177,7 +177,7 @@ protected:
         if(ec){
             LOG("FAILED " << ec);
             BaseClass::setErrorCode(ec);
-            BaseClass::setDriverState(State::open);
+            BaseClass::setNotReady();
             return false;
         }
         
@@ -197,7 +197,7 @@ protected:
 
                 LOG("error: " << BaseClass::input_.id);
                 BaseClass::setInternalError(BaseClass::input_.id);
-                BaseClass::setDriverState(State::open); // TODO: error reset?
+                BaseClass::setNotReady();
 
             }else{
                 BaseClass::input_.is_extended = (frame_.can_id & CAN_EFF_FLAG) ? 1 :0;
