@@ -82,8 +82,12 @@ public:
 	}
     }
     virtual void handleShutdown(LayerStatus &status){
+        can::StateWaiter waiter(driver_.get());
         error_listener_.reset();
         driver_->shutdown();
+        if(!waiter.wait(can::State::closed, boost::posix_time::seconds(1))){
+             status.warn("CAN shutdown timed out");
+        }
         if(thread_){
             thread_->interrupt();
             thread_->join();
