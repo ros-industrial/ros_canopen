@@ -94,7 +94,7 @@ public:
             
             setDriverState(socket_.is_open()?State::open : State::closed);
         }   
-        state_dispatcher_.dispatch(state_);
+        state_dispatcher_.dispatch(getState());
     }
     virtual bool send(const Frame & msg){
         return getState().driver_state == State::ready && enqueue(msg);
