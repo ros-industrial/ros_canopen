@@ -98,8 +98,10 @@ public:
     virtual void handleHalt(LayerStatus &status) { /* nothing to do */ }
     
     virtual void handleRecover(LayerStatus &status){
-		handleShutdown(status);
-		handleInit(status);
+        if(!driver_->getState().isReady()){
+            handleShutdown(status);
+            handleInit(status);
+        }
     }
 
 };
