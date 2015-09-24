@@ -410,7 +410,6 @@ void Motor402::handleWrite(LayerStatus &status, const LayerState &current_state)
                 control_word_ &= ~(1<<Command402::CW_Halt);
             }
         }
-        if(start_fault_reset_.exchange(false)) control_word_ &= ~(1<<Command402::CW_Fault_Reset);
         control_word_entry_.set(control_word_);
     }
 }
@@ -455,11 +454,6 @@ void Motor402::handleInit(LayerStatus &status){
     if(!readState(status)){
         status.error("Could not read motor state");
         return;
-    }
-    {
-        boost::mutex::scoped_lock lock(cw_mutex_);
-        control_word_ = 0;
-        start_fault_reset_ = true;
     }
     if(!switchState(status, State402::Operation_Enable)){
         status.error("Could not enable motor");
@@ -507,7 +501,6 @@ void Motor402::handleHalt(LayerStatus &status){
     }
 }
 void Motor402::handleRecover(LayerStatus &status){
-    start_fault_reset_ = true;
     {
         boost::mutex::scoped_lock lock(mode_mutex_);
         if(selected_mode_ && !selected_mode_->start()){
