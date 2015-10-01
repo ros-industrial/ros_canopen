@@ -95,15 +95,17 @@ install(DIRECTORY
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
-roslaunch_add_file_check(launch/sim_rig1.launch)
-roslaunch_add_file_check(launch/sim_rig2.launch)
-roslaunch_add_file_check(launch/sim_rig12.launch)
-roslaunch_add_file_check(launch/sim_rig1_rig2.launch)
+if(CATKIN_ENABLE_TESTING)
+  roslaunch_add_file_check(launch/sim_rig1.launch)
+  roslaunch_add_file_check(launch/sim_rig2.launch)
+  roslaunch_add_file_check(launch/sim_rig12.launch)
+  roslaunch_add_file_check(launch/sim_rig1_rig2.launch)
 
-roslaunch_add_file_check(launch/hw_rig1.launch)
-roslaunch_add_file_check(launch/hw_rig2.launch)
-roslaunch_add_file_check(launch/hw_rig12.launch)
-roslaunch_add_file_check(launch/hw_rig1_rig2.launch)
+  roslaunch_add_file_check(launch/hw_rig1.launch)
+  roslaunch_add_file_check(launch/hw_rig2.launch)
+  roslaunch_add_file_check(launch/hw_rig12.launch)
+  roslaunch_add_file_check(launch/hw_rig1_rig2.launch)
+endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
