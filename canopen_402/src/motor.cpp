@@ -410,8 +410,11 @@ void Motor402::handleWrite(LayerStatus &status, const LayerState &current_state)
                 control_word_ &= ~(1<<Command402::CW_Halt);
             }
         }
-        if(start_fault_reset_.exchange(false)) control_word_ &= ~(1<<Command402::CW_Fault_Reset);
-        control_word_entry_.set(control_word_);
+        if(start_fault_reset_.exchange(false)){
+            control_word_entry_.set(control_word_ & ~(1<<Command402::CW_Fault_Reset));
+        }else{
+            control_word_entry_.set(control_word_);
+        }
     }
 }
 void Motor402::handleDiag(LayerReport &report){
