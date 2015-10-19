@@ -109,7 +109,7 @@ install(FILES socketcan_interface_plugin.xml
 if(CATKIN_ENABLE_TESTING)
 
   catkin_add_gtest(${PROJECT_NAME}-test_dummy_interface test/test_dummy_interface.cpp)
-  target_link_libraries(${PROJECT_NAME}-test_dummy_interface ${catkin_LIBRARIES})
+  target_link_libraries(${PROJECT_NAME}-test_dummy_interface socketcan_interface_string ${catkin_LIBRARIES})
 
 endif()
 
