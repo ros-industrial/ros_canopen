@@ -30,8 +30,8 @@ script:
   # Enable install space
   #- catkin config --install
   # Build [and Install] packages
-  - catkin build --limit-status-rate 0.1 --no-notify -DCMAKE_BUILD_TYPE=Release
+  - catkin build --no-status --no-notify -DCMAKE_BUILD_TYPE=Release
   # Build tests
-  - catkin build --limit-status-rate 0.1 --no-notify --make-args tests
+  - catkin build --no-status --no-notify --make-args tests
   # Run tests
   #- catkin run_tests
