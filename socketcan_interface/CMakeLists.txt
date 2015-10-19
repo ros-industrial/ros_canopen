@@ -22,7 +22,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES
+  LIBRARIES socketcan_interface_string
   CATKIN_DEPENDS
   DEPENDS Boost
 )
@@ -34,13 +34,14 @@ catkin_package(
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
-# add_library(socketcan_interface
-#   src/${PROJECT_NAME}/socketcan_interface.cpp
-# )
+add_library(socketcan_interface_string
+    src/string.cpp
+    )
 
 ## Declare a cpp executable
 add_executable(socketcan_dump src/candump.cpp)
 target_link_libraries(socketcan_dump
+   socketcan_interface_string
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
 )
@@ -77,7 +78,7 @@ target_link_libraries(socketcan_interface_plugin
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS socketcan_dump socketcan_interface_plugin
+install(TARGETS socketcan_dump socketcan_interface_string socketcan_interface_plugin
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -108,7 +109,7 @@ install(FILES socketcan_interface_plugin.xml
 if(CATKIN_ENABLE_TESTING)
 
   catkin_add_gtest(${PROJECT_NAME}-test_dummy_interface test/test_dummy_interface.cpp)
-  target_link_libraries(${PROJECT_NAME}-test_dummy_interface ${catkin_LIBRARIES})
+  target_link_libraries(${PROJECT_NAME}-test_dummy_interface socketcan_interface_string ${catkin_LIBRARIES})
 
 endif()
 
