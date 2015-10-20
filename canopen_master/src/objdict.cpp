@@ -137,10 +137,10 @@ template<> uint64_t int_from_string(const std::string &s){
 template<typename T> HoldAny parse_int(boost::property_tree::iptree &pt, const std::string &key){
     if(pt.count(key) == 0) return HoldAny(TypeGuard::create<T>());
                                           
-    std::string str = pt.get<std::string>(key);
+    std::string str = boost::trim_copy(pt.get<std::string>(key));
     if(boost::istarts_with(str,"$NODEID")){
         return HoldAny(NodeIdOffset<T>(int_from_string<T>(boost::trim_copy(str.substr(str.find("+",7)+1)))));
-    }else return HoldAny(int_from_string<T>(boost::trim_copy(str)));
+    }else return HoldAny(int_from_string<T>(str));
 }
 
 template<typename T> HoldAny parse_octets(boost::property_tree::iptree &pt, const std::string &key){
