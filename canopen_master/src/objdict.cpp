@@ -216,7 +216,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptr
         entry->desc = object->get<std::string>("Denotation",object->get<std::string>("ParameterName"));
         
         // std::cout << name << ": "<< entry->desc << std::endl;
-        if(entry->obj_code == ObjectDict::VAR || entry->obj_code == ObjectDict::DOMAIN_DATA){
+        if(entry->obj_code == ObjectDict::VAR || entry->obj_code == ObjectDict::DOMAIN_DATA || sub_index){
             entry->sub_index = sub_index? *sub_index: 0;
             read_var(*entry, *object);
             dict->insert(sub_index != 0, entry);
