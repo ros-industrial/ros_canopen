@@ -320,10 +320,8 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
         }
         switch_map_.insert(std::make_pair(controller_it->name, to_switch));
     }
-    return true;
-}
 
-void RobotLayer::doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) {
+    // perform mode switches
     boost::unordered_set<boost::shared_ptr<HandleLayer> > to_stop;
     std::vector<std::string> failed_controllers;
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
@@ -334,6 +332,10 @@ void RobotLayer::doSwitch(const std::list<hardware_interface::ControllerInfo> &s
     }
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
         SwitchContainer &to_switch = switch_map_.at(controller_it->name);
+        bool okay = true;
+        for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
+            it->first->switchMode(MotorBase::No_Mode); // stop all
+        }
         for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
             if(!it->first->switchMode(it->second)){
                 failed_controllers.push_back(controller_it->name);
@@ -341,6 +343,7 @@ void RobotLayer::doSwitch(const std::list<hardware_interface::ControllerInfo> &s
                 for(RobotLayer::SwitchContainer::iterator stop_it = to_switch.begin(); stop_it != to_switch.end(); ++stop_it){
                     to_stop.insert(stop_it->first);
                 }
+                okay = false;
                 break;
             }
             to_stop.erase(it->first);
@@ -349,7 +352,15 @@ void RobotLayer::doSwitch(const std::list<hardware_interface::ControllerInfo> &s
     for(boost::unordered_set<boost::shared_ptr<HandleLayer> >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
         (*it)->switchMode(MotorBase::No_Mode);
     }
-    if(!failed_controllers.empty()) stopControllers(failed_controllers);
+    if(!failed_controllers.empty()){
+        stopControllers(failed_controllers);
+        // will not return false here since this would prevent other controllers to be started and therefore lead to an inconsistent state
+    }
+
+    return true;
+}
+
+void RobotLayer::doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) {
 }
 
 
