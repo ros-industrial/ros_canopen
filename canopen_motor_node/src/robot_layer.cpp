@@ -53,7 +53,7 @@ bool HandleLayer::select(const MotorBase::OperationMode &m){
 }
 
 HandleLayer::HandleLayer(const std::string &name, const boost::shared_ptr<MotorBase> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options)
-: Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0) {
+: Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0), forward_command_(false) {
    commands_[MotorBase::No_Mode] = 0;
 
    std::string p2d("rint(rad2deg(pos)*1000)"), v2d("rint(rad2deg(vel)*1000)"), e2d("rint(eff)");
@@ -97,6 +97,7 @@ HandleLayer::CanSwitchResult HandleLayer::canSwitch(const MotorBase::OperationMo
 
 bool HandleLayer::switchMode(const MotorBase::OperationMode &m){
     if(motor_->getMode() != m){
+        forward_command_ = false;
         jh_ = 0; // disconnect handle
         if(!motor_->enterModeAndWait(m)){
             ROS_ERROR_STREAM(jsh_.getName() << "could not enter mode " << (int)m);
@@ -107,6 +108,15 @@ bool HandleLayer::switchMode(const MotorBase::OperationMode &m){
     }
     return select(m);
 }
+
+bool HandleLayer::forwardForMode(const MotorBase::OperationMode &m){
+    if(motor_->getMode() == m){
+        forward_command_ = true;
+        return true;
+    }
+    return false;
+}
+
 
 hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::PositionJointInterface &iface){
     std::vector<MotorBase::OperationMode> modes;
@@ -141,7 +151,9 @@ void HandleLayer::handleRead(LayerStatus &status, const LayerState &current_stat
 }
 void HandleLayer::handleWrite(LayerStatus &status, const LayerState &current_state) {
     if(current_state == Ready){
-        hardware_interface::JointHandle* jh = jh_;
+        hardware_interface::JointHandle* jh = 0;
+        if(forward_command_) jh = jh_;
+        
         if(jh == &jph_){
             motor_->setTarget(conv_target_pos_->evaluate());
             cmd_vel_ = vel_;
@@ -361,6 +373,29 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
 }
 
 void RobotLayer::doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) {
+    std::vector<std::string> failed_controllers;
+    for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
+        try{
+            SwitchContainer &to_switch = switch_map_.at(controller_it->name);
+            for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
+                if(!it->first->forwardForMode(it->second)){
+                    failed_controllers.push_back(controller_it->name);
+                    ROS_ERROR_STREAM("Could not switch one joint for " << controller_it->name << ", will stop all related joints and the controller.");
+                    for(RobotLayer::SwitchContainer::iterator stop_it = to_switch.begin(); stop_it != to_switch.end(); ++stop_it){
+                        it->first->switchMode(MotorBase::No_Mode);
+                    }
+                    break;
+                }
+            }
+
+        }catch(const std::out_of_range&){
+            ROS_ERROR_STREAM("Conttroller " << controller_it->name << "not found, will stop it");
+            failed_controllers.push_back(controller_it->name);
+        }
+    }
+    if(!failed_controllers.empty()){
+        stopControllers(failed_controllers);
+    }
 }
 
 

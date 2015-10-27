@@ -128,6 +128,7 @@ class HandleLayer: public canopen::Layer{
     hardware_interface::JointStateHandle jsh_;
     hardware_interface::JointHandle jph_, jvh_, jeh_;
     boost::atomic<hardware_interface::JointHandle*> jh_;
+    boost::atomic<bool> forward_command_;
 
     typedef boost::unordered_map< canopen::MotorBase::OperationMode,hardware_interface::JointHandle* > CommandMap;
     CommandMap commands_;
@@ -164,6 +165,7 @@ public:
 
     CanSwitchResult canSwitch(const canopen::MotorBase::OperationMode &m);
     bool switchMode(const canopen::MotorBase::OperationMode &m);
+    bool forwardForMode(const canopen::MotorBase::OperationMode &m);
 
     void registerHandle(hardware_interface::JointStateInterface &iface){
         iface.registerHandle(jsh_);
