@@ -417,7 +417,7 @@ void SDOClient::transmitAndWait(const canopen::ObjectDict::Entry &entry, const S
         if(!reader_.read(&msg,boost::chrono::seconds(1)))
         {
             abort(0x05040000); // SDO protocol timed out.
-            LOG("Did not receivce a response message");
+            LOG("Did not receive a response message");
             break;
         }
         if(!processFrame(msg)){

@@ -100,7 +100,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
     storage->entry(cob_id, com_index, SUB_COM_COB_ID);
     
     bool com_changed = check_com_changed(dict, map_index);
-    if(map_changed || com_changed){
+    if((map_changed || com_changed) && cob_id.desc().writable){
         
         PDOid cur(cob_id.get());
         cur.invalid = 1;
@@ -153,7 +153,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
     if(map_changed){
         num_entry.set(map_num);
     }
-    if(com_changed || map_changed){
+    if((com_changed || map_changed) && cob_id.desc().writable){
         storage->init(ObjectDict::Key(com_index, SUB_COM_COB_ID));
         
         cob_id.set(NodeIdOffset<uint32_t>::apply(dict(com_index, SUB_COM_COB_ID).value(), storage->node_id_));
