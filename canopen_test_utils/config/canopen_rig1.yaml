@@ -10,8 +10,9 @@ defaults: # optional, all defaults can be overwritten per node
     "1017": "100" # heartbeat producer
   ### 402
   # motor_allocator: canopen::Motor402::Allocator # select allocator for motor layer plugin
-  # motor_layer: settings passed to motor layer (plugin-specific)
+  # motor_layer: # settings passed to motor layer (plugin-specific)
   #   switching_state: 5 # (Operation_Enable), state for mode switching
+  #   monitor_mode: true # read operation mode in every cycle
   ### ROS:
   # publish: ["60C1sub1", "6060!"] # list of objects to be published (one topic per node and entry), ! diables caching and forces read from device
   ### ros_control: conversion functions
