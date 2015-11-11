@@ -1,4 +1,5 @@
 #include <canopen_402/motor.h>
+#include <boost/thread/reverse_lock.hpp>
 
 namespace canopen
 {
@@ -326,7 +327,15 @@ bool Motor402::switchMode(LayerStatus &status, uint16_t mode) {
         boost::mutex::scoped_lock lock(mode_mutex_);
 
         time_point abstime = get_abs_time(boost::chrono::seconds(5));
-        while(mode_id_ != mode && mode_cond_.wait_until(lock, abstime) == boost::cv_status::no_timeout) {}
+        if(monitor_mode_){
+            while(mode_id_ != mode && mode_cond_.wait_until(lock, abstime) == boost::cv_status::no_timeout) {}
+        }else{
+            while(mode_id_ != mode && get_abs_time() < abstime){
+                boost::reverse_lock<boost::mutex::scoped_lock> reverse(lock); // unlock inside loop
+                op_mode_display_.get(); // poll
+                boost::this_thread::sleep_for(boost::chrono::milliseconds(20)); // wait some time
+            }
+        }
 
         if(mode_id_ == mode){
             selected_mode_ = next_mode;
@@ -369,7 +378,7 @@ bool Motor402::readState(LayerStatus &status){
     State402::InternalState state = state_handler_.read(sw);
 
     boost::mutex::scoped_lock lock(mode_mutex_);
-    uint16_t new_mode = op_mode_display_.get();
+    uint16_t new_mode = monitor_mode_ ? op_mode_display_.get() : op_mode_display_.get_cached();
     if(selected_mode_ && selected_mode_->mode_id_ == new_mode){
         if(!selected_mode_->read(sw)){
             status.error("Mode handler has error");
