@@ -219,12 +219,6 @@ public:
 
     virtual void handleInit(canopen::LayerStatus &status);
     void enforce(const ros::Duration &period, bool reset);
-    virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) const{
-        // compile-time check for mode switching support in ros_control
-        // if the following line fails, please upgrade to ros_control/contoller_manager 0.9.2 or newer
-        (void) &hardware_interface::RobotHW::canSwitch;
-        return const_cast<RobotLayer*>(this)->prepareSwitch(start_list, stop_list); // awful hack, do not try this at home.
-    }
     virtual bool prepareSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list);
     virtual void doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list);
 };
