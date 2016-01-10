@@ -25,8 +25,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
-#define SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
+#ifndef SOCKETCAN_BRIDGE_TOPIC_TO_SOCKETCAN_H
+#define SOCKETCAN_BRIDGE_TOPIC_TO_SOCKETCAN_H
 
 #include <socketcan_interface/socketcan.h>
 #include <can_msgs/Frame.h>
@@ -34,38 +34,37 @@
 
 namespace socketcan_bridge
 {
-class SocketCANToTopic
+class TopicToSocketCAN
 {
   public:
-    SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param, boost::shared_ptr<can::DriverInterface> driver);
+    TopicToSocketCAN(ros::NodeHandle* nh, ros::NodeHandle* nh_param, boost::shared_ptr<can::DriverInterface> driver);
     int setup();
 
   private:
-    ros::Publisher can_topic_;
+    ros::Subscriber can_topic_;
     boost::shared_ptr<can::DriverInterface> driver_;
 
-    can::CommInterface::FrameListener::Ptr frame_listener_;
     can::StateInterface::StateListener::Ptr state_listener_;
 
-
-    void frameCallback(const can::Frame& f);
+    void msgCallback(const can_msgs::Frame::ConstPtr& msg);
     void stateCallback(const can::State & s);
 };
 
-void convertSocketCANToMessage(const can::Frame& f, can_msgs::Frame& m)
+void convertMessageToSocketCAN(const can_msgs::Frame& m, can::Frame& f)
 {
-  m.id = f.id;
-  m.dlc = f.dlc;
-  m.is_error = f.is_error;
-  m.is_rtr = f.is_rtr;
-  m.is_extended = f.is_extended;
-  for (int i = 0; i < f.dlc; ++i)
+  f.id = m.id;
+  f.dlc = m.dlc;
+  f.is_error = m.is_error;
+  f.is_rtr = m.is_rtr;
+  f.is_extended = m.is_extended;
+
+  for (int i = 0; i < m.dlc; ++i)
   {
-    m.data[i] = f.data[i];
+    f.data[i] = m.data[i];
   }
 };
 
 };  // namespace socketcan_bridge
 
 
-#endif  // SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
+#endif  // SOCKETCAN_BRIDGE_TOPIC_TO_SOCKETCAN_H

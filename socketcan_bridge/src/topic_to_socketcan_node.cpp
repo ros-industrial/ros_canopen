@@ -25,47 +25,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
-#define SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
-
-#include <socketcan_interface/socketcan.h>
-#include <can_msgs/Frame.h>
 #include <ros/ros.h>
+#include <socketcan_bridge/topic_to_socketcan.h>
+#include <socketcan_interface/threading.h>
+#include <socketcan_interface/string.h>
+#include <string>
 
-namespace socketcan_bridge
+
+
+int main(int argc, char *argv[])
 {
-class SocketCANToTopic
-{
-  public:
-    SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param, boost::shared_ptr<can::DriverInterface> driver);
-    int setup();
+  ros::init(argc, argv, "topic_to_socketcan_node");
 
-  private:
-    ros::Publisher can_topic_;
-    boost::shared_ptr<can::DriverInterface> driver_;
+  ros::NodeHandle nh(""), nh_param("~");
 
-    can::CommInterface::FrameListener::Ptr frame_listener_;
-    can::StateInterface::StateListener::Ptr state_listener_;
+  std::string can_device;
+  nh_param.param<std::string>("can_device", can_device, "can0");
 
+  boost::shared_ptr<can::ThreadedSocketCANInterface> driver = boost::make_shared<can::ThreadedSocketCANInterface> ();
 
-    void frameCallback(const can::Frame& f);
-    void stateCallback(const can::State & s);
-};
-
-void convertSocketCANToMessage(const can::Frame& f, can_msgs::Frame& m)
-{
-  m.id = f.id;
-  m.dlc = f.dlc;
-  m.is_error = f.is_error;
-  m.is_rtr = f.is_rtr;
-  m.is_extended = f.is_extended;
-  for (int i = 0; i < f.dlc; ++i)
+  if (!driver->init(can_device, 0))  // initialize device at can_device, 0 for no loopback.
   {
-    m.data[i] = f.data[i];
+    ROS_ERROR("Failed to initialize can_device at %s", can_device.c_str());
+    return -1;
   }
-};
+    else
+  {
+    ROS_INFO("Successfully connected to %s.", can_device.c_str());
+  }
 
-};  // namespace socketcan_bridge
+  socketcan_bridge::TopicToSocketCAN to_socketcan_bridge(&nh, &nh_param, driver);
+  to_socketcan_bridge.setup();
 
+  ros::spin();
 
-#endif  // SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
+  driver->shutdown();
+  driver.reset();
+
+  ros::waitForShutdown();
+}

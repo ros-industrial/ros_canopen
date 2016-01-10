@@ -28,6 +28,7 @@
 #include <ros/ros.h>
 #include <socketcan_bridge/socketcan_to_topic.h>
 #include <socketcan_interface/threading.h>
+#include <socketcan_interface/string.h>
 #include <string>
 
 
@@ -41,9 +42,7 @@ int main(int argc, char *argv[])
   std::string can_device;
   nh_param.param<std::string>("can_device", can_device, "can0");
 
-
   boost::shared_ptr<can::ThreadedSocketCANInterface> driver = boost::make_shared<can::ThreadedSocketCANInterface> ();
-
 
   if (!driver->init(can_device, 0))  // initialize device at can_device, 0 for no loopback.
   {

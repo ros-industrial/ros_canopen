@@ -7,7 +7,6 @@ if [ $VCAN_NOT_LOADED -eq 1 ]; then
     echo "vcan kernel module is not available..."
     echo "loading it;"
     sudo modprobe -a vcan
-    exit;
 fi
 
 ifconfig vcan0 > /dev/null
@@ -17,6 +16,17 @@ if [ $VCAN_NOT_EXIST -eq 1 ]; then
   echo "vcan0 does not exist, creating it."
   sudo ip link add dev vcan0 type vcan
   sudo ip link set vcan0 up
+else
+  echo "vcan0 already exists."
+fi
+
+
+ifconfig vcan1 > /dev/null
+VCAN_NOT_EXIST=$?
+if [ $VCAN_NOT_EXIST -eq 1 ]; then
+  echo "vcan0 does not exist, creating it."
+  sudo ip link add dev vcan1 type vcan
+  sudo ip link set vcan1 up
 else
   echo "vcan0 already exists."
 fi

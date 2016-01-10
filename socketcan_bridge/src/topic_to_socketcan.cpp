@@ -25,51 +25,53 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <socketcan_bridge/socketcan_to_topic.h>
+#include <socketcan_bridge/topic_to_socketcan.h>
 #include <socketcan_interface/string.h>
-#include <can_msgs/Frame.h>
 #include <string>
 
 namespace socketcan_bridge
 {
-  SocketCANToTopic::SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
+  TopicToSocketCAN::TopicToSocketCAN(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
       boost::shared_ptr<can::DriverInterface> driver)
     {
-      can_topic_ = nh->advertise<can_msgs::Frame>("received_messages", 10);
+      can_topic_ = nh->subscribe<can_msgs::Frame>("sent_messages", 10,
+                    boost::bind(&TopicToSocketCAN::msgCallback, this, _1));
       driver_ = driver;
     };
 
-  int SocketCANToTopic::setup()
+  int TopicToSocketCAN::setup()
     {
-      // register handler for frames and state changes.
-      frame_listener_ = driver_->createMsgListener(
-              can::CommInterface::FrameDelegate(this, &SocketCANToTopic::frameCallback));
-
       state_listener_ = driver_->createStateListener(
-              can::StateInterface::StateDelegate(this, &SocketCANToTopic::stateCallback));
+              can::StateInterface::StateDelegate(this, &TopicToSocketCAN::stateCallback));
     };
 
-  void SocketCANToTopic::frameCallback(const can::Frame& f)
+  void TopicToSocketCAN::msgCallback(const can_msgs::Frame::ConstPtr& msg)
     {
-      // ROS_DEBUG("Message came in: %s", can::tostring(f, true).c_str());
+      // ROS_DEBUG("Message came from sent_messages topic");
 
-      if (f.is_error)
-        {
-          ROS_WARN("Message is error: %s", can::tostring(f, true).c_str());
-        }
+      // translate it to the socketcan frame type.
+      can_msgs::Frame m = *msg.get();  // ROS message
+      can::Frame f;  // socketcan type
 
-      can_msgs::Frame msg;
-      // converts the can::Frame (socketcan.h) to can_msgs::Frame (ROS msg)
-      convertSocketCANToMessage(f, msg);
+      // converts the can_msgs::Frame (ROS msg) to can::Frame (socketcan.h)
+      convertMessageToSocketCAN(m, f);
 
-      msg.header.frame_id = "0";  // "0" for no frame.
-      msg.header.stamp = ros::Time::now();
+      if (!f.isValid())  // check if the id and flags are appropriate.
+      {
+        ROS_WARN("Refusing to send invalid frame: %s.", can::tostring(f, true).c_str());
+        return;
+      }
 
-      can_topic_.publish(msg);
+      bool res = driver_->send(f);
+      if (!res)
+      {
+        ROS_WARN("Failed to send message: %s.", can::tostring(f, true).c_str());
+      }
     };
 
 
-  void SocketCANToTopic::stateCallback(const can::State & s)
+
+  void TopicToSocketCAN::stateCallback(const can::State & s)
     {
       std::string err;
       driver_->translateError(s.internal_error, err);
