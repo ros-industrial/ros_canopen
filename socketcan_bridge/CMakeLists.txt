@@ -54,3 +54,9 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 roslint_cpp()
 #for use with catkin_make roslint_socketcan_bridge
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  catkin_add_gtest(test_conversion test/test_conversion.cpp)
+  target_link_libraries(test_conversion topic_to_socketcan socketcan_to_topic ${catkin_LIBRARIES})
+endif()

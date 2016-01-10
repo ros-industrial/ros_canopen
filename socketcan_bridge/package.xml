@@ -20,4 +20,5 @@
   <depend>roscpp</depend>
 
   <test_depend>roslint</test_depend>
+  <test_depend>gtest</test_depend>
 </package>
