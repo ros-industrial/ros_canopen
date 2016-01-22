@@ -8,10 +8,12 @@
 
 namespace can{
 
-class DummyInterface : public CommInterface{
+class DummyInterface : public DriverInterface{
     typedef FilteredDispatcher<const unsigned int, CommInterface::FrameListener> FrameDispatcher;
+    typedef FilteredDispatcher<const unsigned int, StateInterface::StateListener> StateDispatcher;
     typedef boost::unordered_multimap<std::string, Frame> Map;
     FrameDispatcher frame_dispatcher_;
+    StateDispatcher state_dispatcher_;
     Map map_;
     const bool loopback_;
 
@@ -56,6 +58,25 @@ public:
     virtual FrameListener::Ptr createMsgListener(const Frame::Header&h , const FrameDelegate &delegate){
         return frame_dispatcher_.createListener(h, delegate);
     }
+
+    // methods from StateInterface
+    virtual bool recover(){return false;};
+
+    virtual State getState(){can::State s; return s;};
+
+    virtual void shutdown(){};
+
+    virtual bool translateError(unsigned int internal_error, std::string & str){return false;};
+
+    virtual bool doesLoopBack() const {return false;};
+
+    virtual void run(){};
+
+    bool init(const std::string &device, bool loopback){return true;};
+
+    virtual StateListener::Ptr createStateListener(const StateDelegate &delegate){
+      return state_dispatcher_.createListener(delegate); // untested
+    };
 
 };
 
