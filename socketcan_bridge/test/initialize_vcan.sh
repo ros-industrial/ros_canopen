@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# sets up two virtual can interfaces, vcan0 and vcan1
+
 lsmod | grep -q "vcan"
 VCAN_NOT_LOADED=$?
 

@@ -8,9 +8,6 @@ find_package(catkin REQUIRED COMPONENTS
   roslint
 )
 
-find_package(Boost REQUIRED COMPONENTS system thread)
-
-
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES socketcan_to_topic topic_to_socketcan socketcan_interface roscpp can_msgs
@@ -18,10 +15,7 @@ catkin_package(
   DEPENDS Boost
 )
 
-
-
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
-
 
 
 add_library(socketcan_to_topic src/socketcan_to_topic.cpp)

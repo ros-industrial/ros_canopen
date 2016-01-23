@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>socketcan_bridge</name>
-  <version>0.0.1</version>
-  <description>Provides a node to bridge the CAN frames from socketcan to a ROS topic.</description>
+  <version>0.1.0</version>
+  <description>Provides nodes to convert messages from SocketCAN to a ROS Topic and vice versa.</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
   <author email="ivor@iwanders.net">Ivor Wanders</author>
 
   <license>BSD</license>
 
-  <!-- <url type="website">http://wiki.ros.org/canopen_master</url> -->
+  <url type="website">http://wiki.ros.org/socketcan_bridge</url>
+  <url type="repository">https://github.com/ros-industrial/ros_canopen</url>
+  <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roslint</build_depend>
