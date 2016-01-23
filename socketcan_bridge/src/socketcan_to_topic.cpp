@@ -52,15 +52,26 @@ namespace socketcan_bridge
   void SocketCANToTopic::frameCallback(const can::Frame& f)
     {
       // ROS_DEBUG("Message came in: %s", can::tostring(f, true).c_str());
-
-      if (f.is_error)
+      can::Frame frame = f;  // copy the frame first, cannot call isValid() on const.
+      if (!frame.isValid())
+      {
+        ROS_ERROR("Invalid frame from SocketCAN: id: %#04x, length: %d, is_extended: %d, is_error: %d, is_rtr: %d",
+                  f.id, f.dlc, f.is_extended, f.is_error, f.is_rtr);
+        return;
+      }
+      else
+      {
+        if (f.is_error)
         {
-          ROS_WARN("Message is error: %s", can::tostring(f, true).c_str());
+          // can::tostring cannot be used for dlc > 8 frames. It causes an crash
+          // due to usage of boost::array for the data array. The should always work.
+          ROS_WARN("Received frame is error: %s", can::tostring(f, true).c_str());
         }
+      }
 
       can_msgs::Frame msg;
       // converts the can::Frame (socketcan.h) to can_msgs::Frame (ROS msg)
-      convertSocketCANToMessage(f, msg);
+      convertSocketCANToMessage(frame, msg);
 
       msg.header.frame_id = "0";  // "0" for no frame.
       msg.header.stamp = ros::Time::now();

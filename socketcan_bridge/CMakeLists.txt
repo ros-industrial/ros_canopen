@@ -23,11 +23,14 @@ catkin_package(
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 
+
 add_library(socketcan_to_topic src/socketcan_to_topic.cpp)
 target_link_libraries(socketcan_to_topic ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(socketcan_to_topic can_msgs_generate_messages_cpp)
 
 add_library(topic_to_socketcan src/topic_to_socketcan.cpp)
 target_link_libraries(topic_to_socketcan ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(topic_to_socketcan can_msgs_generate_messages_cpp)
 
 add_executable(socketcan_to_topic_node src/socketcan_to_topic_node.cpp)
 target_link_libraries(socketcan_to_topic_node socketcan_to_topic ${catkin_LIBRARIES} ${Boost_LIBRARIES})
@@ -57,6 +60,22 @@ roslint_cpp()
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
+
+  # unit test for the can_msgs::Frame and can::Frame types.
   catkin_add_gtest(test_conversion test/test_conversion.cpp)
   target_link_libraries(test_conversion topic_to_socketcan socketcan_to_topic ${catkin_LIBRARIES})
+
+
+  add_rostest_gtest(test_to_socketcan
+                    test/to_socketcan.test
+                    test/to_socketcan_test.cpp)
+  target_link_libraries(test_to_socketcan topic_to_socketcan ${catkin_LIBRARIES})
+
+  add_rostest_gtest(test_to_topic
+                    test/to_topic.test
+                    test/to_topic_test.cpp)
+  target_link_libraries(test_to_topic socketcan_to_topic ${catkin_LIBRARIES})
+
+  
+
 endif()

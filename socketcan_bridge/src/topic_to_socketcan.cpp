@@ -50,6 +50,7 @@ namespace socketcan_bridge
       // ROS_DEBUG("Message came from sent_messages topic");
 
       // translate it to the socketcan frame type.
+
       can_msgs::Frame m = *msg.get();  // ROS message
       can::Frame f;  // socketcan type
 
@@ -58,14 +59,17 @@ namespace socketcan_bridge
 
       if (!f.isValid())  // check if the id and flags are appropriate.
       {
-        ROS_WARN("Refusing to send invalid frame: %s.", can::tostring(f, true).c_str());
+        // ROS_WARN("Refusing to send invalid frame: %s.", can::tostring(f, true).c_str());
+        // can::tostring cannot be used for dlc > 8 frames. It causes an crash
+        // due to usage of boost::array for the data array. The should always work.
+        ROS_ERROR("Invalid frame from topic: id: %#04x, length: %d, is_extended: %d", m.id, m.dlc, m.is_extended);
         return;
       }
 
       bool res = driver_->send(f);
       if (!res)
       {
-        ROS_WARN("Failed to send message: %s.", can::tostring(f, true).c_str());
+        ROS_ERROR("Failed to send message: %s.", can::tostring(f, true).c_str());
       }
     };
 
