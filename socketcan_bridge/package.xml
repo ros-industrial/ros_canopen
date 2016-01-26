@@ -14,7 +14,6 @@
   <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roslint</build_depend>
 
   <depend>can_msgs</depend>
   <depend>socketcan_interface</depend>
