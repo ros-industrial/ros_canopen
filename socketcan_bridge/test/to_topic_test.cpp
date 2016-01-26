@@ -59,6 +59,9 @@ TEST(SocketCANToTopicTest, checkCorrectData)
   socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_);
   to_topic_bridge.setup();  // initiate the message callbacks
 
+  // init the driver to test stateListener (not checked automatically).
+  driver_->init("string_not_used", true);
+
   // create a frame collector.
   msgCollector message_collector_;
 

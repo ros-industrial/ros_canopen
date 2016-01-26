@@ -58,6 +58,9 @@ TEST(TopicToSocketCANTest, checkCorrectData)
   socketcan_bridge::TopicToSocketCAN to_socketcan_bridge(&nh, &nh_param, driver_);
   to_socketcan_bridge.setup();
 
+  // init the driver to test stateListener (not checked automatically).
+  driver_->init("string_not_used", true);
+
   // register for messages on received_messages.
   ros::Publisher publisher_ = nh.advertise<can_msgs::Frame>("sent_messages", 10);
 
