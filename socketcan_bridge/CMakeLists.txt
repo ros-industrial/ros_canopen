@@ -5,30 +5,29 @@ find_package(catkin REQUIRED COMPONENTS can_msgs roscpp socketcan_interface)
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES socketcan_to_topic topic_to_socketcan socketcan_interface roscpp can_msgs
+  LIBRARIES socketcan_to_topic topic_to_socketcan
   CATKIN_DEPENDS can_msgs roscpp socketcan_interface
-  DEPENDS Boost
 )
 
-include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 
 add_library(socketcan_to_topic src/socketcan_to_topic.cpp)
-target_link_libraries(socketcan_to_topic ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(socketcan_to_topic ${catkin_LIBRARIES})
 add_dependencies(socketcan_to_topic ${catkin_EXPORTED_TARGETS})
 
 add_library(topic_to_socketcan src/topic_to_socketcan.cpp)
-target_link_libraries(topic_to_socketcan ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(topic_to_socketcan ${catkin_LIBRARIES})
 add_dependencies(topic_to_socketcan ${catkin_EXPORTED_TARGETS})
 
 add_executable(socketcan_to_topic_node src/socketcan_to_topic_node.cpp)
-target_link_libraries(socketcan_to_topic_node socketcan_to_topic ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(socketcan_to_topic_node socketcan_to_topic ${catkin_LIBRARIES})
 
 add_executable(topic_to_socketcan_node src/topic_to_socketcan_node.cpp)
-target_link_libraries(topic_to_socketcan_node topic_to_socketcan ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(topic_to_socketcan_node topic_to_socketcan ${catkin_LIBRARIES})
 
 add_executable(socketcan_bridge_node src/socketcan_bridge_node.cpp)
-target_link_libraries(socketcan_bridge_node topic_to_socketcan socketcan_to_topic ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(socketcan_bridge_node topic_to_socketcan socketcan_to_topic ${catkin_LIBRARIES})
 
 install(TARGETS
   socketcan_to_topic
