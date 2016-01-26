@@ -15,7 +15,8 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>message_generation</depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
   <depend>std_msgs</depend>
 
 </package>
