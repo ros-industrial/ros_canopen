@@ -73,7 +73,7 @@ namespace socketcan_bridge
       // converts the can::Frame (socketcan.h) to can_msgs::Frame (ROS msg)
       convertSocketCANToMessage(frame, msg);
 
-      msg.header.frame_id = "0";  // "0" for no frame.
+      msg.header.frame_id = "";  // empty frame is the de-facto standard for no frame.
       msg.header.stamp = ros::Time::now();
 
       can_topic_.publish(msg);
