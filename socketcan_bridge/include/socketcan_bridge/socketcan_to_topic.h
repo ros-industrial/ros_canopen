@@ -38,7 +38,7 @@ class SocketCANToTopic
 {
   public:
     SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param, boost::shared_ptr<can::DriverInterface> driver);
-    int setup();
+    void setup();
 
   private:
     ros::Publisher can_topic_;

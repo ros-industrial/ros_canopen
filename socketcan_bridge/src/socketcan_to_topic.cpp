@@ -39,7 +39,7 @@ namespace socketcan_bridge
       driver_ = driver;
     };
 
-  int SocketCANToTopic::setup()
+  void SocketCANToTopic::setup()
     {
       // register handler for frames and state changes.
       frame_listener_ = driver_->createMsgListener(

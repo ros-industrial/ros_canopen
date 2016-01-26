@@ -39,7 +39,7 @@ namespace socketcan_bridge
       driver_ = driver;
     };
 
-  int TopicToSocketCAN::setup()
+  void TopicToSocketCAN::setup()
     {
       state_listener_ = driver_->createStateListener(
               can::StateInterface::StateDelegate(this, &TopicToSocketCAN::stateCallback));
