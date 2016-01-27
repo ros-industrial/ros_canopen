@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>ros_canopen</name>
   <version>0.6.4</version>
   <description>A generic canopen implementation for ROS</description>
@@ -10,20 +10,19 @@
   <url type="repository">https://github.com/ros-industrial/ros_canopen</url>
   <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
-  <maintainer email="fmw@ipa.fhg.de">Florian Weisshardt</maintainer>
-  <maintainer email="nhg@ipa.fhg.de">Nadia Hammoudeh Garcia</maintainer>
+  <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
   <author email="fmw@ipa.fhg.de">Florian Weisshardt</author>
 
-
   <buildtool_depend>catkin</buildtool_depend>
-  <run_depend>canopen_402</run_depend>
-  <run_depend>canopen_chain_node</run_depend>
-  <run_depend>canopen_master</run_depend>
-  <run_depend>canopen_motor_node</run_depend>
-  <!--run_depend>canopen_test_utils</run_depend-->
-  <run_depend>socketcan_interface</run_depend>
 
-
+  <exec_depend>can_msgs</exec_depend>
+  <exec_depend>canopen_402</exec_depend>
+  <exec_depend>canopen_chain_node</exec_depend>
+  <exec_depend>canopen_master</exec_depend>
+  <exec_depend>canopen_motor_node</exec_depend>
+  <!--exec_depend>canopen_test_utils</exec_depend-->
+  <exec_depend>socketcan_bridge</exec_depend>
+  <exec_depend>socketcan_interface</exec_depend>
 
   <export>
     <metapackage/>
