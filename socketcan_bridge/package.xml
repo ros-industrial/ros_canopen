@@ -16,8 +16,8 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>can_msgs</depend>
-  <depend>socketcan_interface</depend>
   <depend>roscpp</depend>
+  <depend>socketcan_interface</depend>
 
   <test_depend>roslint</test_depend>
   <test_depend>rostest</test_depend>

@@ -118,7 +118,7 @@ int main(int argc, char *argv[]){
 
     if(argc <= 2){
         std::cerr << "usage: " << argv[0] << " device node_id [< INPUT] [> OUTPUT]" << std::endl;
-       return -1;
+       return 1;
     }
 
     bool tty = isatty(fileno(stdin));
@@ -133,7 +133,7 @@ int main(int argc, char *argv[]){
 
     if(!driver->init(argv[1],0)){
         std::cerr << "init failed" << std::endl;
-        return -1;
+        return 1;
     }
 
     sleep(1.0);
@@ -145,12 +145,12 @@ int main(int argc, char *argv[]){
         node->init(status);
         if(!status.bounded<LayerStatus::Warn>()){
             std::cerr << status.reason() << std::endl;
-            shutdown(driver,node,-1);
+            shutdown(driver,node,1);
         }
     }
     catch( const canopen::Exception &e){
         std::cerr << boost::diagnostic_information(e) << std::endl;
-        shutdown(driver,node,-1);
+        shutdown(driver,node,1);
     }
 
     std::string res;

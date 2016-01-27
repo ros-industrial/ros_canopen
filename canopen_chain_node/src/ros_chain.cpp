@@ -1,3 +1,4 @@
+#include <ros/package.h>
 
 #include <canopen_chain_node/ros_chain.h>
 
