@@ -13,7 +13,7 @@ int main(int argc, char** argv){
   RosChain chain(nh, nh_priv);
   
   if(!chain.setup()){
-      return -1;
+      return 1;
   }
   
   ros::spin();

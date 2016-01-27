@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
 
     if(argc < 3){
         std::cout << "Usage: " << argv[0] << " DEVICE EDS/DCF [sync_ms]" << std::endl;
-        return -1;
+        return 1;
     }
 
     // Interface::FrameListener::Ptr printer = driver->createMsgListener(print_frame); // printer for all incoming messages
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]){
 
     if(!driver->init(argv[1],true)){
         std::cout << "init failed" << std::endl;
-        return -1;
+        return 1;
     }
 
     sleep(1.0);
