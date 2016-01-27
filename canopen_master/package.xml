@@ -19,6 +19,7 @@
 
   <depend>class_loader</depend>
 
+  <test_depend>rosunit</test_depend>
   <export>
     <!-- You can specify that this package is a metapackage here: -->
     <!-- <metapackage/> -->
