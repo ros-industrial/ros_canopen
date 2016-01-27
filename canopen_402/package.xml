@@ -15,6 +15,7 @@
   <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
+
   <depend>canopen_master</depend>
   <depend>class_loader</depend>
 

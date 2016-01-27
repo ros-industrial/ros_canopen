@@ -14,18 +14,14 @@
   <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>linux-headers-generic</depend>
-  <depend>boost</depend>
 
+  <depend>boost</depend>
   <depend>class_loader</depend> 
+  <depend>linux-headers-generic</depend>
 
   <test_depend>rosunit</test_depend>
 
   <export>
-    <!-- You can specify that this package is a metapackage here: -->
-    <!-- <metapackage/> -->
-
-    <!-- Other tools can request additional information be placed here -->
     <socketcan_interface plugin="${prefix}/socketcan_interface_plugin.xml" />
   </export>
 </package>

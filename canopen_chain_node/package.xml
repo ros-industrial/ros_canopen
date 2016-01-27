@@ -14,21 +14,14 @@
   <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roslib</depend>
-  <depend>roscpp</depend>
+
   <depend>canopen_master</depend>
-  <depend>std_srvs</depend>
   <depend>diagnostic_updater</depend>
   <depend>pluginlib</depend>
+  <depend>roslib</depend>
+  <depend>roscpp</depend>
   <depend>socketcan_interface</depend> <!-- direct dependency needed for pluginlib look-up -->
   <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
 
-  <!-- The export tag contains other, unspecified, tags -->
-  <export>
-    <!-- You can specify that this package is a metapackage here: -->
-    <!-- <metapackage/> -->
-
-    <!-- Other tools can request additional information be placed here -->
-
-  </export>
 </package>
