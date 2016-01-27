@@ -7,7 +7,8 @@
   <license>LGPL</license>
 
   <url type="website">http://ros.org/wiki/ros_canopen</url>
-  <!-- <url type="bugtracker"></url> -->
+  <url type="repository">https://github.com/ros-industrial/ros_canopen</url>
+  <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
   <maintainer email="fmw@ipa.fhg.de">Florian Weisshardt</maintainer>
   <maintainer email="nhg@ipa.fhg.de">Nadia Hammoudeh Garcia</maintainer>

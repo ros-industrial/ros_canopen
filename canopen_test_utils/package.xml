@@ -9,8 +9,6 @@
 
   <license>LGPLv3</license>
 
-  <!-- <url type="website">http://wiki.ros.org/canopen_master</url> -->
-
   <buildtool_depend>catkin</buildtool_depend>
   <depend>canopen_master</depend>
   <depend>canopen_402</depend>
