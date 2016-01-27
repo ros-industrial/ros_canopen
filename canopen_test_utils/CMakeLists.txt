@@ -5,7 +5,6 @@ find_package(catkin REQUIRED
   COMPONENTS
     canopen_402
     canopen_master
-    roslaunch
 )
 
 catkin_package()
@@ -22,7 +21,6 @@ target_link_libraries(canopen_elmo_console
 install(
   TARGETS
     canopen_elmo_console
-    canopen_test_utils
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -37,6 +35,8 @@ install(
 )
 
 if(CATKIN_ENABLE_TESTING)
+  find_package(roslaunch REQUIRED)
+
   roslaunch_add_file_check(launch/sim_rig1.launch)
   roslaunch_add_file_check(launch/sim_rig2.launch)
   roslaunch_add_file_check(launch/sim_rig12.launch)

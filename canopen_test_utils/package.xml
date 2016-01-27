@@ -13,7 +13,8 @@
 
   <depend>canopen_402</depend>
   <depend>canopen_master</depend>
-  <depend>roslaunch</depend>
+
+  <test_depend>roslaunch</test_depend>
 
   <exec_depend>canopen_motor_node</exec_depend>
   <exec_depend>cob_description</exec_depend>
@@ -21,6 +22,7 @@
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>gazebo_ros_control</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>roslaunch</exec_depend>
   <exec_depend>xacro</exec_depend>
 
 </package>
