@@ -5,7 +5,6 @@
 #include <canopen_master/can_layer.h>
 #include <socketcan_interface/string.h>
 #include <ros/ros.h>
-#include <ros/package.h>
 #include <std_srvs/Trigger.h>
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <boost/filesystem/path.hpp>
