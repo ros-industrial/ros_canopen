@@ -12,14 +12,6 @@ catkin_package()
 
 include_directories(${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
-# canopen_test_utils
-add_executable(canopen_test_utils
-  src/test.cpp
-)
-target_link_libraries(canopen_test_utils
-  ${catkin_LIBRARIES}
-)
-
 # canopen_elmo_console
 add_executable(canopen_elmo_console
   src/elmo_console.cpp
