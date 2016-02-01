@@ -200,8 +200,12 @@ template<typename T> T read_integer(boost::property_tree::iptree &pt, const std:
 void read_var(ObjectDict::Entry &entry, boost::property_tree::iptree &object){
         read_integer<uint16_t>(entry.data_type, object, "DataType");
         entry.mappable = object.get<bool>("PDOMapping", false);
-        set_access(entry, object.get<std::string>("AccessType"));
-        
+        try{
+            set_access(entry, object.get<std::string>("AccessType"));
+        }
+        catch(...){
+            throw ParseException("object " + entry.desc + " has no AccessType") ;
+        }
         entry.def_val = ReadAnyValue::read_value(object, entry.data_type, "DefaultValue");
         entry.init_val = ReadAnyValue::read_value(object, entry.data_type, "ParameterValue");
 }

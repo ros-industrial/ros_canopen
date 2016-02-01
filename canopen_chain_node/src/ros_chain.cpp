@@ -220,7 +220,7 @@ bool RosChain::setup_bus(){
         return false;
     }
 
-    bus_nh.param("master_allocator",master_alloc, std::string("canopen::LocalMaster::Allocator"));
+    bus_nh.param("master_allocator",master_alloc, std::string("canopen::SimpleMaster::Allocator"));
 
     try{
         master_= master_allocator_.allocateInstance(master_alloc, can_device, interface_);

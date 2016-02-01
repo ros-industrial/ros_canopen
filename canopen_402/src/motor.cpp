@@ -420,9 +420,9 @@ void Motor402::handleWrite(LayerStatus &status, const LayerState &current_state)
             }
         }
         if(start_fault_reset_.exchange(false)){
-            control_word_entry_.set(control_word_ & ~(1<<Command402::CW_Fault_Reset));
+            control_word_entry_.set_cached(control_word_ & ~(1<<Command402::CW_Fault_Reset));
         }else{
-            control_word_entry_.set(control_word_);
+            control_word_entry_.set_cached(control_word_);
         }
     }
 }
