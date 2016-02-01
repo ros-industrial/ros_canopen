@@ -128,6 +128,7 @@ class HandleLayer: public canopen::Layer{
     hardware_interface::JointStateHandle jsh_;
     hardware_interface::JointHandle jph_, jvh_, jeh_;
     boost::atomic<hardware_interface::JointHandle*> jh_;
+    boost::atomic<bool> forward_command_;
 
     typedef boost::unordered_map< canopen::MotorBase::OperationMode,hardware_interface::JointHandle* > CommandMap;
     CommandMap commands_;
@@ -164,6 +165,7 @@ public:
 
     CanSwitchResult canSwitch(const canopen::MotorBase::OperationMode &m);
     bool switchMode(const canopen::MotorBase::OperationMode &m);
+    bool forwardForMode(const canopen::MotorBase::OperationMode &m);
 
     void registerHandle(hardware_interface::JointStateInterface &iface){
         iface.registerHandle(jsh_);
@@ -205,7 +207,7 @@ class RobotLayer : public canopen::LayerGroupNoDiag<HandleLayer>, public hardwar
     HandleMap handles_;
     typedef std::vector<std::pair<boost::shared_ptr<HandleLayer>, canopen::MotorBase::OperationMode> >  SwitchContainer;
     typedef boost::unordered_map<std::string, SwitchContainer>  SwitchMap;
-    mutable SwitchMap switch_map_;
+    SwitchMap switch_map_;
 
     boost::atomic<bool> first_init_;
 
@@ -217,7 +219,13 @@ public:
 
     virtual void handleInit(canopen::LayerStatus &status);
     void enforce(const ros::Duration &period, bool reset);
-    virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) const;
+    virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) const{
+        // compile-time check for mode switching support in ros_control
+        // if the following line fails, please upgrade to ros_control/contoller_manager 0.9.2 or newer
+        (void) &hardware_interface::RobotHW::canSwitch;
+        return const_cast<RobotLayer*>(this)->prepareSwitch(start_list, stop_list); // awful hack, do not try this at home.
+    }
+    virtual bool prepareSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list);
     virtual void doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list);
 };
 
