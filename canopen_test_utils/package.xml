@@ -15,6 +15,7 @@
   <depend>canopen_master</depend>
 
   <test_depend>roslaunch</test_depend>
+  <test_depend>canopen_motor_node</test_depend>
 
   <exec_depend>canopen_motor_node</exec_depend>
   <exec_depend>cob_description</exec_depend>
