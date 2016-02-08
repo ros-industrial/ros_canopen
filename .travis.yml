@@ -1,32 +1,13 @@
-sudo: required
-dist: trusty
-# Force travis to use its minimal image with default Python settings
-language: generic
+sudo: required 
+dist: trusty 
+language: generic 
 compiler:
   - gcc
 env:
-  global:
-    - CATKIN_WS=~/catkin_ws
-    - CATKIN_WS_SRC=${CATKIN_WS}/src
-    - CI_ROS_DISTRO="indigo"
-#  matrix:
-#    - CI_ROS_DISTRO="indigo"
-#    - CI_ROS_DISTRO="jade"
+  matrix:
+    - USE_DEB=true  ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
+    - USE_DEB=true  ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu
 install:
-  - sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu trusty main" > /etc/apt/sources.list.d/ros-latest.list'
-  - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq -y python-rosdep
-  - sudo rosdep init
-  - rosdep update
-  - rosdep install --from-paths ./ -i -y --rosdistro $CI_ROS_DISTRO
-script:
-  - source /opt/ros/$CI_ROS_DISTRO/setup.bash
-  - mkdir -p $CATKIN_WS_SRC
-  - ln -s $TRAVIS_BUILD_DIR $CATKIN_WS_SRC
-  - cd $CATKIN_WS_SRC
-  - catkin_init_workspace
-  - cd $CATKIN_WS
-  - catkin_make -DCMAKE_BUILD_TYPE=Release
-  - catkin_make run_tests
-  - catkin_test_results
+  - git clone https://github.com/ros-industrial/industrial_ci.git .ci_config  
+script: 
+  - source .ci_config/travis.sh
