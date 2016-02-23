@@ -35,21 +35,22 @@ bool hex2buffer(std::string& out, const std::string& in_raw, bool pad) {
 }
 
 bool dec2hex(char& h, const uint8_t& d, bool lc) {
-	if (d < 10)
+	if (d < 10) {
 		h = '0' + d;
-	else if (d < 16 && lc)
+	} else if (d < 16 && lc) {
 		h = 'a' + (d - 10);
-	else if (d < 16 && !lc)
+	} else if (d < 16 && !lc) {
 		h = 'A' + (d - 10);
-	else
+	} else {
+		h='?';
 		return false;
-
+	}
 	return true;
 }
 
 std::string byte2hex(const uint8_t& d, bool pad, bool lc) {
 	uint8_t hi = d >> 4;
-	char c;
+	char c=0;
 	std::string s;
 	if (hi || pad) {
 		dec2hex(c, hi, lc);
