@@ -413,7 +413,12 @@ void ControllerManagerLayer::handleWrite(canopen::LayerStatus &status, const Lay
             canopen::time_point abs_now = canopen::get_abs_time();
             ros::Time now = ros::Time::now();
 
-            ros::Duration period(boost::chrono::duration<double>(abs_now -last_time_).count());
+            ros::Duration period = fixed_period_;
+
+            if(period.isZero()) {
+                period.fromSec(boost::chrono::duration<double>(abs_now -last_time_).count());
+            }
+
             last_time_ = abs_now;
 
             bool recover = recover_.exchange(false);
