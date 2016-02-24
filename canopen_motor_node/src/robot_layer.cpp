@@ -428,6 +428,7 @@ void ControllerManagerLayer::handleInit(canopen::LayerStatus &status) {
         status.warn("controller_manager is already intialized");
     }else{
         recover_ = true;
+        last_time_ = canopen::get_abs_time();
         cm_.reset(new controller_manager::ControllerManager(robot_.get(), nh_));
     }
 }
