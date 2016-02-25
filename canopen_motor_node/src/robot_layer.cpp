@@ -53,7 +53,9 @@ bool HandleLayer::select(const MotorBase::OperationMode &m){
 }
 
 HandleLayer::HandleLayer(const std::string &name, const boost::shared_ptr<MotorBase> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options)
-: Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0), forward_command_(false) {
+: Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0), forward_command_(false),
+  filter_pos_("double"), filter_vel_("double"), filter_eff_("double"), options_(options)
+{
    commands_[MotorBase::No_Mode] = 0;
 
    std::string p2d("rint(rad2deg(pos)*1000)"), v2d("rint(rad2deg(vel)*1000)"), e2d("rint(eff)");
@@ -144,9 +146,9 @@ hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface:
 void HandleLayer::handleRead(LayerStatus &status, const LayerState &current_state) {
     if(current_state > Shutdown){
         variables_.sync();
-        pos_ = conv_pos_->evaluate();
-        vel_ = conv_vel_->evaluate();
-        eff_ = conv_eff_->evaluate();
+        filter_pos_.update(conv_pos_->evaluate(), pos_);
+        filter_vel_.update(conv_vel_->evaluate(), vel_);
+        filter_eff_.update(conv_eff_->evaluate(), eff_);
     }
 }
 void HandleLayer::handleWrite(LayerStatus &status, const LayerState &current_state) {
@@ -174,6 +176,19 @@ void HandleLayer::handleWrite(LayerStatus &status, const LayerState &current_sta
         }
     }
 }
+
+bool prepareFilter(const std::string& joint_name, const std::string& filter_name,  filters::FilterChain<double> &filter, XmlRpc::XmlRpcValue & options, canopen::LayerStatus &status){
+    filter.clear();
+    if(options.hasMember(filter_name)){
+        if(!filter.configure(options[filter_name],joint_name + "/" + filter_name)){
+            status.error("could not configure " + filter_name+ " for " + joint_name);
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void HandleLayer::handleInit(LayerStatus &status){
     // TODO: implement proper init
     conv_pos_->reset();
@@ -182,7 +197,14 @@ void HandleLayer::handleInit(LayerStatus &status){
     conv_target_pos_->reset();
     conv_target_vel_->reset();
     conv_target_eff_->reset();
-    handleRead(status, Layer::Ready);
+
+
+    if(prepareFilter(jsh_.getName(), "position_filters", filter_pos_, options_, status) &&
+       prepareFilter(jsh_.getName(), "velocity_filters", filter_vel_, options_, status) &&
+       prepareFilter(jsh_.getName(), "effort_filters", filter_eff_, options_, status))
+    {
+        handleRead(status, Layer::Ready);
+    }
 }
 
 

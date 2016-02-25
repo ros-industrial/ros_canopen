@@ -8,7 +8,7 @@
 #include <joint_limits_interface/joint_limits_interface.h>
 #include <urdf/model.h>
 #include <canopen_402/base.h>
-
+#include <filters/filter_chain.h>
 #include <boost/function.hpp>
 #include <boost/scoped_ptr.hpp>
 
@@ -124,6 +124,9 @@ class HandleLayer: public canopen::Layer{
     ObjectVariables variables_;
     boost::scoped_ptr<UnitConverter>  conv_target_pos_, conv_target_vel_, conv_target_eff_;
     boost::scoped_ptr<UnitConverter>  conv_pos_, conv_vel_, conv_eff_;
+
+    filters::FilterChain<double> filter_pos_, filter_vel_, filter_eff_;
+    XmlRpc::XmlRpcValue options_;
 
     hardware_interface::JointStateHandle jsh_;
     hardware_interface::JointHandle jph_, jvh_, jeh_;

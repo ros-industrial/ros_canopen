@@ -7,6 +7,7 @@ find_package(catkin REQUIRED
     canopen_chain_node
     controller_manager
     controller_manager_msgs
+    filters
     hardware_interface
     joint_limits_interface
     joint_limits_interface

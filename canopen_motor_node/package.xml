@@ -19,6 +19,7 @@
   <depend>canopen_chain_node</depend>
   <depend>controller_manager</depend>
   <depend>controller_manager_msgs</depend>
+  <depend>filters</depend>
   <depend>hardware_interface</depend>
   <depend>joint_limits_interface</depend>
   <depend>muparser</depend>
