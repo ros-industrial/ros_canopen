@@ -189,6 +189,12 @@ bool prepareFilter(const std::string& joint_name, const std::string& filter_name
     return true;
 }
 
+bool HandleLayer::prepareFilters(canopen::LayerStatus &status){
+    return prepareFilter(jsh_.getName(), "position_filters", filter_pos_, options_, status) &&
+       prepareFilter(jsh_.getName(), "velocity_filters", filter_vel_, options_, status) &&
+       prepareFilter(jsh_.getName(), "effort_filters", filter_eff_, options_, status);
+}
+
 void HandleLayer::handleInit(LayerStatus &status){
     // TODO: implement proper init
     conv_pos_->reset();
@@ -199,9 +205,7 @@ void HandleLayer::handleInit(LayerStatus &status){
     conv_target_eff_->reset();
 
 
-    if(prepareFilter(jsh_.getName(), "position_filters", filter_pos_, options_, status) &&
-       prepareFilter(jsh_.getName(), "velocity_filters", filter_vel_, options_, status) &&
-       prepareFilter(jsh_.getName(), "effort_filters", filter_eff_, options_, status))
+    if(prepareFilters(status))
     {
         handleRead(status, Layer::Ready);
     }

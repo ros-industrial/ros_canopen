@@ -177,6 +177,8 @@ public:
     hardware_interface::JointHandle* registerHandle(hardware_interface::VelocityJointInterface &iface);
     hardware_interface::JointHandle* registerHandle(hardware_interface::EffortJointInterface &iface);
 
+    bool prepareFilters(canopen::LayerStatus &status);
+
 private:
     virtual void handleRead(canopen::LayerStatus &status, const LayerState &current_state);
     virtual void handleWrite(canopen::LayerStatus &status, const LayerState &current_state);
