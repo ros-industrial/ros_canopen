@@ -9,8 +9,7 @@ find_package(catkin REQUIRED
     controller_manager_msgs
     filters
     hardware_interface
-    joint_limits_interface
-    joint_limits_interface
+    joint_limits_controller
     urdf
 )
 

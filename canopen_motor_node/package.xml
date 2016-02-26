@@ -21,7 +21,7 @@
   <depend>controller_manager_msgs</depend>
   <depend>filters</depend>
   <depend>hardware_interface</depend>
-  <depend>joint_limits_interface</depend>
+  <depend>joint_limits_controller</depend>
   <depend>muparser</depend>
   <depend>urdf</depend>
 
