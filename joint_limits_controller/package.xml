@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>joint_limits_controller</name>
+  <version>0.6.4</version>
+  <description>joint_limits_controller</description>
+
+  <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
+  <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
+
+  <license>BSD</license>
+
+  <url type="website">http://wiki.ros.org/joint_limits_controller</url>
+  <url type="repository">https://github.com/ros-industrial/ros_canopen</url>
+  <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>controller_interface</depend>
+  <depend>hardware_interface</depend>
+  <depend>joint_limits_interface</depend>
+  <depend>pluginlib</depend>
+  <depend>urdf</depend>
+
+</package>
