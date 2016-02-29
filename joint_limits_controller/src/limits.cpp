@@ -76,8 +76,81 @@ bool LimitedJointHandle::Limits::valid() const {
     return true;
 }
 
+#define TRY_MERGE(flag, max_prop, has_prop, msg)                                        \
+    do {                                                                                \
+        if(other.limits_flags & flag){                                                  \
+            bool ok = true;                                                             \
+            if((limits_flags & flag ) && joint_limits.has_prop){                        \
+                if(!other.joint_limits.has_prop){                                       \
+                    ok = false;                                                         \
+                    ROS_ERROR_STREAM("Cannot disable " << msg << " limits");            \
+                }else if(other.joint_limits.max_prop > joint_limits.max_prop){          \
+                    ok = false;                                                         \
+                    ROS_ERROR_STREAM("new joint_limits.max_" << msg << " too high");    \
+                }                                                                       \
+            }                                                                           \
+            if(ok){                                                                     \
+                limits_flags |= flag;                                                   \
+                joint_limits.max_prop = other.joint_limits.max_prop;                    \
+                joint_limits.has_prop = other.joint_limits.has_prop;                    \
+            }                                                                           \
+        }                                                                               \
+    }while(0);
+
 void LimitedJointHandle::Limits::merge(const Limits &other){
-    *this = other; //TODO: proper merge
+
+    if(other.limits_flags & PositionLimitsConfigured){
+        bool ok = true;
+        if(hasPositionLimits()){
+            if(!other.hasPositionLimits()){
+                ok = false;
+                ROS_ERROR("Cannot disable position limits");
+            }else if(other.joint_limits.min_position < joint_limits.min_position){
+                ok = false;
+                ROS_ERROR("new joint_limits.min_position too low");
+            }else if(other.joint_limits.max_position > joint_limits.max_position){
+                ok = false;
+                ROS_ERROR("new joint_limits.max_position too high");
+            }else if(other.joint_limits.angle_wraparound != joint_limits.angle_wraparound){
+                ok = false;
+                ROS_ERROR("Cannot overwrite position limits");
+            }
+        }
+        if(ok){
+            limits_flags |= PositionLimitsConfigured;
+            joint_limits.min_position = other.joint_limits.min_position;
+            joint_limits.max_position = other.joint_limits.max_position;
+            joint_limits.has_position_limits = other.joint_limits.has_position_limits;
+        }
+    }
+
+    TRY_MERGE(VelocityLimitsConfigured, max_velocity, has_velocity_limits, "velocity");
+    TRY_MERGE(AccelerationLimitsConfigured, max_acceleration, has_acceleration_limits, "acceleration");
+    TRY_MERGE(JerkLimitsConfigured, max_jerk, has_jerk_limits, "jerk");
+    TRY_MERGE(EffortLimitsConfigured, max_effort, has_effort_limits, "effort");
+
+
+    if(other.limits_flags & SoftLimitsConfigured){
+        if(has_soft_limits){ // merge
+            if(other.soft_limits.min_position < soft_limits.min_position){
+                ROS_ERROR("new soft_limits.min_position too low");
+            }else if(other.soft_limits.max_position > soft_limits.max_position){
+                ROS_ERROR("new soft_limits.max_position too high");
+            }else if(other.soft_limits.k_position > soft_limits.k_position){
+                ROS_ERROR("new soft_limits.k_position too high");
+            }else if(other.soft_limits.k_velocity > soft_limits.k_velocity){
+                ROS_ERROR("new soft_limits.k_velocity too high");
+            }else{
+                limits_flags |= SoftLimitsConfigured;
+                soft_limits = other.soft_limits;
+                has_soft_limits = other.has_soft_limits;
+            }
+        }else{
+            limits_flags |= SoftLimitsConfigured;
+            soft_limits = other.soft_limits;
+            has_soft_limits = other.has_soft_limits;
+        }
+    }
 }
 
 std::pair<double,double> LimitedJointHandle::Limits::getVelocitySoftBounds(double pos) const {
