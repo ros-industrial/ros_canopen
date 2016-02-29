@@ -14,28 +14,43 @@ public:
 
     class Limits {
         void read(boost::shared_ptr<const urdf::Joint> joint);
-        void read(const std::string& joint_name, ros::NodeHandle& nh, bool soft_limits);
+        void read(const std::string& joint_name, ros::NodeHandle& nh, bool parse_soft_limits);
     public:
-        bool has_joint_limits;
+        enum {
+            PositionLimitsConfigured = (1<<0),
+            VelocityLimitsConfigured = (1<<1),
+            AccelerationLimitsConfigured = (1<<2),
+            JerkLimitsConfigured = (1<<3),
+            EffortLimitsConfigured = (1<<4),
+            JointLimitsConfigured = (1<<5)-1,
+            SoftLimitsConfigured = (1<<5),
+        };
+
+        size_t limits_flags;
         bool has_soft_limits;
         joint_limits_interface::JointLimits joint_limits;
         joint_limits_interface::SoftJointLimits soft_limits;
 
-        Limits() : has_joint_limits(false), has_soft_limits(false) {}
-        Limits(boost::shared_ptr<const urdf::Joint> joint) : has_joint_limits(false), has_soft_limits(false) { read(joint); }
-        Limits(const std::string& joint_name, ros::NodeHandle& nh, bool soft_limits) : has_joint_limits(false), has_soft_limits(false) { read(joint_name, nh, soft_limits); }
+        Limits() : limits_flags(0), has_soft_limits(false) {}
+        Limits(boost::shared_ptr<const urdf::Joint> joint) : limits_flags(0), has_soft_limits(false) { read(joint); }
+        Limits(const std::string& joint_name, ros::NodeHandle& nh, bool parse_soft_limits) : limits_flags(0), has_soft_limits(false) { read(joint_name, nh, parse_soft_limits); }
 
         Limits(const Limits& other) { *this = other; }
 
         void merge(const Limits &other);
+
+        bool hasPositionLimits() const;
+        bool hasVelocityLimits() const;
+        bool hasAccelerationLimits() const;
+        bool hasJerkLimits() const;
+        bool hasEffortLimits() const;
+        bool hasSoftLimits() const;
 
         bool getAccelerationLimit(double &limit,const ros::Duration& period) const;
         bool getVelocityLimit(double &limit,const ros::Duration& period) const;
 
         std::pair<double,double> getVelocitySoftBounds(double pos) const;
 
-        bool hasPositionLimits() const;
-        bool hasVelocityLimits() const;
 
         double limitPosititon(double pos) const;
         double limitVelocity(double vel) const;

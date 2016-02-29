@@ -15,7 +15,7 @@ void LimitedPositionJointHandle::enforceLimits(const ros::Duration& period) {
 
     if(!last_command_.get(last_command)) last_command = getPosition(); // fallback to actual position
 
-    if(limits_.has_soft_limits){
+    if(limits_.hasSoftLimits()){
         std::pair<double, double> soft_bounds = limits_.getVelocitySoftBounds(last_command);
 
         // try to limit velocity to hard bounds
@@ -43,7 +43,7 @@ void LimitedVelocityJointHandle::enforceLimits(const ros::Duration& period) {
 
     if(!last_command_.get(last_command)) last_command = getVelocity(); // fallback to actual velocity
 
-    if(limits_.has_soft_limits){
+    if(limits_.hasSoftLimits()){
         std::pair<double, double> vel_soft_bounds = limits_.getVelocitySoftBounds(current_pos); // TODO: use tracked pos?
 
         cmd = limitBounds(cmd, vel_soft_bounds.first, vel_soft_bounds.second);
@@ -68,7 +68,7 @@ void LimitedEffortJointHandle::enforceLimits(const ros::Duration& period) {
 
     if(!last_command_.get(last_command)) last_command = getEffort(); // fallback to actual effort
 
-    if(limits_.has_soft_limits){
+    if(limits_.hasSoftLimits()){
         std::pair<double, double> vel_soft_bounds = limits_.getVelocitySoftBounds(current_pos); // TODO: use tracked pos?
 
         std::pair<double, double> eff_soft_bounds = getSoftBounds(getVelocity(), limits_.soft_limits.k_velocity, vel_soft_bounds.first, vel_soft_bounds.second);

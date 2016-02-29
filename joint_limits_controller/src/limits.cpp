@@ -4,30 +4,54 @@
 #include <joint_limits_interface/joint_limits_rosparam.h>
 
 void LimitedJointHandle::Limits::read(boost::shared_ptr<const urdf::Joint> joint){
-    has_joint_limits = joint_limits_interface::getJointLimits(joint, joint_limits);
-    has_soft_limits = joint_limits_interface::getSoftJointLimits(joint, soft_limits);
-}
-void LimitedJointHandle::Limits::read(const std::string& name, ros::NodeHandle& nh, bool soft_limits){
-    if(!nh.param("joint_limits/has_joint_limits", true)){
-        has_joint_limits = false;
-        joint_limits.has_position_limits = false;
-        joint_limits.has_velocity_limits = false;
-        joint_limits.has_acceleration_limits = false;
-        joint_limits.has_jerk_limits = false;
-        joint_limits.has_effort_limits = false;
+    if(joint){
+        if(joint_limits_interface::getJointLimits(joint, joint_limits)){
+            limits_flags |= JointLimitsConfigured;
+        }
+        if(joint_limits_interface::getSoftJointLimits(joint, soft_limits)){
+            limits_flags |= SoftLimitsConfigured;
+        }
     }
-    has_joint_limits = joint_limits_interface::getJointLimits(name, nh, joint_limits) || has_joint_limits;
+}
+void LimitedJointHandle::Limits::read(const std::string& name, ros::NodeHandle& nh, bool parse_soft_limits){
+    ros::NodeHandle limits_nh(nh, "joint_limits/" + name);
+    if(joint_limits_interface::getJointLimits(name, nh, joint_limits)){
+         if(limits_nh.hasParam("has_position_limits")) limits_flags |= PositionLimitsConfigured;
+         if(limits_nh.hasParam("has_velocity_limits")) limits_flags |= VelocityLimitsConfigured;
+         if(limits_nh.hasParam("has_acceleration_limits")) limits_flags |= AccelerationLimitsConfigured;
+         if(limits_nh.hasParam("has_jerk_limits")) limits_flags |= JerkLimitsConfigured;
+         if(limits_nh.hasParam("has_effort_limits")) limits_flags |= EffortLimitsConfigured;
+    }
 
-    if(!nh.param("joint_limits/has_soft_limits", true)) has_soft_limits = false;
+    if(parse_soft_limits && limits_nh.getParam("has_soft_limits", has_soft_limits)){
+        if(has_soft_limits){
+            if(!limits_nh.getParam("soft_lower_limit", soft_limits.min_position)){
+                ROS_ERROR("soft_lower_limit not set");
+                return;
+            }
+            if(!limits_nh.getParam("soft_upper_limit", soft_limits.max_position)){
+                ROS_ERROR("soft_upper_limit not set");
+                return;
+            }
+            if(!limits_nh.getParam("k_position", soft_limits.k_position)){
+                ROS_ERROR("k_position not set");
+                return;
+            }
+            if(!limits_nh.getParam("k_velocity", soft_limits.k_velocity)){
+                ROS_ERROR("k_velocity not set");
+                return;
+            }
+        }
+        limits_flags |= SoftLimitsConfigured;
+
+    }
 }
 
 bool LimitedJointHandle::Limits::getAccelerationLimit(double &limit,const ros::Duration& period) const{
-    if(!has_joint_limits) return false;
-
-    if(joint_limits.has_jerk_limits){
+    if(hasJerkLimits()){
         limit = period.toSec() * joint_limits.max_jerk;
         if(joint_limits.has_acceleration_limits && limit > joint_limits.max_acceleration) limit = joint_limits.max_acceleration;
-    }else if(joint_limits.has_acceleration_limits){
+    }else if(hasAccelerationLimits()){
         limit = joint_limits.max_acceleration;
     }else{
         return false;
@@ -36,13 +60,11 @@ bool LimitedJointHandle::Limits::getAccelerationLimit(double &limit,const ros::D
 }
 
 bool LimitedJointHandle::Limits::getVelocityLimit(double &limit,const ros::Duration& period) const{
-    if(!has_joint_limits) return false;
-
     double a;
     if(getAccelerationLimit(a, period)){
         limit = a*period.toSec();
         if(joint_limits.has_velocity_limits && limit > joint_limits.max_velocity) limit = joint_limits.max_velocity;
-    } else if(joint_limits.has_velocity_limits){
+    } else if(hasVelocityLimits()){
         limit = joint_limits.max_velocity;
     }else{
         return false;
@@ -71,11 +93,27 @@ std::pair<double,double> LimitedJointHandle::Limits::getVelocitySoftBounds(doubl
 }
 
 bool LimitedJointHandle::Limits::hasPositionLimits() const {
-    return has_joint_limits && joint_limits.has_position_limits && !joint_limits.angle_wraparound;
+    return (limits_flags & PositionLimitsConfigured) && joint_limits.has_position_limits && !joint_limits.angle_wraparound;
 }
 
 bool LimitedJointHandle::Limits::hasVelocityLimits() const {
-    return has_joint_limits && joint_limits.has_velocity_limits;
+    return (limits_flags & VelocityLimitsConfigured) && joint_limits.has_velocity_limits;
+}
+
+bool LimitedJointHandle::Limits::hasAccelerationLimits() const {
+    return (limits_flags & AccelerationLimitsConfigured) && joint_limits.has_acceleration_limits;
+}
+
+bool LimitedJointHandle::Limits::hasJerkLimits() const {
+    return (limits_flags & JerkLimitsConfigured) && joint_limits.has_jerk_limits;
+}
+
+bool LimitedJointHandle::Limits::hasEffortLimits() const {
+    return (limits_flags & EffortLimitsConfigured) && joint_limits.has_effort_limits;
+}
+
+bool LimitedJointHandle::Limits::hasSoftLimits() const {
+    return (limits_flags & SoftLimitsConfigured) && has_soft_limits;
 }
 
 double LimitedJointHandle::Limits::limitPosititon(double pos) const {
@@ -88,7 +126,7 @@ double LimitedJointHandle::Limits::limitVelocity(double vel) const {
     else return vel;
 }
 double LimitedJointHandle::Limits::limitEffort(double eff) const {
-    if(has_joint_limits && joint_limits.has_effort_limits) return limitBounds(eff, -joint_limits.max_effort, joint_limits.max_effort);
+    if(hasEffortLimits()) return limitBounds(eff, -joint_limits.max_effort, joint_limits.max_effort);
     else return eff;
 }
 
