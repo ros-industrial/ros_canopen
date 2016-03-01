@@ -70,6 +70,13 @@ public:
         bool hasEffortLimits() const;
         bool hasSoftLimits() const;
 
+        void setPositionLimits(double min_position, double max_position);
+        void setVelocityLimits(double max_velocity);
+        void setAccelerationLimits(double max_acceleration);
+        void setJerkLimits(double max_jerk);
+        void setEffortLimits(double max_effort);
+        void setSoftLimits(double k_position, double min_position, double max_position, double k_velocity);
+
         bool getVelocityLimit(double &limit, const double& period) const;
         bool getAccelerationLimit(double &limit, const double& period) const;
 

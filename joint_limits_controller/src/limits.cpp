@@ -200,6 +200,46 @@ bool JointLimiter::Limits::hasSoftLimits() const {
     return (limits_flags & SoftLimitsConfigured) && has_soft_limits;
 }
 
+void JointLimiter::Limits::setPositionLimits(double min_position, double max_position){
+    limits_flags |= PositionLimitsConfigured;
+    joint_limits.has_position_limits = true;
+    joint_limits.min_position = min_position;
+    joint_limits.max_position = max_position;
+}
+
+void JointLimiter::Limits::setVelocityLimits(double max_velocity){
+    limits_flags |= VelocityLimitsConfigured;
+    joint_limits.has_velocity_limits = true;
+    joint_limits.max_velocity = max_velocity;
+}
+
+void JointLimiter::Limits::setAccelerationLimits(double max_acceleration){
+    limits_flags |= AccelerationLimitsConfigured;
+    joint_limits.has_acceleration_limits = true;
+    joint_limits.max_acceleration = max_acceleration;
+}
+
+void JointLimiter::Limits::setJerkLimits(double max_jerk){
+    limits_flags |= JerkLimitsConfigured;
+    joint_limits.has_jerk_limits = true;
+    joint_limits.max_jerk = max_jerk;
+}
+
+void JointLimiter::Limits::setEffortLimits(double max_effort){
+    limits_flags |= EffortLimitsConfigured;
+    joint_limits.has_effort_limits = true;
+    joint_limits.max_effort = max_effort;
+}
+
+void JointLimiter::Limits::setSoftLimits(double k_position, double min_position, double max_position, double k_velocity){
+    limits_flags |= SoftLimitsConfigured;
+    has_soft_limits = true;
+    soft_limits.k_position = k_position;
+    soft_limits.min_position = min_position;
+    soft_limits.max_position = max_position;
+    soft_limits.k_velocity = k_velocity;
+}
+
 double JointLimiter::Limits::limitPosition(double pos) const {
     if(hasPositionLimits()) return limitBounds(pos, joint_limits.min_position, joint_limits.max_position);
     else return pos;
