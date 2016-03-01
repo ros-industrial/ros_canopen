@@ -57,6 +57,7 @@ public:
         Limits(const std::string& joint_name, ros::NodeHandle& nh, bool parse_soft_limits) : limits_flags(0), has_soft_limits(false) { read(joint_name, nh, parse_soft_limits); }
 
         Limits(const Limits& other) { *this = other; }
+        Limits(const Limits& base, const Limits& other) { *this = base; merge(other); }
 
         void merge(const Limits &other);
         void merge(const std::string& joint_name, ros::NodeHandle& nh, bool parse_soft_limits);
@@ -81,35 +82,30 @@ public:
 
         bool valid() const;
     };
-    JointLimiter(const Limits &limits) : limits_(limits) {}
-    virtual void enforceLimits(const ros::Duration& period, const double pos, const double vel, const double eff, double &cmd) = 0;
+    virtual void enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) = 0;
 
     virtual void recover() {
         last_command_.reset();
     }
     ~JointLimiter() {}
 
-    const Limits limits_;
 protected:
     DataStore<double> last_command_;
 };
 
 class PositionJointLimiter : public JointLimiter {
 public:
-    PositionJointLimiter(const Limits &limits) : JointLimiter(limits){}
-    virtual void enforceLimits(const ros::Duration& period, const double pos, const double vel, const double eff, double &cmd);
+    virtual void enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
 };
 
 class VelocityJointLimiter : public JointLimiter {
 public:
-    VelocityJointLimiter(const Limits &limits) : JointLimiter(limits){}
-    virtual void enforceLimits(const ros::Duration& period, const double pos, const double vel, const double eff, double &cmd);
+    virtual void enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
 };
 
 class EffortJointLimiter : public JointLimiter {
 public:
-    EffortJointLimiter(const Limits &limits) : JointLimiter(limits){}
-    virtual void enforceLimits(const ros::Duration& period, const double pos, const double vel, const double eff, double &cmd);
+    virtual void enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
 };
 
 #endif
