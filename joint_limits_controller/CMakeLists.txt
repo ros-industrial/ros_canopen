@@ -27,7 +27,7 @@ include_directories(
 )
 
 add_library(limited_joint_handle
-  src/limited_joint_handle.cpp
+  src/joint_limiter.cpp
   src/limits.cpp
 )
 target_link_libraries(limited_joint_handle
