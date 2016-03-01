@@ -312,6 +312,8 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                         }
                 }
             }
+        }else if (controller_it->resources.size()){
+            ROS_WARN_STREAM("controller " << controller_it->name << " claims resources, but does not set required_drive_mode param");
         }
         switch_map_.insert(std::make_pair(controller_it->name, to_switch));
     }
