@@ -29,7 +29,7 @@ void PositionJointLimiter::enforceLimits(const double& period, const Limits &lim
         cmd = limitBounds(cmd, last_command - max_vel * period, last_command + max_vel * period);
     }
 
-    cmd = limits.limitPosititon(cmd);
+    cmd = limits.limitPosition(cmd);
 
     //TODO: What do to if effort limit is exceeded?
 

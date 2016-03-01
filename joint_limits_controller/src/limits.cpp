@@ -43,7 +43,6 @@ void JointLimiter::Limits::read(const std::string& name, const ros::NodeHandle& 
             }
         }
         limits_flags |= SoftLimitsConfigured;
-
     }
 }
 
@@ -199,7 +198,7 @@ bool JointLimiter::Limits::hasSoftLimits() const {
     return (limits_flags & SoftLimitsConfigured) && has_soft_limits;
 }
 
-double JointLimiter::Limits::limitPosititon(double pos) const {
+double JointLimiter::Limits::limitPosition(double pos) const {
     if(hasPositionLimits()) return limitBounds(pos, joint_limits.min_position, joint_limits.max_position);
     else return pos;
 }

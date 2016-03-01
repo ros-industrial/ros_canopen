@@ -75,7 +75,7 @@ public:
 
         std::pair<double,double> getVelocitySoftBounds(double pos) const;
 
-        double limitPosititon(double pos) const;
+        double limitPosition(double pos) const;
         double limitVelocity(double vel) const;
         double limitEffort(double eff) const;
 
