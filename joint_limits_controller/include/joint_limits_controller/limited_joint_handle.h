@@ -19,6 +19,7 @@ template<typename T> class TypedLimitedJointHandle: public LimitedJointHandle {
     T limiter_;
     const Limits limits_;
 public:
+    TypedLimitedJointHandle(const hardware_interface::JointStateHandle &js, double *cmd) : LimitedJointHandle(js,cmd) {}
     TypedLimitedJointHandle(const hardware_interface::JointStateHandle &js, double *cmd, const JointLimiter::Limits &limits) : LimitedJointHandle(js,cmd), limits_(limits) {}
     TypedLimitedJointHandle(const hardware_interface::JointHandle &handle, const JointLimiter::Limits &limits) : LimitedJointHandle(handle), limits_(limits) {}
 
