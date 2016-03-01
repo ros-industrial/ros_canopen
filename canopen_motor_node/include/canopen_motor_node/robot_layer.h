@@ -135,7 +135,7 @@ class HandleLayer: public canopen::Layer{
     boost::atomic<LimitedJointHandle*> jh_;
     boost::atomic<bool> forward_command_;
 
-    LimitedEffortJointHandle::Limits limits_, overlay_limits_;
+    LimitedJointHandle::Limits limits_, overlay_limits_;
 
     typedef boost::unordered_map< canopen::MotorBase::OperationMode,LimitedJointHandle* > CommandMap;
     CommandMap commands_;

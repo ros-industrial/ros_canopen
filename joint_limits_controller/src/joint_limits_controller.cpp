@@ -19,7 +19,7 @@ class JointLimitsController : public controller_interface::ControllerBase {
         limits.merge(name, controller_nh, true);
         boost::shared_ptr<LimitedJointHandle> ptr(new T(handle, limits));
         limit_handles_.push_back(ptr);
-        return true; // TODO
+        return true; // TODO: Might fail fo various reasons, add proper checks
     }
 
     template<typename T> bool track(hardware_interface::JointCommandInterface *interface, ros::NodeHandle& root_nh, ros::NodeHandle &controller_nh, std::set<std::string>& claimed_resources){

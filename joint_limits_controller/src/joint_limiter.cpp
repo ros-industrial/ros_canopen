@@ -20,13 +20,8 @@ void PositionJointLimiter::enforceLimits(const double& period, const Limits &lim
     if(!last_command_.get(last_command)) last_command = pos; // fallback to actual position
 
     if(limits.hasSoftLimits()){
-        std::pair<double, double> soft_bounds = limits.getVelocitySoftBounds(last_command);
-
-        // try to limit velocity to hard bounds
-        soft_bounds.first = limits.limitVelocity(soft_bounds.first);
-        soft_bounds.second = limits.limitVelocity(soft_bounds.second);
-
-        cmd = limitBounds(cmd, last_command + soft_bounds.first * period, last_command + soft_bounds.second * period);
+        std::pair<double, double> vel_soft_bounds = limits.getVelocitySoftBounds(last_command);
+        cmd = limitBounds(cmd, last_command + vel_soft_bounds.first * period, last_command + vel_soft_bounds.second * period);
     }
 
     double max_vel;
@@ -48,9 +43,7 @@ void VelocityJointLimiter::enforceLimits(const double& period, const Limits &lim
 
     if(limits.hasSoftLimits()){
         std::pair<double, double> vel_soft_bounds = limits.getVelocitySoftBounds(pos); // TODO: use tracked pos?
-
         cmd = limitBounds(cmd, vel_soft_bounds.first, vel_soft_bounds.second);
-
     }
 
     double max_vel;

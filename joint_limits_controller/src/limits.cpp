@@ -73,6 +73,7 @@ bool JointLimiter::Limits::getAccelerationLimit(double &limit,const double& peri
 }
 
 bool JointLimiter::Limits::valid() const {
+    // TODO: implement validity checks, e.g. min_position <= max_position
     return true;
 }
 
@@ -165,7 +166,6 @@ void JointLimiter::Limits::merge(boost::shared_ptr<const urdf::Joint> joint){
 
 std::pair<double,double> JointLimiter::Limits::getVelocitySoftBounds(double pos) const {
     std::pair<double,double> vel_soft_bounds = getSoftBounds(pos, soft_limits.k_position, soft_limits.min_position, soft_limits.max_position);
-
 
     if(hasVelocityLimits()){
         if(vel_soft_bounds.first < -joint_limits.max_velocity) vel_soft_bounds.first = -joint_limits.max_velocity;
