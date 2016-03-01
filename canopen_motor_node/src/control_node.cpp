@@ -76,12 +76,7 @@ class MotorChain : public RosChain{
         motors_->add(motor);
         logger->add(motor);
 
-        // TODO: use hardware limits
-        LimitedJointHandle::Limits urdf_limits(urdf_joint);
-        LimitedJointHandle::Limits yaml_limits(joint, nh_, false);
-        urdf_limits.merge(yaml_limits);
-
-        boost::shared_ptr<HandleLayer> handle( new HandleLayer(joint, motor, node->getStorage(), params, urdf_limits));
+        boost::shared_ptr<HandleLayer> handle( new HandleLayer(joint, motor, node->getStorage(), params));
         ROS_INFO_STREAM("adding " << joint);
 
         canopen::LayerStatus s;

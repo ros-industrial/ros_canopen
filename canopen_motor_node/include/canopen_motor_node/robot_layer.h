@@ -135,6 +135,8 @@ class HandleLayer: public canopen::Layer{
     boost::atomic<LimitedJointHandle*> jh_;
     boost::atomic<bool> forward_command_;
 
+    LimitedEffortJointHandle::Limits limits_, overlay_limits_;
+
     typedef boost::unordered_map< canopen::MotorBase::OperationMode,LimitedJointHandle* > CommandMap;
     CommandMap commands_;
 
@@ -159,7 +161,7 @@ class HandleLayer: public canopen::Layer{
     bool select(const canopen::MotorBase::OperationMode &m);
     static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
 public:
-    HandleLayer(const std::string &name, const boost::shared_ptr<canopen::MotorBase> & motor, const boost::shared_ptr<canopen::ObjectStorage> storage,  XmlRpc::XmlRpcValue & options, const LimitedJointHandle::Limits &limits);
+    HandleLayer(const std::string &name, const boost::shared_ptr<canopen::MotorBase> & motor, const boost::shared_ptr<canopen::ObjectStorage> storage,  XmlRpc::XmlRpcValue & options);
 
     enum CanSwitchResult{
         NotSupported,

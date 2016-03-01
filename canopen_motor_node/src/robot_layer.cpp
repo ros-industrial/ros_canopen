@@ -52,8 +52,8 @@ bool HandleLayer::select(const MotorBase::OperationMode &m){
     return true;
 }
 
-HandleLayer::HandleLayer(const std::string &name, const boost::shared_ptr<MotorBase> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options,const LimitedJointHandle::Limits &limits)
-: Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_, limits), jvh_(jsh_, &cmd_vel_, limits), jeh_(jsh_, &cmd_eff_, limits), jh_(0), forward_command_(false),
+HandleLayer::HandleLayer(const std::string &name, const boost::shared_ptr<MotorBase> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options)
+: Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0), forward_command_(false),
   filter_pos_("double"), filter_vel_("double"), filter_eff_("double"), options_(options)
 {
    commands_[MotorBase::No_Mode] = 0;
@@ -205,19 +205,29 @@ void HandleLayer::handleInit(LayerStatus &status){
     conv_target_eff_->reset();
 
 
+    limits_.limits_flags = 0; // reset
+    // TODO: fill hardware limits
+    ros::NodeHandle nh;
+    LimitedJointHandle::Limits yaml_limits(jsh_.getName(), nh, true);
+    limits_.merge(yaml_limits);
+    overlay_limits_ = limits_;
+
     if(prepareFilters(status))
     {
         handleRead(status, Layer::Ready);
     }
 }
 
+void HandleLayer::setOverlayLimits(const LimitedJointHandle::Limits & limits){
+    overlay_limits_ = LimitedJointHandle::Limits(limits_, limits);
+}
 
 void HandleLayer::enforceLimits(const ros::Duration &period, bool recover) {
     LimitedJointHandle * jh = jh_;
 
     if(jh){
         if(recover) jh->recover();
-        jh->enforceLimits(period);
+        jh->enforceLimits(period, overlay_limits_);
     }
 }
 
