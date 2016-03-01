@@ -70,8 +70,8 @@ public:
         bool hasEffortLimits() const;
         bool hasSoftLimits() const;
 
-        bool getAccelerationLimit(double &limit, const double& period) const;
         bool getVelocityLimit(double &limit, const double& period) const;
+        bool getAccelerationLimit(double &limit, const double& period) const;
 
         std::pair<double,double> getVelocitySoftBounds(double pos) const;
 
