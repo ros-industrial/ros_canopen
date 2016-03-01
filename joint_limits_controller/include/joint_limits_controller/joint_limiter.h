@@ -61,6 +61,7 @@ public:
 
         void merge(const Limits &other);
         void merge(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits);
+        void merge(boost::shared_ptr<const urdf::Joint> joint);
 
         bool hasPositionLimits() const;
         bool hasVelocityLimits() const;

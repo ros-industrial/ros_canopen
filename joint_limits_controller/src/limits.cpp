@@ -158,6 +158,11 @@ void JointLimiter::Limits::merge(const std::string& joint_name, const ros::NodeH
     merge(l);
 }
 
+void JointLimiter::Limits::merge(boost::shared_ptr<const urdf::Joint> joint){
+    Limits l(joint);
+    merge(l);
+}
+
 std::pair<double,double> JointLimiter::Limits::getVelocitySoftBounds(double pos) const {
     std::pair<double,double> vel_soft_bounds = getSoftBounds(pos, soft_limits.k_position, soft_limits.min_position, soft_limits.max_position);
 
