@@ -1,0 +1,10 @@
+<library path="lib/libjoint_limits_controller">
+
+  <class name="joint_limits_controller/JointLimitsController" type="joint_limits_controller::JointLimitsController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      Wraps any controller and enforces joint limit based on URDF and ROS paramters.
+    </description>
+  </class>
+
+
+</library>

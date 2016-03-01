@@ -34,8 +34,18 @@ target_link_libraries(limited_joint_handle
   ${catkin_LIBRARIES}
 )
 
+add_library(joint_limits_controller
+  src/joint_limits_controller.cpp
+)
+
+target_link_libraries(joint_limits_controller
+  limited_joint_handle
+  ${catkin_LIBRARIES}
+)
+
 install(
   TARGETS
+    joint_limits_controller
     limited_joint_handle
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

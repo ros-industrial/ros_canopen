@@ -21,4 +21,7 @@
   <depend>pluginlib</depend>
   <depend>urdf</depend>
 
+  <export>
+    <controller_interface plugin="${prefix}/controller_interface_plugins.xml"/>
+  </export>
 </package>
