@@ -164,6 +164,8 @@ void JointLimiter::Limits::merge(boost::shared_ptr<const urdf::Joint> joint){
 }
 
 std::pair<double,double> JointLimiter::Limits::getVelocitySoftBounds(double pos) const {
+    if(!hasSoftLimits()) return std::make_pair(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN());
+
     std::pair<double,double> vel_soft_bounds = getSoftBounds(pos, soft_limits.k_position, soft_limits.min_position, soft_limits.max_position);
 
     if(hasVelocityLimits()){
