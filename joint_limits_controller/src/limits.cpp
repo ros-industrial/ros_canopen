@@ -95,7 +95,7 @@ bool JointLimiter::Limits::valid() const {
                 joint_limits.has_prop = other.joint_limits.has_prop;                    \
             }                                                                           \
         }                                                                               \
-    }while(0);
+    }while(0)
 
 void JointLimiter::Limits::merge(const Limits &other){
 
