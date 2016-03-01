@@ -54,7 +54,7 @@ public:
             return false;
         }
         if(controller_type == "joint_limits_controller::JointLimitsController"){
-            if(!controller_nh.getParam("controller", controller_type)){
+            if(!controller_nh.getParam("controller_type", controller_type)){
                 ROS_ERROR("Missing controller param");
                 return false;
             }
