@@ -65,14 +65,14 @@ public:
             return false;
         }
 
-        std::string has_robot_description;
+        std::string has_robot_description_fqn;
 
-        bool has_urdf = true;
+        bool has_robot_description = true;
 
-        if(controller_nh.searchParam("has_robot_description", has_robot_description)){
-            ros::param::get(has_robot_description, has_urdf);
+        if(controller_nh.searchParam("has_robot_description", has_robot_description_fqn)){
+            ros::param::get(has_robot_description_fqn, has_robot_description);
         }
-        if(has_urdf){
+        if(has_robot_description){
             urdf_.initParam("robot_description");
         }
 

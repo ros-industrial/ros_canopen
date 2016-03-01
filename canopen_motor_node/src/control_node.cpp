@@ -96,7 +96,13 @@ public:
 
     virtual bool setup() {
 
-        if(nh_priv_.param("has_robot_description", true)){
+        std::string has_robot_description_fqn;
+        bool has_robot_description = true;
+
+        if(nh_priv_.searchParam("has_robot_description", has_robot_description_fqn)){
+            ros::param::get(has_robot_description_fqn, has_robot_description);
+        }
+        if(has_robot_description){
             if(!urdf_.initParam("robot_description")) return false;
             has_urdf_ = true;
         }else{
