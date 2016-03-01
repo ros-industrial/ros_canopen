@@ -296,7 +296,10 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                         return false;
                     case HandleLayer::ReadyToSwitch:
                     case HandleLayer::NoNeedToSwitch:
-                        to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
+                        {
+                            SwitchData data = { h_it->second, MotorBase::OperationMode(mode) };
+                            to_switch.push_back(data);
+                        }
                 }
             }
         }
@@ -309,26 +312,26 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
         SwitchContainer &to_switch = switch_map_.at(controller_it->name);
         for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-            to_stop.insert(it->first);
+            to_stop.insert(it->handle);
         }
     }
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
         SwitchContainer &to_switch = switch_map_.at(controller_it->name);
         bool okay = true;
         for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-            it->first->switchMode(MotorBase::No_Mode); // stop all
+            it->handle->switchMode(MotorBase::No_Mode); // stop all
         }
         for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-            if(!it->first->switchMode(it->second)){
+            if(!it->handle->switchMode(it->mode)){
                 failed_controllers.push_back(controller_it->name);
                 ROS_ERROR_STREAM("Could not switch one joint for " << controller_it->name << ", will stop all related joints and the controller.");
                 for(RobotLayer::SwitchContainer::iterator stop_it = to_switch.begin(); stop_it != to_switch.end(); ++stop_it){
-                    to_stop.insert(stop_it->first);
+                    to_stop.insert(stop_it->handle);
                 }
                 okay = false;
                 break;
             }
-            to_stop.erase(it->first);
+            to_stop.erase(it->handle);
         }
     }
     for(boost::unordered_set<boost::shared_ptr<HandleLayer> >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
@@ -348,11 +351,11 @@ void RobotLayer::doSwitch(const std::list<hardware_interface::ControllerInfo> &s
         try{
             SwitchContainer &to_switch = switch_map_.at(controller_it->name);
             for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-                if(!it->first->forwardForMode(it->second)){
+                if(!it->handle->forwardForMode(it->mode)){
                     failed_controllers.push_back(controller_it->name);
                     ROS_ERROR_STREAM("Could not switch one joint for " << controller_it->name << ", will stop all related joints and the controller.");
                     for(RobotLayer::SwitchContainer::iterator stop_it = to_switch.begin(); stop_it != to_switch.end(); ++stop_it){
-                        it->first->switchMode(MotorBase::No_Mode);
+                        it->handle->switchMode(MotorBase::No_Mode);
                     }
                     break;
                 }
