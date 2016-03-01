@@ -70,8 +70,8 @@ public:
         bool hasEffortLimits() const;
         bool hasSoftLimits() const;
 
-        bool getAccelerationLimit(double &limit,const ros::Duration& period) const;
-        bool getVelocityLimit(double &limit,const ros::Duration& period) const;
+        bool getAccelerationLimit(double &limit, const double& period) const;
+        bool getVelocityLimit(double &limit, const double& period) const;
 
         std::pair<double,double> getVelocitySoftBounds(double pos) const;
 
@@ -83,7 +83,7 @@ public:
 
         bool valid() const;
     };
-    virtual void enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) = 0;
+    virtual void enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) = 0;
 
     virtual void recover() {
         last_command_.reset();
@@ -96,17 +96,17 @@ protected:
 
 class PositionJointLimiter : public JointLimiter {
 public:
-    virtual void enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
+    virtual void enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
 };
 
 class VelocityJointLimiter : public JointLimiter {
 public:
-    virtual void enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
+    virtual void enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
 };
 
 class EffortJointLimiter : public JointLimiter {
 public:
-    virtual void enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
+    virtual void enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
 };
 
 #endif

@@ -47,9 +47,9 @@ void JointLimiter::Limits::read(const std::string& name, const ros::NodeHandle& 
     }
 }
 
-bool JointLimiter::Limits::getAccelerationLimit(double &limit,const ros::Duration& period) const{
+bool JointLimiter::Limits::getAccelerationLimit(double &limit,const double& period) const{
     if(hasJerkLimits()){
-        limit = period.toSec() * joint_limits.max_jerk;
+        limit = period * joint_limits.max_jerk;
         if(joint_limits.has_acceleration_limits && limit > joint_limits.max_acceleration) limit = joint_limits.max_acceleration;
     }else if(hasAccelerationLimits()){
         limit = joint_limits.max_acceleration;
@@ -59,10 +59,10 @@ bool JointLimiter::Limits::getAccelerationLimit(double &limit,const ros::Duratio
     return true;
 }
 
-bool JointLimiter::Limits::getVelocityLimit(double &limit,const ros::Duration& period) const{
+bool JointLimiter::Limits::getVelocityLimit(double &limit,const double& period) const{
     double a;
     if(getAccelerationLimit(a, period)){
-        limit = a*period.toSec();
+        limit = a*period;
         if(joint_limits.has_velocity_limits && limit > joint_limits.max_velocity) limit = joint_limits.max_velocity;
     } else if(hasVelocityLimits()){
         limit = joint_limits.max_velocity;

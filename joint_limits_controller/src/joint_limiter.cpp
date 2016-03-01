@@ -10,7 +10,7 @@ std::pair<double,double> JointLimiter::getSoftBounds(double value, double k, dou
     return std::make_pair(-k*(value-lower), -k*(value-upper));
 }
 
-void PositionJointLimiter::enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) {
+void PositionJointLimiter::enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) {
     double last_command = 0;
 
     if(!last_command_.get(last_command)) last_command = pos; // fallback to actual position
@@ -22,12 +22,12 @@ void PositionJointLimiter::enforceLimits(const ros::Duration& period, const Limi
         soft_bounds.first = limits.limitVelocity(soft_bounds.first);
         soft_bounds.second = limits.limitVelocity(soft_bounds.second);
 
-        cmd = limitBounds(cmd, last_command + soft_bounds.first * period.toSec(), last_command + soft_bounds.second * period.toSec());
+        cmd = limitBounds(cmd, last_command + soft_bounds.first * period, last_command + soft_bounds.second * period);
     }
 
     double max_vel;
     if(limits.getVelocityLimit(max_vel, period)){
-        cmd = limitBounds(cmd, last_command - max_vel * period.toSec(), last_command + max_vel * period.toSec());
+        cmd = limitBounds(cmd, last_command - max_vel * period, last_command + max_vel * period);
     }
 
     cmd = limits.limitPosititon(cmd);
@@ -37,7 +37,7 @@ void PositionJointLimiter::enforceLimits(const ros::Duration& period, const Limi
     last_command_.set(cmd);
 }
 
-void VelocityJointLimiter::enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) {
+void VelocityJointLimiter::enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) {
     double last_command = 0;
 
     if(!last_command_.get(last_command)) last_command = vel; // fallback to actual velocity
@@ -61,7 +61,7 @@ void VelocityJointLimiter::enforceLimits(const ros::Duration& period, const Limi
     last_command_.set(cmd);
 }
 
-void EffortJointLimiter::enforceLimits(const ros::Duration& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) {
+void EffortJointLimiter::enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) {
     double last_command = 0;
 
     if(!last_command_.get(last_command)) last_command = eff; // fallback to actual effort

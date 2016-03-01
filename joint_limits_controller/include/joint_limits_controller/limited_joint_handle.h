@@ -25,7 +25,7 @@ public:
 
     virtual void enforceLimits(const ros::Duration& period, const JointLimiter::Limits &limits){
         double cmd = getCommand();
-        limiter_.enforceLimits(period, limits_, getPosition(), getVelocity(), getEffort(), cmd);
+        limiter_.enforceLimits(period.toSec(), limits_, getPosition(), getVelocity(), getEffort(), cmd);
         setCommand(cmd);
     }
     virtual void enforceLimits(const ros::Duration& period) {
