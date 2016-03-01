@@ -13,7 +13,7 @@ void JointLimiter::Limits::read(boost::shared_ptr<const urdf::Joint> joint){
         }
     }
 }
-void JointLimiter::Limits::read(const std::string& name, ros::NodeHandle& nh, bool parse_soft_limits){
+void JointLimiter::Limits::read(const std::string& name, const ros::NodeHandle& nh, bool parse_soft_limits){
     ros::NodeHandle limits_nh(nh, "joint_limits/" + name);
     if(joint_limits_interface::getJointLimits(name, nh, joint_limits)){
          if(limits_nh.hasParam("has_position_limits")) limits_flags |= PositionLimitsConfigured;
@@ -153,7 +153,7 @@ void JointLimiter::Limits::merge(const Limits &other){
     }
 }
 
-void JointLimiter::Limits::merge(const std::string& joint_name, ros::NodeHandle& nh, bool parse_soft_limits){
+void JointLimiter::Limits::merge(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits){
     Limits l(joint_name, nh, parse_soft_limits);
     merge(l);
 }

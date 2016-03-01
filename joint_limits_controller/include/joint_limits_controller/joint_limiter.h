@@ -35,7 +35,7 @@ public:
 
     class Limits {
         void read(boost::shared_ptr<const urdf::Joint> joint);
-        void read(const std::string& joint_name, ros::NodeHandle& nh, bool parse_soft_limits);
+        void read(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits);
     public:
         enum {
             PositionLimitsConfigured = (1<<0),
@@ -54,13 +54,13 @@ public:
 
         Limits() : limits_flags(0), has_soft_limits(false) {}
         Limits(boost::shared_ptr<const urdf::Joint> joint) : limits_flags(0), has_soft_limits(false) { read(joint); }
-        Limits(const std::string& joint_name, ros::NodeHandle& nh, bool parse_soft_limits) : limits_flags(0), has_soft_limits(false) { read(joint_name, nh, parse_soft_limits); }
+        Limits(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits) : limits_flags(0), has_soft_limits(false) { read(joint_name, nh, parse_soft_limits); }
 
         Limits(const Limits& other) { *this = other; }
         Limits(const Limits& base, const Limits& other) { *this = base; merge(other); }
 
         void merge(const Limits &other);
-        void merge(const std::string& joint_name, ros::NodeHandle& nh, bool parse_soft_limits);
+        void merge(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits);
 
         bool hasPositionLimits() const;
         bool hasVelocityLimits() const;
