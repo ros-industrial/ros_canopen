@@ -1,6 +1,10 @@
 #include <joint_limits_controller/limited_joint_handle.h>
 
 double JointLimiter::limitBounds(double value, double min, double max){
+    if(min > max){
+        ROS_ERROR("min > max");
+        return std::numeric_limits<double>::quiet_NaN();
+    }
     if(value > max) return max;
     else if (value < min) return min;
     return value;
