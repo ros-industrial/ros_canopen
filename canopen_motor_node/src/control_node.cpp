@@ -104,7 +104,7 @@ public:
         }
 
         motors_.reset( new LayerGroupNoDiag<MotorBase>("402 Layer"));
-        robot_layer_.reset( new RobotLayer(nh_));
+        robot_layer_.reset( new RobotLayer(nh_, urdf_));
 
         ros::Duration dur(0.0) ;
 

@@ -173,6 +173,7 @@ public:
     CanSwitchResult canSwitch(const canopen::MotorBase::OperationMode &m);
     bool switchMode(const canopen::MotorBase::OperationMode &m);
     bool forwardForMode(const canopen::MotorBase::OperationMode &m);
+    void setOverlayLimits(const LimitedJointHandle::Limits & limits);
 
     void enforceLimits(const ros::Duration &period, bool recover);
 
@@ -184,6 +185,7 @@ public:
     bool registerHandle(hardware_interface::EffortJointInterface &iface);
 
     bool prepareFilters(canopen::LayerStatus &status);
+    const LimitedJointHandle::Limits & getLimits() const { return limits_; }
 
 private:
     virtual void handleRead(canopen::LayerStatus &status, const LayerState &current_state);
@@ -203,12 +205,14 @@ class RobotLayer : public canopen::LayerGroupNoDiag<HandleLayer>, public hardwar
     hardware_interface::EffortJointInterface eff_interface_;
 
     ros::NodeHandle nh_;
+    urdf::Model &urdf_;
 
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
     struct SwitchData{
         boost::shared_ptr<HandleLayer> handle;
         canopen::MotorBase::OperationMode mode;
+        LimitedJointHandle::Limits limits;
     };
     typedef std::vector<SwitchData>  SwitchContainer;
     typedef boost::unordered_map<std::string, SwitchContainer>  SwitchMap;
@@ -219,7 +223,7 @@ class RobotLayer : public canopen::LayerGroupNoDiag<HandleLayer>, public hardwar
     void stopControllers(const std::vector<std::string> controllers);
 public:
     void add(const std::string &name, boost::shared_ptr<HandleLayer> handle);
-    RobotLayer(ros::NodeHandle nh);
+    RobotLayer(ros::NodeHandle nh, urdf::Model &urdf);
 
     virtual void handleInit(canopen::LayerStatus &status);
     void enforceLimits(const ros::Duration &period, bool recover);

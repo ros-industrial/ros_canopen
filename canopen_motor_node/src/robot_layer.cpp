@@ -244,7 +244,7 @@ void RobotLayer::add(const std::string &name, boost::shared_ptr<HandleLayer> han
     handles_.insert(std::make_pair(name, handle));
 }
 
-RobotLayer::RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh), first_init_(true)
+RobotLayer::RobotLayer(ros::NodeHandle nh, urdf::Model &urdf) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh), urdf_(urdf), first_init_(true)
 {
     registerInterface(&state_interface_);
     registerInterface(&pos_interface_);
@@ -289,25 +289,30 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
         int mode;
         if(nh.getParam("required_drive_mode", mode)){
             for (std::set<std::string>::const_iterator res_it = controller_it->resources.begin(); res_it != controller_it->resources.end(); ++res_it){
-                boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
+                std::string joint_name = *res_it;
+                boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(joint_name);
 
                 if(h_it == handles_.end()){
-                    ROS_ERROR_STREAM(*res_it << " not found");
+                    ROS_ERROR_STREAM(joint_name << " not found");
                     return false;
                 }
                 HandleLayer::CanSwitchResult res = h_it->second->canSwitch((MotorBase::OperationMode)mode);
 
                 switch(res){
                     case HandleLayer::NotSupported:
-                        ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
+                        ROS_ERROR_STREAM("Mode " << mode << " is not available for " << joint_name);
                         return false;
                     case HandleLayer::NotReadyToSwitch:
-                        ROS_ERROR_STREAM(*res_it << " is not ready to switch mode");
+                        ROS_ERROR_STREAM(joint_name << " is not ready to switch mode");
                         return false;
                     case HandleLayer::ReadyToSwitch:
                     case HandleLayer::NoNeedToSwitch:
                         {
-                            SwitchData data = { h_it->second, MotorBase::OperationMode(mode) };
+                            LimitedJointHandle::Limits limits = h_it->second->getLimits(); // Hardware
+                            limits.merge(urdf_.getJoint(joint_name)); // URDF
+                            limits.merge(joint_name, nh_, true);      // global YAML
+                            limits.merge(joint_name, nh, true);       // local YAML
+                            SwitchData data = { h_it->second, MotorBase::OperationMode(mode), limits};
                             to_switch.push_back(data);
                         }
                 }
@@ -348,6 +353,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
     }
     for(boost::unordered_set<boost::shared_ptr<HandleLayer> >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
         (*it)->switchMode(MotorBase::No_Mode);
+        (*it)->setOverlayLimits(LimitedJointHandle::Limits()); // reset limits
     }
     if(!failed_controllers.empty()){
         stopControllers(failed_controllers);
@@ -371,6 +377,7 @@ void RobotLayer::doSwitch(const std::list<hardware_interface::ControllerInfo> &s
                     }
                     break;
                 }
+                it->handle->setOverlayLimits(it->limits);
             }
 
         }catch(const std::out_of_range&){
