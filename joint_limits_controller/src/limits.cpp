@@ -152,15 +152,31 @@ void JointLimiter::Limits::merge(const Limits &other){
         }
     }
 }
+#define TRY_COPY(flag, max_prop, has_prop)                      \
+    do {                                                        \
+        if(other.limits_flags & flag){                          \
+            joint_limits.max_prop = other.joint_limits.max_prop;\
+            joint_limits.has_prop = other.joint_limits.has_prop;\
+        }                                                       \
+    }while(0)
 
-void JointLimiter::Limits::merge(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits){
-    Limits l(joint_name, nh, parse_soft_limits);
-    merge(l);
-}
-
-void JointLimiter::Limits::merge(boost::shared_ptr<const urdf::Joint> joint){
-    Limits l(joint);
-    merge(l);
+void JointLimiter::Limits::apply(const Limits &other){
+    if(other.limits_flags & PositionLimitsConfigured){
+        if(other.hasPositionLimits()){
+            setPositionLimits(other.joint_limits.min_position, other.joint_limits.max_position);
+        }else{
+            joint_limits.has_position_limits = false;
+        }
+    }
+    TRY_COPY(VelocityLimitsConfigured, max_velocity, has_velocity_limits);
+    TRY_COPY(AccelerationLimitsConfigured, max_acceleration, has_acceleration_limits);
+    TRY_COPY(JerkLimitsConfigured, max_jerk, has_jerk_limits);
+    TRY_COPY(EffortLimitsConfigured, max_effort, has_effort_limits);
+    if(other.limits_flags & SoftLimitsConfigured){
+        soft_limits = other.soft_limits;
+        has_soft_limits = other.has_soft_limits;
+    }
+    limits_flags = other.limits_flags;
 }
 
 std::pair<double,double> JointLimiter::Limits::getVelocitySoftBounds(double pos) const {

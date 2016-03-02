@@ -60,8 +60,26 @@ public:
         Limits(const Limits& base, const Limits& other) { *this = base; merge(other); }
 
         void merge(const Limits &other);
-        void merge(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits);
-        void merge(boost::shared_ptr<const urdf::Joint> joint);
+
+        void merge(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits){
+            Limits l(joint_name, nh, parse_soft_limits);
+            merge(l);
+        }
+        void merge(boost::shared_ptr<const urdf::Joint> joint){
+            Limits l(joint);
+            merge(l);
+        }
+
+        void apply(const Limits &other);
+
+        void apply(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits){
+            Limits l(joint_name, nh, parse_soft_limits);
+            apply(l);
+        }
+        void apply(boost::shared_ptr<const urdf::Joint> joint){
+            Limits l(joint);
+            apply(l);
+        }
 
         bool hasPositionLimits() const;
         bool hasVelocityLimits() const;

@@ -15,8 +15,8 @@ class JointLimitsController : public controller_interface::ControllerBase {
     template<typename T> bool track(const hardware_interface::JointHandle &handle, ros::NodeHandle& root_nh, ros::NodeHandle &controller_nh) {
         std::string name = handle.getName();
         LimitedJointHandle::Limits limits(urdf_.getJoint(name));
-        limits.merge(name, root_nh, true);
-        limits.merge(name, controller_nh, true);
+        limits.apply(name, root_nh, true);
+        limits.apply(name, controller_nh, true);
         boost::shared_ptr<LimitedJointHandle> ptr(new T(handle, limits));
         limit_handles_.push_back(ptr);
         return true; // TODO: Might fail fo various reasons, add proper checks

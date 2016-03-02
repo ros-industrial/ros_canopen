@@ -308,11 +308,11 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                     case HandleLayer::ReadyToSwitch:
                     case HandleLayer::NoNeedToSwitch:
                         {
-                            LimitedJointHandle::Limits limits = h_it->second->getLimits(); // Hardware
-                            limits.merge(urdf_.getJoint(joint_name)); // URDF
-                            limits.merge(joint_name, nh_, true);      // global YAML
-                            limits.merge(joint_name, nh, true);       // local YAML
-                            SwitchData data = { h_it->second, MotorBase::OperationMode(mode), limits};
+                            LimitedJointHandle::Limits controller_limits(urdf_.getJoint(joint_name)); // URDF
+                            controller_limits.apply(joint_name, nh_, true);      // global YAML
+                            controller_limits.apply(joint_name, nh, true);       // local YAML
+
+                            SwitchData data = { h_it->second, MotorBase::OperationMode(mode), LimitedJointHandle::Limits(h_it->second->getLimits(), controller_limits)};
                             to_switch.push_back(data);
                         }
                 }
