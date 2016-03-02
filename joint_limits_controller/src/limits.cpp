@@ -3,6 +3,27 @@
 #include <joint_limits_interface/joint_limits_urdf.h>
 #include <joint_limits_interface/joint_limits_rosparam.h>
 
+bool JointLimiter::Limits::operator==(const Limits &other) const{
+    return (limits_flags == other.limits_flags) && //TODO: only test configured settings
+           (has_soft_limits == other.has_soft_limits) &&
+           (joint_limits.min_position == other.joint_limits.min_position) &&
+           (joint_limits.max_position == other.joint_limits.max_position) &&
+           (joint_limits.max_velocity == other.joint_limits.max_velocity) &&
+           (joint_limits.max_acceleration == other.joint_limits.max_acceleration) &&
+           (joint_limits.max_jerk == other.joint_limits.max_jerk) &&
+           (joint_limits.max_effort == other.joint_limits.max_effort) &&
+           (joint_limits.has_position_limits == other.joint_limits.has_position_limits) &&
+           (joint_limits.has_velocity_limits == other.joint_limits.has_velocity_limits) &&
+           (joint_limits.has_acceleration_limits == other.joint_limits.has_acceleration_limits) &&
+           (joint_limits.has_jerk_limits == other.joint_limits.has_jerk_limits) &&
+           (joint_limits.has_effort_limits == other.joint_limits.has_effort_limits) &&
+           (joint_limits.angle_wraparound == other.joint_limits.angle_wraparound) &&
+           (soft_limits.min_position == other.soft_limits.min_position) &&
+           (soft_limits.max_position == other.soft_limits.max_position) &&
+           (soft_limits.k_position == other.soft_limits.k_position) &&
+           (soft_limits.k_velocity == other.soft_limits.k_velocity);
+}
+
 void JointLimiter::Limits::read(boost::shared_ptr<const urdf::Joint> joint){
     if(joint){
         if(joint_limits_interface::getJointLimits(joint, joint_limits)){

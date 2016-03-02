@@ -58,3 +58,8 @@ install(
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"
 )
+
+if (CATKIN_ENABLE_TESTING)
+  catkin_add_gtest(test_limits tests/test_limits.cpp)
+  target_link_libraries(test_limits limited_joint_handle)
+endif()

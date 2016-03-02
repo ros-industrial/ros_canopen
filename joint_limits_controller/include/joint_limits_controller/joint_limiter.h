@@ -57,6 +57,9 @@ public:
 
         Limits(const Limits& base, const Limits& other) { *this = base; merge(other); }
 
+        bool operator==(const Limits &other) const;
+        bool operator!=(const Limits &other) const { return !(*this == other); }
+
         void merge(const Limits &other);
 
         void merge(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits){
