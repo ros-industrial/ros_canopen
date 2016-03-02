@@ -133,9 +133,8 @@ void JointLimiter::Limits::merge(const Limits &other){
     TRY_MERGE(JerkLimitsConfigured, max_jerk, has_jerk_limits, "jerk");
     TRY_MERGE(EffortLimitsConfigured, max_effort, has_effort_limits, "effort");
 
-
     if(other.limits_flags & SoftLimitsConfigured){
-        if(has_soft_limits){ // merge
+        if(hasSoftLimits() && other.hasSoftLimits()){ // merge
             if(other.soft_limits.min_position < soft_limits.min_position){
                 ROS_ERROR("new soft_limits.min_position too low");
             }else if(other.soft_limits.max_position > soft_limits.max_position){
@@ -180,7 +179,7 @@ void JointLimiter::Limits::apply(const Limits &other){
         soft_limits = other.soft_limits;
         has_soft_limits = other.has_soft_limits;
     }
-    limits_flags = other.limits_flags;
+    limits_flags |= other.limits_flags;
 }
 
 std::pair<double,double> JointLimiter::Limits::getVelocitySoftBounds(double pos) const {
