@@ -5,27 +5,32 @@ using namespace canopen;
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1) /* set alignment to 1 byte boundary */
 
-struct PDOid{
-    uint32_t id:29;
-    uint32_t extended:1;
-    uint32_t no_rtr:1;
-    uint32_t invalid:1;
-    PDOid(uint32_t val){
-        *(uint32_t*) this = val;
+class PDOid{
+    const uint32_t value_;
+public:
+    static const unsigned int ID_MASK = (1u << 29)-1;
+    static const unsigned int EXTENDED_MASK = (1u << 29);
+    static const unsigned int NO_RTR_MASK = (1u << 30);
+    static const unsigned int INVALID_MASK = (1u << 31);
+
+    PDOid(const uint32_t &val)
+    : value_(val)
+    {}
+    can::Header header(bool fill_rtr = false) const {
+        return can::Header(value_ & ID_MASK, value_ & EXTENDED_MASK, fill_rtr && !(value_ & NO_RTR_MASK), false);
     }
-    can::Header header() {
-        return can::Header(id, extended, false, false);
-    }
-    const uint32_t get() const { return *(uint32_t*) this; }
+    bool isInvalid() const { return value_ & INVALID_MASK; }
 };
 
 struct PDOmap{
     uint8_t length;
     uint8_t sub_index;
     uint16_t index;
-    PDOmap(uint32_t val){
-        *(uint32_t*) this = val;
-    }
+    PDOmap(uint32_t val)
+    : length(val & 0xFF),
+      sub_index((val>>8) & 0xFF),
+      index(val>>16)
+    {}
 };
 
 #pragma pack(pop) /* pop previous alignment from stack */
@@ -101,12 +106,8 @@ void PDOMapper::PDO::parse_and_set_mapping(const boost::shared_ptr<ObjectStorage
     
     bool com_changed = check_com_changed(dict, map_index);
     if((map_changed || com_changed) && cob_id.desc().writable){
-        
-        PDOid cur(cob_id.get());
-        cur.invalid = 1;
-        cob_id.set(cur.get());
+        cob_id.set(cob_id.get() | PDOid::INVALID_MASK);
     }
-    
     if(map_num > 0 && map_num <= 0x40){ // actual mapping 
         if(map_changed){
             num_entry.set(0);
@@ -210,13 +211,12 @@ bool PDOMapper::RPDO::init(const boost::shared_ptr<ObjectStorage> &storage, cons
     
     PDOid pdoid( NodeIdOffset<uint32_t>::apply(dict(com_index, SUB_COM_COB_ID).value(), storage->node_id_) );
 
-    if(buffers.empty() || pdoid.invalid){
-       return false;     
+    if(buffers.empty() || pdoid.isInvalid()){
+       return false;
     }
-        
-    frame = pdoid.header();
-    frame.is_rtr = pdoid.no_rtr?0:1;
-    
+
+    frame = pdoid.header(true);
+
     transmission_type = dict(com_index, SUB_COM_TRANSMISSION_TYPE).value().get<uint8_t>();
     
     listener_ = interface_->createMsgListener(pdoid.header() ,can::CommInterface::FrameDelegate(this, &RPDO::handleFrame));
@@ -233,10 +233,9 @@ bool PDOMapper::TPDO::init(const boost::shared_ptr<ObjectStorage> &storage, cons
     frame = pdoid.header();
     
     parse_and_set_mapping(storage, com_index, map_index, false, true);
-    if(buffers.empty() || pdoid.invalid){
-       return false;     
+    if(buffers.empty() || pdoid.isInvalid()){
+       return false;
     }
-    
     ObjectStorage::Entry<uint8_t> tt;
     storage->entry(tt, com_index, SUB_COM_TRANSMISSION_TYPE);
     transmission_type = tt.desc().value().get<uint8_t>();

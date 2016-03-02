@@ -375,7 +375,8 @@ bool Motor402::switchState(LayerStatus &status, const State402::InternalState &t
 bool Motor402::readState(LayerStatus &status){
     uint16_t sw = status_word_entry_.get(); // TODO: added error handling
     status_word_ = sw;
-    State402::InternalState state = state_handler_.read(sw);
+
+    state_handler_.read(sw);
 
     boost::mutex::scoped_lock lock(mode_mutex_);
     uint16_t new_mode = monitor_mode_ ? op_mode_display_.get() : op_mode_display_.get_cached();
