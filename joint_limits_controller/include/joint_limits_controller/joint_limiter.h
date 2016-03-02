@@ -43,7 +43,6 @@ public:
             AccelerationLimitsConfigured = (1<<2),
             JerkLimitsConfigured = (1<<3),
             EffortLimitsConfigured = (1<<4),
-            JointLimitsConfigured = (1<<5)-1,
             SoftLimitsConfigured = (1<<5),
         };
 
@@ -56,7 +55,6 @@ public:
         Limits(boost::shared_ptr<const urdf::Joint> joint) : limits_flags(0), has_soft_limits(false) { read(joint); }
         Limits(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits) : limits_flags(0), has_soft_limits(false) { read(joint_name, nh, parse_soft_limits); }
 
-        Limits(const Limits& other) { *this = other; }
         Limits(const Limits& base, const Limits& other) { *this = base; merge(other); }
 
         void merge(const Limits &other);
