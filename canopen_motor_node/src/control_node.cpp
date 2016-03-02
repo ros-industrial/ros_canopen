@@ -85,7 +85,17 @@ public:
     virtual bool setup() {
         motors_.reset( new LayerGroupNoDiag<MotorBase>("402 Layer"));
         robot_layer_.reset( new RobotLayer(nh_));
-        cm_.reset(new ControllerManagerLayer(robot_layer_, nh_));
+
+        ros::Duration dur(0.0) ;
+
+        if(!nh_.param("use_realtime_period", false)){
+            dur.fromSec(boost::chrono::duration<double>(update_duration_).count());
+            ROS_INFO_STREAM("Using fixed control period: " << dur);
+        }else{
+            ROS_INFO("Using real-time control period");
+        }
+
+        cm_.reset(new ControllerManagerLayer(robot_layer_, nh_, dur));
 
         if(RosChain::setup()){
             add(motors_);

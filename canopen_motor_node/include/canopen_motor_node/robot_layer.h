@@ -237,10 +237,11 @@ class ControllerManagerLayer : public canopen::Layer {
 
     canopen::time_point last_time_;
     boost::atomic<bool> recover_;
+    const ros::Duration fixed_period_;
 
 public:
-    ControllerManagerLayer(const boost::shared_ptr<RobotLayer> robot, const ros::NodeHandle &nh)
-    :Layer("ControllerManager"), robot_(robot), nh_(nh) {
+    ControllerManagerLayer(const boost::shared_ptr<RobotLayer> robot, const ros::NodeHandle &nh, const ros::Duration &fixed_period)
+    :Layer("ControllerManager"), robot_(robot), nh_(nh), fixed_period_(fixed_period) {
     }
 
     virtual void handleRead(canopen::LayerStatus &status, const LayerState &current_state);
