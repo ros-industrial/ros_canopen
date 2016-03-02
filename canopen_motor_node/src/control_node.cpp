@@ -73,6 +73,13 @@ class MotorChain : public RosChain{
         logger->add(motor);
 
         boost::shared_ptr<HandleLayer> handle( new HandleLayer(joint, motor, node->getStorage(), params));
+
+        canopen::LayerStatus s;
+        if(!handle->prepareFilters(s)){
+            ROS_ERROR_STREAM(s.reason());
+            return false;
+        }
+
         robot_layer_->add(joint, handle);
         logger->add(handle);
 
