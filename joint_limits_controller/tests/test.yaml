@@ -1,0 +1,107 @@
+full_limits:
+  joint_limits:
+    test_joint:
+      has_position_limits: true
+      min_position: -333
+      max_position: +333
+      has_velocity_limits: true
+      max_velocity: 33
+      has_acceleration_limits: true
+      max_acceleration: 3333
+      has_jerk_limits: true
+      max_jerk: 33333
+      has_effort_limits: true
+      max_effort: 333333
+      angle_wraparound: true # should be ignored
+      has_soft_limits: true
+      soft_lower_limit: -3
+      soft_upper_limit: +3
+      k_position: 4
+      k_velocity: 5
+
+no_limits:
+  joint_limits:
+    test_joint:
+      has_position_limits: false
+      has_velocity_limits: false
+      has_acceleration_limits: false
+      has_jerk_limits: false
+      has_effort_limits: false
+      has_soft_limits: false
+
+only_pos:
+  joint_limits:
+    test_joint:
+      has_position_limits: true
+      min_position: -333
+      max_position: +333
+
+only_vel:
+  joint_limits:
+    test_joint:
+      has_velocity_limits: true
+      max_velocity: 33
+
+only_acc:
+  joint_limits:
+    test_joint:
+      has_acceleration_limits: true
+      max_acceleration: 3333
+
+only_jerk:
+  joint_limits:
+    test_joint:
+      has_jerk_limits: true
+      max_jerk: 33333
+
+only_effort:
+  joint_limits:
+    test_joint:
+      has_effort_limits: true
+      max_effort: 333333
+
+only_soft:
+  joint_limits:
+    test_joint:
+      has_soft_limits: true
+      soft_lower_limit: -3
+      soft_upper_limit: +3
+      k_position: 4
+      k_velocity: 5
+
+fail_soft1:
+  joint_limits:
+    test_joint:
+      has_soft_limits: true
+      soft_upper_limit: +3
+      k_position: 4
+      k_velocity: 5
+
+fail_soft2:
+  joint_limits:
+    test_joint:
+      has_soft_limits: true
+      soft_lower_limit: -3
+      k_position: 4
+      k_velocity: 5
+
+fail_soft3:
+  joint_limits:
+    test_joint:
+      has_soft_limits: true
+      soft_lower_limit: -3
+      soft_upper_limit: +3
+      k_velocity: 5
+
+fail_soft4:
+  joint_limits:
+    test_joint:
+      has_soft_limits: true
+      soft_lower_limit: -3
+      soft_upper_limit: +3
+      k_position: 4
+
+fail_soft5:
+  joint_limits:
+    test_joint:
+      has_soft_limits: true

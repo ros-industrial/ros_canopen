@@ -1,0 +1,20 @@
+<robot name="test">
+  <link name="base"/>
+  <link name="link1"/>
+  <link name="link2"/>
+
+  <joint name="joint1" type="revolute">
+    <parent link="base"/>
+    <child link="link1"/>
+    <limit effort="1111" velocity="11" lower="-111" upper="111" />
+    <safety_controller k_velocity="12" k_position="10" soft_lower_limit="-110" soft_upper_limit="110" />
+  </joint>
+
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <limit effort="2222" velocity="22" lower="-222" upper="222" />
+  </joint>
+
+  <!-- TODO add continuous joint case -->
+</robot>

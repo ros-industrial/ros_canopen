@@ -1,0 +1,10 @@
+<launch>
+  <rosparam command="load" file="$(find joint_limits_controller)/tests/test.yaml" />
+  <rosparam command="load" param="robot_description" file="$(find joint_limits_controller)/tests/test.urdf" />
+
+  <param name="test1/has_robot_description" type="bool" value="false" />
+  <param name="test3/test4/has_robot_description" type="bool" value="false" />
+
+  <test test-name="urdf_yaml_test" pkg="joint_limits_controller" type="test_urdf_yaml">
+  </test>
+</launch>

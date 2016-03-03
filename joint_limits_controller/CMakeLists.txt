@@ -61,5 +61,18 @@ install(
 
 if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(test_limits tests/test_limits.cpp)
-  target_link_libraries(test_limits limited_joint_handle)
+  target_link_libraries(test_limits
+    limited_joint_handle
+    ${catkin_LIBRARIES}
+  )
+
+  find_package(rostest REQUIRED)
+  add_rostest_gtest(test_urdf_yaml
+    tests/test_urdf_yaml.test
+    tests/test_urdf_yaml.cpp
+  )
+  target_link_libraries(test_urdf_yaml
+    limited_joint_handle
+    ${catkin_LIBRARIES}
+  )
 endif()

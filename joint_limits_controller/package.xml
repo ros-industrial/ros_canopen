@@ -22,6 +22,7 @@
   <depend>urdf</depend>
 
   <test_depend>rosunit</test_depend>
+  <test_depend>rostest</test_depend>
 
   <export>
     <controller_interface plugin="${prefix}/controller_interface_plugins.xml"/>
