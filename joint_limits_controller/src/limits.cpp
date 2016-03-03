@@ -24,6 +24,22 @@ bool JointLimiter::Limits::operator==(const Limits &other) const{
            (soft_limits.k_velocity == other.soft_limits.k_velocity);
 }
 
+bool JointLimiter::Limits::parseURDF(ros::NodeHandle nh, urdf::Model &urdf, bool *has_urdf){
+   std::string has_robot_description_fqn;
+   bool has_robot_description = true;
+
+   if(nh.searchParam("has_robot_description", has_robot_description_fqn)){
+        ros::param::get(has_robot_description_fqn, has_robot_description);
+    }
+    if(has_robot_description){
+        if(!urdf.initParam("robot_description")) return false;
+        if(has_urdf) *has_urdf = true;
+    }else if(has_urdf){
+        *has_urdf = false;
+    }
+    return true;
+}
+
 void JointLimiter::Limits::read(boost::shared_ptr<const urdf::Joint> joint){
     if(joint){
         if(joint_limits_interface::getJointLimits(joint, joint_limits)){

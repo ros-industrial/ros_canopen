@@ -2,7 +2,7 @@
 #define CANOPEN_MOTOR_NODE_JOINT_LIMITER_H_
 
 #include <joint_limits_interface/joint_limits.h>
-#include <urdf_model/joint.h>
+#include <urdf/model.h>
 #include <ros/node_handle.h>
 
 template<typename T> class DataStore {
@@ -37,6 +37,7 @@ public:
         void read(boost::shared_ptr<const urdf::Joint> joint);
         void read(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits);
     public:
+        static bool parseURDF(ros::NodeHandle nh, urdf::Model &urdf, bool *has_urdf);
         enum {
             PositionLimitsConfigured = (1<<0),
             VelocityLimitsConfigured = (1<<1),

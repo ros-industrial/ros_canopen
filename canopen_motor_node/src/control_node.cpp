@@ -96,18 +96,7 @@ public:
 
     virtual bool setup() {
 
-        std::string has_robot_description_fqn;
-        bool has_robot_description = true;
-
-        if(nh_priv_.searchParam("has_robot_description", has_robot_description_fqn)){
-            ros::param::get(has_robot_description_fqn, has_robot_description);
-        }
-        if(has_robot_description){
-            if(!urdf_.initParam("robot_description")) return false;
-            has_urdf_ = true;
-        }else{
-            has_urdf_ = false;
-        }
+        if(!JointLimiter::Limits::parseURDF(nh_priv_, urdf_, &has_urdf_)) return false;
 
         motors_.reset( new LayerGroupNoDiag<MotorBase>("402 Layer"));
         robot_layer_.reset( new RobotLayer(nh_, urdf_));

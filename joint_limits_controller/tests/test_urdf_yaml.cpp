@@ -3,21 +3,6 @@
 #include <ros/ros.h>
 
 #include <gtest/gtest.h>
-bool parseURDF(ros::NodeHandle nh, urdf::Model &urdf, bool &has_urdf){ // TODO: migrate this function to somewhere else
-   std::string has_robot_description_fqn;
-   bool has_robot_description = true;
-
-   if(nh.searchParam("has_robot_description", has_robot_description_fqn)){
-        ros::param::get(has_robot_description_fqn, has_robot_description);
-    }
-    if(has_robot_description){
-        if(!urdf.initParam("robot_description")) return false;
-        has_urdf = true;
-    }else{
-        has_urdf = false;
-    }
-    return true;
-}
 
 TEST(TestURDF, testNoURDF1)
 {
@@ -25,7 +10,7 @@ TEST(TestURDF, testNoURDF1)
     urdf::Model urdf;
     bool has_urdf;
 
-    ASSERT_TRUE(parseURDF(nh, urdf, has_urdf));
+    ASSERT_TRUE(JointLimiter::Limits::parseURDF(nh, urdf, &has_urdf));
     ASSERT_FALSE(has_urdf);
 }
 
@@ -35,7 +20,7 @@ TEST(TestURDF, testNoURDF2)
     urdf::Model urdf;
     bool has_urdf;
 
-    ASSERT_TRUE(parseURDF(nh, urdf, has_urdf));
+    ASSERT_TRUE(JointLimiter::Limits::parseURDF(nh, urdf, &has_urdf));
     ASSERT_FALSE(has_urdf);
 }
 
@@ -45,7 +30,7 @@ TEST(TestURDF, testURDF3)
     urdf::Model urdf;
     bool has_urdf;
 
-    ASSERT_TRUE(parseURDF(nh, urdf, has_urdf));
+    ASSERT_TRUE(JointLimiter::Limits::parseURDF(nh, urdf, &has_urdf));
     ASSERT_TRUE(has_urdf);
 }
 
@@ -56,7 +41,7 @@ TEST(TestURDF, testNoURDF4)
     urdf::Model urdf;
     bool has_urdf;
 
-    ASSERT_TRUE(parseURDF(nh, urdf, has_urdf));
+    ASSERT_TRUE(JointLimiter::Limits::parseURDF(nh, urdf, &has_urdf));
     ASSERT_FALSE(has_urdf);
 }
 
@@ -66,7 +51,7 @@ TEST(TestURDF, testURDF)
     urdf::Model urdf;
     bool has_urdf;
 
-    ASSERT_TRUE(parseURDF(nh, urdf, has_urdf));
+    ASSERT_TRUE(JointLimiter::Limits::parseURDF(nh, urdf, &has_urdf));
     ASSERT_TRUE(has_urdf);
 
     boost::shared_ptr<const urdf::Joint> joint1 = urdf.getJoint("joint1"), joint2 = urdf.getJoint("joint2");
