@@ -29,12 +29,11 @@ void JointLimiter::Limits::read(boost::shared_ptr<const urdf::Joint> joint){
         if(joint_limits_interface::getJointLimits(joint, joint_limits)){
             limits_flags |= PositionLimitsConfigured;
             limits_flags |= VelocityLimitsConfigured;
-            limits_flags |= AccelerationLimitsConfigured;
-            limits_flags |= JerkLimitsConfigured;
             limits_flags |= EffortLimitsConfigured;
         }
         if(joint_limits_interface::getSoftJointLimits(joint, soft_limits)){
             limits_flags |= SoftLimitsConfigured;
+            has_soft_limits = true;
         }
     }
 }
