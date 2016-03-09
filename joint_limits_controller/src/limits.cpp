@@ -222,7 +222,6 @@ std::pair<double,double> JointLimiter::Limits::getVelocitySoftBounds(double pos)
     if(!hasSoftLimits()) return std::make_pair(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN());
 
     std::pair<double,double> vel_soft_bounds = getSoftBounds(pos, soft_limits.k_position, soft_limits.min_position, soft_limits.max_position);
-
     if(hasVelocityLimits()){
         if(vel_soft_bounds.first < -joint_limits.max_velocity) vel_soft_bounds.first = -joint_limits.max_velocity;
         if(vel_soft_bounds.second > joint_limits.max_velocity) vel_soft_bounds.second = joint_limits.max_velocity;
@@ -295,18 +294,43 @@ void JointLimiter::Limits::setSoftLimits(double k_position, double min_position,
     soft_limits.k_velocity = k_velocity;
 }
 
+std::pair<double, bool> JointLimiter::Limits::limitPositionChecked(double pos) const {
+    if(hasPositionLimits()) return limitBoundsChecked(pos, joint_limits.min_position, joint_limits.max_position);
+    else return std::make_pair(pos, false);
+}
+
+std::pair<double, bool> JointLimiter::Limits::limitVelocityChecked(double vel) const {
+    if(hasVelocityLimits()) return limitBoundsChecked(vel, -joint_limits.max_velocity, joint_limits.max_velocity);
+    else return std::make_pair(vel, false);
+}
+std::pair<double, bool> JointLimiter::Limits::limitAccelerationChecked(double acc) const {
+    if(hasAccelerationLimits()) return limitBoundsChecked(acc, -joint_limits.max_acceleration, joint_limits.max_acceleration);
+    else return std::make_pair(acc, false);
+}
+std::pair<double, bool> JointLimiter::Limits::limitJerkChecked(double jerk) const {
+    if(hasJerkLimits()) return limitBoundsChecked(jerk, -joint_limits.max_jerk, joint_limits.max_jerk);
+    else return std::make_pair(jerk, false);
+}
+std::pair<double, bool> JointLimiter::Limits::limitEffortChecked(double eff) const {
+    if(hasEffortLimits()) return limitBoundsChecked(eff, -joint_limits.max_effort, joint_limits.max_effort);
+    else return std::make_pair(eff, false);
+}
+
 double JointLimiter::Limits::limitPosition(double pos) const {
-    if(hasPositionLimits()) return limitBounds(pos, joint_limits.min_position, joint_limits.max_position);
-    else return pos;
+    return limitPositionChecked(pos).first;
 }
 
 double JointLimiter::Limits::limitVelocity(double vel) const {
-    if(hasVelocityLimits()) return limitBounds(vel, -joint_limits.max_velocity, joint_limits.max_velocity);
-    else return vel;
+    return limitVelocityChecked(vel).first;
+}
+double JointLimiter::Limits::limitAcceleration(double acc) const {
+    return limitAccelerationChecked(acc).first;
+}
+double JointLimiter::Limits::limitJerk(double jerk) const {
+    return limitJerkChecked(jerk).first;
 }
 double JointLimiter::Limits::limitEffort(double eff) const {
-    if(hasEffortLimits()) return limitBounds(eff, -joint_limits.max_effort, joint_limits.max_effort);
-    else return eff;
+    return limitEffortChecked(eff).first;
 }
 
 double JointLimiter::Limits::stopOnPositionLimit(double cmd, double current_pos) const {

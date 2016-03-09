@@ -6,12 +6,12 @@
 TEST(TestHelpers, testBounds)
 {
     for(int i=-10; i <=10; i+=10){
-        EXPECT_EQ( 0+i, JointLimiter::limitBounds( 0+i, -5+i, +5+i));
-        EXPECT_EQ(-5+i, JointLimiter::limitBounds(-5+i, -5+i, +5+i));
-        EXPECT_EQ(-5+i, JointLimiter::limitBounds(-6+i, -5+i, +5+i));
-        EXPECT_EQ(+5+i ,JointLimiter::limitBounds(+5+i, -5+i, +5+i));
-        EXPECT_EQ(+5+i, JointLimiter::limitBounds(+6+i, -5+i, +5+i));
-        EXPECT_TRUE(isnan(JointLimiter::limitBounds(0, +5+i, -5+i)));
+        EXPECT_EQ( 0+i, JointLimiter::Limits::limitBounds( 0+i, -5+i, +5+i));
+        EXPECT_EQ(-5+i, JointLimiter::Limits::limitBounds(-5+i, -5+i, +5+i));
+        EXPECT_EQ(-5+i, JointLimiter::Limits::limitBounds(-6+i, -5+i, +5+i));
+        EXPECT_EQ(+5+i ,JointLimiter::Limits::limitBounds(+5+i, -5+i, +5+i));
+        EXPECT_EQ(+5+i, JointLimiter::Limits::limitBounds(+6+i, -5+i, +5+i));
+        EXPECT_TRUE(isnan(JointLimiter::Limits::limitBounds(0, +5+i, -5+i)));
     }
 }
 
@@ -20,17 +20,17 @@ TEST(TestHelpers, testSoftLimits)
     for(double k=0; k < 2; k+=0.1){
         for(double i=-10; i <=10; i+=1){
             {
-                std::pair<double, double> bounds = JointLimiter::getSoftBounds(0, k,-i,i);
+                std::pair<double, double> bounds = JointLimiter::Limits::getSoftBounds(0, k,-i,i);
                 EXPECT_DOUBLE_EQ( bounds.first, -i*k);
                 EXPECT_DOUBLE_EQ( bounds.second, +i*k);
             }
             {
-                std::pair<double, double> bounds = JointLimiter::getSoftBounds(-i, k,-i,i);
+                std::pair<double, double> bounds = JointLimiter::Limits::getSoftBounds(-i, k,-i,i);
                 EXPECT_DOUBLE_EQ( bounds.first, 0);
                 EXPECT_DOUBLE_EQ( bounds.second, +2*i*k);
             }
             {
-                std::pair<double, double> bounds = JointLimiter::getSoftBounds(+i, k,-i,i);
+                std::pair<double, double> bounds = JointLimiter::Limits::getSoftBounds(+i, k,-i,i);
                 EXPECT_DOUBLE_EQ( bounds.first, -2*i*k);
                 EXPECT_DOUBLE_EQ( bounds.second, 0);
             }

@@ -1,16 +1,20 @@
 #include <joint_limits_controller/limited_joint_handle.h>
 
-double JointLimiter::limitBounds(double value, double min, double max){
+std::pair<double,bool> JointLimiter::Limits::limitBoundsChecked(double value, double min, double max){
     if(min > max){
         ROS_ERROR("min > max");
-        return std::numeric_limits<double>::quiet_NaN();
+        return std::make_pair(std::numeric_limits<double>::quiet_NaN(), false);
     }
-    if(value > max) return max;
-    else if (value < min) return min;
-    return value;
+    if(value > max) return std::make_pair(max, true);
+    else if (value < min) return std::make_pair(min, true);
+    return std::make_pair(value, false);
 }
 
-std::pair<double,double> JointLimiter::getSoftBounds(double value, double k, double lower, double upper){
+double JointLimiter::Limits::limitBounds(double value, double min, double max){
+    return limitBoundsChecked(value, min, max).first;
+}
+
+std::pair<double,double> JointLimiter::Limits::getSoftBounds(double value, double k, double lower, double upper){
     return std::make_pair(-k*(value-lower), -k*(value-upper));
 }
 
