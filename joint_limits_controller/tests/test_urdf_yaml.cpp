@@ -283,9 +283,9 @@ TEST(TestYAML, testNoLimits)
     EXPECT_TRUE(limits.limits_flags & JointLimiter::Limits::SoftLimitsConfigured);
 }
 
-TEST(TestYAML, testEmpyLimits)
+TEST(TestYAML, testEmptyLimits)
 {
-    JointLimiter::Limits limits("test_joint", ros::NodeHandle("empy_limits"), true);
+    JointLimiter::Limits limits("test_joint", ros::NodeHandle("empty_limits"), true);
 
     EXPECT_FALSE(limits.hasPositionLimits());
     EXPECT_FALSE(limits.hasVelocityLimits());

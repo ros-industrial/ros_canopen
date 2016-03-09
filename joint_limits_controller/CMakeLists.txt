@@ -75,4 +75,15 @@ if (CATKIN_ENABLE_TESTING)
     limited_joint_handle
     ${catkin_LIBRARIES}
   )
+
+  find_package(std_msgs REQUIRED)
+  add_rostest_gtest(test_joint_limiter
+    tests/test_joint_limiter.test
+    tests/test_joint_limiter.cpp
+  )
+  target_link_libraries(test_joint_limiter
+    limited_joint_handle
+    ${std_msgs_LIBRARIES}
+    ${catkin_LIBRARIES}
+  )
 endif()

@@ -19,68 +19,55 @@ std::pair<double,double> JointLimiter::Limits::getSoftBounds(double value, doubl
 }
 
 void PositionJointLimiter::enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) {
-    double last_command = 0;
+    double current_pos = pos_.getOrInit(pos);
 
-    if(!last_command_.get(last_command)) last_command = pos; // fallback to actual position
+    std::pair<double, bool> new_vel = limits.limitVelocityWithSoftBounds((cmd - current_pos)/period, current_pos);
 
-    if(limits.hasSoftLimits()){
-        std::pair<double, double> vel_soft_bounds = limits.getVelocitySoftBounds(last_command);
-        cmd = limitBounds(cmd, last_command + vel_soft_bounds.first * period, last_command + vel_soft_bounds.second * period);
-    }
-
-    double max_vel;
-    if(limits.getVelocityLimit(max_vel, period)){
-        cmd = limitBounds(cmd, last_command - max_vel * period, last_command + max_vel * period);
+    if(new_vel.second)
+    {
+        cmd = current_pos + new_vel.first * period;
     }
 
     cmd = limits.limitPosition(cmd);
 
-    //TODO: What do to if effort limit is exceeded?
+    pos_.set(cmd);
 
-    last_command_.set(cmd);
+    //TODO: What do to if effort limit is exceeded?
 }
 
 void VelocityJointLimiter::enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) {
-    double last_command = 0;
+    double current_vel = vel_.getOrInit(vel);
 
-    if(!last_command_.get(last_command)) last_command = vel; // fallback to actual velocity
-
-    if(limits.hasSoftLimits()){
-        std::pair<double, double> vel_soft_bounds = limits.getVelocitySoftBounds(pos); // TODO: use tracked pos?
-        cmd = limitBounds(cmd, vel_soft_bounds.first, vel_soft_bounds.second);
+    std::pair<double, bool> new_acc = limits.limitAccelerationChecked((cmd - current_vel)/period);
+    if(new_acc.second)
+    {
+        cmd = current_vel + new_acc.first * period;
     }
 
-    double max_vel;
-    if(limits.getVelocityLimit(max_vel, period)){
-        cmd = limitBounds(cmd, -max_vel, max_vel);
-    }
-
-    cmd = limits.stopOnPositionLimit(cmd, pos);
+    std::pair<double, bool>  new_vel = limits.limitVelocityWithSoftBounds(cmd, pos + cmd*period);
+    cmd = limits.stopOnPositionLimit(new_vel.first, pos + cmd*period);
+    vel_.set(cmd);
 
     //TODO: What do to if effort limit is exceeded?
-
-    last_command_.set(cmd);
 }
 
 void EffortJointLimiter::enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd) {
-    double last_command = 0;
-
-    if(!last_command_.get(last_command)) last_command = eff; // fallback to actual effort
+    double current_eff = eff_.getOrInit(eff);
 
     if(limits.hasSoftLimits()){
         std::pair<double, double> vel_soft_bounds = limits.getVelocitySoftBounds(pos); // TODO: use tracked pos?
 
-        std::pair<double, double> eff_soft_bounds = getSoftBounds(vel, limits.soft_limits.k_velocity, vel_soft_bounds.first, vel_soft_bounds.second);
+        std::pair<double, double> eff_soft_bounds = Limits::getSoftBounds(vel, limits.soft_limits.k_velocity, vel_soft_bounds.first, vel_soft_bounds.second);
 
         eff_soft_bounds.first = limits.limitEffort(eff_soft_bounds.first);
         eff_soft_bounds.second = limits.limitEffort(eff_soft_bounds.second);
 
-        cmd = limitBounds(cmd, eff_soft_bounds.first, eff_soft_bounds.second);
+        cmd = Limits::limitBounds(cmd, eff_soft_bounds.first, eff_soft_bounds.second);
     }
 
     cmd = limits.limitEffort(cmd);
 
     cmd = limits.stopOnPositionLimit(cmd, pos);
 
-    last_command_.set(cmd);
+    eff_.set(cmd);
 }

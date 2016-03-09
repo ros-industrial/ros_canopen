@@ -84,31 +84,10 @@ void JointLimiter::Limits::read(const std::string& name, const ros::NodeHandle& 
         }
         limits_flags |= SoftLimitsConfigured;
     }
-}
-
-bool JointLimiter::Limits::getVelocityLimit(double &limit,const double& period) const{
-    double a;
-    if(getAccelerationLimit(a, period)){
-        limit = a*period;
-        if(joint_limits.has_velocity_limits && limit > joint_limits.max_velocity) limit = joint_limits.max_velocity;
-    } else if(hasVelocityLimits()){
-        limit = joint_limits.max_velocity;
-    }else{
-        return false;
-    }
-    return true;
-}
-
-bool JointLimiter::Limits::getAccelerationLimit(double &limit,const double& period) const{
     if(hasJerkLimits()){
-        limit = period * joint_limits.max_jerk;
-        if(joint_limits.has_acceleration_limits && limit > joint_limits.max_acceleration) limit = joint_limits.max_acceleration;
-    }else if(hasAccelerationLimits()){
-        limit = joint_limits.max_acceleration;
-    }else{
-        return false;
+        ROS_WARN_STREAM_THROTTLE(1, "jerk limits are not yet implementend");
     }
-    return true;
+
 }
 
 bool JointLimiter::Limits::valid() const {
@@ -342,3 +321,19 @@ double JointLimiter::Limits::stopOnPositionLimit(double cmd, double current_pos)
     }
     return cmd;
 }
+
+std::pair<double, bool> JointLimiter::Limits::limitVelocityWithSoftBounds(double vel, double current_pos) const {
+    std::pair<double, bool> new_soft_vel;
+
+    if(hasSoftLimits()){
+        std::pair<double, double> vel_soft_bounds = getVelocitySoftBounds(current_pos);
+        new_soft_vel = limitBoundsChecked(vel, vel_soft_bounds.first, vel_soft_bounds.second);
+    }else{
+        new_soft_vel = std::make_pair(vel, false);
+    }
+
+    std::pair<double, bool> new_vel = limitVelocityChecked(new_soft_vel.first);
+    new_vel.second |= new_soft_vel.second;
+    return new_vel;
+}
+

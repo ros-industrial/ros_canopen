@@ -11,16 +11,24 @@ template<typename T> class DataStore {
 public:
     DataStore(): has_data_(false) {}
     bool get(T &data){
-        data = data_;
+        if(has_data_) data = data_;
         return has_data_;
+    }
+    T getOrInit(const T &data){
+        if(has_data_) return data_;
+        return data_ = data;
     }
     void set(const T &data){
         data_ = data;
         has_data_ = true;
     }
-    double diff(T &data, double d){
-        if(has_data_) return data - data_;
-        else return d;
+    double setMax(double d){
+        if(!has_data_ || d > data_ ) set(d);
+        return d;
+    }
+    double setMin(double d){
+        if(!has_data_ || d < data_ ) set(d);
+        return d;
     }
     void reset() {
         has_data_ = false;
@@ -29,14 +37,15 @@ public:
 
 class JointLimiter {
 public:
-    static double limitBounds(double value, double min, double max);
-
-    static std::pair<double,double> getSoftBounds(double value, double k, double lower, double upper);
-
     class Limits {
         void read(boost::shared_ptr<const urdf::Joint> joint);
         void read(const std::string& joint_name, const ros::NodeHandle& nh, bool parse_soft_limits);
     public:
+        static std::pair<double,bool> limitBoundsChecked(double value, double min, double max);
+        static double limitBounds(double value, double min, double max);
+
+        static std::pair<double,double> getSoftBounds(double value, double k, double lower, double upper);
+
         static bool parseURDF(ros::NodeHandle nh, urdf::Model &urdf, bool *has_urdf);
         enum {
             PositionLimitsConfigured = (1<<0),
@@ -97,16 +106,22 @@ public:
         void setEffortLimits(double max_effort);
         void setSoftLimits(double k_position, double min_position, double max_position, double k_velocity);
 
-        bool getVelocityLimit(double &limit, const double& period) const;
-        bool getAccelerationLimit(double &limit, const double& period) const;
-
         std::pair<double,double> getVelocitySoftBounds(double pos) const;
+
+        std::pair<double, bool> limitPositionChecked(double pos) const;
+        std::pair<double, bool> limitVelocityChecked(double vel) const;
+        std::pair<double, bool> limitAccelerationChecked(double acc) const;
+        std::pair<double, bool> limitJerkChecked(double jerk) const;
+        std::pair<double, bool> limitEffortChecked(double eff) const;
 
         double limitPosition(double pos) const;
         double limitVelocity(double vel) const;
+        double limitAcceleration(double acc) const;
+        double limitJerk(double jerk) const;
         double limitEffort(double eff) const;
 
         double stopOnPositionLimit(double cmd, double current_pos) const;
+        std::pair<double, bool> limitVelocityWithSoftBounds(double vel, double pos) const;
 
         bool valid() const;
     };
@@ -122,18 +137,31 @@ protected:
 };
 
 class PositionJointLimiter : public JointLimiter {
+    DataStore<double> pos_;
 public:
     virtual void enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
+    virtual void recover() {
+        pos_.reset();
+    }
+
 };
 
 class VelocityJointLimiter : public JointLimiter {
+    DataStore<double> vel_;
 public:
     virtual void enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
+    virtual void recover() {
+        vel_.reset();
+    }
 };
 
 class EffortJointLimiter : public JointLimiter {
+    DataStore<double> eff_;
 public:
     virtual void enforceLimits(const double& period, const Limits &limits, const double pos, const double vel, const double eff, double &cmd);
+    virtual void recover() {
+        eff_.reset();
+    }
 };
 
 #endif

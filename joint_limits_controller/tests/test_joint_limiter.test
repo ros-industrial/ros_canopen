@@ -1,0 +1,22 @@
+<launch>
+  <arg name="rate" default="50"/>
+  <arg name="plot" default="false"/>
+  <arg name="filter" default="*"/>
+
+  <node name="control_monitor"
+        pkg="rqt_plot"
+        type="rqt_plot"
+        if="$(arg plot)"
+        args="/runner/data[0]:data[1]:data[2]" />
+
+  <node name="state_monitor"
+        pkg="rqt_plot"
+        type="rqt_plot"
+        if="$(arg plot)"
+        args="/runner/data[3]:data[4]:data[5]" />
+
+  <test test-name="test_joint_limiter" pkg="joint_limits_controller" type="test_joint_limiter" time-limit="240" args="--gtest_filter=$(arg filter)">
+        <param name="loop_rate" value="$(arg rate)"/>
+        <param name="use_real_time" value="$(arg plot)"/>
+  </test>
+</launch>
