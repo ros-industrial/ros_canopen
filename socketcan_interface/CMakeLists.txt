@@ -8,6 +8,7 @@ find_package(catkin REQUIRED
 
 find_package(Boost REQUIRED
   COMPONENTS
+    chrono
     system
     thread
 )

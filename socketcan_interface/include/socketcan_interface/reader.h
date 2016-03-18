@@ -6,6 +6,7 @@
 
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
+#include <boost/chrono.hpp>
 
 namespace can{
 
@@ -76,6 +77,11 @@ public:
         enabled_ = false;
     }
 
+    void listen(boost::shared_ptr<CommInterface> interface){
+        boost::mutex::scoped_lock lock(mutex_);
+        listener_ = interface->createMsgListener(CommInterface::FrameDelegate(this, &BufferedReader::handleFrame));
+        buffer_.clear();
+    }
     void listen(boost::shared_ptr<CommInterface> interface, const Frame::Header& h){
         boost::mutex::scoped_lock lock(mutex_);
         listener_ = interface->createMsgListener(h, CommInterface::FrameDelegate(this, &BufferedReader::handleFrame));
