@@ -319,6 +319,9 @@ void RobotLayer::enforce(const ros::Duration &period, bool reset){
 }
 
 bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) {
+    // compile-time check for mode switching support in ros_control
+    (void) &hardware_interface::RobotHW::prepareSwitch; // please upgrade to ros_control/contoller_manager 0.9.4 or newer
+
     // stop handles
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
 
