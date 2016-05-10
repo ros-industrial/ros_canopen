@@ -428,7 +428,6 @@ void SDOClient::transmitAndWait(const canopen::ObjectDict::Entry &entry, const S
     if(offset == 0 || offset != total){
         BOOST_THROW_EXCEPTION( TimeoutException("SDO: " + std::string(ObjectDict::Key(*current_entry))));
     }
-
     if(result) *result=buffer;
 
 }

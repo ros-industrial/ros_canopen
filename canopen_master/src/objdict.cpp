@@ -82,22 +82,22 @@ bool ObjectDict::iterate(boost::unordered_map<Key, boost::shared_ptr<const Entry
 }
 void set_access( ObjectDict::Entry &entry, const std::string &access){
     entry.constant = false;
-    if(access == "ro"){
+    if(access == "ro" || access=="RO"){
         entry.readable = true;
         entry.writable = false;
-    }else if (access == "wo"){
+    }else if (access == "wo" || access=="WO"){
         entry.readable = false;
         entry.writable = true;
-    }else if (access == "rw"){
+    }else if (access == "rw" || access=="RW"){
         entry.readable = true;
         entry.writable = true;
-    }else if (access == "rwr"){
+    }else if (access == "rwr" || access=="RWR"){
         entry.readable = true;
         entry.writable = true;
-    }else if (access == "rww"){
+    }else if (access == "rww" || access=="RWW"){
         entry.readable = true;
         entry.writable = true;
-    }else if (access == "const"){
+    }else if (access == "const" || access=="CONST"){
         entry.readable = true;
         entry.writable = false;
         entry.constant = true;
