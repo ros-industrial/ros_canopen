@@ -9,6 +9,7 @@
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <boost/filesystem/path.hpp>
 #include <boost/weak_ptr.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <pluginlib/class_loader.h>
 
 namespace canopen{
