@@ -356,20 +356,20 @@ void PDOMapper::Buffer::read(const canopen::ObjectDict::Entry &entry, String &da
     boost::mutex::scoped_lock lock(mutex);
     time_point abs_time = get_abs_time(boost::chrono::seconds(1));
     if(size != data.size()){
-        BOOST_THROW_EXCEPTION( std::bad_cast() );
+        THROW_WITH_KEY(std::bad_cast(), ObjectDict::Key(entry));
     }
     if(empty){
-        BOOST_THROW_EXCEPTION( TimeoutException("PDO data empty: " + std::string(ObjectDict::Key(entry))));
+        THROW_WITH_KEY(TimeoutException("PDO data empty"), ObjectDict::Key(entry));
     }
     if(dirty){
         data.assign(buffer.begin(), buffer.end());
         dirty = false;
     }
 }
-void PDOMapper::Buffer::write(const canopen::ObjectDict::Entry &, const String &data){
+void PDOMapper::Buffer::write(const canopen::ObjectDict::Entry &entry, const String &data){
     boost::mutex::scoped_lock lock(mutex);
     if(size != data.size()){
-        BOOST_THROW_EXCEPTION( std::bad_cast() );
+        THROW_WITH_KEY(std::bad_cast(), ObjectDict::Key(entry));
     }
     empty = false;
     dirty = true;
