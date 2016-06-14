@@ -194,9 +194,10 @@ protected:
     bool setup_nodes();
     virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger);
     void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
+    virtual bool setup_chain();
 public:
     RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv);
-    virtual bool setup();
+    bool setup();
     virtual ~RosChain();
 };
 
