@@ -323,6 +323,10 @@ protected:
             if(r) read_delegate = r;
             if(w) write_delegate = w;
         }
+        bool test_delegates(const ReadDelegate &r, const WriteDelegate &w){
+            boost::mutex::scoped_lock lock(mutex);
+            return (!r || read_delegate == r) && (!w || write_delegate == w);
+        }
         template<typename T> const T get(bool cached) {
             boost::mutex::scoped_lock lock(mutex);
 

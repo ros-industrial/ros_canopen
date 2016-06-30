@@ -352,13 +352,22 @@ size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const Object
     }
 
     if(read_delegate && write_delegate){
+        if(!it->second->test_delegates(read_delegate_, write_delegate_)){
+            THROW_WITH_KEY(std::logic_error("PDO was mapped twice, this is not yet supported (#183)") , key);
+        }
         it->second->set_delegates(read_delegate_, write_delegate);
         it->second->force_write(); // update buffer
         it->second->set_delegates(read_delegate, write_delegate_);
     }else if(write_delegate) {
+        if(!it->second->test_delegates(0, write_delegate_)){
+            THROW_WITH_KEY(std::logic_error("PDO was mapped twice, this is not yet supported (#183)") , key);
+        }
         it->second->set_delegates(read_delegate_, write_delegate);
         it->second->force_write(); // update buffer
     }else if(read_delegate){
+        if(!it->second->test_delegates(read_delegate_, 0)){
+            THROW_WITH_KEY(std::logic_error("PDO was mapped twice, this is not yet supported (#183)") , key);
+        }
         it->second->set_delegates(read_delegate, write_delegate_);
     }
     return it->second->size();
