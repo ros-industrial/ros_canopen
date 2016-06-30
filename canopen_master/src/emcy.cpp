@@ -101,11 +101,15 @@ EMCYHandler::EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, 
     storage_->entry(error_register_, 0x1001);
     try{
         storage_->entry(num_errors_, 0x1003,0);
-        
+    }
+    catch(...){
+       // pass, 1003 is optional
+    }
+    try{
         EMCYid emcy_id(storage_->entry<uint32_t>(0x1014).get_cached());
         emcy_listener_ = interface->createMsgListener( emcy_id.header(), can::CommInterface::FrameDelegate(this, &EMCYHandler::handleEMCY));
     }
     catch(...){
-       // pass
+       // pass, EMCY is optional
     }
 }
