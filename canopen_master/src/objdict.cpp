@@ -390,6 +390,16 @@ std::pair<ObjectDict::Key, size_t> ObjectStorage::map(uint16_t index, uint8_t su
     }
 }
 
+void ObjectStorage::unmap(const ObjectDict::Key &key){
+    boost::mutex::scoped_lock lock(mutex_);
+    boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(key);
+
+    if(it != storage_.end()){
+        it->second->set_delegates(read_delegate_, write_delegate_);
+    }
+}
+
+
 ObjectStorage::ObjectStorage(ObjectDictConstSharedPtr dict, uint8_t node_id, ReadDelegate read_delegate, WriteDelegate write_delegate)
 :read_delegate_(read_delegate), write_delegate_(write_delegate), dict_(dict), node_id_(node_id){
     assert(dict_);

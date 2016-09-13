@@ -489,6 +489,7 @@ public:
     }
 
     std::pair<ObjectDict::Key, size_t> map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
+    void unmap(const ObjectDict::Key &key);
 
     template<typename T> Entry<T> entry(uint16_t index){
         return entry<T>(ObjectDict::Key(index));

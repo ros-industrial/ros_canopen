@@ -12,6 +12,7 @@
 #include <boost/thread/condition_variable.hpp>
 #include <boost/chrono/system_clocks.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/function.hpp>
 
 namespace canopen{
 
@@ -87,9 +88,14 @@ class PDOMapper{
     class PDO {
     protected:
         void parse_and_set_mapping(const ObjectStorageSharedPtr &storage, const uint16_t &com_index, const uint16_t &map_index, const bool &read, const bool &write);
+        boost::function<void()> unmap;
         can::Frame frame;
         uint8_t transmission_type;
         std::vector<BufferSharedPtr>buffers;
+    public:
+        ~PDO(){
+            if(unmap) unmap();
+        }
     };
 
     struct TPDO: public PDO{
