@@ -454,7 +454,7 @@ protected:
 
     ReadDelegate read_delegate_;
     WriteDelegate write_delegate_;
-    size_t map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
+    std::pair<ObjectDict::Key, size_t> map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
 public:
     template<typename T> Entry<T> entry(const ObjectDict::Key &key){
         boost::mutex::scoped_lock lock(mutex_);
@@ -488,7 +488,7 @@ public:
         return Entry<T>(it->second);
     }
 
-    size_t map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
+    std::pair<ObjectDict::Key, size_t> map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
 
     template<typename T> Entry<T> entry(uint16_t index){
         return entry<T>(ObjectDict::Key(index));

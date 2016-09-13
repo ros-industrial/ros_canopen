@@ -331,7 +331,7 @@ ObjectDictSharedPtr ObjectDict::fromFile(const std::string &path, const ObjectDi
     return dict;
 }
 
-size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
+std::pair<ObjectDict::Key, size_t> ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
     boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator it = storage_.find(key);
 
     if(it == storage_.end()){
@@ -370,10 +370,10 @@ size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const Object
         }
         it->second->set_delegates(read_delegate, write_delegate_);
     }
-    return it->second->size();
+    return std::make_pair(key, it->second->size());
 }
 
-size_t ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
+std::pair<ObjectDict::Key, size_t> ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
     boost::mutex::scoped_lock lock(mutex_);
 
     try{

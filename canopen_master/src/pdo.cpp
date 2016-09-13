@@ -129,8 +129,9 @@ void PDOMapper::PDO::parse_and_set_mapping(const ObjectStorageSharedPtr &storage
                 ObjectStorage::WriteDelegate wd;
                 if(read) rd = ObjectStorage::ReadDelegate(b.get(), &Buffer::read);
                 if(read || write) wd = ObjectStorage::WriteDelegate(b.get(), &Buffer::write); // set writer for buffer setup or as write delegate
-                size_t l = storage->map(param.index, param.sub_index, rd, wd);
-                assert(l  == param.length/8);
+                
+                std::pair<ObjectDict::Key, size_t> m = storage->map(param.index, param.sub_index, rd, wd);
+                assert(m.second == param.length/8);
             }
 
             frame.dlc += b->size;
