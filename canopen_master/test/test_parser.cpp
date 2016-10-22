@@ -98,6 +98,55 @@ TEST(TestHex, checkCommonObjects){
     }
 }
 
+void set_access( canopen::ObjectDict::Entry &entry, std::string access);
+
+void testAccess(bool c, bool r, bool w, const char* variants[]){
+  canopen::ObjectDict::Entry entry;
+  for(const char ** v = variants; *v; ++v){
+      SCOPED_TRACE(*v);
+      entry.constant = !c;
+      entry.readable = !r;
+      entry.writable = !w;
+
+      set_access(entry, *v);
+
+      ASSERT_EQ(c, entry.constant);
+      ASSERT_EQ(r, entry.readable);
+      ASSERT_EQ(w, entry.writable);
+  }
+}
+
+TEST(TestAccessString, TestRO)
+{
+  const char* variants[] = {"ro", "Ro", "rO", "RO", 0};
+  testAccess(false, true, false, variants);
+}
+
+TEST(TestAccessString, TestWO)
+{
+  const char* variants[] = {"wo", "Wo", "wO", "WO", 0};
+  testAccess(false, false, true, variants);
+}
+
+TEST(TestAccessString, TestRW)
+{
+  const char* variants[] = {
+      "rw" , "Rw" , "rW" , "Rw",
+      "rwr", "Rwr", "rWr", "Rwr",
+      "rwR", "RwR", "rWR", "RwR",
+      "rww", "Rww", "rWw", "Rww",
+      "rwW", "RwW", "rWW", "RwW",
+      0};
+  testAccess(false, true, true, variants);
+}
+
+TEST(TestAccessString, TestConst)
+{
+  const char* variants[] = {
+      "const" , "Const" , "CONST", 0};
+  testAccess(true, true, false, variants);
+}
+
 
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv){

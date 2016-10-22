@@ -81,7 +81,8 @@ bool ObjectDict::iterate(boost::unordered_map<Key, boost::shared_ptr<const Entry
     }else it = dict_.begin();
     return it != dict_.end();
 }
-void set_access( ObjectDict::Entry &entry, const std::string &access){
+void set_access( ObjectDict::Entry &entry, std::string access){
+    boost::algorithm::to_lower(access);
     entry.constant = false;
     if(access == "ro"){
         entry.readable = true;
