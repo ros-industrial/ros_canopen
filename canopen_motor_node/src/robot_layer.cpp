@@ -155,7 +155,7 @@ void HandleLayer::handleWrite(LayerStatus &status, const LayerState &current_sta
     if(current_state == Ready){
         hardware_interface::JointHandle* jh = 0;
         if(forward_command_) jh = jh_;
-        
+
         if(jh == &jph_){
             motor_->setTarget(conv_target_pos_->evaluate());
             cmd_vel_ = vel_;
@@ -337,6 +337,10 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
         ros::NodeHandle nh(nh_,controller_it->name);
         int mode;
         if(nh.getParam("required_drive_mode", mode)){
+            if(controller_it->claimed_resources.size() > 1){
+                ROS_ERROR_STREAM("controllers with mixed interfaces are not yet supported (https://github.com/ros-industrial/ros_canopen/issues/197)");
+                return false;
+            }
             for (std::vector<hardware_interface::InterfaceResources>::const_iterator cres_it = controller_it->claimed_resources.begin(); cres_it != controller_it->claimed_resources.end(); ++cres_it){
                 for (std::set<std::string>::const_iterator res_it = cres_it->resources.begin(); res_it != cres_it->resources.end(); ++res_it){
                     boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
