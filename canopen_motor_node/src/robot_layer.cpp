@@ -345,18 +345,21 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                 for (std::set<std::string>::const_iterator res_it = cres_it->resources.begin(); res_it != cres_it->resources.end(); ++res_it){
                     boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
 
+                    const std::string & joint = *res_it;
+
                     if(h_it == handles_.end()){
-                        ROS_ERROR_STREAM(*res_it << " not found");
+                        ROS_ERROR_STREAM(joint << " not found");
+                        return false;
                         return false;
                     }
                     HandleLayer::CanSwitchResult res = h_it->second->canSwitch((MotorBase::OperationMode)mode);
 
                     switch(res){
                         case HandleLayer::NotSupported:
-                            ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
+                            ROS_ERROR_STREAM("Mode " << mode << " is not available for " << joint);
                             return false;
                         case HandleLayer::NotReadyToSwitch:
-                            ROS_ERROR_STREAM(*res_it << " is not ready to switch mode");
+                            ROS_ERROR_STREAM(joint << " is not ready to switch mode");
                             return false;
                         case HandleLayer::ReadyToSwitch:
                         case HandleLayer::NoNeedToSwitch:
