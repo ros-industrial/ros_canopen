@@ -62,10 +62,20 @@ target_link_libraries(canopen_chain_node
   ${catkin_LIBRARIES}
 )
 
+# canopen_sync_node
+add_executable(canopen_sync_node
+  src/sync_node.cpp
+)
+target_link_libraries(canopen_sync_node
+  ${Boost_LIBRARIES}
+  ${catkin_LIBRARIES}
+)
+
 install(
   TARGETS
     canopen_chain_node
     canopen_ros_chain
+    canopen_sync_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
