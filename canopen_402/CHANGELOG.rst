@@ -2,6 +2,34 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.5 (2016-12-10)
+------------------
+* stop on internal limit only if limit was not reached before
+* hardened code with the help of cppcheck
+* Do not send control if it was not changed
+  Otherwise invalid state machine transitions might get commanded
+* styled and sorted CMakeLists.txt
+  * removed boilerplate comments
+  * indention
+  * reviewed exported dependencies
+* styled and sorted package.xml
+* update package URLs
+* added option to turn off mode monitor
+* reset Fault_Reset bit in output only
+* enforce rising edge on fault reset bit on init and recover
+* Revert "Enforce rising edge on fault reset bit on init and recover"
+* enforce rising edge on fault reset bit on init and recover
+* Merge pull request `#117 <https://github.com/ipa-mdl/ros_canopen/issues/117>`_ from ipa-mdl/condvars
+  Reviewed condition variables
+* use boost::numeric_cast for limit checks since it handles 64bit values right
+* add clamping test
+* enforce target type limits
+* ModeTargetHelper is now template
+* readability fix
+* simplified State402::waitForNewState and Motor402::switchState
+* Set Halt bit unless current mode releases it
+* Contributors: Mathias Lüdtke
+
 0.6.4 (2015-07-03)
 ------------------
 

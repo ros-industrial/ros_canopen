@@ -110,6 +110,8 @@ struct DeviceInfo{
     boost::unordered_set<uint16_t> dummy_usage;
 };
 
+#define THROW_WITH_KEY(e,k) BOOST_THROW_EXCEPTION(boost::enable_error_info(e) << ObjectDict::key_info(k))
+
 class ObjectDict{
 protected:
 public:
@@ -204,13 +206,14 @@ public:
     const DeviceInfo device_info;
     
     ObjectDict(const DeviceInfo &info): device_info(info) {}
+    typedef boost::error_info<struct tag_objectdict_key, ObjectDict::Key> key_info;
 protected:
     const boost::shared_ptr<const Entry>& at(const Key &key) const{
         try{
             return dict_.at(key);
         }
-        catch(std::out_of_range){
-            BOOST_THROW_EXCEPTION(std::out_of_range("Unable to find " +std::string(key) + " in dictionary"));
+        catch(const std::out_of_range &e){
+            THROW_WITH_KEY(e, key);
         }
     }
 
@@ -248,6 +251,7 @@ template<typename T> std::ostream& operator<<(std::ostream& stream, const NodeId
     //stream << "Offset: " << n.apply(0);
     return stream;
  }
+std::ostream& operator<<(std::ostream& stream, const ObjectDict::Key &k);
 
 class AccessException : public Exception{
 public:
@@ -271,7 +275,7 @@ protected:
         
         template <typename T> T & access(){
             if(!valid){
-                BOOST_THROW_EXCEPTION(std::length_error("buffer not valid"));
+                THROW_WITH_KEY(std::length_error("buffer not valid"), key);
             }
             return *(T*)&(buffer.front());
         }
@@ -312,7 +316,8 @@ protected:
             boost::mutex::scoped_lock lock(mutex);
             
             if(!entry->readable){
-                BOOST_THROW_EXCEPTION( AccessException(std::string(key) + " is not readable") );
+                THROW_WITH_KEY(AccessException("no read access"), key);
+
             }
             
             if(entry->constant) cached = true;
@@ -328,7 +333,7 @@ protected:
             
             if(!entry->writable){
                 if(access<T>() != val){
-                    BOOST_THROW_EXCEPTION( AccessException(std::string(key) + " is not readable") );
+                    THROW_WITH_KEY(AccessException("no write access"), key);
                 }
             }else{
                 allocate<T>() = val;
@@ -339,7 +344,7 @@ protected:
             boost::mutex::scoped_lock lock(mutex);
             if(!valid || val != access<T>() ){
                 if(!entry->writable){
-                    BOOST_THROW_EXCEPTION( AccessException(std::string(key) + " is neither cached nor  writable") );
+                    THROW_WITH_KEY(AccessException("no write access and not cached"), key);
                 }else{
                     allocate<T>() = val;
                     write_delegate(*entry, buffer);
@@ -454,7 +459,7 @@ public:
                 if(!e->def_val.type().valid() ||  e->def_val.type() == type) {
                     data = boost::make_shared<Data>(key,e,type, read_delegate_, write_delegate_);
                 }else{
-                    BOOST_THROW_EXCEPTION( std::bad_cast() );
+                    THROW_WITH_KEY(std::bad_cast(), key);
                 }
             }
             
@@ -463,7 +468,7 @@ public:
         }
         
         if(!it->second->type_guard.is_type<T>()){
-            BOOST_THROW_EXCEPTION( std::bad_cast() );
+            THROW_WITH_KEY(std::bad_cast(), key);
         }
         return Entry<T>(it->second);
     }

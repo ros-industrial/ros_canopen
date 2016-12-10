@@ -470,7 +470,10 @@ RosChain::RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv)
 
 bool RosChain::setup(){
     boost::mutex::scoped_lock lock(mutex_);
+    return setup_chain();
+}
 
+bool RosChain::setup_chain(){
     std::string hw_id;
     nh_priv_.param("hardware_id", hw_id, std::string("none"));
 

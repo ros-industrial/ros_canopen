@@ -8,6 +8,7 @@
 
 namespace canopen{
     size_t hash_value(ObjectDict::Key const& k)  { return k.hash;  }
+    std::ostream& operator<<(std::ostream& stream, const ObjectDict::Key &k) { return stream << std::string(k); }
 }
 
 using namespace canopen;
@@ -18,7 +19,7 @@ template<> const String & HoldAny::get() const{
 
 template<> String & ObjectStorage::Data::access(){
     if(!valid){
-        throw std::length_error("buffer not valid");
+        THROW_WITH_KEY(std::length_error("buffer not valid") , key);
     }
     return buffer;
 }
@@ -80,7 +81,8 @@ bool ObjectDict::iterate(boost::unordered_map<Key, boost::shared_ptr<const Entry
     }else it = dict_.begin();
     return it != dict_.end();
 }
-void set_access( ObjectDict::Entry &entry, const std::string &access){
+void set_access( ObjectDict::Entry &entry, std::string access){
+    boost::algorithm::to_lower(access);
     entry.constant = false;
     if(access == "ro"){
         entry.readable = true;
@@ -102,7 +104,7 @@ void set_access( ObjectDict::Entry &entry, const std::string &access){
         entry.writable = false;
         entry.constant = true;
     }else{
-        throw ParseException("Cannot determine access for" + std::string(ObjectDict::Key(entry)));
+        THROW_WITH_KEY(ParseException("Cannot determine access"), ObjectDict::Key(entry));
     }
 }
 
@@ -204,7 +206,8 @@ void read_var(ObjectDict::Entry &entry, boost::property_tree::iptree &object){
             set_access(entry, object.get<std::string>("AccessType"));
         }
         catch(...){
-            throw ParseException("object " + entry.desc + " has no AccessType") ;
+            THROW_WITH_KEY(ParseException("No AccessType") , ObjectDict::Key(entry));
+
         }
         entry.def_val = ReadAnyValue::read_value(object, entry.data_type, "DefaultValue");
         entry.init_val = ReadAnyValue::read_value(object, entry.data_type, "ParameterValue");
@@ -248,7 +251,7 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptr
                 }
             }
         }else{
-            throw ParseException("ObjectType of " + entry->desc + " not supported") ;
+            THROW_WITH_KEY(ParseException("Object type not supported") , ObjectDict::Key(*entry));
         }
 }
 void parse_objects(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptree &pt, const std::string &key){
@@ -329,7 +332,7 @@ size_t ObjectStorage::map(const boost::shared_ptr<const ObjectDict::Entry> &e, c
         
         
         if(!e->def_val.type().valid()){
-            throw std::bad_cast();
+            THROW_WITH_KEY(std::bad_cast() , key);
         }
         
         data = boost::make_shared<Data>(key, e,e->def_val.type(),read_delegate_, write_delegate_);
@@ -387,7 +390,7 @@ void ObjectStorage::init_nolock(const ObjectDict::Key &key, const boost::shared_
             std::pair<boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
             it = ok.first;
             if(!ok.second){
-                throw std::bad_alloc();
+                THROW_WITH_KEY(std::bad_alloc() , key);
             }
         }
         it->second->init();

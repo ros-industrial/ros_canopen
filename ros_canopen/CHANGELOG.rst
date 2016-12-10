@@ -2,6 +2,15 @@
 Changelog for package ros_canopen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.5 (2016-12-10)
+------------------
+* updated metapackage
+  * format 2
+  * updated maintaner
+  * added new packages
+* update package URLs
+* Contributors: Mathias Lüdtke
+
 0.6.4 (2015-07-03)
 ------------------
 

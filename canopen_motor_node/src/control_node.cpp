@@ -89,13 +89,13 @@ class MotorChain : public RosChain{
 public:
     MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv): RosChain(nh, nh_priv), motor_allocator_("canopen_402", "canopen::MotorBase::Allocator"){}
 
-    virtual bool setup() {
+    virtual bool setup_chain() {
         motors_.reset( new LayerGroupNoDiag<MotorBase>("402 Layer"));
         robot_layer_.reset( new RobotLayer(nh_));
 
         ros::Duration dur(0.0) ;
 
-        if(RosChain::setup()){
+        if(RosChain::setup_chain()){
             add(motors_);
             add(robot_layer_);
 
@@ -116,7 +116,7 @@ public:
 };
 
 int main(int argc, char** argv){
-  ros::init(argc, argv, "canopen_chain_node_node");
+  ros::init(argc, argv, "canopen_motor_chain_node");
   ros::AsyncSpinner spinner(0);
   spinner.start();
 
