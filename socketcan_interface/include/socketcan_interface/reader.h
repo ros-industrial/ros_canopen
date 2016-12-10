@@ -89,8 +89,10 @@ public:
     }
 
     template<typename DurationType> bool read(can::Frame * msg, const DurationType &duration){
+        return readUntil(msg, boost::chrono::high_resolution_clock::now() + duration);
+    }
+    bool readUntil(can::Frame * msg, boost::chrono::high_resolution_clock::time_point abs_time){
         boost::mutex::scoped_lock lock(mutex_);
-        boost::chrono::high_resolution_clock::time_point abs_time =  boost::chrono::high_resolution_clock::now() + duration;
 
         while(buffer_.empty() && cond_.wait_until(lock,abs_time)  != boost::cv_status::timeout)
         {}
@@ -104,7 +106,6 @@ public:
             buffer_.pop_front();
         }
         return true;
-
     }
 
 };
