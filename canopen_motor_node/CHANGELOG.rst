@@ -2,8 +2,8 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2016-12-10)
+------------------
 * protect MotorChain setup with RosChain lock
 * Merge pull request `#153 <https://github.com/ipa-mdl/ros_canopen/issues/153>`_ from ipa-mdl/deprecated-canswitch
   deprecated canSwitch

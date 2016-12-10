@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2016-12-10)
+------------------
 * removed Baseclass typedef since its use prevented virtual functions calls
 * add missing chrono dependency
 * Added catch-all features in BufferedReader

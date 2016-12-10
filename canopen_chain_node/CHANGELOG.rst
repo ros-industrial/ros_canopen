@@ -2,8 +2,8 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2016-12-10)
+------------------
 * protect MotorChain setup with RosChain lock
 * added include to <boost/scoped_ptr.hpp>; solving `#177 <https://github.com/ipa-mdl/ros_canopen/issues/177>`_
 * default to canopen::SimpleMaster::Allocator (`#71 <https://github.com/ipa-mdl/ros_canopen/issues/71>`_)

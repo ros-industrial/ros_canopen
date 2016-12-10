@@ -2,8 +2,8 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2016-12-10)
+------------------
 * Merge pull request `#179 <https://github.com/ipa-mdl/ros_canopen/issues/179>`_ from ipa-mdl/mixed_case_access
   support mixed-case access strings in EDS
 * decouple listener initialization from 1003 binding

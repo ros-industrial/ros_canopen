@@ -2,8 +2,8 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2016-12-10)
+------------------
 * hamonized versions
 * styled and sorted CMakeLists.txt
   * removed boilerplate comments
