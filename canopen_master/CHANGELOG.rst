@@ -2,6 +2,58 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#179 <https://github.com/ipa-mdl/ros_canopen/issues/179>`_ from ipa-mdl/mixed_case_access
+  support mixed-case access strings in EDS
+* decouple listener initialization from 1003 binding
+* introduced THROW_WITH_KEY and ObjectDict::key_info
+* added access type tests
+* convert access string to lowercase
+* Do not remove shared memory automatically
+* hardened code with the help of cppcheck
+* throw verbose exception if AccessType is missing (`#64 <https://github.com/ipa-mdl/ros_canopen/issues/64>`_)
+* styled and sorted CMakeLists.txt
+  * removed boilerplate comments
+  * indention
+  * reviewed exported dependencies
+* styled and sorted package.xml
+* canopen_master needs to depend on rosunit for gtest
+* update package URLs
+* fixed typo
+* do not reset PDO COB-ID if it is not writable
+* Do not recurse into sub-objects, handle them as simple data
+* strip string before searching for $NODEID
+* added NodeID/hex parser test
+* do full recover if if driver is not ready
+* wait for driver to be shutdown in run()
+* limit SDO reader to size of 1
+* do not send abort twice
+* removed unnecessary sleep (added for tests only)
+* catch all std exceptions in layer handlers
+* migrated SDOClient to BufferedReader
+* getter for LayerState
+* fixed lost wake-up condition, unified SDO accessors
+* minor NMT improvements
+* removed cond from PDOMapper, it does not wait on empty buffer anymore
+* Simple master counts nodes as well
+* throw exception on read from empty buffer
+* proper initialisation of PDO data from SDOs
+* change sync subscription only on change
+* shutdown and restart CAN layer on recover
+* canopen::Exception is now based on std::runtime_error
+* Merge pull request `#109 <https://github.com/ipa-mdl/ros_canopen/issues/109>`_ from ipa-mdl/shutdown-crashes
+  Fix for pluginlib-related crashes on shutdown
+* stop after heartbeat was disabled, do not wait for state switch
+* added virtual destructor to SyncCounter
+* Use getHeartbeatInterval()
+* minor shutdown improvements
+* removed unstable StateWaiter::wait_for
+* Revert change to handleShutdown
+* Heartbeat interval is uint16, not double
+* Added validity check to heartbeat\_ (Some devices do not support heartbeat)
+* Contributors: Florian Weisshardt, Mathias Lüdtke, Michael Stoll
+
 0.6.4 (2015-07-03)
 ------------------
 * added missing include, revised depends etc.
