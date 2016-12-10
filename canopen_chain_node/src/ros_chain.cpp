@@ -63,9 +63,10 @@ void RosChain::run(){
         catch(const canopen::Exception& e){
             ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
         }
-        abs_time += update_duration_;
-
-        boost::this_thread::sleep_until(abs_time);
+        if(!sync_){
+            abs_time += update_duration_;
+            boost::this_thread::sleep_until(abs_time);
+        }
     }
 }
 
