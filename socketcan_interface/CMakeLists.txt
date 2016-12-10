@@ -38,7 +38,19 @@ add_library(socketcan_interface_string
 add_executable(socketcan_dump
   src/candump.cpp
 )
+
 target_link_libraries(socketcan_dump
+   socketcan_interface_string
+   ${catkin_LIBRARIES}
+   ${Boost_LIBRARIES}
+)
+
+# socketcan_bcm
+add_executable(socketcan_bcm
+  src/canbcm.cpp
+)
+
+target_link_libraries(socketcan_bcm
    socketcan_interface_string
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
@@ -55,6 +67,7 @@ target_link_libraries(socketcan_interface_plugin
 
 install(
   TARGETS
+    socketcan_bcm
     socketcan_dump
     socketcan_interface_plugin
     socketcan_interface_string
