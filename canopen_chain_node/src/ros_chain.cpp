@@ -417,6 +417,8 @@ bool RosChain::setup_nodes(){
         loggers_.push_back(logger);
         diag_updater_.add(it->first, boost::bind(&Logger::log, logger, _1));
 
+        std::string node_name = std::string(merged["name"]);
+        
         if(merged.hasMember("publish")){
             try{
                 XmlRpc::XmlRpcValue objs = merged["publish"];
@@ -426,7 +428,7 @@ bool RosChain::setup_nodes(){
                     bool force = pos != std::string::npos;
                     if(force) obj_name.erase(pos);
 
-                    boost::function<void()> pub = PublishFunc::create(nh_, std::string(merged["name"])+"_"+obj_name, node, obj_name, force);
+                    boost::function<void()> pub = PublishFunc::create(nh_, node_name +"_"+obj_name, node, obj_name, force);
                     if(!pub){
                         ROS_ERROR_STREAM("Could not create publisher for '" << obj_name << "'");
                         return false;
@@ -440,6 +442,7 @@ bool RosChain::setup_nodes(){
             }
         }
         nodes_->add(node);
+        nodes_lookup_.insert(std::make_pair(node_name, node));
     }
     return true;
 }
