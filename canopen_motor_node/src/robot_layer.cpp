@@ -337,25 +337,27 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
         ros::NodeHandle nh(nh_,controller_it->name);
         int mode;
         if(nh.getParam("required_drive_mode", mode)){
-            for (std::set<std::string>::const_iterator res_it = controller_it->resources.begin(); res_it != controller_it->resources.end(); ++res_it){
-                boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
+            for (std::vector<hardware_interface::InterfaceResources>::const_iterator cres_it = controller_it->claimed_resources.begin(); cres_it != controller_it->claimed_resources.end(); ++cres_it){
+                for (std::set<std::string>::const_iterator res_it = cres_it->resources.begin(); res_it != cres_it->resources.end(); ++res_it){
+                    boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
 
-                if(h_it == handles_.end()){
-                    ROS_ERROR_STREAM(*res_it << " not found");
-                    return false;
-                }
-                HandleLayer::CanSwitchResult res = h_it->second->canSwitch((MotorBase::OperationMode)mode);
+                    if(h_it == handles_.end()){
+                        ROS_ERROR_STREAM(*res_it << " not found");
+                        return false;
+                    }
+                    HandleLayer::CanSwitchResult res = h_it->second->canSwitch((MotorBase::OperationMode)mode);
 
-                switch(res){
-                    case HandleLayer::NotSupported:
-                        ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
-                        return false;
-                    case HandleLayer::NotReadyToSwitch:
-                        ROS_ERROR_STREAM(*res_it << " is not ready to switch mode");
-                        return false;
-                    case HandleLayer::ReadyToSwitch:
-                    case HandleLayer::NoNeedToSwitch:
-                        to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
+                    switch(res){
+                        case HandleLayer::NotSupported:
+                            ROS_ERROR_STREAM("Mode " << mode << " is not available for " << *res_it);
+                            return false;
+                        case HandleLayer::NotReadyToSwitch:
+                            ROS_ERROR_STREAM(*res_it << " is not ready to switch mode");
+                            return false;
+                        case HandleLayer::ReadyToSwitch:
+                        case HandleLayer::NoNeedToSwitch:
+                            to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
+                    }
                 }
             }
         }
