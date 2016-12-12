@@ -60,21 +60,31 @@ class Logger: public DiagGroup<canopen::Layer>{
     
     std::vector<boost::function< void (diagnostic_updater::DiagnosticStatusWrapper &)> > entries_;
     
-    template<typename T> void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, const std::string &name, const ObjectDict::Key &key){
-        stat.add(name, node_->template get<T>(key));
+    static void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, uint8_t level, const std::string &name, boost::function<std::string()> getter){
+        if(stat.level >= level){
+            try{
+                stat.add(name, getter());
+            }catch(...){
+                stat.add(name, "<ERROR>");
+            }
+        }
     }
 
 public:
     Logger(boost::shared_ptr<canopen::Node> node):  node_(node) { add(node_); }
     
-    template<typename T> void add(const std::string &name, const ObjectDict::Key &key){
-            entries_.push_back(boost::bind(&Logger::log_entry<T>, this, _1, name, key));
-    }
-    template<const uint16_t dt> static void func(Logger &l, const std::string &n, const ObjectDict::Key &k){
-        l.template add<typename ObjectStorage::DataType<dt>::type>(n,k);
-    }
-    void add(const uint16_t data_type, const std::string &name, const ObjectDict::Key &key){
-        branch_type<Logger, void (Logger &, const std::string &, const ObjectDict::Key &)>(data_type)(*this,name, key);
+    bool add(uint8_t level, const std::string &key, bool forced){
+        try{
+            ObjectDict::Key k(key);
+            const boost::shared_ptr<const ObjectDict::Entry> entry = node_->getStorage()->dict_->get(k);
+            std::string name = entry->desc.empty() ? key : entry->desc;
+            entries_.push_back(boost::bind(log_entry, _1, level, name, node_->getStorage()->getStringReader(k, !forced)));
+            return true;
+        }
+        catch(std::exception& e){
+            ROS_ERROR_STREAM(boost::diagnostic_information(e));
+            return false;
+        }
     }
 
     template<typename T> void add(const boost::shared_ptr<T> &n){
@@ -92,9 +102,9 @@ public:
                 for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
                     stat.add(it->first, it->second);
                 }
+                for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat);
             }
         }
-        // for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat); TODO
     }
     virtual ~Logger() {}
 };

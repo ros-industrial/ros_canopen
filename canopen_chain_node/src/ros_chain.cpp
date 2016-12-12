@@ -320,6 +320,34 @@ bool RosChain::setup_heartbeat(){
 
 
 }
+std::pair<std::string, bool> parseObjectName(std::string obj_name){
+    size_t pos = obj_name.find('!');
+    bool force = pos != std::string::npos;
+    if(force) obj_name.erase(pos);
+    return std::make_pair(obj_name, force);
+}
+
+bool addLoggerEntries(XmlRpc::XmlRpcValue merged, const std::string param, uint8_t level, Logger &logger){
+    if(merged.hasMember(param)){
+        try{
+            XmlRpc::XmlRpcValue objs = merged[param];
+            for(int i = 0; i < objs.size(); ++i){
+                std::pair<std::string, bool> obj_name = parseObjectName(objs[i]);
+
+                if(!logger.add(level, obj_name.first, obj_name.second)){
+                    ROS_ERROR_STREAM("Could not create logger for '" << obj_name.first << "'");
+                    return false;
+                }
+            }
+        }
+        catch(...){
+            ROS_ERROR_STREAM("Could not parse " << param << " parameter");
+            return false;
+        }
+    }
+    return true;
+}
+
 bool RosChain::setup_nodes(){
     nodes_.reset(new canopen::LayerGroupNoDiag<canopen::Node>("301 layer"));
     add(nodes_);
@@ -413,7 +441,10 @@ bool RosChain::setup_nodes(){
 
         if(!nodeAdded(merged, node, logger)) return false;
 
-        //logger->add(4,"pos", canopen::ObjectDict::Key(0x6064));
+        if(!addLoggerEntries(merged, "log", diagnostic_updater::DiagnosticStatusWrapper::OK, *logger)) return false;
+        if(!addLoggerEntries(merged, "log_warn", diagnostic_updater::DiagnosticStatusWrapper::WARN, *logger)) return false;
+        if(!addLoggerEntries(merged, "log_error", diagnostic_updater::DiagnosticStatusWrapper::ERROR, *logger)) return false;
+
         loggers_.push_back(logger);
         diag_updater_.add(it->first, boost::bind(&Logger::log, logger, _1));
 
@@ -423,14 +454,11 @@ bool RosChain::setup_nodes(){
             try{
                 XmlRpc::XmlRpcValue objs = merged["publish"];
                 for(int i = 0; i < objs.size(); ++i){
-                    std::string obj_name = objs[i];
-                    size_t pos = obj_name.find('!');
-                    bool force = pos != std::string::npos;
-                    if(force) obj_name.erase(pos);
+                    std::pair<std::string, bool> obj_name = parseObjectName(objs[i]);
 
-                    boost::function<void()> pub = PublishFunc::create(nh_, node_name +"_"+obj_name, node, obj_name, force);
+                    boost::function<void()> pub = PublishFunc::create(nh_, node_name +"_"+obj_name.first, node, obj_name.first, obj_name.second);
                     if(!pub){
-                        ROS_ERROR_STREAM("Could not create publisher for '" << obj_name << "'");
+                        ROS_ERROR_STREAM("Could not create publisher for '" << obj_name.first << "'");
                         return false;
                     }
                     publishers_.push_back(pub);
