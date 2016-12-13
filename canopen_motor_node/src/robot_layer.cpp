@@ -9,6 +9,10 @@
 
 #include <canopen_motor_node/robot_layer.h>
 
+#include <boost/bimap.hpp>
+#include <boost/bimap/multiset_of.hpp>
+#include <boost/foreach.hpp>
+
 using namespace canopen;
 
 UnitConverter::UnitConverter(const std::string &expression, get_var_func_type var_func)
@@ -119,28 +123,49 @@ bool HandleLayer::forwardForMode(const MotorBase::OperationMode &m){
     return false;
 }
 
+class InterfaceMapping {
+    typedef boost::bimap<boost::bimaps::multiset_of<std::string>, boost::bimaps::set_of<MotorBase::OperationMode>  > bimap_type;
+    bimap_type mapping_;
+public:
+    InterfaceMapping(){
+        mapping_.insert(bimap_type::value_type("hardware_interface::PositionJointInterface" ,MotorBase::Profiled_Position));
+        mapping_.insert(bimap_type::value_type("hardware_interface::PositionJointInterface" ,MotorBase::Interpolated_Position));
+        mapping_.insert(bimap_type::value_type("hardware_interface::PositionJointInterface" ,MotorBase::Cyclic_Synchronous_Position));
+
+        mapping_.insert(bimap_type::value_type("hardware_interface::VelocityJointInterface" ,MotorBase::Velocity));
+        mapping_.insert(bimap_type::value_type("hardware_interface::VelocityJointInterface" ,MotorBase::Profiled_Velocity));
+        mapping_.insert(bimap_type::value_type("hardware_interface::VelocityJointInterface" ,MotorBase::Cyclic_Synchronous_Velocity));
+
+        mapping_.insert(bimap_type::value_type("hardware_interface::EffortJointInterface" ,MotorBase::Profiled_Torque));
+        mapping_.insert(bimap_type::value_type("hardware_interface::EffortJointInterface" ,MotorBase::Cyclic_Synchronous_Torque));
+    }
+    std::vector<MotorBase::OperationMode> getInterfaceModes(const std::string &interface){
+        std::vector<MotorBase::OperationMode> modes;
+        BOOST_FOREACH(bimap_type::left_reference i, mapping_.left.equal_range(interface)){
+            modes.push_back(i.second);
+        }
+        return modes;
+    }
+    bool hasConflict(const std::string &interface, MotorBase::OperationMode mode){
+        bimap_type::right_const_iterator it;
+        if((it = mapping_.right.find(mode)) != mapping_.right.end()){
+            return it->second != interface;
+        }
+        return false;
+    }
+  
+} g_interface_mapping;
 
 hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::PositionJointInterface &iface){
-    std::vector<MotorBase::OperationMode> modes;
-    modes.push_back(MotorBase::Profiled_Position);
-    modes.push_back(MotorBase::Interpolated_Position);
-    modes.push_back(MotorBase::Cyclic_Synchronous_Position);
-    return addHandle(iface, &jph_, modes);
+    return addHandle(iface, &jph_, g_interface_mapping.getInterfaceModes("hardware_interface::PositionJointInterface"));
 }
 
 hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::VelocityJointInterface &iface){
-    std::vector<MotorBase::OperationMode> modes;
-    modes.push_back(MotorBase::Velocity);
-    modes.push_back(MotorBase::Profiled_Velocity);
-    modes.push_back(MotorBase::Cyclic_Synchronous_Velocity);
-    return addHandle(iface, &jvh_, modes);
+    return addHandle(iface, &jvh_, g_interface_mapping.getInterfaceModes("hardware_interface::VelocityJointInterface"));
 }
 
 hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::EffortJointInterface &iface){
-    std::vector<MotorBase::OperationMode> modes;
-    modes.push_back(MotorBase::Profiled_Torque);
-    modes.push_back(MotorBase::Cyclic_Synchronous_Torque);
-    return addHandle(iface, &jeh_, modes);
+    return addHandle(iface, &jeh_, g_interface_mapping.getInterfaceModes("hardware_interface::EffortJointInterface"));
 }
 
 void HandleLayer::handleRead(LayerStatus &status, const LayerState &current_state) {
@@ -360,7 +385,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
         SwitchContainer to_switch;
         ModeLookup ml(nh_, controller_it->name);
-        
+
         std::set<std::string> claimed_interfaces;
 
         if(controller_it->claimed_resources.size() > 0){
@@ -387,6 +412,11 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
 
                     if(!ml.getMode(mode, joint)){
                         ROS_ERROR_STREAM("could not determine drive mode for " << joint);
+                        return false;
+                    }
+
+                    if(g_interface_mapping.hasConflict(cres_it->hardware_interface, mode)){
+                        ROS_ERROR_STREAM(cres_it->hardware_interface << " cannot be provided in mode " << mode);
                         return false;
                     }
 
