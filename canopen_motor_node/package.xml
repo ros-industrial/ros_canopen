@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>canopen_motor_node</name>
-  <version>0.6.5</version>
+  <version>0.7.0</version>
   <description>This package extends the canopen_chain_node with specialized handling for canopen_402 devices. It facilitates interface abstraction with ros_control.</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
