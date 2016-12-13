@@ -498,6 +498,7 @@ public:
         }
     }
      boost::function<std::string()> getStringReader(const ObjectDict::Key &key, bool cached = false);
+     boost::function<void(const std::string &)> getStringWriter(const ObjectDict::Key &key, bool cached = false);
 
     const boost::shared_ptr<const ObjectDict> dict_;
     const uint8_t node_id_;
