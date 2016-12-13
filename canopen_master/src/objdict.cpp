@@ -415,3 +415,31 @@ void ObjectStorage::reset(){
         it->second->reset();
     }
 }
+
+template<const ObjectDict::DataTypes dt, typename T> std::string formatValue(const T &value){
+    std::stringstream sstr;
+    sstr << value;
+    return sstr.str();
+}
+template<> std::string formatValue<ObjectDict::DEFTYPE_DOMAIN>(const std::string &value){
+    return can::buffer2hex(value, false);
+}
+template<> std::string formatValue<ObjectDict::DEFTYPE_OCTET_STRING>(const std::string &value){
+    return can::buffer2hex(value, false);
+}
+
+struct PrintValue {
+    template<const ObjectDict::DataTypes dt> static std::string func(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
+        ObjectStorage::Entry<typename ObjectStorage::DataType<dt>::type> entry = storage.entry<typename ObjectStorage::DataType<dt>::type>(key);
+        return formatValue<dt>(cached? entry.get_cached() : entry.get() );
+    }
+    static boost::function<std::string()> getReader(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
+        ObjectDict::DataTypes data_type = (ObjectDict::DataTypes) storage.dict_->get(key)->data_type;
+        return boost::bind(branch_type<PrintValue, std::string (ObjectStorage&, const ObjectDict::Key &, bool)>(data_type),boost::ref(storage), key, cached);
+    }
+};
+
+boost::function<std::string()> ObjectStorage::getStringReader(const ObjectDict::Key &key, bool cached){
+    return PrintValue::getReader(*this, key, cached);
+}
+
