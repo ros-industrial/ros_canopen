@@ -5,6 +5,7 @@ find_package(catkin REQUIRED
   COMPONENTS
     canopen_master
     diagnostic_updater
+    message_generation
     pluginlib
     roscpp
     roslib
@@ -18,6 +19,13 @@ find_package(Boost REQUIRED
     filesystem
 )
 
+add_service_files(DIRECTORY srv
+                  FILES
+                  GetObject.srv
+                  SetObject.srv)
+
+generate_messages(DEPENDENCIES)
+
 catkin_package(
   INCLUDE_DIRS
     include
@@ -26,6 +34,7 @@ catkin_package(
   CATKIN_DEPENDS
     canopen_master
     diagnostic_updater
+    message_runtime
     pluginlib
     roscpp
     socketcan_interface
@@ -50,6 +59,7 @@ target_link_libraries(canopen_ros_chain
 )
 add_dependencies(canopen_ros_chain
   ${catkin_EXPORTED_TARGETS}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
 )
 
 # canopen_chain_node

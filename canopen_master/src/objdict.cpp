@@ -443,3 +443,29 @@ boost::function<std::string()> ObjectStorage::getStringReader(const ObjectDict::
     return PrintValue::getReader(*this, key, cached);
 }
 
+struct WriteStringValue {
+    typedef HoldAny (*reader_type)(boost::property_tree::iptree &, const std::string &);
+    template<typename T> static void write(ObjectStorage::Entry<T> entry, bool cached, reader_type reader, const std::string &value){
+        boost::property_tree::iptree pt;
+        pt.put("value", value);
+        HoldAny any = reader(pt, "value");
+        if(cached){ 
+            entry.set_cached(any.get<T>());
+        } else {
+            entry.set(any.get<T>());
+        }
+    }
+    template<const ObjectDict::DataTypes dt> static boost::function<void (const std::string&)> func(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
+        ObjectStorage::Entry<typename ObjectStorage::DataType<dt>::type> entry = storage.entry<typename ObjectStorage::DataType<dt>::type>(key);
+        reader_type reader = branch_type<ReadAnyValue, HoldAny (boost::property_tree::iptree &, const std::string &)>(dt);
+        return boost::bind(&WriteStringValue::write<typename ObjectStorage::DataType<dt>::type >, entry, cached, reader, _1);
+    }
+    static boost::function<void (const std::string&)> getWriter(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
+        ObjectDict::DataTypes data_type = (ObjectDict::DataTypes) storage.dict_->get(key)->data_type;
+        return branch_type<WriteStringValue,  boost::function<void (const std::string&)> (ObjectStorage&, const ObjectDict::Key &, bool)>(data_type)(storage, key, cached);
+    }
+};
+
+boost::function<void (const std::string&)> ObjectStorage::getStringWriter(const ObjectDict::Key &key, bool cached){
+    return WriteStringValue::getWriter(*this, key, cached);
+}
