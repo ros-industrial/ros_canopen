@@ -317,7 +317,32 @@ void RobotLayer::enforce(const ros::Duration &period, bool reset){
     eff_saturation_interface_.enforceLimits(period);
     eff_soft_limits_interface_.enforceLimits(period);
 }
+class ModeLookup {
+    int default_mode_;
+    bool has_default_mode_;
+    std::map<std::string, int> lookup_;
+    bool has_lookup_;
+public:
+    ModeLookup(ros::NodeHandle &nh, const std::string &name){
+        ros::NodeHandle nh_c(nh,name);
 
+        has_default_mode_ = nh_c.getParam("required_drive_mode", default_mode_);
+        has_lookup_ = nh_c.getParam("required_drive_modes", lookup_);
+    }
+    bool hasModes() { return has_default_mode_ || has_lookup_; }
+    bool hasMixedModes() { return has_lookup_; }
+    bool getMode(MotorBase::OperationMode &om, const std::string &key) {
+        std::map<std::string, int>::iterator f = lookup_.find(key);
+        if(f != lookup_.end()){
+            om = MotorBase::OperationMode(f->second);
+            return true;
+        }else if (has_default_mode_) {
+            om = MotorBase::OperationMode(default_mode_);
+            return true;
+        }
+        return false;
+    }
+};
 bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) {
     // compile-time check for mode switching support in ros_control
     (void) &hardware_interface::RobotHW::prepareSwitch; // please upgrade to ros_control/contoller_manager 0.9.4 or newer
@@ -334,15 +359,22 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
     // start handles
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
         SwitchContainer to_switch;
-        ros::NodeHandle nh(nh_,controller_it->name);
-        int mode;
-        if(nh.getParam("required_drive_mode", mode)){
-            if(controller_it->claimed_resources.size() > 1){
-                ROS_ERROR_STREAM("controllers with mixed interfaces are not yet supported (https://github.com/ros-industrial/ros_canopen/issues/197)");
-                return false;
-            }
+        ModeLookup ml(nh_, controller_it->name);
+        
+        std::set<std::string> claimed_interfaces;
+
+        if(controller_it->claimed_resources.size() > 0){
             for (std::vector<hardware_interface::InterfaceResources>::const_iterator cres_it = controller_it->claimed_resources.begin(); cres_it != controller_it->claimed_resources.end(); ++cres_it){
                 for (std::set<std::string>::const_iterator res_it = cres_it->resources.begin(); res_it != cres_it->resources.end(); ++res_it){
+                    claimed_interfaces.insert(cres_it->hardware_interface);
+                    if(!ml.hasModes()){
+                        ROS_ERROR_STREAM("Please set required_drive_mode(s) for controller " << controller_it->name);
+                        return false;
+                    }
+                    if(claimed_interfaces.size() > 1 && !ml.hasMixedModes()){
+                        ROS_ERROR_STREAM("controller "<< controller_it->name << " has mixed interfaces, please set required_drive_modes.");
+                        return false;
+                    }
                     boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
 
                     const std::string & joint = *res_it;
@@ -350,9 +382,15 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                     if(h_it == handles_.end()){
                         ROS_ERROR_STREAM(joint << " not found");
                         return false;
+                    }
+                    MotorBase::OperationMode mode;
+
+                    if(!ml.getMode(mode, joint)){
+                        ROS_ERROR_STREAM("could not determine drive mode for " << joint);
                         return false;
                     }
-                    HandleLayer::CanSwitchResult res = h_it->second->canSwitch((MotorBase::OperationMode)mode);
+
+                    HandleLayer::CanSwitchResult res = h_it->second->canSwitch(mode);
 
                     switch(res){
                         case HandleLayer::NotSupported:
@@ -363,7 +401,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                             return false;
                         case HandleLayer::ReadyToSwitch:
                         case HandleLayer::NoNeedToSwitch:
-                            to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
+                            to_switch.push_back(std::make_pair(h_it->second, mode));
                     }
                 }
             }
