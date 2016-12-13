@@ -188,6 +188,36 @@ bool RosChain::handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::
     return true;
 }
 
+bool RosChain::handle_get_object(canopen_chain_node::GetObject::Request  &req, canopen_chain_node::GetObject::Response &res){
+    std::map<std::string, boost::shared_ptr<canopen::Node> >::iterator it = nodes_lookup_.find(req.node);
+    if(it == nodes_lookup_.end()){
+        res.message = "node not found";
+    }else{
+        try {
+            res.value = it->second->getStorage()->getStringReader(canopen::ObjectDict::Key(req.object), req.cached)();
+            res.success = true;
+        } catch(std::exception& e) {
+            res.message = boost::diagnostic_information(e);
+        }
+    }
+    return true;
+}
+
+bool RosChain::handle_set_object(canopen_chain_node::SetObject::Request  &req, canopen_chain_node::SetObject::Response &res){
+    std::map<std::string, boost::shared_ptr<canopen::Node> >::iterator it = nodes_lookup_.find(req.node);
+    if(it == nodes_lookup_.end()){
+        res.message = "node not found";
+    }else{
+        try {
+            it->second->getStorage()->getStringWriter(canopen::ObjectDict::Key(req.object), req.cached)(req.value);
+            res.success = true;
+        } catch(std::exception& e) {
+            res.message = boost::diagnostic_information(e);
+        }
+    }
+    return true;
+}
+
 bool RosChain::setup_bus(){
     ros::NodeHandle bus_nh(nh_priv_,"bus");
     std::string can_device;
@@ -519,6 +549,9 @@ bool RosChain::setup_chain(){
     srv_recover_ = nh_driver.advertiseService("recover",&RosChain::handle_recover, this);
     srv_halt_ = nh_driver.advertiseService("halt",&RosChain::handle_halt, this);
     srv_shutdown_ = nh_driver.advertiseService("shutdown",&RosChain::handle_shutdown, this);
+
+    srv_get_object_ = nh_driver.advertiseService("get_object",&RosChain::handle_get_object, this);
+    srv_set_object_ = nh_driver.advertiseService("set_object",&RosChain::handle_set_object, this);
 
     return setup_bus() && setup_sync() && setup_heartbeat() && setup_nodes();
 }

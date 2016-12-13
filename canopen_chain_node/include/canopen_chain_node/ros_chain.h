@@ -3,6 +3,8 @@
 
 #include <canopen_master/canopen.h>
 #include <canopen_master/can_layer.h>
+#include <canopen_chain_node/GetObject.h>
+#include <canopen_chain_node/SetObject.h>
 #include <socketcan_interface/string.h>
 #include <ros/ros.h>
 #include <std_srvs/Trigger.h>
@@ -176,6 +178,8 @@ protected:
     ros::ServiceServer srv_recover_;
     ros::ServiceServer srv_halt_;
     ros::ServiceServer srv_shutdown_;
+    ros::ServiceServer srv_get_object_;
+    ros::ServiceServer srv_set_object_;
 
     time_duration update_duration_;
 
@@ -199,6 +203,10 @@ protected:
     virtual void handleShutdown(LayerStatus &status);
     virtual bool handle_shutdown(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);
     virtual bool handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);
+
+    bool handle_get_object(canopen_chain_node::GetObject::Request  &req, canopen_chain_node::GetObject::Response &res);
+    bool handle_set_object(canopen_chain_node::SetObject::Request  &req, canopen_chain_node::SetObject::Response &res);
+
     bool setup_bus();
     bool setup_sync();
     bool setup_heartbeat();
