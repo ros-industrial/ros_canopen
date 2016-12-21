@@ -48,8 +48,19 @@ target_link_libraries(canopen_master_plugin
   ${Boost_LIBRARIES}
   canopen_master
 )
+
+# canopen_bcm_sync
+add_executable(canopen_bcm_sync
+  src/bcm_sync.cpp
+)
+target_link_libraries(canopen_bcm_sync
+  ${Boost_LIBRARIES}
+  ${catkin_LIBRARIES}
+)
+
 install(
   TARGETS
+    canopen_bcm_sync
     canopen_master
     canopen_master_plugin
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
