@@ -63,9 +63,10 @@ void RosChain::run(){
         catch(const canopen::Exception& e){
             ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
         }
-        abs_time += update_duration_;
-
-        boost::this_thread::sleep_until(abs_time);
+        if(!sync_){
+            abs_time += update_duration_;
+            boost::this_thread::sleep_until(abs_time);
+        }
     }
 }
 
@@ -252,6 +253,9 @@ bool RosChain::setup_bus(){
 
     bus_nh.param("master_allocator",master_alloc, std::string("canopen::SimpleMaster::Allocator"));
 
+    if(master_alloc == "canopen::LocalMaster::Allocator" || master_alloc == "canopen::SharedMaster::Allocator" || master_alloc == "canopen::UnrestrictedMaster::Allocator"){
+        ROS_WARN_STREAM(master_alloc << " is going be removed, please consider using canopen::ExternalMaster::Allocator in combination with canopen_chain_sync");
+    }
     try{
         master_= master_allocator_.allocateInstance(master_alloc, can_device, interface_);
     }
