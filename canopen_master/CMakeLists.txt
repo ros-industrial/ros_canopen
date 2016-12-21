@@ -28,7 +28,6 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_library(canopen_master
   src/emcy.cpp
-  src/master.cpp
   src/node.cpp
   src/objdict.cpp
   src/pdo.cpp
