@@ -49,6 +49,17 @@ double* UnitConverter::createVariable(const char *name, void * userdata){
 }
 
 
+template<typename T > class LimitsHandle {
+    T limits_handle_;
+public:
+    LimitsHandle(const T &handle) : limits_handle_(handle) {}
+    virtual void enforce(const ros::Duration &period) { limits_handle_.enforceLimits(period); }
+    virtual void reset() {}
+};
+
+template<> void LimitsHandle<joint_limits_interface::PositionJointSaturationHandle>::reset() { limits_handle_.reset(); }
+template<>void LimitsHandle<joint_limits_interface::PositionJointSoftLimitsHandle>::reset() { limits_handle_.reset(); }
+
 bool HandleLayer::select(const MotorBase::OperationMode &m){
     CommandMap::iterator it = commands_.find(m);
     if(it == commands_.end()) return false;
@@ -58,7 +69,7 @@ bool HandleLayer::select(const MotorBase::OperationMode &m){
 
 HandleLayer::HandleLayer(const std::string &name, const boost::shared_ptr<MotorBase> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options)
 : Layer(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0), forward_command_(false),
-  filter_pos_("double"), filter_vel_("double"), filter_eff_("double"), options_(options)
+  filter_pos_("double"), filter_vel_("double"), filter_eff_("double"), options_(options), enable_limits_(true)
 {
    commands_[MotorBase::No_Mode] = 0;
 
@@ -156,16 +167,48 @@ public:
   
 } g_interface_mapping;
 
-hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::PositionJointInterface &iface){
-    return addHandle(iface, &jph_, g_interface_mapping.getInterfaceModes("hardware_interface::PositionJointInterface"));
+
+template<typename T> void addLimitsHandle(std::vector<LimitsHandleBase::Ptr> &limits, const T &t) {
+    limits.push_back(LimitsHandleBase::Ptr( (LimitsHandleBase *) new LimitsHandle<T> (t) ));
 }
 
-hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::VelocityJointInterface &iface){
-    return addHandle(iface, &jvh_, g_interface_mapping.getInterfaceModes("hardware_interface::VelocityJointInterface"));
+hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::PositionJointInterface &iface,
+                                                             const joint_limits_interface::JointLimits &limits,
+                                                             const joint_limits_interface::SoftJointLimits *soft_limits){
+    hardware_interface::JointHandle* h = addHandle(iface, &jph_, g_interface_mapping.getInterfaceModes("hardware_interface::PositionJointInterface"));
+    if(h &&  limits.has_position_limits){
+        addLimitsHandle(limits_, joint_limits_interface::PositionJointSaturationHandle(*h, limits));
+        if(soft_limits){
+            addLimitsHandle(limits_, joint_limits_interface::PositionJointSoftLimitsHandle(*h, limits, *soft_limits));
+        }
+    }
+    return h;
 }
 
-hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::EffortJointInterface &iface){
-    return addHandle(iface, &jeh_, g_interface_mapping.getInterfaceModes("hardware_interface::EffortJointInterface"));
+hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::VelocityJointInterface &iface,
+                                                             const joint_limits_interface::JointLimits&limits,
+                                                             const joint_limits_interface::SoftJointLimits *soft_limits){
+    hardware_interface::JointHandle* h = addHandle(iface, &jvh_, g_interface_mapping.getInterfaceModes("hardware_interface::VelocityJointInterface"));
+    if(h &&  limits.has_velocity_limits){
+        addLimitsHandle(limits_, joint_limits_interface::VelocityJointSaturationHandle(*h, limits));
+        if(soft_limits){
+            addLimitsHandle(limits_, joint_limits_interface::VelocityJointSoftLimitsHandle(*h, limits, *soft_limits));
+        }
+    }
+    return h;
+}
+
+hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::EffortJointInterface &iface,
+                                                             const joint_limits_interface::JointLimits&limits,
+                                                             const joint_limits_interface::SoftJointLimits *soft_limits){
+    hardware_interface::JointHandle* h = addHandle(iface, &jeh_, g_interface_mapping.getInterfaceModes("hardware_interface::EffortJointInterface"));
+    if(h &&  limits.has_effort_limits){
+        addLimitsHandle(limits_, joint_limits_interface::EffortJointSaturationHandle(*h, limits));
+        if(soft_limits){
+            addLimitsHandle(limits_, joint_limits_interface::EffortJointSoftLimitsHandle(*h, limits, *soft_limits));
+        }
+    }
+    return h;
 }
 
 void HandleLayer::handleRead(LayerStatus &status, const LayerState &current_state) {
@@ -236,6 +279,16 @@ void HandleLayer::handleInit(LayerStatus &status){
     }
 }
 
+void HandleLayer::enforceLimits(const ros::Duration &period, bool reset){
+    for(std::vector<LimitsHandleBase::Ptr>::iterator it = limits_.begin(); it != limits_.end(); ++it){
+        if(reset) (*it)->reset();
+        if(enable_limits_) (*it)->enforce(period);
+    }
+}
+
+void HandleLayer::enableLimits(bool enable){
+    enable_limits_ = enable;
+}
 
 
 void RobotLayer::stopControllers(const std::vector<std::string> controllers){
@@ -257,14 +310,6 @@ RobotLayer::RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("Robo
     registerInterface(&pos_interface_);
     registerInterface(&vel_interface_);
     registerInterface(&eff_interface_);
-
-
-    registerInterface(&pos_saturation_interface_);
-    registerInterface(&pos_soft_limits_interface_);
-    registerInterface(&vel_saturation_interface_);
-    registerInterface(&vel_soft_limits_interface_);
-    registerInterface(&eff_saturation_interface_);
-    registerInterface(&eff_soft_limits_interface_);
 
     urdf_.initParam("robot_description");
 }
@@ -296,34 +341,9 @@ void RobotLayer::handleInit(LayerStatus &status){
 
             const hardware_interface::JointHandle *h  = 0;
 
-            h = it->second->registerHandle(pos_interface_);
-            if(h && limits.has_position_limits){
-                joint_limits_interface::PositionJointSaturationHandle sathandle(*h, limits);
-                pos_saturation_interface_.registerHandle(sathandle);
-                if(has_soft_limits){
-                    joint_limits_interface::PositionJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
-                    pos_soft_limits_interface_.registerHandle(softhandle);
-                }
-            }
-            h = it->second->registerHandle(vel_interface_);
-            if(h && limits.has_velocity_limits){
-                joint_limits_interface::VelocityJointSaturationHandle sathandle(*h, limits);
-                vel_saturation_interface_.registerHandle(sathandle);
-                if(has_soft_limits){
-                    joint_limits_interface::VelocityJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
-                    vel_soft_limits_interface_.registerHandle(softhandle);
-                }
-            }
-            h = it->second->registerHandle(eff_interface_);
-            if(h && limits.has_effort_limits){
-                joint_limits_interface::EffortJointSaturationHandle sathandle(*h, limits);
-                eff_saturation_interface_.registerHandle(sathandle);
-                if(has_soft_limits){
-                    joint_limits_interface::EffortJointSoftLimitsHandle softhandle(*h, limits,soft_limits);
-                    eff_soft_limits_interface_.registerHandle(softhandle);
-                }
-            }
-
+            it->second->registerHandle(pos_interface_, limits, has_soft_limits ? &soft_limits : 0);
+            it->second->registerHandle(vel_interface_, limits, has_soft_limits ? &soft_limits : 0);
+            it->second->registerHandle(eff_interface_, limits, has_soft_limits ? &soft_limits : 0);
         }
         first_init_ = false;
     }
@@ -331,16 +351,9 @@ void RobotLayer::handleInit(LayerStatus &status){
 }
 
 void RobotLayer::enforce(const ros::Duration &period, bool reset){
-    if(reset){
-        pos_saturation_interface_.reset();
-        pos_soft_limits_interface_.reset();
+    for(HandleMap::iterator it = handles_.begin(); it != handles_.end(); ++it){
+        it->second->enforceLimits(period, reset);
     }
-    pos_saturation_interface_.enforceLimits(period);
-    pos_soft_limits_interface_.enforceLimits(period);
-    vel_saturation_interface_.enforceLimits(period);
-    vel_soft_limits_interface_.enforceLimits(period);
-    eff_saturation_interface_.enforceLimits(period);
-    eff_soft_limits_interface_.enforceLimits(period);
 }
 
 bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list) {
@@ -366,6 +379,9 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                 ROS_ERROR_STREAM(controller_it->hardware_interface << " cannot be provided in mode " << mode);
                 return false;
             }
+            SwitchData sd;
+            sd.enforce_limits = nh.param("enforce_limits", true);
+            sd.mode = MotorBase::OperationMode(mode);
             for (std::set<std::string>::const_iterator res_it = controller_it->resources.begin(); res_it != controller_it->resources.end(); ++res_it){
                 boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
 
@@ -384,7 +400,8 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                         return false;
                     case HandleLayer::ReadyToSwitch:
                     case HandleLayer::NoNeedToSwitch:
-                        to_switch.push_back(std::make_pair(h_it->second, MotorBase::OperationMode(mode)));
+                        sd.handle = h_it->second;
+                        to_switch.push_back(sd);
                 }
             }
         }
@@ -397,26 +414,28 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
         SwitchContainer &to_switch = switch_map_.at(controller_it->name);
         for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-            to_stop.insert(it->first);
+            to_stop.insert(it->handle);
         }
     }
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
         SwitchContainer &to_switch = switch_map_.at(controller_it->name);
         bool okay = true;
         for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-            it->first->switchMode(MotorBase::No_Mode); // stop all
+            it->handle->switchMode(MotorBase::No_Mode); // stop all
         }
         for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-            if(!it->first->switchMode(it->second)){
+            if(!it->handle->switchMode(it->mode)){
                 failed_controllers.push_back(controller_it->name);
                 ROS_ERROR_STREAM("Could not switch one joint for " << controller_it->name << ", will stop all related joints and the controller.");
                 for(RobotLayer::SwitchContainer::iterator stop_it = to_switch.begin(); stop_it != to_switch.end(); ++stop_it){
-                    to_stop.insert(stop_it->first);
+                    to_stop.insert(stop_it->handle);
                 }
                 okay = false;
                 break;
+            }else{
+                it->handle->enableLimits(it->enforce_limits);
             }
-            to_stop.erase(it->first);
+            to_stop.erase(it->handle);
         }
     }
     for(boost::unordered_set<boost::shared_ptr<HandleLayer> >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
@@ -436,11 +455,11 @@ void RobotLayer::doSwitch(const std::list<hardware_interface::ControllerInfo> &s
         try{
             SwitchContainer &to_switch = switch_map_.at(controller_it->name);
             for(RobotLayer::SwitchContainer::iterator it = to_switch.begin(); it != to_switch.end(); ++it){
-                if(!it->first->forwardForMode(it->second)){
+                if(!it->handle->forwardForMode(it->mode)){
                     failed_controllers.push_back(controller_it->name);
                     ROS_ERROR_STREAM("Could not switch one joint for " << controller_it->name << ", will stop all related joints and the controller.");
                     for(RobotLayer::SwitchContainer::iterator stop_it = to_switch.begin(); stop_it != to_switch.end(); ++stop_it){
-                        it->first->switchMode(MotorBase::No_Mode);
+                        it->handle->switchMode(MotorBase::No_Mode);
                     }
                     break;
                 }
