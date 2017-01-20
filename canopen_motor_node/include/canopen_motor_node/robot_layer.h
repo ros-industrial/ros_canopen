@@ -230,7 +230,12 @@ class RobotLayer : public canopen::LayerGroupNoDiag<HandleLayer>, public hardwar
 
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
-    typedef std::vector<std::pair<boost::shared_ptr<HandleLayer>, canopen::MotorBase::OperationMode> >  SwitchContainer;
+    struct SwitchData {
+        boost::shared_ptr<HandleLayer> handle;
+        canopen::MotorBase::OperationMode mode;
+        bool enforce_limits;
+    };
+    typedef std::vector<SwitchData>  SwitchContainer;
     typedef boost::unordered_map<std::string, SwitchContainer>  SwitchMap;
     SwitchMap switch_map_;
 
