@@ -59,9 +59,9 @@ public:
 
 class Logger: public DiagGroup<canopen::Layer>{
     const boost::shared_ptr<canopen::Node> node_;
-    
+
     std::vector<boost::function< void (diagnostic_updater::DiagnosticStatusWrapper &)> > entries_;
-    
+
     static void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, uint8_t level, const std::string &name, boost::function<std::string()> getter){
         if(stat.level >= level){
             try{
@@ -74,7 +74,7 @@ class Logger: public DiagGroup<canopen::Layer>{
 
 public:
     Logger(boost::shared_ptr<canopen::Node> node):  node_(node) { add(node_); }
-    
+
     bool add(uint8_t level, const std::string &key, bool forced){
         try{
             ObjectDict::Key k(key);
@@ -164,7 +164,7 @@ protected:
     std::vector<PublishFunc::func_type> publishers_;
 
     can::StateInterface::StateListener::Ptr state_listener_;
-    
+
     boost::scoped_ptr<boost::thread> thread_;
 
     ros::NodeHandle nh_;
@@ -192,7 +192,7 @@ protected:
     } hb_sender_;
     Timer heartbeat_timer_;
 
-    boost::atomic<bool> initialized_;
+    boost::atomic<bool> running_;
     boost::mutex diag_mutex_;
 
     void logState(const can::State &s);
