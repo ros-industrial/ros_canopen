@@ -50,9 +50,9 @@ void RosChain::logState(const can::State &s){
 }
 
 void RosChain::run(){
-
+    running_ = true;
     time_point abs_time = boost::chrono::high_resolution_clock::now();
-    while(true){
+    while(running_){
         LayerStatus s;
         try{
             read(s);
@@ -73,7 +73,7 @@ void RosChain::run(){
 bool RosChain::handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
     ROS_INFO("Initializing XXX");
     boost::mutex::scoped_lock lock(mutex_);
-    if(initialized_){
+    if(getLayerState() > Off){
         res.success = true;
         res.message = "already initialized";
         return true;
@@ -82,7 +82,6 @@ bool RosChain::handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::
     LayerReport status;
     try{
         init(status);
-        initialized_ = true;
         res.success = status.bounded<LayerStatus::Ok>();
         res.message = status.reason();
         if(!status.bounded<LayerStatus::Warn>()){
@@ -106,8 +105,6 @@ bool RosChain::handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::
 
     res.success = false;
     shutdown(status);
-    thread_.reset();
-    initialized_ = false;
 
     return true;
 }
@@ -116,10 +113,10 @@ bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigge
     boost::mutex::scoped_lock lock(mutex_);
     res.success = false;
 
-    if(initialized_ && thread_){
+    if(getLayerState() > Init){
         LayerReport status;
         try{
-            thread_->interrupt();
+            running_=false;
             thread_->join();
             thread_.reset(new boost::thread(&RosChain::run, this));
             recover(status);
@@ -154,19 +151,18 @@ void RosChain::handleShutdown(LayerStatus &status){
     boost::mutex::scoped_lock lock(diag_mutex_);
     heartbeat_timer_.stop();
     LayerStack::handleShutdown(status);
-    if(initialized_ &&  thread_){
-        thread_->interrupt();
+    if(running_){
+        running_ = false;
         thread_->join();
         thread_.reset();
     }
-    initialized_ = false;
 }
 
 bool RosChain::handle_shutdown(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
     ROS_INFO("Shuting down XXX");
     boost::mutex::scoped_lock lock(mutex_);
     res.success = true;
-    if(initialized_ && thread_){
+    if(getLayerState() > Init){
         LayerStatus s;
         halt(s);
         shutdown(s);
@@ -180,7 +176,7 @@ bool RosChain::handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::
     ROS_INFO("Halting down XXX");
     boost::mutex::scoped_lock lock(mutex_);
      res.success = true;
-     if(initialized_){
+     if(getLayerState() > Init){
         LayerStatus s;
         halt(s);
     }else{
@@ -483,7 +479,7 @@ bool RosChain::setup_nodes(){
         diag_updater_.add(it->first, boost::bind(&Logger::log, logger, _1));
 
         std::string node_name = std::string(merged["name"]);
-        
+
         if(merged.hasMember("publish")){
             try{
                 XmlRpc::XmlRpcValue objs = merged["publish"];
@@ -515,10 +511,10 @@ bool RosChain::nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<ca
 void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
     boost::mutex::scoped_lock lock(diag_mutex_);
     LayerReport r;
-    if(!initialized_){
+    if(getLayerState() == Off){
         stat.summary(stat.WARN,"Not initailized");
-    }else if(!thread_){
-        stat.summary(stat.ERROR,"Rhread was not created");
+    }else if(!running_){
+        stat.summary(stat.ERROR,"Thread is not running");
     }else{
         diag(r);
         if(r.bounded<LayerStatus::Unbounded>()){ // valid
@@ -531,7 +527,7 @@ void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &s
 }
 
 RosChain::RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv)
-: LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"), master_allocator_("canopen_master", "canopen::Master::Allocator"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_), initialized_(false){}
+: LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"), master_allocator_("canopen_master", "canopen::Master::Allocator"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_), running_(false){}
 
 bool RosChain::setup(){
     boost::mutex::scoped_lock lock(mutex_);
