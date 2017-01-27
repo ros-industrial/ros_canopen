@@ -117,6 +117,7 @@ bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigge
         LayerReport status;
         try{
             running_=false;
+            thread_->interrupt();
             thread_->join();
             thread_.reset(new boost::thread(&RosChain::run, this));
             recover(status);
@@ -153,6 +154,7 @@ void RosChain::handleShutdown(LayerStatus &status){
     LayerStack::handleShutdown(status);
     if(running_){
         running_ = false;
+        thread_->interrupt();
         thread_->join();
         thread_.reset();
     }
