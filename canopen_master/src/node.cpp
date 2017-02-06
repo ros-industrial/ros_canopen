@@ -204,13 +204,11 @@ void Node::handleInit(LayerStatus &status){
 }
 void Node::handleRecover(LayerStatus &status){
     emcy_.recover();
-    if(getState() != Operational){
-        try{
-            start();
-        }
-        catch(const TimeoutException&){
-            status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
-        }
+    try{
+        start();
+    }
+    catch(const TimeoutException&){
+        status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
     }
 }
 void Node::handleShutdown(LayerStatus &status){
