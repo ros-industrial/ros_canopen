@@ -1,4 +1,5 @@
 #include <canopen_master/canopen.h>
+#include <socketcan_interface/string.h>
 
 using namespace canopen;
 
@@ -41,6 +42,7 @@ struct EMCYmsg{
 
 void EMCYHandler::handleEMCY(const can::Frame & msg){
     EMCYmsg::Frame em(msg);
+    LOG("EMCY: " << can::tostring(msg, false));
     has_error_ = (em.data.error_register & ~32) != 0;
 }
 
