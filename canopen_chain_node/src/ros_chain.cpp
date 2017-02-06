@@ -380,6 +380,8 @@ bool RosChain::setup_nodes(){
     nodes_.reset(new canopen::LayerGroupNoDiag<canopen::Node>("301 layer"));
     add(nodes_);
 
+    emcy_handlers_.reset(new canopen::LayerGroupNoDiag<canopen::EMCYHandler>("EMCY layer"));
+
     XmlRpc::XmlRpcValue nodes;
     if(!nh_priv_.getParam("nodes", nodes)){
         ROS_WARN("falling back to 'modules', please switch to 'nodes'");
@@ -499,6 +501,11 @@ bool RosChain::setup_nodes(){
         }
         nodes_->add(node);
         nodes_lookup_.insert(std::make_pair(node_name, node));
+
+        boost::shared_ptr<canopen::EMCYHandler> emcy = boost::make_shared<canopen::EMCYHandler>(interface_, node->getStorage());
+        emcy_handlers_->add(emcy);
+        logger->add(emcy);
+
     }
     return true;
 }
@@ -529,7 +536,9 @@ RosChain::RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv)
 
 bool RosChain::setup(){
     boost::mutex::scoped_lock lock(mutex_);
-    return setup_chain();
+    bool okay = setup_chain();
+    if(okay) add(emcy_handlers_);
+    return okay;
 }
 
 bool RosChain::setup_chain(){
