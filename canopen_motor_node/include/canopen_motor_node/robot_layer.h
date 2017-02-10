@@ -164,11 +164,11 @@ class HandleLayer: public canopen::Layer{
     }
 
     bool select(const canopen::MotorBase::OperationMode &m);
-    static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
     std::vector<LimitsHandleBase::Ptr> limits_;
     bool enable_limits_;
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<canopen::MotorBase> & motor, const boost::shared_ptr<canopen::ObjectStorage> storage,  XmlRpc::XmlRpcValue & options);
+    static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
 
     enum CanSwitchResult{
         NotSupported,
