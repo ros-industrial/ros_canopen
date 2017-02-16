@@ -158,6 +158,7 @@ protected:
     boost::shared_ptr<can::DriverInterface> interface_;
     boost::shared_ptr<Master> master_;
     boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::Node> > nodes_;
+    boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::EMCYHandler> > emcy_handlers_;
     std::map<std::string, boost::shared_ptr<canopen::Node> > nodes_lookup_;
     boost::shared_ptr<canopen::SyncLayer> sync_;
     std::vector<boost::shared_ptr<Logger > > loggers_;

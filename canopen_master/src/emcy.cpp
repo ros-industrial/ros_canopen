@@ -1,4 +1,5 @@
 #include <canopen_master/canopen.h>
+#include <socketcan_interface/string.h>
 
 using namespace canopen;
 
@@ -41,23 +42,39 @@ struct EMCYmsg{
 
 void EMCYHandler::handleEMCY(const can::Frame & msg){
     EMCYmsg::Frame em(msg);
+    LOG("EMCY: " << can::tostring(msg, false));
     has_error_ = (em.data.error_register & ~32) != 0;
 }
 
-void EMCYHandler::init(){
-    recover();
-}
-void EMCYHandler::recover(){
-    if(num_errors_.valid()) num_errors_.set(0);
-    has_error_ = false;
-}
-
-void EMCYHandler::read(LayerStatus &status){
-    if(has_error_){
-        status.error("Node has emergency error");
+EMCYHandler::EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): Layer("EMCY handler"), storage_(storage), has_error_(true){
+    storage_->entry(error_register_, 0x1001);
+    try{
+        storage_->entry(num_errors_, 0x1003,0);
+    }
+    catch(...){
+       // pass, 1003 is optional
+    }
+    try{
+        EMCYid emcy_id(storage_->entry<uint32_t>(0x1014).get_cached());
+        emcy_listener_ = interface->createMsgListener( emcy_id.header(), can::CommInterface::FrameDelegate(this, &EMCYHandler::handleEMCY));
+    }
+    catch(...){
+       // pass, EMCY is optional
     }
 }
-void EMCYHandler::diag(LayerReport &report){
+
+void EMCYHandler::handleRead(LayerStatus &status, const LayerState &current_state) {
+    if(current_state == Ready){
+        if(has_error_){
+            status.error("Node has emergency error");
+        }
+    }
+}
+void EMCYHandler::handleWrite(LayerStatus &status, const LayerState &current_state) {
+    // noithing to do
+}
+
+void EMCYHandler::handleDiag(LayerReport &report){
     uint8_t error_register = 0;
     if(!error_register_.get(error_register)){
         report.error("Could not read error error_register");
@@ -97,19 +114,25 @@ void EMCYHandler::diag(LayerReport &report){
 
     }
 }
-EMCYHandler::EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): storage_(storage), has_error_(true){
-    storage_->entry(error_register_, 0x1001);
-    try{
-        storage_->entry(num_errors_, 0x1003,0);
+void EMCYHandler::handleInit(LayerStatus &status){
+    uint8_t error_register = 0;
+    if(!error_register_.get(error_register)){
+        status.error("Could not read error error_register");
+        return;
+    }else if(error_register & 1){
+        LOG("ER: " << int(error_register));
+        status.warn("Node has emergency error");
+        return;
     }
-    catch(...){
-       // pass, 1003 is optional
-    }
-    try{
-        EMCYid emcy_id(storage_->entry<uint32_t>(0x1014).get_cached());
-        emcy_listener_ = interface->createMsgListener( emcy_id.header(), can::CommInterface::FrameDelegate(this, &EMCYHandler::handleEMCY));
-    }
-    catch(...){
-       // pass, EMCY is optional
-    }
+
+    if(num_errors_.valid()) num_errors_.set(0);
+    has_error_ = false;
+}
+void EMCYHandler::handleRecover(LayerStatus &status){
+    handleInit(status);
+}
+void EMCYHandler::handleShutdown(LayerStatus &status){
+}
+void EMCYHandler::handleHalt(LayerStatus &status){
+    // do nothing
 }

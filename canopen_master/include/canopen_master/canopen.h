@@ -137,19 +137,24 @@ public:
     bool init(const boost::shared_ptr<ObjectStorage> storage, LayerStatus &status);
 };
 
-class EMCYHandler{
-    bool has_error_;
+class EMCYHandler : public Layer {
+    boost::atomic<bool> has_error_;
     ObjectStorage::Entry<uint8_t> error_register_;
     ObjectStorage::Entry<uint8_t> num_errors_;
     can::CommInterface::FrameListener::Ptr emcy_listener_;
     void handleEMCY(const can::Frame & msg);
     const boost::shared_ptr<ObjectStorage> storage_;
+
+    virtual void handleDiag(LayerReport &report);
+
+    virtual void handleInit(LayerStatus &status);
+    virtual void handleRecover(LayerStatus &status);
+    virtual void handleRead(LayerStatus &status, const LayerState &current_state);
+    virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
+    virtual void handleHalt(LayerStatus &status);
+    virtual void handleShutdown(LayerStatus &status);
+
 public:
-    virtual void init();
-    virtual void recover();
-    virtual void diag(LayerReport &report);
-    virtual void read(LayerStatus &status);
-    const uint8_t error_register();
     EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage);
 };
 
@@ -230,7 +235,6 @@ private:
 
     State state_;
     SDOClient sdo_;
-    EMCYHandler emcy_;
     PDOMapper pdo_;
 
     boost::chrono::high_resolution_clock::time_point heartbeat_timeout_;
