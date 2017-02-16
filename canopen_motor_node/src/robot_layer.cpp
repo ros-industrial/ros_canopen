@@ -395,7 +395,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
     // start handles
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = start_list.begin(); controller_it != start_list.end(); ++controller_it){
         SwitchContainer to_switch;
-        ros::NodeHandle nh(nh_,name);
+        ros::NodeHandle nh(nh_, controller_it->name);
         ModeLookup ml(nh);
 
         std::set<std::string> claimed_interfaces;
