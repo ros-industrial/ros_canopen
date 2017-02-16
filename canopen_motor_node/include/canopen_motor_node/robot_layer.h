@@ -35,6 +35,7 @@ class ObjectVariables {
         operator double*() const { return val_ptr.get(); }
     };
     boost::unordered_map<canopen::ObjectDict::Key, Getter> getters_;
+    boost::mutex mutex_;
 public:
     template<const uint16_t dt> static double* func(ObjectVariables &list, const canopen::ObjectDict::Key &key){
         typedef typename canopen::ObjectStorage::DataType<dt>::type type;
@@ -42,6 +43,7 @@ public:
     }
     ObjectVariables(const boost::shared_ptr<canopen::ObjectStorage> storage) : storage_(storage) {}
     bool sync(){
+        boost::mutex::scoped_lock lock(mutex_);
         bool ok = true;
         for(boost::unordered_map<canopen::ObjectDict::Key, Getter>::iterator it = getters_.begin(); it != getters_.end(); ++it){
             ok = it->second() && ok;
@@ -49,6 +51,7 @@ public:
         return ok;
     }
     double * getVariable(const std::string &n) {
+        boost::mutex::scoped_lock lock(mutex_);
         try{
             if(n.find("obj") == 0){
                 canopen::ObjectDict::Key key(n.substr(3));
@@ -164,11 +167,11 @@ class HandleLayer: public canopen::Layer{
     }
 
     bool select(const canopen::MotorBase::OperationMode &m);
-    static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
     std::vector<LimitsHandleBase::Ptr> limits_;
     bool enable_limits_;
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<canopen::MotorBase> & motor, const boost::shared_ptr<canopen::ObjectStorage> storage,  XmlRpc::XmlRpcValue & options);
+    static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
 
     enum CanSwitchResult{
         NotSupported,
