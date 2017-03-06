@@ -5,14 +5,16 @@
 #include <boost/unordered_map.hpp>
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
+#include <joint_limits_interface/joint_limits_interface.h>
 #include <hardware_interface/robot_hw.h>
 #include <urdf/model.h>
-#include <canopen_motor_node/handle_layer.h>
+#include <canopen_402/base.h>
+#include <canopen_motor_node/handle_layer_base.h>
 
 
 namespace canopen {
 
-class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interface::RobotHW{
+class RobotLayer : public LayerGroupNoDiag<HandleLayerBase>, public hardware_interface::RobotHW{
     hardware_interface::JointStateInterface state_interface_;
     hardware_interface::PositionJointInterface pos_interface_;
     hardware_interface::VelocityJointInterface vel_interface_;
@@ -28,10 +30,10 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
     ros::NodeHandle nh_;
     urdf::Model urdf_;
 
-    typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
+    typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayerBase> > HandleMap;
     HandleMap handles_;
     struct SwitchData {
-        boost::shared_ptr<HandleLayer> handle;
+        boost::shared_ptr<HandleLayerBase> handle;
         canopen::MotorBase::OperationMode mode;
         bool enforce_limits;
     };
@@ -43,7 +45,7 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayer>, public hardware_interfa
 
     void stopControllers(const std::vector<std::string> controllers);
 public:
-    void add(const std::string &name, boost::shared_ptr<HandleLayer> handle);
+    void add(const std::string &name, boost::shared_ptr<HandleLayerBase> handle);
     RobotLayer(ros::NodeHandle nh);
     boost::shared_ptr<const urdf::Joint> getJoint(const std::string &n) const { return urdf_.getJoint(n); }
 

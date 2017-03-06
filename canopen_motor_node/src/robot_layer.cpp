@@ -23,12 +23,12 @@ void RobotLayer::stopControllers(const std::vector<std::string> controllers){
     call.detach();
 }
 
-void RobotLayer::add(const std::string &name, boost::shared_ptr<HandleLayer> handle){
+void RobotLayer::add(const std::string &name, boost::shared_ptr<HandleLayerBase> handle){
     LayerGroupNoDiag::add(handle);
     handles_.insert(std::make_pair(name, handle));
 }
 
-RobotLayer::RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayer>("RobotLayer"), nh_(nh), first_init_(true)
+RobotLayer::RobotLayer(ros::NodeHandle nh) : LayerGroupNoDiag<HandleLayerBase>("RobotLayer"), nh_(nh), first_init_(true)
 {
     registerInterface(&state_interface_);
     registerInterface(&pos_interface_);
@@ -137,7 +137,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                         return false;
                     }
 
-                    boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> >::const_iterator h_it = handles_.find(*res_it);
+                    boost::unordered_map< std::string, boost::shared_ptr<HandleLayerBase> >::const_iterator h_it = handles_.find(*res_it);
 
                     const std::string & joint = *res_it;
 
@@ -158,17 +158,17 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                         return false;
                     }
 
-                    HandleLayer::CanSwitchResult res = h_it->second->canSwitch(sd.mode);
+                    HandleLayerBase::CanSwitchResult res = h_it->second->canSwitch(sd.mode);
 
                     switch(res){
-                        case HandleLayer::NotSupported:
+                        case HandleLayerBase::NotSupported:
                             ROS_ERROR_STREAM("Mode " << sd.mode << " is not available for " << joint);
                             return false;
-                        case HandleLayer::NotReadyToSwitch:
+                        case HandleLayerBase::NotReadyToSwitch:
                             ROS_ERROR_STREAM(joint << " is not ready to switch mode");
                             return false;
-                        case HandleLayer::ReadyToSwitch:
-                        case HandleLayer::NoNeedToSwitch:
+                        case HandleLayerBase::ReadyToSwitch:
+                        case HandleLayerBase::NoNeedToSwitch:
                             sd.handle = h_it->second;
                             to_switch.push_back(sd);
                     }
@@ -179,7 +179,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
     }
 
     // perform mode switches
-    boost::unordered_set<boost::shared_ptr<HandleLayer> > to_stop;
+    boost::unordered_set<boost::shared_ptr<HandleLayerBase> > to_stop;
     std::vector<std::string> failed_controllers;
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
         SwitchContainer &to_switch = switch_map_.at(controller_it->name);
@@ -208,7 +208,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
             to_stop.erase(it->handle);
         }
     }
-    for(boost::unordered_set<boost::shared_ptr<HandleLayer> >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
+    for(boost::unordered_set<boost::shared_ptr<HandleLayerBase> >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
         (*it)->switchMode(MotorBase::No_Mode);
     }
     if(!failed_controllers.empty()){

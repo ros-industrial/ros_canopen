@@ -14,6 +14,7 @@
 #include <canopen_master/layer.h>
 #include <canopen_402/base.h>
 #include <canopen_motor_node/unit_converter.h>
+#include <canopen_motor_node/handle_layer_base.h>
 
 namespace canopen {
 
@@ -80,7 +81,7 @@ template<> inline double* ObjectVariables::func<canopen::ObjectDict::DEFTYPE_UNI
 template<> inline double* ObjectVariables::func<canopen::ObjectDict::DEFTYPE_DOMAIN >(ObjectVariables &, const canopen::ObjectDict::Key &){ return 0; }
 
 
-class HandleLayer: public canopen::Layer{
+class HandleLayer: public canopen::HandleLayerBase {
     boost::shared_ptr<canopen::MotorBase> motor_;
     double pos_, vel_, eff_;
 
@@ -126,13 +127,6 @@ class HandleLayer: public canopen::Layer{
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<canopen::MotorBase> & motor, const boost::shared_ptr<canopen::ObjectStorage> storage,  XmlRpc::XmlRpcValue & options);
     static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
-
-    enum CanSwitchResult{
-        NotSupported,
-        NotReadyToSwitch,
-        ReadyToSwitch,
-        NoNeedToSwitch
-    };
 
     CanSwitchResult canSwitch(const canopen::MotorBase::OperationMode &m);
     bool switchMode(const canopen::MotorBase::OperationMode &m);

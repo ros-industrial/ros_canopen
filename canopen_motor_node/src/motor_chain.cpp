@@ -1,5 +1,6 @@
 
 #include <canopen_motor_node/motor_chain.h>
+#include <canopen_motor_node/handle_layer.h>
 
 using namespace canopen;
 
