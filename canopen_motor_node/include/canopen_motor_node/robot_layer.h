@@ -209,7 +209,7 @@ private:
     virtual void handleDiag(canopen::LayerReport &report) { /* nothing to do */ }
     virtual void handleShutdown(canopen::LayerStatus &status) { /* nothing to do */ }
     virtual void handleHalt(canopen::LayerStatus &status) { /* TODO */ }
-    virtual void handleRecover(canopen::LayerStatus &status) { handleRead(status, Layer::Ready); }
+    virtual void handleRecover(canopen::LayerStatus &status) { /* nothing to do */ }
 
 };
 
