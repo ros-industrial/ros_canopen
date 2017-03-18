@@ -2,8 +2,8 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.6 (2017-03-18)
+------------------
 * do not call handleReadread in HandleLayer::handleRecover
   this prevents a race condition, it is not needed anyway.
 * protect ObjectVariables with mutex

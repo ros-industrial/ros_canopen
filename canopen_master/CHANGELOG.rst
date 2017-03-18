@@ -2,8 +2,8 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.6 (2017-03-18)
+------------------
 * refactored EMCY handling into separate layer
 * print EMCY to stdout
 * send node start on recover

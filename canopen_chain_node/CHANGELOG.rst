@@ -2,8 +2,8 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.6 (2017-03-18)
+------------------
 * refactored EMCY handling into separate layer
 * do not reset thread for recover
 * properly stop run thread if init failed
