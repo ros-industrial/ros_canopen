@@ -2,6 +2,21 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.6 (2017-03-18)
+------------------
+* refactored EMCY handling into separate layer
+* do not reset thread for recover
+* properly stop run thread if init failed
+* Merge pull request `#201 <https://github.com/ros-industrial/ros_canopen/issues/201>`_ from ipa-mdl/bcm-sync
+  Added support for external sync providers
+* deprecation warning for SHM-based master implementations
+* implemented canopen_sync_node
+* added object access services
+* implement level-based object logging
+* added node name lookup
+* wait only if sync is disabled
+* Contributors: Mathias Lüdtke
+
 0.6.5 (2016-12-10)
 ------------------
 * protect MotorChain setup with RosChain lock

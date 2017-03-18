@@ -11,4 +11,7 @@
   <class type="canopen::SimpleMaster::Allocator" base_class_type="canopen::Master::Allocator">
     <description>Allocator for SimpleMaster instances</description>
   </class>
+  <class type="canopen::ExternalMaster::Allocator" base_class_type="canopen::Master::Allocator">
+    <description>Allocator for ExternalMaster instances</description>
+  </class>
 </library>

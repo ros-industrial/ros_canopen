@@ -3,6 +3,8 @@
 
 #include <canopen_master/canopen.h>
 #include <canopen_master/can_layer.h>
+#include <canopen_chain_node/GetObject.h>
+#include <canopen_chain_node/SetObject.h>
 #include <socketcan_interface/string.h>
 #include <ros/ros.h>
 #include <std_srvs/Trigger.h>
@@ -57,24 +59,34 @@ public:
 
 class Logger: public DiagGroup<canopen::Layer>{
     const boost::shared_ptr<canopen::Node> node_;
-    
+
     std::vector<boost::function< void (diagnostic_updater::DiagnosticStatusWrapper &)> > entries_;
-    
-    template<typename T> void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, const std::string &name, const ObjectDict::Key &key){
-        stat.add(name, node_->template get<T>(key));
+
+    static void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, uint8_t level, const std::string &name, boost::function<std::string()> getter){
+        if(stat.level >= level){
+            try{
+                stat.add(name, getter());
+            }catch(...){
+                stat.add(name, "<ERROR>");
+            }
+        }
     }
 
 public:
     Logger(boost::shared_ptr<canopen::Node> node):  node_(node) { add(node_); }
-    
-    template<typename T> void add(const std::string &name, const ObjectDict::Key &key){
-            entries_.push_back(boost::bind(&Logger::log_entry<T>, this, _1, name, key));
-    }
-    template<const uint16_t dt> static void func(Logger &l, const std::string &n, const ObjectDict::Key &k){
-        l.template add<typename ObjectStorage::DataType<dt>::type>(n,k);
-    }
-    void add(const uint16_t data_type, const std::string &name, const ObjectDict::Key &key){
-        branch_type<Logger, void (Logger &, const std::string &, const ObjectDict::Key &)>(data_type)(*this,name, key);
+
+    bool add(uint8_t level, const std::string &key, bool forced){
+        try{
+            ObjectDict::Key k(key);
+            const boost::shared_ptr<const ObjectDict::Entry> entry = node_->getStorage()->dict_->get(k);
+            std::string name = entry->desc.empty() ? key : entry->desc;
+            entries_.push_back(boost::bind(log_entry, _1, level, name, node_->getStorage()->getStringReader(k, !forced)));
+            return true;
+        }
+        catch(std::exception& e){
+            ROS_ERROR_STREAM(boost::diagnostic_information(e));
+            return false;
+        }
     }
 
     template<typename T> void add(const boost::shared_ptr<T> &n){
@@ -92,9 +104,9 @@ public:
                 for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
                     stat.add(it->first, it->second);
                 }
+                for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat);
             }
         }
-        // for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat); TODO
     }
     virtual ~Logger() {}
 };
@@ -146,12 +158,14 @@ protected:
     boost::shared_ptr<can::DriverInterface> interface_;
     boost::shared_ptr<Master> master_;
     boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::Node> > nodes_;
+    boost::shared_ptr<canopen::LayerGroupNoDiag<canopen::EMCYHandler> > emcy_handlers_;
+    std::map<std::string, boost::shared_ptr<canopen::Node> > nodes_lookup_;
     boost::shared_ptr<canopen::SyncLayer> sync_;
     std::vector<boost::shared_ptr<Logger > > loggers_;
     std::vector<PublishFunc::func_type> publishers_;
 
     can::StateInterface::StateListener::Ptr state_listener_;
-    
+
     boost::scoped_ptr<boost::thread> thread_;
 
     ros::NodeHandle nh_;
@@ -165,6 +179,8 @@ protected:
     ros::ServiceServer srv_recover_;
     ros::ServiceServer srv_halt_;
     ros::ServiceServer srv_shutdown_;
+    ros::ServiceServer srv_get_object_;
+    ros::ServiceServer srv_set_object_;
 
     time_duration update_duration_;
 
@@ -177,7 +193,7 @@ protected:
     } hb_sender_;
     Timer heartbeat_timer_;
 
-    boost::atomic<bool> initialized_;
+    boost::atomic<bool> running_;
     boost::mutex diag_mutex_;
 
     void logState(const can::State &s);
@@ -188,6 +204,10 @@ protected:
     virtual void handleShutdown(LayerStatus &status);
     virtual bool handle_shutdown(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);
     virtual bool handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);
+
+    bool handle_get_object(canopen_chain_node::GetObject::Request  &req, canopen_chain_node::GetObject::Response &res);
+    bool handle_set_object(canopen_chain_node::SetObject::Request  &req, canopen_chain_node::SetObject::Response &res);
+
     bool setup_bus();
     bool setup_sync();
     bool setup_heartbeat();

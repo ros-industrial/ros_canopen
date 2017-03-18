@@ -50,3 +50,14 @@ install(
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_gtest(${PROJECT_NAME}-test_muparser
+    test/test_muparser.cpp
+    src/robot_layer.cpp
+  )
+  target_link_libraries(${PROJECT_NAME}-test_muparser
+    ${catkin_LIBRARIES}
+    ${MUPARSER_LIBRARIES}
+  )
+endif()

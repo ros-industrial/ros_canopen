@@ -35,6 +35,7 @@ class ObjectVariables {
         operator double*() const { return val_ptr.get(); }
     };
     boost::unordered_map<canopen::ObjectDict::Key, Getter> getters_;
+    boost::mutex mutex_;
 public:
     template<const uint16_t dt> static double* func(ObjectVariables &list, const canopen::ObjectDict::Key &key){
         typedef typename canopen::ObjectStorage::DataType<dt>::type type;
@@ -42,6 +43,7 @@ public:
     }
     ObjectVariables(const boost::shared_ptr<canopen::ObjectStorage> storage) : storage_(storage) {}
     bool sync(){
+        boost::mutex::scoped_lock lock(mutex_);
         bool ok = true;
         for(boost::unordered_map<canopen::ObjectDict::Key, Getter>::iterator it = getters_.begin(); it != getters_.end(); ++it){
             ok = it->second() && ok;
@@ -49,6 +51,7 @@ public:
         return ok;
     }
     double * getVariable(const std::string &n) {
+        boost::mutex::scoped_lock lock(mutex_);
         try{
             if(n.find("obj") == 0){
                 canopen::ObjectDict::Key key(n.substr(3));
@@ -115,6 +118,14 @@ private:
     }
 };
 
+class LimitsHandleBase {
+public:
+    virtual void enforce(const ros::Duration &period) = 0;
+    virtual void reset() = 0;
+    virtual ~LimitsHandleBase();
+    typedef boost::shared_ptr<LimitsHandleBase> Ptr;
+};
+
 class HandleLayer: public canopen::Layer{
     boost::shared_ptr<canopen::MotorBase> motor_;
     double pos_, vel_, eff_;
@@ -154,10 +165,13 @@ class HandleLayer: public canopen::Layer{
         }
         return jh;
     }
+
     bool select(const canopen::MotorBase::OperationMode &m);
-    static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
+    std::vector<LimitsHandleBase::Ptr> limits_;
+    bool enable_limits_;
 public:
     HandleLayer(const std::string &name, const boost::shared_ptr<canopen::MotorBase> & motor, const boost::shared_ptr<canopen::ObjectStorage> storage,  XmlRpc::XmlRpcValue & options);
+    static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
 
     enum CanSwitchResult{
         NotSupported,
@@ -173,9 +187,18 @@ public:
     void registerHandle(hardware_interface::JointStateInterface &iface){
         iface.registerHandle(jsh_);
     }
-    hardware_interface::JointHandle* registerHandle(hardware_interface::PositionJointInterface &iface);
-    hardware_interface::JointHandle* registerHandle(hardware_interface::VelocityJointInterface &iface);
-    hardware_interface::JointHandle* registerHandle(hardware_interface::EffortJointInterface &iface);
+    hardware_interface::JointHandle* registerHandle(hardware_interface::PositionJointInterface &iface,
+                                                    const joint_limits_interface::JointLimits &limits,
+                                                    const joint_limits_interface::SoftJointLimits *soft_limits = 0);
+    hardware_interface::JointHandle* registerHandle(hardware_interface::VelocityJointInterface &iface,
+                                                    const joint_limits_interface::JointLimits &limits,
+                                                    const joint_limits_interface::SoftJointLimits *soft_limits = 0);
+    hardware_interface::JointHandle* registerHandle(hardware_interface::EffortJointInterface &iface,
+                                                    const joint_limits_interface::JointLimits &limits,
+                                                    const joint_limits_interface::SoftJointLimits *soft_limits = 0);
+
+    void enforceLimits(const ros::Duration &period, bool reset);
+    void enableLimits(bool enable);
 
     bool prepareFilters(canopen::LayerStatus &status);
 
@@ -186,7 +209,7 @@ private:
     virtual void handleDiag(canopen::LayerReport &report) { /* nothing to do */ }
     virtual void handleShutdown(canopen::LayerStatus &status) { /* nothing to do */ }
     virtual void handleHalt(canopen::LayerStatus &status) { /* TODO */ }
-    virtual void handleRecover(canopen::LayerStatus &status) { handleRead(status, Layer::Ready); }
+    virtual void handleRecover(canopen::LayerStatus &status) { /* nothing to do */ }
 
 };
 
@@ -210,7 +233,12 @@ class RobotLayer : public canopen::LayerGroupNoDiag<HandleLayer>, public hardwar
 
     typedef boost::unordered_map< std::string, boost::shared_ptr<HandleLayer> > HandleMap;
     HandleMap handles_;
-    typedef std::vector<std::pair<boost::shared_ptr<HandleLayer>, canopen::MotorBase::OperationMode> >  SwitchContainer;
+    struct SwitchData {
+        boost::shared_ptr<HandleLayer> handle;
+        canopen::MotorBase::OperationMode mode;
+        bool enforce_limits;
+    };
+    typedef std::vector<SwitchData>  SwitchContainer;
     typedef boost::unordered_map<std::string, SwitchContainer>  SwitchMap;
     SwitchMap switch_map_;
 

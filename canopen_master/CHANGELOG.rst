@@ -2,6 +2,19 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.6 (2017-03-18)
+------------------
+* refactored EMCY handling into separate layer
+* print EMCY to stdout
+* send node start on recover
+  needed for external sync to work properly
+* pass halt on error unconditionally
+* added canopen_bcm_sync
+* added object access services
+* implemented ObjectStorage::getStringReader
+* implemented ExternalMaster
+* Contributors: Mathias Lüdtke
+
 0.6.5 (2016-12-10)
 ------------------
 * Merge pull request `#179 <https://github.com/ipa-mdl/ros_canopen/issues/179>`_ from ipa-mdl/mixed_case_access

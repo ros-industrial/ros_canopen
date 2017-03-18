@@ -2,6 +2,17 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.6 (2017-03-18)
+------------------
+* do not call handleReadread in HandleLayer::handleRecover
+  this prevents a race condition, it is not needed anyway.
+* protect ObjectVariables with mutex
+* added test for norm function
+* introduced per-controller enforce_limits parameter
+* implemented per-joint limits handling
+* backport: check if hardware interface matches mode
+* Contributors: Mathias Lüdtke
+
 0.6.5 (2016-12-10)
 ------------------
 * protect MotorChain setup with RosChain lock

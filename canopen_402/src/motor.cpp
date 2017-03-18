@@ -514,13 +514,17 @@ void Motor402::handleShutdown(LayerStatus &status){
 void Motor402::handleHalt(LayerStatus &status){
     State402::InternalState state = state_handler_.getState();
     boost::mutex::scoped_lock lock(cw_mutex_);
-    target_state_ = State402::Quick_Stop_Active;
 
     // do not demand quickstop in case of fault
     if(state == State402::Fault_Reaction_Active || state == State402::Fault) return;
 
-    if(!Command402::setTransition(control_word_ ,state, State402::Quick_Stop_Active, 0)){
-        status.warn("Could not quick stop");
+    if(state != State402::Operation_Enable){
+        target_state_ = state;
+    }else{
+        target_state_ = State402::Quick_Stop_Active;
+        if(!Command402::setTransition(control_word_ ,state, State402::Quick_Stop_Active, 0)){
+            status.warn("Could not quick stop");
+        }
     }
 }
 void Motor402::handleRecover(LayerStatus &status){

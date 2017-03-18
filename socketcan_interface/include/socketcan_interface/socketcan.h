@@ -19,9 +19,10 @@ namespace can {
 
 class SocketCANInterface : public AsioDriver<boost::asio::posix::stream_descriptor> {
     bool loopback_;
+    int sc_;
 public:    
     SocketCANInterface()
-    : loopback_(false)
+    : loopback_(false), sc_(-1)
     {}
     
     virtual bool doesLoopBack() const{
@@ -31,6 +32,7 @@ public:
     virtual bool init(const std::string &device, bool loopback){
         State s = getState();
         if(s.driver_state == State::closed){
+            sc_ = 0;
             device_ = device;
             loopback_ = loopback;
 
@@ -103,6 +105,7 @@ public:
             }
             setInternalError(0);
             setDriverState(State::open);
+            sc_ = sc;
             return true;
         }
         return getState().isReady();
@@ -150,6 +153,9 @@ public:
             ret = true;
         }
         return ret;
+    }
+    int getInternalSocket() {
+        return sc_;
     }
 protected:
     std::string device_;

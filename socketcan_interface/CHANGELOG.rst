@@ -2,6 +2,14 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.6 (2017-03-18)
+------------------
+* stop CAN driver on read errors as well
+* expose socketcan handle
+* implemented BCMsocket
+* introduced BufferedReader::readUntil
+* Contributors: Mathias Lüdtke
+
 0.6.5 (2016-12-10)
 ------------------
 * removed Baseclass typedef since its use prevented virtual functions calls

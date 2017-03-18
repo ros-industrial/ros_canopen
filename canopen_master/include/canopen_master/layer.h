@@ -188,17 +188,15 @@ public:
 template<typename T=Layer> class LayerGroup : public Layer, public VectorHelper<T> {
 protected:
     template<typename Data> void call_or_fail(void(Layer::*func)(Data&), void(Layer::*fail)(Data&), Data &status){
-        bool wasError = !status.template bounded<LayerStatus::Warn>();
         this->template call(func, status);
-        if(!wasError && !status.template bounded<LayerStatus::Warn>()){
+        if(!status.template bounded<LayerStatus::Warn>()){
             this->template call(fail, status);
             (this->*fail)(status);
         }
     }
     template<typename Data> void call_or_fail_rev(void(Layer::*func)(Data&), void(Layer::*fail)(Data&), Data &status){
-        bool wasError = !status.template bounded<LayerStatus::Warn>();
         this->template call_rev(func, status);
-        if(!wasError && !status.template bounded<LayerStatus::Warn>()){
+        if(!status.template bounded<LayerStatus::Warn>()){
             this->template call_rev(fail, status);
             (this->*fail)(status);
         }

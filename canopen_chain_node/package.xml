@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>canopen_chain_node</name>
-  <version>0.6.5</version>
+  <version>0.6.6</version>
   <description>ROS node base implementation for CANopen chains with support for management services and diagnostics</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
@@ -14,6 +14,10 @@
   <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>message_generation</build_depend>
+  <build_export_depend>message_runtime</build_export_depend>
+  <exec_depend>message_runtime</exec_depend>
 
   <depend>canopen_master</depend>
   <depend>diagnostic_updater</depend>
