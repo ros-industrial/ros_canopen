@@ -2,6 +2,9 @@
 Changelog for package ros_canopen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.6.5 (2016-12-10)
 ------------------
 * updated metapackage

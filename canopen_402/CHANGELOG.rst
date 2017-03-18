@@ -2,6 +2,11 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* do quickstop for halt only if operation is enabled
+* Contributors: Mathias Lüdtke
+
 0.6.5 (2016-12-10)
 ------------------
 * stop on internal limit only if limit was not reached before
