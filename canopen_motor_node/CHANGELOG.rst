@@ -2,6 +2,22 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Decouble RobotLayer by introducing HandleLayerBase
+* Split layers into different headers and compile units
+* do not call handleReadread in HandleLayer::handleRecover
+  this prevents a race condition, it is not needed anyway.
+* protect ObjectVariables with mutex
+* added test for norm function
+* fix for joint limit handling
+* introduced per-controller enforce_limits parameter
+* implemented per-joint limits handling
+* check if hardware interface matches mode
+* implemented mixed-mode switching (`#197 <https://github.com/ipa-mdl/ros_canopen/issues/197>`_)
+* introduced joint reference for *res_it
+* Contributors: Mathias Lüdtke, Michael Stoll
+
 0.7.0 (2016-12-13)
 ------------------
 * multi-mode controllers are not supported (`#197 <https://github.com/ros-industrial/ros_canopen/issues/197>`_)

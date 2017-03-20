@@ -2,6 +2,19 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* refactored EMCY handling into separate layer
+* print EMCY to stdout
+* send node start on recover
+  needed for external sync to work properly
+* pass halt on error unconditionally
+* added canopen_bcm_sync
+* implemented ExternalMaster
+* added object access services
+* implemented ObjectStorage::getStringReader
+* Contributors: Mathias Lüdtke
+
 0.7.0 (2016-12-13)
 ------------------
 

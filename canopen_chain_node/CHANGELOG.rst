@@ -2,6 +2,19 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* refactored EMCY handling into separate layer
+* do not reset thread for recover
+* properly stop run thread if init failed
+* deprecation warning for SHM-based master implementations
+* implemented canopen_sync_node
+* wait only if sync is disabled
+* added object access services
+* implement level-based object logging
+* added node name lookup
+* Contributors: Mathias Lüdtke
+
 0.7.0 (2016-12-13)
 ------------------
 

@@ -2,6 +2,14 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* stop CAN driver on read errors as well
+* expose socketcan handle
+* implemented BCMsocket
+* introduced BufferedReader::readUntil
+* Contributors: Mathias Lüdtke
+
 0.7.0 (2016-12-13)
 ------------------
 
