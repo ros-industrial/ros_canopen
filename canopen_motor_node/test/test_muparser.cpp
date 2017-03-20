@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
-#include <canopen_motor_node/robot_layer.h>
+#include <canopen_motor_node/unit_converter.h>
+#include <canopen_motor_node/handle_layer.h>
 #include <boost/bind.hpp>
+
+using namespace canopen;
 
 double * mapVariable(const std::string &, double *p) {
     return p;
