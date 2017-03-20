@@ -2,6 +2,51 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* refactored EMCY handling into separate layer
+* do not reset thread for recover
+* properly stop run thread if init failed
+* deprecation warning for SHM-based master implementations
+* implemented canopen_sync_node
+* wait only if sync is disabled
+* added object access services
+* implement level-based object logging
+* added node name lookup
+* Contributors: Mathias Lüdtke
+
+0.7.0 (2016-12-13)
+------------------
+
+0.6.5 (2016-12-10)
+------------------
+* protect MotorChain setup with RosChain lock
+* added include to <boost/scoped_ptr.hpp>; solving `#177 <https://github.com/ipa-mdl/ros_canopen/issues/177>`_
+* default to canopen::SimpleMaster::Allocator (`#71 <https://github.com/ipa-mdl/ros_canopen/issues/71>`_)
+* exit code for generic error should be 1, not -1
+* styled and sorted CMakeLists.txt
+  * removed boilerplate comments
+  * indention
+  * reviewed exported dependencies
+* styled and sorted package.xml
+* update package URLs
+* moved roslib include into source file
+* renamed chain_ros.h to ros_chain.h, fixes `#126 <https://github.com/ipa-mdl/ros_canopen/issues/126>`_
+* Use of catkin_EXPORTED_TARGETS
+  Install target for canopen_ros_chain
+* Splitted charn_ros.h into chain_ros.h and ros_chain.cpp
+* Revert "stop heartbeat after stack was shutdown"
+  This reverts commit de985b5e9664edbbcc4f743fff3e2a2391e1bf8f.
+* improve failure handling in init service callback
+* improved excetion handling in init and recover callback
+* Merge pull request `#109 <https://github.com/ipa-mdl/ros_canopen/issues/109>`_ from ipa-mdl/shutdown-crashes
+  Fix for pluginlib-related crashes on shutdown
+* catch std::exception instead of canopen::Exception (`#110 <https://github.com/ipa-mdl/ros_canopen/issues/110>`_)
+* call to detroy is not needed anymore
+* added GuardedClassLoader implementation
+* minor shutdown improvements
+* Contributors: Mathias Lüdtke, Michael Stoll, xaedes
+
 0.6.4 (2015-07-03)
 ------------------
 

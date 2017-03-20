@@ -1,0 +1,8 @@
+string node
+string object
+string value
+bool cached
+---
+bool success
+string message
+

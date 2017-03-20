@@ -65,6 +65,7 @@ protected:
             triggerReadSome();
         }else{
             setErrorCode(error);
+            setNotReady();
         }
     }
 

@@ -2,6 +2,49 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* stop CAN driver on read errors as well
+* expose socketcan handle
+* implemented BCMsocket
+* introduced BufferedReader::readUntil
+* Contributors: Mathias Lüdtke
+
+0.7.0 (2016-12-13)
+------------------
+
+0.6.5 (2016-12-10)
+------------------
+* removed Baseclass typedef since its use prevented virtual functions calls
+* add missing chrono dependency
+* Added catch-all features in BufferedReader
+* hardened code with the help of cppcheck
+* styled and sorted CMakeLists.txt
+  * removed boilerplate comments
+  * indention
+  * reviewed exported dependencies
+* styled and sorted package.xml
+* update package URLs
+* Improves StateInterface implementation of the DummyInterface.
+  The doesLoopBack() method now returns the correct value. A state change is
+  correctly dispatched when the init() method is called.
+* Changes inheritance of DummyInterface to DriverInterface.
+  Such that this interface can also be used for tests requiring a DriverInterface
+  class.
+  Test results of the socketcan_interface tests are unchanged by this
+  modification as it only uses the CommInterface methods.
+* added socketcan_interface_string to test
+* moved string functions into separate lib
+* Introduced setNotReady, prevent enqueue() to switch from closed to open
+* Reading state\_ should be protected by lock
+* improved BufferedReader interface and ScopedEnabler
+* added flush() and max length support to BufferedReader
+* added BufferedReader
+* wake multiple waiting threads if needed
+* pad hex buffer strings in all cases
+* removed unstable StateWaiter::wait_for
+* Contributors: Ivor Wanders, Mathias Lüdtke, Michael Stoll
+
 0.6.4 (2015-07-03)
 ------------------
 * added missing include, revised depends etc.

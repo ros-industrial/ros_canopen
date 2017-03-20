@@ -28,7 +28,7 @@ struct NMTcommand{
 #pragma pack(pop) /* pop previous alignment from stack */
 
 Node::Node(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync)
-: Layer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), emcy_(interface, getStorage()), pdo_(interface){
+: Layer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
     try{
         getStorage()->entry(heartbeat_, 0x1017);
     }
@@ -153,7 +153,6 @@ void Node::handleRead(LayerStatus &status, const LayerState &current_state) {
             status.error("not operational");
         } else{
             pdo_.read(status);
-            emcy_.read(status);
         }
     }
 }
@@ -173,7 +172,6 @@ void Node::handleDiag(LayerReport &report){
     }else if(!checkHeartbeat()){
         report.error("Heartbeat timeout");
     }
-    if(state != Unknown) emcy_.diag(report);
 }
 void Node::handleInit(LayerStatus &status){
     nmt_listener_ = interface_->createMsgListener( can::MsgHeader(0x700 + node_id_), can::CommInterface::FrameDelegate(this, &Node::handleNMT));
@@ -200,17 +198,13 @@ void Node::handleInit(LayerStatus &status){
     catch(const TimeoutException&){
         status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
     }
-    emcy_.init();
 }
 void Node::handleRecover(LayerStatus &status){
-    emcy_.recover();
-    if(getState() != Operational){
-        try{
-            start();
-        }
-        catch(const TimeoutException&){
-            status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
-        }
+    try{
+        start();
+    }
+    catch(const TimeoutException&){
+        status.error(boost::str(boost::format("could not start node '%1%'") %  (int)node_id_));
     }
 }
 void Node::handleShutdown(LayerStatus &status){
