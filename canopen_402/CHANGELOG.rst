@@ -2,8 +2,8 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.1 (2017-03-20)
+------------------
 * do quickstop for halt only if operation is enabled
 * Contributors: Mathias Lüdtke
 
