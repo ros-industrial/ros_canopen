@@ -121,7 +121,7 @@ void EMCYHandler::handleInit(LayerStatus &status){
         return;
     }else if(error_register & 1){
         LOG("ER: " << int(error_register));
-        status.warn("Node has emergency error");
+        status.error("Node has emergency error");
         return;
     }
 
