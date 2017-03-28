@@ -2,6 +2,9 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.7.1 (2017-03-20)
 ------------------
 * stop CAN driver on read errors as well

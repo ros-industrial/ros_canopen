@@ -2,6 +2,11 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix: handle EMCY as error, not as warning
+* Contributors: Mathias Lüdtke
+
 0.7.1 (2017-03-20)
 ------------------
 * refactored EMCY handling into separate layer
