@@ -544,7 +544,7 @@ bool RosChain::setup(){
 bool RosChain::setup_chain(){
     std::string hw_id;
     nh_priv_.param("hardware_id", hw_id, std::string("none"));
-
+    hw_id="2";
     diag_updater_.setHardwareID(hw_id);
     diag_updater_.add("chain", this, &RosChain::report_diagnostics);
 
