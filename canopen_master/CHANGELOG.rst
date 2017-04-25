@@ -2,6 +2,11 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* enforce boost::chrono-based timer
+* Contributors: Mathias Lüdtke
+
 0.7.2 (2017-03-28)
 ------------------
 * fix: handle EMCY as error, not as warning
