@@ -2,8 +2,8 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.3 (2017-04-25)
+------------------
 * enforce boost::chrono-based timer
 * Contributors: Mathias Lüdtke
 

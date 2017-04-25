@@ -2,8 +2,8 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.3 (2017-04-25)
+------------------
 * use urdf::JointConstSharedPtr
 * Contributors: Mathias Lüdtke
 
