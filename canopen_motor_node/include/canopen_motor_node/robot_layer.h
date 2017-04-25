@@ -7,6 +7,7 @@
 #include <hardware_interface/joint_state_interface.h>
 #include <joint_limits_interface/joint_limits_interface.h>
 #include <hardware_interface/robot_hw.h>
+#include <urdf/urdfdom_compatibility.h>
 #include <urdf/model.h>
 #include <canopen_402/base.h>
 #include <canopen_motor_node/handle_layer_base.h>
@@ -47,7 +48,7 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayerBase>, public hardware_int
 public:
     void add(const std::string &name, boost::shared_ptr<HandleLayerBase> handle);
     RobotLayer(ros::NodeHandle nh);
-    boost::shared_ptr<const urdf::Joint> getJoint(const std::string &n) const { return urdf_.getJoint(n); }
+    urdf::JointConstSharedPtr getJoint(const std::string &n) const { return urdf_.getJoint(n); }
 
     virtual void handleInit(canopen::LayerStatus &status);
     void enforce(const ros::Duration &period, bool reset);

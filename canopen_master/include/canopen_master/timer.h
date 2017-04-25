@@ -44,7 +44,7 @@ public:
 private:
     boost::asio::io_service io;
     boost::asio::io_service::work work;
-    boost::asio::high_resolution_timer timer;
+    boost::asio::basic_waitable_timer<boost::chrono::high_resolution_clock> timer;
     boost::chrono::high_resolution_clock::duration period;
     boost::mutex mutex;
     boost::thread thread;
