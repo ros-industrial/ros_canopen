@@ -148,7 +148,7 @@ public:
     bool hasTarget() { return has_target_; }
     T getTarget() { return target_; }
     virtual bool setTarget(const double &val) {
-        if(isnan(val)){
+        if(boost::math::isnan(val)){
             LOG("target command is not a number");
             return false;
         }
