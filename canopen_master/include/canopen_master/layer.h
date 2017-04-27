@@ -33,11 +33,11 @@ public:
     struct Unbounded { static const State state = UNBOUNDED; private: Unbounded(); };
 
     template<typename T> bool bounded() const{ return state <= T::state; }
-    
+
     LayerStatus() : state(OK) {}
-    
+
     int get() const { return state; }
-    
+
     const std::string reason() const { boost::mutex::scoped_lock lock(write_mutex_); return reason_; }
 
     const void warn(const std::string & r) { set(WARN, r); }
@@ -58,7 +58,7 @@ public:
 #define CATCH_LAYER_HANDLER_EXCEPTIONS(command, status)                           \
     try{ command; }                                                             \
     catch(std::exception &e) {status.error(boost::diagnostic_information(e)); }
-  
+
 class Layer{
 public:
     enum LayerState{
@@ -124,7 +124,7 @@ public:
     LayerState getLayerState() { return state; }
 
     Layer(const std::string &n) : name(n), state(Off) {}
-    
+
     virtual ~Layer() {}
 
 protected:
@@ -149,7 +149,7 @@ template<typename T> class VectorHelper{
     vector_type layers;
     boost::shared_mutex mutex;
 
-    template<typename Bound, typename Iterator, typename Data> Iterator call(void(Layer::*func)(Data&), Data &status, const Iterator &begin, const Iterator &end){
+    template<typename Bound, typename Iterator, typename Data, typename FuncType> Iterator call(FuncType func, Data &status, const Iterator &begin, const Iterator &end){
         bool okay_on_start = status.template bounded<Bound>();
 
         for(Iterator it = begin; it != end; ++it){
@@ -160,41 +160,47 @@ template<typename T> class VectorHelper{
         }
         return end;
     }
-    template<typename Iterator, typename Data> Iterator call(void(Layer::*func)(Data&), Data &status, const Iterator &begin, const Iterator &end){
+    template<typename Iterator, typename Data, typename FuncType> Iterator call(FuncType func, Data &status, const Iterator &begin, const Iterator &end){
         return call<LayerStatus::Unbounded, Iterator, Data>(func, status, begin, end);
     }
 protected:
-    template<typename Bound, typename Data> typename vector_type::iterator call(void(Layer::*func)(Data&), Data &status){
+    template<typename Bound, typename Data, typename FuncType> typename vector_type::iterator call(FuncType func, Data &status){
         boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<Bound>(func, status, layers.begin(), layers.end());
     }
-    template<typename Data> typename vector_type::iterator call(void(Layer::*func)(Data&), Data &status){
+    template<typename Data, typename FuncType> typename vector_type::iterator call(FuncType func, Data &status){
         boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<LayerStatus::Unbounded>(func, status, layers.begin(), layers.end());
     }
-    template<typename Bound, typename Data> typename vector_type::reverse_iterator call_rev(void(Layer::*func)(Data&), Data &status){
+    template<typename Bound, typename Data, typename FuncType> typename vector_type::reverse_iterator call_rev(FuncType func, Data &status){
         boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<Bound>(func, status, layers.rbegin(), layers.rend());
     }
-    template<typename Data> typename vector_type::reverse_iterator call_rev(void(Layer::*func)(Data&), Data &status){
+    template<typename Data, typename FuncType> typename vector_type::reverse_iterator call_rev(FuncType func, Data &status){
         boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<LayerStatus::Unbounded>(func, status, layers.rbegin(), layers.rend());
     }
     void destroy() { boost::unique_lock<boost::shared_mutex> lock(mutex); layers.clear(); }
+
 public:
     virtual void add(const boost::shared_ptr<T> &l) { boost::unique_lock<boost::shared_mutex> lock(mutex); layers.push_back(l); }
+
+    template<typename Bound, typename Data, typename FuncType> bool callFunc(FuncType func, Data &status){
+        boost::shared_lock<boost::shared_mutex> lock(mutex);
+        return call<Bound>(func, status, layers.begin(), layers.end()) == layers.end();
+    }
 };
 
 template<typename T=Layer> class LayerGroup : public Layer, public VectorHelper<T> {
 protected:
-    template<typename Data> void call_or_fail(void(Layer::*func)(Data&), void(Layer::*fail)(Data&), Data &status){
+    template<typename Data, typename FuncType, typename FailType> void call_or_fail(FuncType func, FailType fail, Data &status){
         this->template call(func, status);
         if(!status.template bounded<LayerStatus::Warn>()){
             this->template call(fail, status);
             (this->*fail)(status);
         }
     }
-    template<typename Data> void call_or_fail_rev(void(Layer::*func)(Data&), void(Layer::*fail)(Data&), Data &status){
+    template<typename Data, typename FuncType, typename FailType> void call_or_fail_rev(FuncType func, FailType fail, Data &status){
         this->template call_rev(func, status);
         if(!status.template bounded<LayerStatus::Warn>()){
             this->template call_rev(fail, status);
@@ -221,7 +227,7 @@ public:
 };
 
 class LayerStack : public LayerGroup<>{
-    
+
 protected:
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) { call_or_fail_rev(&Layer::write, &Layer::halt, status);}
     virtual void handleShutdown(LayerStatus &status) { call_rev(&Layer::shutdown, status); }
