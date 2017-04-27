@@ -125,9 +125,13 @@ void EMCYHandler::handleInit(LayerStatus &status){
         return;
     }
 
+    resetErrors(status);
+}
+void EMCYHandler::resetErrors(LayerStatus &status){
     if(num_errors_.valid()) num_errors_.set(0);
     has_error_ = false;
 }
+
 void EMCYHandler::handleRecover(LayerStatus &status){
     handleInit(status);
 }
