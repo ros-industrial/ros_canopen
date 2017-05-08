@@ -116,7 +116,9 @@ bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigge
     if(getLayerState() > Init){
         LayerReport status;
         try{
-            recover(status);
+            if(!reset_errors_before_recover_ || emcy_handlers_->callFunc<LayerStatus::Warn>(&EMCYHandler::resetErrors, status)){
+                recover(status);
+            }
             if(!status.bounded<LayerStatus::Warn>()){
                 diag(status);
             }
@@ -532,7 +534,12 @@ void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &s
 }
 
 RosChain::RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv)
-: LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"), master_allocator_("canopen_master", "canopen::Master::Allocator"),nh_(nh), nh_priv_(nh_priv), diag_updater_(nh_,nh_priv_), running_(false){}
+: LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"),
+  master_allocator_("canopen_master", "canopen::Master::Allocator"),
+  nh_(nh), nh_priv_(nh_priv),
+  diag_updater_(nh_,nh_priv_),
+  running_(false),
+  reset_errors_before_recover_(false){}
 
 bool RosChain::setup(){
     boost::mutex::scoped_lock lock(mutex_);
@@ -544,6 +551,7 @@ bool RosChain::setup(){
 bool RosChain::setup_chain(){
     std::string hw_id;
     nh_priv_.param("hardware_id", hw_id, std::string("none"));
+    nh_priv_.param("reset_errors_before_recover", reset_errors_before_recover_, false);
 
     diag_updater_.setHardwareID(hw_id);
     diag_updater_.add("chain", this, &RosChain::report_diagnostics);
