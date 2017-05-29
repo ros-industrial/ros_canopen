@@ -17,7 +17,7 @@
 
   <depend>boost</depend>
   <depend>class_loader</depend> 
-  <depend>linux-headers-generic</depend>
+  <depend>linux-kernel-headers</depend>
 
   <test_depend>rosunit</test_depend>
 
