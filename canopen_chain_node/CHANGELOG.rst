@@ -2,6 +2,11 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* added reset_errors_before_recover option
+* Contributors: Mathias Lüdtke
+
 0.7.4 (2017-04-25)
 ------------------
 

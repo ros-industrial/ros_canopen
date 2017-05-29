@@ -2,6 +2,9 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.7.4 (2017-04-25)
 ------------------
 * use portable boost::math::isnan
