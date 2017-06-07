@@ -440,7 +440,7 @@ void Motor402::handleDiag(LayerReport &report){
     case State402::Switch_On_Disabled:
     case State402::Ready_To_Switch_On:
     case State402::Switched_On:
-        report.warn("Motor operation is not enabled");
+        report.error("Motor operation is not enabled");
     case State402::Operation_Enable:
         break;
 
