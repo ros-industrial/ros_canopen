@@ -2,6 +2,11 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix rosdep dependency on kernel headers
+* Contributors: Mathias Lüdtke
+
 0.6.7 (2017-03-28)
 ------------------
 
