@@ -2,6 +2,9 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.7.5 (2017-05-29)
 ------------------
 

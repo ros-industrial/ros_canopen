@@ -2,6 +2,11 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* make can::Header/Frame::isValid() const
+* Contributors: Mathias Lüdtke
+
 0.7.5 (2017-05-29)
 ------------------
 * fix rosdep dependency on kernel headers
