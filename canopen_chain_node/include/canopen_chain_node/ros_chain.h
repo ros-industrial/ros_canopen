@@ -196,6 +196,8 @@ protected:
     boost::atomic<bool> running_;
     boost::mutex diag_mutex_;
 
+    bool reset_errors_before_recover_;
+
     void logState(const can::State &s);
     void run();
     virtual bool handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);

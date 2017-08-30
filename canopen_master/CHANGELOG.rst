@@ -2,8 +2,31 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.6 (2017-08-30)
+------------------
+
+0.7.5 (2017-05-29)
+------------------
+* added EMCYHandler::resetErrors
+* added VectorHelper::callFunc
+  generalized call templates
+* Contributors: Mathias Lüdtke
+
+0.7.4 (2017-04-25)
+------------------
+
+0.7.3 (2017-04-25)
+------------------
+* enforce boost::chrono-based timer
+* Contributors: Mathias Lüdtke
+
+0.7.2 (2017-03-28)
+------------------
+* fix: handle EMCY as error, not as warning
+* Contributors: Mathias Lüdtke
+
+0.7.1 (2017-03-20)
+------------------
 * refactored EMCY handling into separate layer
 * print EMCY to stdout
 * send node start on recover

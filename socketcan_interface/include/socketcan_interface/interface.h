@@ -21,7 +21,7 @@ struct Header{
     unsigned int is_rtr:1; ///< frame is a remote transfer request
     unsigned int is_extended:1; ///< frame uses 29 bit CAN identifier 
     /** check if frame header is valid*/
-    bool isValid(){
+    bool isValid() const{
         return id < (is_extended?(1<<29):(1<<11));
     }
     /** constructor with default parameters
@@ -58,7 +58,7 @@ struct Frame: public Header{
     unsigned char dlc; ///< len of data
     
     /** check if frame header and length are valid*/
-    bool isValid(){
+    bool isValid() const{
         return (dlc <= 8)  &&  Header::isValid();
     }
     /** 

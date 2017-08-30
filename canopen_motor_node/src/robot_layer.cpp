@@ -44,7 +44,7 @@ void RobotLayer::handleInit(LayerStatus &status){
             joint_limits_interface::JointLimits limits;
             joint_limits_interface::SoftJointLimits soft_limits;
 
-            boost::shared_ptr<const urdf::Joint> joint = getJoint(it->first);
+            urdf::JointConstSharedPtr joint = getJoint(it->first);
 
             if(!joint){
                 status.error("joint " + it->first + " not found");

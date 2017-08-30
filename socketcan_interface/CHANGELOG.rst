@@ -2,8 +2,27 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.6 (2017-08-30)
+------------------
+* make can::Header/Frame::isValid() const
+* Contributors: Mathias Lüdtke
+
+0.7.5 (2017-05-29)
+------------------
+* fix rosdep dependency on kernel headers
+* Contributors: Mathias Lüdtke
+
+0.7.4 (2017-04-25)
+------------------
+
+0.7.3 (2017-04-25)
+------------------
+
+0.7.2 (2017-03-28)
+------------------
+
+0.7.1 (2017-03-20)
+------------------
 * stop CAN driver on read errors as well
 * expose socketcan handle
 * implemented BCMsocket
