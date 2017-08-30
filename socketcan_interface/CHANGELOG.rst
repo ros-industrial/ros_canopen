@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.6 (2017-08-30)
+------------------
 * make can::Header/Frame::isValid() const
 * Contributors: Mathias Lüdtke
 
