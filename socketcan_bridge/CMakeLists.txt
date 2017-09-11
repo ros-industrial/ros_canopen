@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
+add_compile_options(-std=c++11)
 project(socketcan_bridge)
 
 find_package(catkin REQUIRED
@@ -14,6 +15,7 @@ catkin_package(
   LIBRARIES
     socketcan_to_topic
     topic_to_socketcan
+    socketcan_recover_ctrl
   CATKIN_DEPENDS
     can_msgs
     roscpp
@@ -48,12 +50,24 @@ add_dependencies(topic_to_socketcan
   ${catkin_EXPORTED_TARGETS}
 )
 
+# socketcan_recover_ctrl
+add_library(socketcan_recover_ctrl
+  src/socketcan_recover_ctrl.cpp
+)
+target_link_libraries(socketcan_recover_ctrl
+  ${catkin_LIBRARIES}
+)
+add_dependencies(socketcan_recover_ctrl
+  ${catkin_EXPORTED_TARGETS}
+)
+
 # socketcan_to_topic_node
 add_executable(socketcan_to_topic_node
   src/socketcan_to_topic_node.cpp
 )
 target_link_libraries(socketcan_to_topic_node
   socketcan_to_topic
+  socketcan_recover_ctrl
   ${catkin_LIBRARIES}
 )
 
@@ -64,6 +78,7 @@ add_executable(topic_to_socketcan_node
 )
 target_link_libraries(topic_to_socketcan_node
   topic_to_socketcan
+  socketcan_recover_ctrl
   ${catkin_LIBRARIES}
 )
 
@@ -74,16 +89,20 @@ add_executable(socketcan_bridge_node
 target_link_libraries(socketcan_bridge_node
   topic_to_socketcan
   socketcan_to_topic
+  socketcan_recover_ctrl
   ${catkin_LIBRARIES}
 )
+
 
 install(
   TARGETS
     socketcan_bridge_node
+    socketcan_recover_ctrl
     socketcan_to_topic
     socketcan_to_topic_node
     topic_to_socketcan
     topic_to_socketcan_node
+    
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -109,6 +128,7 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(test_conversion
     topic_to_socketcan
     socketcan_to_topic
+    socketcan_recover_ctrl
     ${catkin_LIBRARIES}
   )
 
@@ -131,4 +151,6 @@ if(CATKIN_ENABLE_TESTING)
     ${catkin_LIBRARIES}
   )
 
+
+  
 endif()
