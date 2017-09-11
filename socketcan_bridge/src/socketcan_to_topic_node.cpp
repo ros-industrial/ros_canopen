@@ -30,7 +30,7 @@
 #include <socketcan_interface/threading.h>
 #include <socketcan_interface/string.h>
 #include <string>
-
+#include <cstdlib>
 
 
 int main(int argc, char *argv[])
@@ -41,6 +41,26 @@ int main(int argc, char *argv[])
 
   std::string can_device;
   nh_param.param<std::string>("can_device", can_device, "can0");
+
+  std::vector<unsigned int> pass_can_ids;
+  if( nh_param.hasParam("can_ids") )
+  {
+    std::vector<std::string> ids;
+    nh_param.getParam("can_ids", ids);
+
+    for (size_t i=0; i < ids.size(); ++i)
+    {
+      unsigned int id = static_cast<unsigned int>(strtoul(ids[i].c_str(), NULL, 16));
+      if (id != 0)
+      {
+        pass_can_ids.push_back(id);
+      }
+      else
+      {
+        ROS_ERROR("Failed to parse can_id: %s from Param Server.", ids[i].c_str());
+      }
+    }
+  }
 
   boost::shared_ptr<can::ThreadedSocketCANInterface> driver = boost::make_shared<can::ThreadedSocketCANInterface> ();
 
@@ -54,7 +74,7 @@ int main(int argc, char *argv[])
     ROS_INFO("Successfully connected to %s.", can_device.c_str());
   }
 
-  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver);
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver, pass_can_ids);
   to_topic_bridge.setup();
 
   ros::spin();

@@ -29,11 +29,13 @@
 #include <socketcan_interface/string.h>
 #include <can_msgs/Frame.h>
 #include <string>
+#include <algorithm>
 
 namespace socketcan_bridge
 {
   SocketCANToTopic::SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
-      boost::shared_ptr<can::DriverInterface> driver)
+      boost::shared_ptr<can::DriverInterface> driver, const std::vector<unsigned int>& pass_ids)
+    : pass_ids_(pass_ids)
     {
       can_topic_ = nh->advertise<can_msgs::Frame>("received_messages", 10);
       driver_ = driver;
@@ -67,6 +69,12 @@ namespace socketcan_bridge
           // due to usage of boost::array for the data array. The should always work.
           ROS_WARN("Received frame is error: %s", can::tostring(f, true).c_str());
         }
+      }
+
+      // discard can frame if can_ids to pass are defined and current frame.id is not inside pass list
+      if( !pass_ids_.empty() && (std::find(pass_ids_.begin(), pass_ids_.end(), frame.id) == pass_ids_.end()) )
+      {
+        return;
       }
 
       can_msgs::Frame msg;

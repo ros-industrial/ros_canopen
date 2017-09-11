@@ -37,12 +37,15 @@ namespace socketcan_bridge
 class SocketCANToTopic
 {
   public:
-    SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param, boost::shared_ptr<can::DriverInterface> driver);
+    SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
+                     boost::shared_ptr<can::DriverInterface> driver,
+                     const std::vector<unsigned int>& pass_ids);
     void setup();
 
   private:
     ros::Publisher can_topic_;
     boost::shared_ptr<can::DriverInterface> driver_;
+    const std::vector<unsigned int> pass_ids_;
 
     can::CommInterface::FrameListener::Ptr frame_listener_;
     can::StateInterface::StateListener::Ptr state_listener_;
@@ -60,7 +63,7 @@ void convertSocketCANToMessage(const can::Frame& f, can_msgs::Frame& m)
   m.is_rtr = f.is_rtr;
   m.is_extended = f.is_extended;
 
-  for (int i = 0; i < 8; i++)  // always copy all data, regardless of dlc.
+  for (size_t i = 0; i < 8; i++)  // always copy all data, regardless of dlc.
   {
     m.data[i] = f.data[i];
   }
