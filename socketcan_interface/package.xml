@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>socketcan_interface</name>
-  <version>0.6.7</version>
+  <version>0.6.8</version>
   <description>This package contains a generic CAN interface description with helpers for filtering and driver implementation. Further a socketcan implementation based on boost::asio is included.</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
@@ -17,7 +17,7 @@
 
   <depend>boost</depend>
   <depend>class_loader</depend> 
-  <depend>linux-headers-generic</depend>
+  <depend>linux-kernel-headers</depend>
 
   <test_depend>rosunit</test_depend>
 
