@@ -78,6 +78,7 @@ namespace socketcan_bridge
      */
     void SocketCANRecoverCtrl::recover() 
     {
+        timer_.stop();
         if(driver_->recover()) {
             ROS_INFO("CAN driver timed out, successfully recovered");
         } 
