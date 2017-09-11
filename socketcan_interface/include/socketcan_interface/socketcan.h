@@ -149,7 +149,7 @@ public:
             ret = true;
         }
         if( internal_error & CAN_ERR_RESTARTED){
-            str += "ontroller restarted;";
+            str += "controller restarted;";
             ret = true;
         }
         return ret;
