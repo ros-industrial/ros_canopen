@@ -44,7 +44,7 @@ namespace socketcan_bridge
      * Initializes the publisher, and sets up a timer to periodically check the bus state
      */
     SocketCANRecoverCtrl::SocketCANRecoverCtrl(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
-        boost::shared_ptr<can::DriverInterface> driver) : driver_(driver), timeout_(ros::Duration(1))
+        boost::shared_ptr<can::DriverInterface> driver) : driver_(driver)
     {
         state_pub_ = nh->advertise<can_msgs::CanState>("can_state", 1, true);
 
@@ -61,9 +61,9 @@ namespace socketcan_bridge
      */
     void SocketCANRecoverCtrl::stateCallback(const can::State & state) {
         publishStatus(state);
-        if(!state.isReady)
+        if(!state.isReady())
         {            
-            timer_.start()
+            timer_.start();
         }
         else
         {
@@ -85,7 +85,7 @@ namespace socketcan_bridge
         else 
         {
             ROS_WARN("CAN driver timed out, recovery failed");
-            timer_.start()
+            timer_.start();
         }
     }
 

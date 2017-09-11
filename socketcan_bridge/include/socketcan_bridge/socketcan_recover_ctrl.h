@@ -58,7 +58,7 @@ namespace socketcan_bridge
     	/**
      	* @brief Publishes the status of the bus
      	*/
-        void publishStatus();
+        void publishStatus(const can::State & state);
 
         /**
 	     * @brief Recover the bus from an error state
