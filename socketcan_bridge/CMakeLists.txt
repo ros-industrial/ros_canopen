@@ -7,11 +7,6 @@ find_package(catkin REQUIRED
     can_msgs
     roscpp
     socketcan_interface
-    dynamic_reconfigure
-)
-
-generate_dynamic_reconfigure_options(
-    cfg/socketcan_bridge.cfg
 )
 
 catkin_package(
