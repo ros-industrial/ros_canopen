@@ -5,7 +5,6 @@ project(socketcan_bridge)
 find_package(catkin REQUIRED
   COMPONENTS
     can_msgs
-    can_srvs
     roscpp
     socketcan_interface
     dynamic_reconfigure
@@ -23,7 +22,6 @@ catkin_package(
     topic_to_socketcan
     socketcan_recover_ctrl
   CATKIN_DEPENDS
-  can_srvs
     can_msgs
     roscpp
     socketcan_interface
