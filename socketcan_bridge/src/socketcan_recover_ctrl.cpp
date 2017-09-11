@@ -44,42 +44,31 @@ namespace socketcan_bridge
      * Initializes the publisher, and sets up a timer to periodically check the bus state
      */
     SocketCANRecoverCtrl::SocketCANRecoverCtrl(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
-        boost::shared_ptr<can::DriverInterface> driver)
+        boost::shared_ptr<can::DriverInterface> driver) : driver_(driver), timeout_(ros::Duration(1))
     {
-        state_pub_ = nh->advertise<can_msgs::CanState>("can_state", 1000);
-        driver_ = driver;
-        timeout_ = ros::Duration(1); // will be reconfigured
-        timer_ = nh->createWallTimer(ros::WallDuration(1), [this](const ros::WallTimerEvent& event) {CheckState();});
-        //dynamic reconfig
-        config_server_.setCallback([this](socketcan_bridge::SocketCANConfig& cfg, uint32_t level) { dynReconfigCallback(cfg, level); });
+        state_pub_ = nh->advertise<can_msgs::CanState>("can_state", 1, true);
+
+        timer_ = nh->createWallTimer(ros::WallDuration(5), [this](const ros::WallTimerEvent& event) {recover();}, true, false);
+
+        state_listener_ = driver_->createStateListener(
+            can::StateInterface::StateDelegate(this, &SocketCANRecoverCtrl::stateCallback));
 
     };
 
     /**
-     * @brief Checks the state of the bus, recover if necessary
+     * @brief Checks the state of the bus, if !statie.isReady() then the
+     * recover timer is started to fire in 5secs, otherwise we stop the timer
      */
-    void SocketCANRecoverCtrl::CheckState() {
-        curr_state_ = driver_->getState();
-        publishStatus();
-        // Last_error_time denotes the beginning of a fault
-        // clear it when the bus is working properly
-        if(curr_state_.isReady()) {
-            last_error_time_.sec = 0;
-            last_error_time_.nsec = 0;
+    void SocketCANRecoverCtrl::stateCallback(const can::State & state) {
+        publishStatus(state);
+        if(!state.isReady)
+        {            
+            timer_.start()
         }
-        // if this is the first error, set the time
-        else if (last_error_time_.sec == 0 && last_error_time_.nsec == 0) {
-            last_error_time_ = ros::Time::now();
+        else
+        {
+            timer_.stop();
         }
-        // if this isn't the first consecutive error, check how long
-        // the error state has lasted and recover if necessary
-        else {
-            ros::Duration error_duration = ros::Time::now() - last_error_time_;
-            if(error_duration > timeout_) {
-                recover();
-            }
-        }
-        
     }
 
     /**
@@ -87,33 +76,24 @@ namespace socketcan_bridge
      *
      * Calls the driver's recover() function
      */
-    void SocketCANRecoverCtrl::recover() {
-        // Optimistically assume that it will work and reset timeout - 
-        // if it fails, it'll time out again later
-        last_error_time_.sec = 0;
-        last_error_time_.nsec = 0;
-        bool success = false;
-        if(mutex_.try_lock()) {
-            success = driver_->recover();
-            if(success) {
-                ROS_INFO("CAN driver timed out, successfully recovered");
-            } else {
-                ROS_WARN("CAN driver timed out, recovery failed");
-            }
-            mutex_.unlock();
+    void SocketCANRecoverCtrl::recover() 
+    {
+        if(driver_->recover()) {
+            ROS_INFO("CAN driver timed out, successfully recovered");
+        } 
+        else 
+        {
+            ROS_WARN("CAN driver timed out, recovery failed");
+            timer_.start()
         }
-        
     }
 
     /**
      * @brief Publishes the status of the bus
      */
-    void SocketCANRecoverCtrl::publishStatus() {
-        static unsigned int seq = 0;
-
+    void SocketCANRecoverCtrl::publishStatus(const can::State & state) {
         can_msgs::CanState state_msg;
-
-        switch(curr_state_.driver_state) {
+        switch(state.driver_state) {
             case can::State::open:
                 state_msg.driver_state = can_msgs::CanState::OPEN;
                 break;
@@ -129,11 +109,6 @@ namespace socketcan_bridge
         }
 
         state_pub_.publish(state_msg);
-    }
-
-    void SocketCANRecoverCtrl::dynReconfigCallback(socketcan_bridge::SocketCANConfig &config, uint32_t level) {
-        timeout_ = ros::Duration(config.timeout);
-        ROS_INFO("Reconfigured timeout to %d seconds", config.timeout);
     }
 
 

@@ -35,15 +35,9 @@
 #ifndef SOCKETCAN_RECOVER_CTRL_H
 #define SOCKETCAN_RECOVER_CTRL_H
 
-
-#include <socketcan_interface/socketcan.h>
-#include <socketcan_interface/interface.h>
-#include <ros/ros.h>
-#include <mutex>
 #include <can_msgs/CanState.h>
-
-#include <dynamic_reconfigure/server.h>
-#include <socketcan_bridge/SocketCANConfig.h>
+#include <socketcan_interface/socketcan.h>
+#include <ros/ros.h>
 
 namespace socketcan_bridge
 {
@@ -58,10 +52,6 @@ namespace socketcan_bridge
 	     */
         SocketCANRecoverCtrl(ros::NodeHandle* nh, ros::NodeHandle* nh_param, boost::shared_ptr<can::DriverInterface> driver);
 
-        /**
-	     * @brief Checks the state of the bus, recover if necessary
-	     */
-    	void CheckState();
 
     private:
 
@@ -77,17 +67,18 @@ namespace socketcan_bridge
 	     */
         void recover();
 
-        void dynReconfigCallback(socketcan_bridge::SocketCANConfig &config, uint32_t level);
+        /**
+         * @brief Checks the state of the bus, if !statie.isReady() then the
+         * recover timer is started to fire in 5secs, otherwise we stop the timer
+         */
+        void stateCallback(const can::State & s);
 
-        dynamic_reconfigure::Server<socketcan_bridge::SocketCANConfig> config_server_;
-        ros::ServiceServer recover_service_;
+
         ros::Publisher state_pub_;
         boost::shared_ptr<can::DriverInterface> driver_;
-        can::State curr_state_;
-        ros::Time last_error_time_;
-        ros::Duration timeout_;
         ros::WallTimer timer_;
-        std::mutex mutex_;
+
+        can::StateInterface::StateListener::Ptr state_listener_;
 
     };
 
