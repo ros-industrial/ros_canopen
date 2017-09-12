@@ -53,7 +53,7 @@ namespace socketcan_bridge
         state_listener_ = driver_->createStateListener(
             can::StateInterface::StateDelegate(this, &SocketCANRecoverCtrl::stateCallback));
 
-    };
+    }
 
     /**
      * @brief Checks the state of the bus, if !statie.isReady() then the
