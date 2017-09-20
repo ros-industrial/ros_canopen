@@ -129,6 +129,38 @@ Frame toframe(const std::string& s) {
 	return frame;
 }
 
+template<> FrameFilter::Ptr tofilter(const std::string  &s){
+	  FrameFilter * filter = 0;
+		size_t delim = s.find_first_of(":~-_");
+
+		uint32_t second = FrameMaskFilter::MASK_ALL;
+		bool invert = false;
+		char type = ':';
+
+		if(delim != std::string::npos) {
+			type = s.at(delim);
+			second = toheader(s.substr(delim +1));
+		}
+		uint32_t first = toheader(s.substr(0, delim));
+		switch (type) {
+			case '~':
+				invert = true;
+			case ':':
+				filter = new FrameMaskFilter(first, second, invert);
+				break;
+			case '_':
+				invert = true;
+			case '-':
+				filter = new FrameRangeFilter(first, second, invert);
+				break;
+		}
+		return FrameFilter::Ptr(filter);
+}
+
+template<> FrameFilter::Ptr tofilter(const uint32_t &id){
+		return FrameFilter::Ptr(new FrameMaskFilter(id));
+}
+
 }
 
 std::ostream& operator <<(std::ostream& stream, const can::Header& h) {
