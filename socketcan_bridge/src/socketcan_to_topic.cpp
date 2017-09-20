@@ -30,6 +30,19 @@
 #include <can_msgs/Frame.h>
 #include <string>
 
+namespace can {
+template<> can::FrameFilter::Ptr tofilter(const XmlRpc::XmlRpcValue  &ct) {
+  XmlRpc::XmlRpcValue t(ct);
+  try{ // to read as integer
+      uint32_t id = static_cast<int>(t);
+      return tofilter(id);
+  }
+  catch(...){ // read as string
+      return  tofilter(static_cast<std::string>(t));
+  }
+}
+}
+
 namespace socketcan_bridge
 {
   SocketCANToTopic::SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
@@ -48,6 +61,25 @@ namespace socketcan_bridge
       state_listener_ = driver_->createStateListener(
               can::StateInterface::StateDelegate(this, &SocketCANToTopic::stateCallback));
     };
+
+  void SocketCANToTopic::setup(const can::FilteredFrameListener::FilterVector &filters){
+    frame_listener_.reset(new can::FilteredFrameListener(driver_,
+                                                         can::CommInterface::FrameDelegate(this, &SocketCANToTopic::frameCallback),
+                                                         filters));
+
+    state_listener_ = driver_->createStateListener(
+            can::StateInterface::StateDelegate(this, &SocketCANToTopic::stateCallback));
+  }
+
+  void SocketCANToTopic::setup(XmlRpc::XmlRpcValue filters) {
+      setup(can::tofilters(filters));
+  }
+  void SocketCANToTopic::setup(ros::NodeHandle nh) {
+       XmlRpc::XmlRpcValue filters;
+       if(nh.getParam("can_ids", filters)) return setup(filters);
+       return setup();
+  }
+
 
   void SocketCANToTopic::frameCallback(const can::Frame& f)
     {
