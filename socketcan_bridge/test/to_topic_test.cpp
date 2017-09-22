@@ -29,6 +29,7 @@
 #include <can_msgs/Frame.h>
 #include <socketcan_interface/socketcan.h>
 #include <socketcan_interface/dummy.h>
+#include <socketcan_bridge/topic_to_socketcan.h>
 
 #include <gtest/gtest.h>
 #include <ros/ros.h>
@@ -47,6 +48,11 @@ class msgCollector
     }
 };
 
+std::string convertMessageToString(const can_msgs::Frame &msg, bool lc=true) {
+  can::Frame f;
+  socketcan_bridge::convertMessageToSocketCAN(msg, f);
+  return can::tostring(f, lc);
+}
 
 TEST(SocketCANToTopicTest, checkCorrectData)
 {
@@ -245,6 +251,47 @@ TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
   can_msgs::Frame received;
   received = message_collector_.messages.back();
   EXPECT_EQ(0, message_collector_.messages.size());
+}
+
+TEST(SocketCANToTopicTest, checkMaskFilter)
+{
+  ros::NodeHandle nh(""), nh_param("~");
+
+  // create the dummy interface
+  boost::shared_ptr<can::DummyInterface> driver_ = boost::make_shared<can::DummyInterface>(true);
+
+  // setup filter
+  can::FilteredFrameListener::FilterVector filters;
+  filters.push_back(can::tofilter("300:ffe"));
+
+  // start the to topic bridge.
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_);
+  to_topic_bridge.setup(filters);  // initiate the message callbacks
+
+  // init the driver to test stateListener (not checked automatically).
+  driver_->init("string_not_used", true);
+
+  // create a frame collector.
+  msgCollector message_collector_;
+
+  // register for messages on received_messages.
+  ros::Subscriber subscriber_ = nh.subscribe("received_messages", 10, &msgCollector::msgCallback, &message_collector_);
+
+  const std::string pass1("300#1234"), nopass1("302#9999"), pass2("301#5678");
+
+  // send the can framew to the driver
+  driver_->send(can::toframe(pass1));
+  driver_->send(can::toframe(nopass1));
+  driver_->send(can::toframe(pass2));
+
+  // give some time for the interface some time to process the message
+  ros::WallDuration(1.0).sleep();
+  ros::spinOnce();
+
+  // compare the received can_msgs::Frame message to the sent can::Frame.
+  ASSERT_EQ(2, message_collector_.messages.size());
+  EXPECT_EQ(pass1, convertMessageToString(message_collector_.messages.front()));
+  EXPECT_EQ(pass2, convertMessageToString(message_collector_.messages.back()));
 }
 
 int main(int argc, char **argv)
