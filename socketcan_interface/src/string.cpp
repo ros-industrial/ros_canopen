@@ -133,7 +133,7 @@ template<> FrameFilter::Ptr tofilter(const std::string  &s){
 	  FrameFilter * filter = 0;
 		size_t delim = s.find_first_of(":~-_");
 
-		uint32_t second = FrameMaskFilter::MASK_ALL;
+		uint32_t second = FrameMaskFilter::MASK_RELAXED;
 		bool invert = false;
 		char type = ':';
 

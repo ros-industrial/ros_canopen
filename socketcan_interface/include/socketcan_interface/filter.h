@@ -17,7 +17,8 @@ public:
 class FrameMaskFilter : public FrameFilter {
 public:
   static const uint32_t MASK_ALL = 0xffffffff;
-  FrameMaskFilter(uint32_t can_id, uint32_t mask = MASK_ALL, bool invert = false)
+  static const uint32_t MASK_RELAXED = ~Frame::EXTENDED_MASK;
+  FrameMaskFilter(uint32_t can_id, uint32_t mask = MASK_RELAXED, bool invert = false)
   : mask_(mask), masked_id_(can_id & mask), invert_(invert)
   {}
   virtual bool pass(const can::Frame &frame) const{
