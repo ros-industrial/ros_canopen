@@ -30,6 +30,8 @@ template<class T> FrameFilter::Ptr tofilter(const T  &ct);
 template<> FrameFilter::Ptr tofilter(const std::string &s);
 template<> FrameFilter::Ptr tofilter(const uint32_t &id);
 
+FrameFilter::Ptr tofilter(const char* s);
+
 template <typename T> FilteredFrameListener::FilterVector tofilters(const T& v) {
     FilteredFrameListener::FilterVector filters;
     for(size_t i = 0; i < static_cast<size_t>(v.size()); ++i){
