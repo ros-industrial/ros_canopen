@@ -93,6 +93,8 @@ TEST(SocketCANToTopicTest, checkCorrectData)
   ros::WallDuration(1.0).sleep();
   ros::spinOnce();
 
+  ASSERT_EQ(1, message_collector_.messages.size());
+
   // compare the received can_msgs::Frame message to the sent can::Frame.
   can_msgs::Frame received;
   received = message_collector_.messages.back();
@@ -193,6 +195,8 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   ros::WallDuration(1.0).sleep();
   ros::spinOnce();
 
+  ASSERT_EQ(1, message_collector_.messages.size());
+
   // compare the received can_msgs::Frame message to the sent can::Frame.
   can_msgs::Frame received;
   received = message_collector_.messages.back();
@@ -247,9 +251,6 @@ TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
   ros::WallDuration(1.0).sleep();
   ros::spinOnce();
 
-  // compare the received can_msgs::Frame message to the sent can::Frame.
-  can_msgs::Frame received;
-  received = message_collector_.messages.back();
   EXPECT_EQ(0, message_collector_.messages.size());
 }
 
