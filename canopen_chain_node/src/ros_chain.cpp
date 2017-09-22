@@ -249,9 +249,6 @@ bool RosChain::setup_bus(){
 
     bus_nh.param("master_allocator",master_alloc, std::string("canopen::SimpleMaster::Allocator"));
 
-    if(master_alloc == "canopen::LocalMaster::Allocator" || master_alloc == "canopen::SharedMaster::Allocator" || master_alloc == "canopen::UnrestrictedMaster::Allocator"){
-        ROS_WARN_STREAM(master_alloc << " is going be removed, please consider using canopen::ExternalMaster::Allocator in combination with canopen_chain_sync");
-    }
     try{
         master_= master_allocator_.allocateInstance(master_alloc, can_device, interface_);
     }
