@@ -89,7 +89,7 @@ std::string tostring(const Header& h, bool lc) {
 }
 
 Header toheader(const std::string& s) {
-	if (s.empty() || s.size() > 4)
+	if (s.empty() || s.size() > 8)
 		return MsgHeader(0xfff); // invalid
 
 	std::stringstream stream;

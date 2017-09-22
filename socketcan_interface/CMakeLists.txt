@@ -97,4 +97,12 @@ if(CATKIN_ENABLE_TESTING)
     socketcan_interface_string
     ${catkin_LIBRARIES}
   )
+
+  catkin_add_gtest(${PROJECT_NAME}-test_string
+    test/test_string.cpp
+  )
+  target_link_libraries(${PROJECT_NAME}-test_string
+    socketcan_interface_string
+    ${catkin_LIBRARIES}
+  )
 endif()
