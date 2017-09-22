@@ -84,8 +84,7 @@ namespace socketcan_bridge
   void SocketCANToTopic::frameCallback(const can::Frame& f)
     {
       // ROS_DEBUG("Message came in: %s", can::tostring(f, true).c_str());
-      can::Frame frame = f;  // copy the frame first, cannot call isValid() on const.
-      if (!frame.isValid())
+      if (!f.isValid())
       {
         ROS_ERROR("Invalid frame from SocketCAN: id: %#04x, length: %d, is_extended: %d, is_error: %d, is_rtr: %d",
                   f.id, f.dlc, f.is_extended, f.is_error, f.is_rtr);
@@ -103,7 +102,7 @@ namespace socketcan_bridge
 
       can_msgs::Frame msg;
       // converts the can::Frame (socketcan.h) to can_msgs::Frame (ROS msg)
-      convertSocketCANToMessage(frame, msg);
+      convertSocketCANToMessage(f, msg);
 
       msg.header.frame_id = "";  // empty frame is the de-facto standard for no frame.
       msg.header.stamp = ros::Time::now();
