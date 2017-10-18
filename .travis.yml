@@ -4,7 +4,6 @@ language: generic
 
 env:
   matrix:
-    - ROS_DISTRO="jade"    PRERELEASE=true
     - ROS_DISTRO="kinetic" PRERELEASE=true
     - ROS_DISTRO="lunar"   PRERELEASE=true
 install:
