@@ -2,7 +2,7 @@
 <package format="2">
   <name>canopen_motor_node</name>
   <version>0.7.6</version>
-  <description>This package extends the canopen_chain_node with specialized handling for canopen_402 devices. It facilitates interface abstraction with ros_control.</description>
+  <description>canopen_chain_node specialization for handling of canopen_402 motor devices. It facilitates interface abstraction with ros_control.</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
   <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
@@ -17,12 +17,18 @@
 
   <depend>canopen_402</depend>
   <depend>canopen_chain_node</depend>
+  <depend>canopen_master</depend>
   <depend>controller_manager</depend>
-  <depend>controller_manager_msgs</depend>
   <depend>filters</depend>
   <depend>hardware_interface</depend>
   <depend>joint_limits_interface</depend>
   <depend>muparser</depend>
+  <depend>roscpp</depend>
   <depend>urdf</depend>
+
+  <build_depend>controller_manager_msgs</build_depend>
+  <exec_depend>controller_manager_msgs</exec_depend>
+
+  <test_depend>rosunit</test_depend>
 
 </package>
