@@ -5,12 +5,13 @@ find_package(catkin REQUIRED
   COMPONENTS
     canopen_402
     canopen_chain_node
+    canopen_master
     controller_manager
     controller_manager_msgs
     filters
     hardware_interface
     joint_limits_interface
-    joint_limits_interface
+    roscpp
     urdf
 )
 
@@ -20,7 +21,27 @@ find_package(Boost REQUIRED
 )
 
 find_package(PkgConfig)
-pkg_check_modules (MUPARSER REQUIRED muparser)
+pkg_check_modules(PC_MUPARSER QUIET muparser)
+set(MUPARSER_DEFINITIONS ${PC_MUPARSER_CFLAGS_OTHER})
+
+find_path(MUPARSER_INCLUDE_DIR muParser.h
+          HINTS ${PC_MUPARSER_INCLUDEDIR} ${PC_MUPARSER_INCLUDE_DIRS}
+)
+
+find_library(MUPARSER_LIBRARY NAMES muparser libmurser
+             HINTS ${PC_MUPARSER_LIBDIR} ${PC_MUPARSER_LIBRARY_DIRS} )
+
+include(FindPackageHandleStandardArgs)
+# handle the QUIETLY and REQUIRED arguments and set MUPARSER_FOUND to TRUE
+# if all listed variables are TRUE
+find_package_handle_standard_args(MUPARSER  DEFAULT_MSG
+                                  MUPARSER_LIBRARY MUPARSER_INCLUDE_DIR)
+
+mark_as_advanced(MUPARSER_INCLUDE_DIR MUPARSER_LIBRARY )
+
+set(MUPARSER_LIBRARIES ${MUPARSER_LIBRARY} )
+set(MUPARSER_INCLUDE_DIRS ${MUPARSER_INCLUDE_DIR} )
+
 
 catkin_package(
   INCLUDE_DIRS
@@ -30,9 +51,11 @@ catkin_package(
   CATKIN_DEPENDS
     canopen_402
     canopen_chain_node
+    canopen_master
     controller_manager
     hardware_interface
     joint_limits_interface
+    roscpp
     urdf
   DEPENDS
     Boost
@@ -61,21 +84,21 @@ add_dependencies(canopen_motor
 )
 
 # canopen_motor_node
-add_executable(canopen_motor_node
+add_executable(${PROJECT_NAME}
   src/canopen_motor_chain_node.cpp
 )
-target_link_libraries(canopen_motor_node
+target_link_libraries(${PROJECT_NAME}
   canopen_motor
   ${catkin_LIBRARIES}
 )
-add_dependencies(canopen_motor_node
+add_dependencies(${PROJECT_NAME}
   ${catkin_EXPORTED_TARGETS}
 )
 
 install(
   TARGETS
     canopen_motor
-    canopen_motor_node
+    ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

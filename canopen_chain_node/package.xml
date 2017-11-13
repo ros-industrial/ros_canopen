@@ -2,7 +2,7 @@
 <package format="2">
   <name>canopen_chain_node</name>
   <version>0.7.6</version>
-  <description>ROS node base implementation for CANopen chains with support for management services and diagnostics</description>
+  <description>Base implementation for CANopen chains node with support for management services and diagnostics</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
   <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
@@ -25,7 +25,9 @@
   <depend>roslib</depend>
   <depend>roscpp</depend>
   <depend>socketcan_interface</depend> <!-- direct dependency needed for pluginlib look-up -->
-  <depend>std_msgs</depend>
   <depend>std_srvs</depend>
+
+  <build_depend>std_msgs</build_depend>
+  <exec_depend>std_msgs</exec_depend>
 
 </package>

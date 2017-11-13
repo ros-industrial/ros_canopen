@@ -18,7 +18,7 @@ catkin_package(
   INCLUDE_DIRS
     include
   LIBRARIES
-    canopen_master
+    ${PROJECT_NAME}
   CATKIN_DEPENDS
     socketcan_interface
   DEPENDS
@@ -26,26 +26,26 @@ catkin_package(
 )
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_library(canopen_master
+add_library(${PROJECT_NAME}
   src/emcy.cpp
   src/node.cpp
   src/objdict.cpp
   src/pdo.cpp
   src/sdo.cpp
 )
-target_link_libraries(canopen_master
+target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 
-add_library(canopen_master_plugin
+add_library(${PROJECT_NAME}_plugin
   src/master_plugin.cpp
 )
 
-target_link_libraries(canopen_master_plugin
+target_link_libraries(${PROJECT_NAME}_plugin
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
-  canopen_master
+  ${PROJECT_NAME}
 )
 
 # canopen_bcm_sync
@@ -60,8 +60,8 @@ target_link_libraries(canopen_bcm_sync
 install(
   TARGETS
     canopen_bcm_sync
-    canopen_master
-    canopen_master_plugin
+    ${PROJECT_NAME}
+   ${PROJECT_NAME}_plugin
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -85,6 +85,6 @@ if(CATKIN_ENABLE_TESTING)
     test/test_parser.cpp
   )
   target_link_libraries(${PROJECT_NAME}-test_parser
-    canopen_master
+    ${PROJECT_NAME}
   )
 endif()
