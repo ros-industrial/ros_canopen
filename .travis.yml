@@ -1,6 +1,7 @@
-sudo: required 
-dist: trusty 
-language: generic 
+sudo: required
+dist: trusty
+language: generic
+
 env:
   matrix:
     - ROS_DISTRO="kinetic" ROS_REPO=ros-shadow-fixed
@@ -8,8 +9,12 @@ env:
     - ROS_DISTRO="lunar"   ROS_REPO=ros-shadow-fixed
     - ROS_DISTRO="lunar"   ROS_REPO=ros
     - ROS_DISTRO="kinetic" ROSDEP_SKIP_KEYS=muparser EXPECT_EXIT_CODE=1
+    - ROS_DISTRO="kinetic" ABICHECK_URL='github:ros-industrial/ros_canopen#kinetic'
+matrix:
+  allow_failures:
+    - env: ROS_DISTRO="kinetic" ABICHECK_URL='github:ros-industrial/ros_canopen#kinetic'
 
 install:
-  - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config  
+  - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config
 script: 
   - .ci_config/travis.sh
