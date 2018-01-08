@@ -255,6 +255,9 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptr
             THROW_WITH_KEY(ParseException("Object type not supported") , ObjectDict::Key(*entry));
         }
     }
+    catch(const std::bad_cast &e){
+        throw ParseException(std::string("Type of ") + name + " does not match or is not supported");
+    }
     catch(const std::exception&e){
         throw ParseException(std::string("Cannot process ") + name + ": " + e.what());
     }
