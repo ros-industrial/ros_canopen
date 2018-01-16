@@ -13,6 +13,8 @@ find_package(Boost REQUIRED
     thread
 )
 
+find_package(Threads REQUIRED)
+
 catkin_package(
   INCLUDE_DIRS
     include
@@ -43,6 +45,7 @@ target_link_libraries(socketcan_dump
    ${PROJECT_NAME}_string
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
+   ${CMAKE_THREAD_LIBS_INIT}
 )
 
 # socketcan_bcm
