@@ -53,7 +53,7 @@ public:
             }
             can_err_mask_t err_mask =
                 ( CAN_ERR_TX_TIMEOUT   /* TX timeout (by netdevice driver) */
-                | CAN_ERR_LOSTARB      /* lost arbitration    / data[0]    */
+		//| CAN_ERR_LOSTARB      /* lost arbitration    / data[0]    */
                 | CAN_ERR_CRTL         /* controller problems / data[1]    */
                 | CAN_ERR_PROT         /* protocol violations / data[2..3] */
                 | CAN_ERR_TRX          /* transceiver status  / data[4]    */
