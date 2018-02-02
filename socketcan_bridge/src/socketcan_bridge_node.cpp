@@ -38,10 +38,13 @@ int main(int argc, char *argv[])
 
   ros::NodeHandle nh(""), nh_param("~");
 
+  bool lostArbIsError;
   std::string can_device;
   nh_param.param<std::string>("can_device", can_device, "can0");
+  nh_param.param<bool>("lost_arbitration_is_error", lostArbIsError, true);
 
   boost::shared_ptr<can::ThreadedSocketCANInterface> driver = boost::make_shared<can::ThreadedSocketCANInterface> ();
+  driver->arbitrationLostIsError_ = lostArbIsError;
 
   if (!driver->init(can_device, 0))  // initialize device at can_device, 0 for no loopback.
   {

@@ -20,11 +20,12 @@ namespace can {
 class SocketCANInterface : public AsioDriver<boost::asio::posix::stream_descriptor> {
     bool loopback_;
     int sc_;
-public:    
+public:
+    bool arbitrationLostIsError_;
     SocketCANInterface()
-    : loopback_(false), sc_(-1)
+    : loopback_(false), sc_(-1), arbitrationLostIsError_(true)
     {}
-    
+
     virtual bool doesLoopBack() const{
         return loopback_;
     }
@@ -53,7 +54,7 @@ public:
             }
             can_err_mask_t err_mask =
                 ( CAN_ERR_TX_TIMEOUT   /* TX timeout (by netdevice driver) */
-                //CAN_ERR_LOSTARB      /* lost arbitration    / data[0]  (Not a fatal error)  */
+                | CAN_ERR_LOSTARB      /* lost arbitration    / data[0]    */
                 | CAN_ERR_CRTL         /* controller problems / data[1]    */
                 | CAN_ERR_PROT         /* protocol violations / data[2..3] */
                 | CAN_ERR_TRX          /* transceiver status  / data[4]    */
@@ -160,7 +161,6 @@ public:
 protected:
     std::string device_;
     can_frame frame_;
-    
     virtual void triggerReadSome(){
         boost::mutex::scoped_lock lock(send_mutex_);
         socket_.async_read_some(boost::asio::buffer(&frame_, sizeof(frame_)), boost::bind( &SocketCANInterface::readFrame,this, boost::asio::placeholders::error));
@@ -200,10 +200,14 @@ protected:
                 input_.id = frame_.can_id & CAN_EFF_MASK;
                 input_.is_error = 1;
 
-                LOG("error: " << input_.id);
-                setInternalError(input_.id);
-                setNotReady();
-
+                bool errorIsArbitLost = (frame_.can_id & CAN_ERR_LOSTARB);
+                if(!errorIsArbitLost || (errorIsArbitLost && arbitrationLostIsError_)){
+                    LOG("error: " << input_.id);
+                    setInternalError(input_.id);
+                    setNotReady();
+                }else{
+                    LOG("warning: " << input_.id << ", arbitration lost but ignored");
+                }
             }else{
                 input_.is_extended = (frame_.can_id & CAN_EFF_FLAG) ? 1 :0;
                 input_.id = frame_.can_id & (input_.is_extended ? CAN_EFF_MASK : CAN_SFF_MASK);
