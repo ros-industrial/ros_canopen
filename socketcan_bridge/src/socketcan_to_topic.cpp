@@ -37,6 +37,31 @@ namespace socketcan_bridge
     {
       can_topic_ = nh->advertise<can_msgs::Frame>("received_messages", 10);
       driver_ = driver;
+
+      std::string lostArbLevel;
+      nh_param->param<std::string>("lost_arbitration_reporting_level", lostArbLevel,"ARBITLOST_IS_ERROR");
+      if (!lostArbLevel.compare("ARBITLOST_IS_DEBUG"))
+      {
+        this->arbitrationLostIsError_ = ARBITLOST_IS_DEBUG;
+      }
+      else if(!lostArbLevel.compare("ARBITLOST_IS_INFO"))
+      {
+        this->arbitrationLostIsError_ = ARBITLOST_IS_INFO;
+      }
+      else if(!lostArbLevel.compare("ARBITLOST_IS_WARN"))
+      {
+        this->arbitrationLostIsError_ = ARBITLOST_IS_WARN;
+      }
+      else if(!lostArbLevel.compare("ARBITLOST_IS_ERROR"))
+      {
+        this->arbitrationLostIsError_ = ARBITLOST_IS_ERROR;
+      }
+      else
+      {
+        ROS_ERROR("Unsupported value for 'lost_arbitration_reporting_level' parameter, using ARBITLOST_IS_ERROR as default");
+        this->arbitrationLostIsError_ = ARBITLOST_IS_ERROR;
+      }
+
     };
 
   void SocketCANToTopic::setup()
@@ -65,7 +90,26 @@ namespace socketcan_bridge
         {
           // can::tostring cannot be used for dlc > 8 frames. It causes an crash
           // due to usage of boost::array for the data array. The should always work.
-          ROS_WARN("Received frame is error: %s", can::tostring(f, true).c_str());
+          if (f.id & CAN_ERR_LOSTARB)
+          {
+            switch(arbitrationLostIsError_)
+            {
+            case ARBITLOST_IS_DEBUG:
+              ROS_DEBUG("Received frame indicates an arbitration loss");
+              break;
+            case ARBITLOST_IS_INFO:
+              ROS_INFO("Received frame indicates an arbitration loss");
+              break;
+            case ARBITLOST_IS_WARN:
+            case ARBITLOST_IS_ERROR:
+              ROS_WARN("Received frame indicates an arbitration loss");
+              break;
+            }
+          }
+          else
+          {
+            ROS_WARN("Received frame is error: %s", can::tostring(f, true).c_str());
+          }
         }
       }
 

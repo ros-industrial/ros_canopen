@@ -15,15 +15,22 @@
 
 #include <socketcan_interface/dispatcher.h>
 
+typedef enum{
+    ARBITLOST_IS_DEBUG = 0,
+    ARBITLOST_IS_INFO,
+    ARBITLOST_IS_WARN,
+    ARBITLOST_IS_ERROR
+} ArbitLost_Level_t;
+
 namespace can {
 
 class SocketCANInterface : public AsioDriver<boost::asio::posix::stream_descriptor> {
     bool loopback_;
     int sc_;
 public:
-    bool arbitrationLostIsError_;
+    ArbitLost_Level_t arbitrationLostIsError_;
     SocketCANInterface()
-    : loopback_(false), sc_(-1), arbitrationLostIsError_(true)
+    : loopback_(false), sc_(-1), arbitrationLostIsError_(ARBITLOST_IS_ERROR)
     {}
 
     virtual bool doesLoopBack() const{
@@ -196,19 +203,22 @@ protected:
                 input_.data[i] = frame_.data[i];
             }
             
-            if(frame_.can_id & CAN_ERR_FLAG){ // error message
+            if(frame_.can_id & CAN_ERR_FLAG) // error message
+            {
                 input_.id = frame_.can_id & CAN_EFF_MASK;
                 input_.is_error = 1;
 
                 bool errorIsArbitLost = (frame_.can_id & CAN_ERR_LOSTARB);
-                if(!errorIsArbitLost || (errorIsArbitLost && arbitrationLostIsError_)){
-                    LOG("error: " << input_.id);
-                    setInternalError(input_.id);
-                    setNotReady();
-                }else{
-                    LOG("warning: " << input_.id << ", arbitration lost but ignored");
+                if(!errorIsArbitLost ||
+                    (errorIsArbitLost && (arbitrationLostIsError_ == ARBITLOST_IS_ERROR)))
+                {
+                  LOG("error: " << input_.id);
+                  setInternalError(input_.id);
+                  setNotReady();
                 }
-            }else{
+            }
+            else
+            {
                 input_.is_extended = (frame_.can_id & CAN_EFF_FLAG) ? 1 :0;
                 input_.id = frame_.can_id & (input_.is_extended ? CAN_EFF_MASK : CAN_SFF_MASK);
                 input_.is_error = 0;
