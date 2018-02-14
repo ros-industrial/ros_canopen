@@ -550,7 +550,8 @@ template<typename T, typename R> static R *branch_type(const uint16_t data_type)
         case ObjectDict::DEFTYPE_UNICODE_STRING: return T::template func< ObjectDict::DEFTYPE_UNICODE_STRING >;
         case ObjectDict::DEFTYPE_DOMAIN: return T::template func< ObjectDict::DEFTYPE_DOMAIN >;
            
-        default: return 0;
+        default:
+            throw std::bad_cast();
     }
 }
 
