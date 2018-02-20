@@ -68,10 +68,10 @@ target_link_libraries(topic_to_socketcan_node
 )
 
 # socketcan_bridge_node
-add_executable(socketcan_bridge_node
-  src/socketcan_bridge_node.cpp
+add_executable(${PROJECT_NAME}_node
+  src/${PROJECT_NAME}_node.cpp
 )
-target_link_libraries(socketcan_bridge_node
+target_link_libraries(${PROJECT_NAME}_node
   topic_to_socketcan
   socketcan_to_topic
   ${catkin_LIBRARIES}
@@ -79,7 +79,7 @@ target_link_libraries(socketcan_bridge_node
 
 install(
   TARGETS
-    socketcan_bridge_node
+    ${PROJECT_NAME}_node
     socketcan_to_topic
     socketcan_to_topic_node
     topic_to_socketcan

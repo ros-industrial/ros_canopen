@@ -214,10 +214,11 @@ void read_var(ObjectDict::Entry &entry, boost::property_tree::iptree &object){
 }
 
 void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptree &pt, const std::string &name, const uint8_t* sub_index = 0){
-        boost::optional<boost::property_tree::iptree&> object =  pt.get_child_optional(name.substr(2));
-        if(!object) return;
+    boost::optional<boost::property_tree::iptree&> object =  pt.get_child_optional(name.substr(2));
+    if(!object) return;
 
-        boost::shared_ptr<ObjectDict::Entry> entry = boost::make_shared<ObjectDict::Entry>();
+    boost::shared_ptr<ObjectDict::Entry> entry = boost::make_shared<ObjectDict::Entry>();
+    try{
         entry->index = int_from_string<uint16_t>(name);
         entry->obj_code = ObjectDict::Code(int_from_string<uint16_t>(object->get<std::string>("ObjectType", boost::lexical_cast<std::string>((uint16_t)ObjectDict::VAR))));
         entry->desc = object->get<std::string>("Denotation",object->get<std::string>("ParameterName"));
@@ -253,6 +254,13 @@ void parse_object(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptr
         }else{
             THROW_WITH_KEY(ParseException("Object type not supported") , ObjectDict::Key(*entry));
         }
+    }
+    catch(const std::bad_cast &e){
+        throw ParseException(std::string("Type of ") + name + " does not match or is not supported");
+    }
+    catch(const std::exception&e){
+        throw ParseException(std::string("Cannot process ") + name + ": " + e.what());
+    }
 }
 void parse_objects(boost::shared_ptr<ObjectDict> dict, boost::property_tree::iptree &pt, const std::string &key){
     if(!pt.count(key)) return;

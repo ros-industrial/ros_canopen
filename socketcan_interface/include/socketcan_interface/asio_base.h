@@ -23,7 +23,11 @@ template<typename Socket> class AsioDriver : public DriverInterface{
     
 protected:
     boost::asio::io_service io_service_;
+#if BOOST_ASIO_VERSION >= 101200 // Boost 1.66+
+    boost::asio::io_context::strand strand_;
+#else
     boost::asio::strand strand_;
+#endif
     Socket socket_;
     Frame input_;
     

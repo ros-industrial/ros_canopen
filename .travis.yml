@@ -8,5 +8,5 @@ env:
     - ROS_DISTRO="lunar"   PRERELEASE=true
 install:
   - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config  
-script:
+script: 
   - .ci_config/travis.sh

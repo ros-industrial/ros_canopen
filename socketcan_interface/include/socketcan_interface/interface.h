@@ -190,6 +190,7 @@ public:
 
 } // namespace can
 
+#include <iostream>
 #include <boost/thread/mutex.hpp>
 
 struct _cout_wrapper{
