@@ -55,8 +55,11 @@ TEST(SocketCANToTopicTest, checkCorrectData)
   // create the dummy interface
   boost::shared_ptr<can::DummyInterface> driver_ = boost::make_shared<can::DummyInterface>(true);
 
+  //create empty pass_can_ids vector
+  std::vector<unsigned int> pass_can_ids;
+
   // start the to topic bridge.
-  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_);
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_, pass_can_ids);
   to_topic_bridge.setup();  // initiate the message callbacks
 
   // init the driver to test stateListener (not checked automatically).
@@ -112,8 +115,11 @@ TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
   // create the dummy interface
   boost::shared_ptr<can::DummyInterface> driver_ = boost::make_shared<can::DummyInterface>(true);
 
+  //create empty pass_can_ids vector
+  std::vector<unsigned int> pass_can_ids;
+
   // start the to topic bridge.
-  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_);
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_, pass_can_ids);
   to_topic_bridge.setup();  // initiate the message callbacks
 
   // create a frame collector.
@@ -142,6 +148,109 @@ TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
   ros::WallDuration(1.0).sleep();
   ros::spinOnce();
   EXPECT_EQ(message_collector_.messages.size(), 1);
+}
+
+TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
+{
+  ros::NodeHandle nh(""), nh_param("~");
+
+  // create the dummy interface
+  boost::shared_ptr<can::DummyInterface> driver_ = boost::make_shared<can::DummyInterface>(true);
+
+  //create can_id vector with id that should be passed and published to ros
+  std::vector<unsigned int> pass_can_ids;
+  pass_can_ids.push_back(0x1337);
+
+  // start the to topic bridge.
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_, pass_can_ids);
+  to_topic_bridge.setup();  // initiate the message callbacks
+
+  // init the driver to test stateListener (not checked automatically).
+  driver_->init("string_not_used", true);
+
+  // create a frame collector.
+  msgCollector message_collector_;
+
+  // register for messages on received_messages.
+  ros::Subscriber subscriber_ = nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
+
+  // create a can frame
+  can::Frame f;
+  f.is_extended = true;
+  f.is_rtr = false;
+  f.is_error = false;
+  f.id = 0x1337;
+  f.dlc = 8;
+  for (uint8_t i=0; i < f.dlc; i++)
+  {
+    f.data[i] = i;
+  }
+
+  // send the can frame to the driver
+  driver_->send(f);
+
+  // give some time for the interface some time to process the message
+  ros::WallDuration(1.0).sleep();
+  ros::spinOnce();
+
+  // compare the received can_msgs::Frame message to the sent can::Frame.
+  can_msgs::Frame received;
+  received = message_collector_.messages.back();
+  EXPECT_EQ(received.id, f.id);
+  EXPECT_EQ(received.dlc, f.dlc);
+  EXPECT_EQ(received.is_extended, f.is_extended);
+  EXPECT_EQ(received.is_rtr, f.is_rtr);
+  EXPECT_EQ(received.is_error, f.is_error);
+  EXPECT_EQ(received.data, f.data);
+}
+
+TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
+{
+  ros::NodeHandle nh(""), nh_param("~");
+
+  // create the dummy interface
+  boost::shared_ptr<can::DummyInterface> driver_ = boost::make_shared<can::DummyInterface>(true);
+
+  //create can_id vector with id that should not be received on can bus
+  std::vector<unsigned int> pass_can_ids;
+  pass_can_ids.push_back(0x300);
+
+  // start the to topic bridge.
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_, pass_can_ids);
+  to_topic_bridge.setup();  // initiate the message callbacks
+
+  // init the driver to test stateListener (not checked automatically).
+  driver_->init("string_not_used", true);
+
+  // create a frame collector.
+  msgCollector message_collector_;
+
+  // register for messages on received_messages.
+  ros::Subscriber subscriber_ = nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
+
+  // create a can frame
+  can::Frame f;
+  f.is_extended = true;
+  f.is_rtr = false;
+  f.is_error = false;
+  f.id = 0x1337;
+  f.dlc = 8;
+  for (uint8_t i=0; i < f.dlc; i++)
+  {
+    f.data[i] = i;
+  }
+
+  // send the can frame to the driver
+  driver_->send(f);
+
+  // give some time for the interface some time to process the message
+  ros::WallDuration(1.0).sleep();
+  ros::spinOnce();
+
+  // compare the received can_msgs::Frame message to the sent can::Frame.
+  can_msgs::Frame received;
+  received = message_collector_.messages.back();
+  EXPECT_EQ(0, message_collector_.messages.size());
 }
 
 int main(int argc, char **argv)
