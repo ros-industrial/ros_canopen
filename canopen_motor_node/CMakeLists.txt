@@ -36,12 +36,14 @@ include(FindPackageHandleStandardArgs)
 # if all listed variables are TRUE
 find_package_handle_standard_args(MUPARSER  DEFAULT_MSG
                                   MUPARSER_LIBRARY MUPARSER_INCLUDE_DIR)
-
 mark_as_advanced(MUPARSER_INCLUDE_DIR MUPARSER_LIBRARY )
+
+if(NOT ${MUPARSER_FOUND})
+  message(FATAL_ERROR "muparser library not found")  
+endif()
 
 set(MUPARSER_LIBRARIES ${MUPARSER_LIBRARY} )
 set(MUPARSER_INCLUDE_DIRS ${MUPARSER_INCLUDE_DIR} )
-
 
 catkin_package(
   INCLUDE_DIRS

@@ -7,6 +7,7 @@ env:
     - ROS_DISTRO="kinetic" ROS_REPO=ros CATKIN_LINT=pedantic
     - ROS_DISTRO="lunar"   ROS_REPO=ros-shadow-fixed
     - ROS_DISTRO="lunar"   ROS_REPO=ros
+    - ROS_DISTRO="kinetic" ROSDEP_SKIP_KEYS=muparser EXPECT_EXIT_CODE=1
 matrix:
   allow_failures:
     - env: ROS_DISTRO="jade" ROS_REPO=ros
