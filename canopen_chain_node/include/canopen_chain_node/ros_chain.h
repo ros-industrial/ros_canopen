@@ -12,7 +12,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <pluginlib/class_loader.h>
+#include <pluginlib/class_loader.hpp>
 
 namespace canopen{
 
@@ -226,4 +226,3 @@ public:
 } //namespace canopen
 
 #endif
-

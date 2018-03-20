@@ -1,4 +1,4 @@
-#include <class_loader/class_loader.h>
+#include <class_loader/class_loader.hpp>
 #include <canopen_402/motor.h>
 
 boost::shared_ptr<canopen::MotorBase> canopen::Motor402::Allocator::allocate(const std::string &name, boost::shared_ptr<canopen::ObjectStorage> storage, const canopen::Settings &settings) {
