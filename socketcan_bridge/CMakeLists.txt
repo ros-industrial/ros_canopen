@@ -128,6 +128,7 @@ if(CATKIN_ENABLE_TESTING)
   )
   target_link_libraries(test_to_topic
     socketcan_to_topic
+    topic_to_socketcan
     ${catkin_LIBRARIES}
   )
 

@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
   }
 
   socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver);
-  to_topic_bridge.setup();
+  to_topic_bridge.setup(nh_param);
 
   ros::spin();
 

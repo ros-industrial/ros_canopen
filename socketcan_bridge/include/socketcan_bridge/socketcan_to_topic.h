@@ -29,6 +29,7 @@
 #define SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
 
 #include <socketcan_interface/socketcan.h>
+#include <socketcan_interface/filter.h>
 #include <can_msgs/Frame.h>
 #include <ros/ros.h>
 
@@ -39,6 +40,9 @@ class SocketCANToTopic
   public:
     SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param, boost::shared_ptr<can::DriverInterface> driver);
     void setup();
+    void setup(const can::FilteredFrameListener::FilterVector &filters);
+    void setup(XmlRpc::XmlRpcValue filters);
+    void setup(ros::NodeHandle nh);
 
   private:
     ros::Publisher can_topic_;
