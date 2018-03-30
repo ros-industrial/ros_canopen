@@ -105,7 +105,7 @@ if(CATKIN_ENABLE_TESTING)
     test/test_string.cpp
   )
   target_link_libraries(${PROJECT_NAME}-test_string
-    socketcan_interface_string
+    ${PROJECT_NAME}_string
     ${catkin_LIBRARIES}
   )
 
@@ -113,7 +113,7 @@ if(CATKIN_ENABLE_TESTING)
     test/test_filter.cpp
   )
   target_link_libraries(${PROJECT_NAME}-test_filter
-    socketcan_interface_string
+    ${PROJECT_NAME}_string
     ${catkin_LIBRARIES}
   )
 endif()
