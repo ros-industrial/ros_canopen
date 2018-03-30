@@ -88,14 +88,16 @@ std::string tostring(const Header& h, bool lc) {
 	return buf.str();
 }
 
-Header toheader(const std::string& s) {
-	if (s.empty() || s.size() > 4)
-		return MsgHeader(0xfff); // invalid
+uint32_t tohex(const std::string& s) {
+		unsigned int h = 0;
+		std::stringstream stream;
+		stream << std::hex << s;
+		stream >> h;
+		return h;
+}
 
-	std::stringstream stream;
-	stream << std::hex << s;
-	unsigned int h = 0;
-	stream >> h;
+Header toheader(const std::string& s) {
+	unsigned int h = tohex(s);
 	return Header(h & Header::ID_MASK, h & Header::EXTENDED_MASK,
 			h & Header::RTR_MASK, h & Header::ERROR_MASK);
 }
@@ -127,6 +129,41 @@ Frame toframe(const std::string& s) {
 		frame.dlc = buffer.size();
 	}
 	return frame;
+}
+
+template<> FrameFilter::Ptr tofilter(const std::string  &s){
+	  FrameFilter * filter = 0;
+		size_t delim = s.find_first_of(":~-_");
+
+		uint32_t second = FrameMaskFilter::MASK_RELAXED;
+		bool invert = false;
+		char type = ':';
+
+		if(delim != std::string::npos) {
+			type = s.at(delim);
+			second = tohex(s.substr(delim +1));
+		}
+		uint32_t first = toheader(s.substr(0, delim));
+		switch (type) {
+			case '~':
+				invert = true;
+			case ':':
+				filter = new FrameMaskFilter(first, second, invert);
+				break;
+			case '_':
+				invert = true;
+			case '-':
+				filter = new FrameRangeFilter(first, second, invert);
+				break;
+		}
+		return FrameFilter::Ptr(filter);
+}
+template<> FrameFilter::Ptr tofilter(const uint32_t &id){
+		return FrameFilter::Ptr(new FrameMaskFilter(id));
+}
+
+FrameFilter::Ptr tofilter(const char* s){
+		return tofilter<std::string>(s);
 }
 
 }

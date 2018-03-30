@@ -2,9 +2,10 @@
 #define SOCKETCAN_INTERFACE_STRING_H
 
 #include "interface.h"
+#include "filter.h"
 #include <sstream>
 
-namespace can{
+namespace can {
 
 bool hex2dec(uint8_t& d, const char& h);
 
@@ -24,6 +25,20 @@ Header toheader(const std::string& s);
 std::string tostring(const Frame& f, bool lc);
 
 Frame toframe(const std::string& s);
+
+template<class T> FrameFilter::Ptr tofilter(const T  &ct);
+template<> FrameFilter::Ptr tofilter(const std::string &s);
+template<> FrameFilter::Ptr tofilter(const uint32_t &id);
+
+FrameFilter::Ptr tofilter(const char* s);
+
+template <typename T> FilteredFrameListener::FilterVector tofilters(const T& v) {
+    FilteredFrameListener::FilterVector filters;
+    for(size_t i = 0; i < static_cast<size_t>(v.size()); ++i){
+        filters.push_back(tofilter(v[i]));
+    }
+    return filters;
+}
 
 }
 

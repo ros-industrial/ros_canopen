@@ -100,4 +100,20 @@ if(CATKIN_ENABLE_TESTING)
     ${PROJECT_NAME}_string
     ${catkin_LIBRARIES}
   )
+
+  catkin_add_gtest(${PROJECT_NAME}-test_string
+    test/test_string.cpp
+  )
+  target_link_libraries(${PROJECT_NAME}-test_string
+    ${PROJECT_NAME}_string
+    ${catkin_LIBRARIES}
+  )
+
+  catkin_add_gtest(${PROJECT_NAME}-test_filter
+    test/test_filter.cpp
+  )
+  target_link_libraries(${PROJECT_NAME}-test_filter
+    ${PROJECT_NAME}_string
+    ${catkin_LIBRARIES}
+  )
 endif()
