@@ -131,7 +131,7 @@ Frame toframe(const std::string& s) {
 	return frame;
 }
 
-template<> FrameFilter::Ptr tofilter(const std::string  &s){
+template<> FrameFilterSharedPtr tofilter(const std::string  &s){
 	  FrameFilter * filter = 0;
 		size_t delim = s.find_first_of(":~-_");
 
@@ -156,13 +156,13 @@ template<> FrameFilter::Ptr tofilter(const std::string  &s){
 				filter = new FrameRangeFilter(first, second, invert);
 				break;
 		}
-		return FrameFilter::Ptr(filter);
+		return FrameFilterSharedPtr(filter);
 }
-template<> FrameFilter::Ptr tofilter(const uint32_t &id){
-		return FrameFilter::Ptr(new FrameMaskFilter(id));
+template<> FrameFilterSharedPtr tofilter(const uint32_t &id){
+		return FrameFilterSharedPtr(new FrameMaskFilter(id));
 }
 
-FrameFilter::Ptr tofilter(const char* s){
+FrameFilterSharedPtr tofilter(const char* s){
 		return tofilter<std::string>(s);
 }
 

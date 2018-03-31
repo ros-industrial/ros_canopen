@@ -267,16 +267,16 @@ uint16_t Motor402::getMode() {
 bool Motor402::isModeSupportedByDevice(uint16_t mode){
     return mode > 0 && supported_drive_modes_.valid() && (supported_drive_modes_.get_cached() & (1<<(mode-1)));
 }
-void Motor402::registerMode(uint16_t id, const boost::shared_ptr<Mode> &m){
+void Motor402::registerMode(uint16_t id, const ModeSharedPtr &m){
     boost::mutex::scoped_lock map_lock(map_mutex_);
     if(m && m->mode_id_ == id) modes_.insert(std::make_pair(id, m));
 }
 
-boost::shared_ptr<Mode> Motor402::allocMode(uint16_t mode){
-    boost::shared_ptr<Mode> res;
+ModeSharedPtr Motor402::allocMode(uint16_t mode){
+    ModeSharedPtr res;
     if(isModeSupportedByDevice(mode)){
         boost::mutex::scoped_lock map_lock(map_mutex_);
-        boost::unordered_map<uint16_t, boost::shared_ptr<Mode> >::iterator it = modes_.find(mode);
+        boost::unordered_map<uint16_t, ModeSharedPtr >::iterator it = modes_.find(mode);
         if(it != modes_.end()){
             res = it->second;
         }
@@ -295,7 +295,7 @@ bool Motor402::switchMode(LayerStatus &status, uint16_t mode) {
         return true;
     }
 
-    boost::shared_ptr<Mode> next_mode = allocMode(mode);
+    ModeSharedPtr next_mode = allocMode(mode);
     if(!next_mode){
         status.error("Mode is not supported.");
         return false;
@@ -483,7 +483,7 @@ void Motor402::handleInit(LayerStatus &status){
         return;
     }
 
-    boost::shared_ptr<Mode> m = allocMode(MotorBase::Homing);
+    ModeSharedPtr m = allocMode(MotorBase::Homing);
     if(!m){
         return; // homing not supported
     }

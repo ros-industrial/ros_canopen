@@ -53,10 +53,10 @@ public:
         return true;
     }
 
-    virtual FrameListener::Ptr createMsgListener(const FrameDelegate &delegate){
+    virtual FrameListenerConstSharedPtr createMsgListener(const FrameDelegate &delegate){
         return frame_dispatcher_.createListener(delegate);
     }
-    virtual FrameListener::Ptr createMsgListener(const Frame::Header&h , const FrameDelegate &delegate){
+    virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&h , const FrameDelegate &delegate){
         return frame_dispatcher_.createListener(h, delegate);
     }
 
@@ -87,11 +87,12 @@ public:
         return true;
     };
 
-    virtual StateListener::Ptr createStateListener(const StateDelegate &delegate){
+    virtual StateListenerConstSharedPtr createStateListener(const StateDelegate &delegate){
       return state_dispatcher_.createListener(delegate);
     };
 
 };
+typedef boost::shared_ptr<DummyInterface> DummyInterfaceSharedPtr;
 
 
 }

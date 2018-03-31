@@ -26,11 +26,11 @@ std::string tostring(const Frame& f, bool lc);
 
 Frame toframe(const std::string& s);
 
-template<class T> FrameFilter::Ptr tofilter(const T  &ct);
-template<> FrameFilter::Ptr tofilter(const std::string &s);
-template<> FrameFilter::Ptr tofilter(const uint32_t &id);
+template<class T> FrameFilterSharedPtr tofilter(const T  &ct);
+template<> FrameFilterSharedPtr tofilter(const std::string &s);
+template<> FrameFilterSharedPtr tofilter(const uint32_t &id);
 
-FrameFilter::Ptr tofilter(const char* s);
+FrameFilterSharedPtr tofilter(const char* s);
 
 template <typename T> FilteredFrameListener::FilterVector tofilters(const T& v) {
     FilteredFrameListener::FilterVector filters;

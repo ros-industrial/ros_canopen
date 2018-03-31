@@ -8,11 +8,11 @@ namespace canopen{
 
 class CANLayer: public Layer{
     boost::mutex mutex_;
-    boost::shared_ptr<can::DriverInterface> driver_;
+    can::DriverInterfaceSharedPtr driver_;
     const std::string device_;
     const bool loopback_;
     can::Frame last_error_;
-    can::CommInterface::FrameListener::Ptr error_listener_;
+    can::FrameListenerConstSharedPtr error_listener_;
     void handleFrame(const can::Frame & msg){
         boost::mutex::scoped_lock lock(mutex_);
         last_error_ = msg;
@@ -21,7 +21,7 @@ class CANLayer: public Layer{
     boost::shared_ptr<boost::thread> thread_;
 
 public:
-    CANLayer(const boost::shared_ptr<can::DriverInterface> &driver, const std::string &device, bool loopback)
+    CANLayer(const can::DriverInterfaceSharedPtr &driver, const std::string &device, bool loopback)
     : Layer(device + " Layer"), driver_(driver), device_(device), loopback_(loopback) { assert(driver_); }
 
     virtual void handleRead(LayerStatus &status, const LayerState &current_state) {

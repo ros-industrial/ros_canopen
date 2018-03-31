@@ -48,16 +48,16 @@ class SDOClient{
     void transmitAndWait(const canopen::ObjectDict::Entry &entry, const String &data, String *result);
     void abort(uint32_t reason);
 
-    const boost::shared_ptr<can::CommInterface> interface_;
+    const can::CommInterfaceSharedPtr interface_;
 protected:
     void read(const canopen::ObjectDict::Entry &entry, String &data);
     void write(const canopen::ObjectDict::Entry &entry, const String &data);
 public:
-    const boost::shared_ptr<ObjectStorage> storage_;
+    const ObjectStorageSharedPtr storage_;
 
     void init();
 
-    SDOClient(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id)
+    SDOClient(const can::CommInterfaceSharedPtr interface, const ObjectDictSharedPtr dict, uint8_t node_id)
     : interface_(interface), storage_(boost::make_shared<ObjectStorage>(dict, node_id, ObjectStorage::ReadDelegate(this, &SDOClient::read), ObjectStorage::WriteDelegate(this, &SDOClient::write))), reader_(false, 1)
     {
     }
@@ -82,68 +82,71 @@ class PDOMapper{
         bool empty;
         std::vector<char> buffer;
     };
+    typedef boost::shared_ptr<Buffer> BufferSharedPtr;
 
     class PDO {
     protected:
-        void parse_and_set_mapping(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index, const bool &read, const bool &write);
+        void parse_and_set_mapping(const ObjectStorageSharedPtr &storage, const uint16_t &com_index, const uint16_t &map_index, const bool &read, const bool &write);
         can::Frame frame;
         uint8_t transmission_type;
-        std::vector< boost::shared_ptr<Buffer> >buffers;
+        std::vector<BufferSharedPtr>buffers;
     };
 
     struct TPDO: public PDO{
+        typedef boost::shared_ptr<TPDO> TPDOSharedPtr;
         void sync();
-        static boost::shared_ptr<TPDO> create(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
-            boost::shared_ptr<TPDO> tpdo(new TPDO(interface));
+        static TPDOSharedPtr create(const can::CommInterfaceSharedPtr interface, const ObjectStorageSharedPtr &storage, const uint16_t &com_index, const uint16_t &map_index){
+            TPDOSharedPtr tpdo(new TPDO(interface));
             if(!tpdo->init(storage, com_index, map_index))
                 tpdo.reset();
             return tpdo;
         }
     private:
-        TPDO(const boost::shared_ptr<can::CommInterface> interface) : interface_(interface){}
-        bool init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index);
-        const boost::shared_ptr<can::CommInterface> interface_;
+        TPDO(const can::CommInterfaceSharedPtr interface) : interface_(interface){}
+        bool init(const ObjectStorageSharedPtr &storage, const uint16_t &com_index, const uint16_t &map_index);
+        const can::CommInterfaceSharedPtr interface_;
         boost::mutex mutex;
     };
 
     struct RPDO : public PDO{
         void sync(LayerStatus &status);
-        static boost::shared_ptr<RPDO> create(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index){
-            boost::shared_ptr<RPDO> rpdo(new RPDO(interface));
+        typedef boost::shared_ptr<RPDO> RPDOSharedPtr;
+        static RPDOSharedPtr create(const can::CommInterfaceSharedPtr interface, const ObjectStorageSharedPtr &storage, const uint16_t &com_index, const uint16_t &map_index){
+            RPDOSharedPtr rpdo(new RPDO(interface));
             if(!rpdo->init(storage, com_index, map_index))
                 rpdo.reset();
             return rpdo;
         }
     private:
-        bool init(const boost::shared_ptr<ObjectStorage> &storage, const uint16_t &com_index, const uint16_t &map_index);
-        RPDO(const boost::shared_ptr<can::CommInterface> interface) : interface_(interface), timeout(-1) {}
+        bool init(const ObjectStorageSharedPtr &storage, const uint16_t &com_index, const uint16_t &map_index);
+        RPDO(const can::CommInterfaceSharedPtr interface) : interface_(interface), timeout(-1) {}
         boost::mutex mutex;
-        const boost::shared_ptr<can::CommInterface> interface_;
+        const can::CommInterfaceSharedPtr interface_;
 
-        can::CommInterface::FrameListener::Ptr listener_;
+        can::FrameListenerConstSharedPtr listener_;
         void handleFrame(const can::Frame & msg);
         int timeout;
     };
 
-    boost::unordered_set< boost::shared_ptr<RPDO> > rpdos_;
-    boost::unordered_set< boost::shared_ptr<TPDO> > tpdos_;
+    boost::unordered_set<RPDO::RPDOSharedPtr> rpdos_;
+    boost::unordered_set<TPDO::TPDOSharedPtr> tpdos_;
 
-    const boost::shared_ptr<can::CommInterface> interface_;
+    const can::CommInterfaceSharedPtr interface_;
 
 public:
-    PDOMapper(const boost::shared_ptr<can::CommInterface> interface);
+    PDOMapper(const can::CommInterfaceSharedPtr interface);
     void read(LayerStatus &status);
     bool write();
-    bool init(const boost::shared_ptr<ObjectStorage> storage, LayerStatus &status);
+    bool init(const ObjectStorageSharedPtr storage, LayerStatus &status);
 };
 
 class EMCYHandler : public Layer {
     boost::atomic<bool> has_error_;
     ObjectStorage::Entry<uint8_t> error_register_;
     ObjectStorage::Entry<uint8_t> num_errors_;
-    can::CommInterface::FrameListener::Ptr emcy_listener_;
+    can::FrameListenerConstSharedPtr emcy_listener_;
     void handleEMCY(const can::Frame & msg);
-    const boost::shared_ptr<ObjectStorage> storage_;
+    const ObjectStorageSharedPtr storage_;
 
     virtual void handleDiag(LayerReport &report);
 
@@ -155,7 +158,7 @@ class EMCYHandler : public Layer {
     virtual void handleShutdown(LayerStatus &status);
 
 public:
-    EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage);
+    EMCYHandler(const can::CommInterfaceSharedPtr interface, const ObjectStorageSharedPtr storage);
     void resetErrors(LayerStatus &status);
 };
 
@@ -176,6 +179,7 @@ public:
     virtual  void removeNode(void * const ptr) = 0;
     virtual ~SyncCounter() {}
 };
+typedef boost::shared_ptr<SyncCounter> SyncCounterSharedPtr;
 
 class Node : public Layer{
 public:
@@ -183,12 +187,12 @@ public:
         Unknown = 255, BootUp = 0, Stopped = 4, Operational = 5 , PreOperational = 127
     };
     const uint8_t node_id_;
-    Node(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync = boost::shared_ptr<SyncCounter>());
+    Node(const can::CommInterfaceSharedPtr interface, const ObjectDictSharedPtr dict, uint8_t node_id, const SyncCounterSharedPtr sync = SyncCounterSharedPtr());
 
     const State getState();
     void enterState(const State &s);
 
-    const boost::shared_ptr<ObjectStorage> getStorage() { return sdo_.storage_; }
+    const ObjectStorageSharedPtr getStorage() { return sdo_.storage_; }
 
     bool start();
     bool stop();
@@ -198,8 +202,9 @@ public:
 
     typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
     typedef can::Listener<const StateDelegate, const State&> StateListener;
+    typedef StateListener::ListenerConstSharedPtr StateListenerConstSharedPtr;
 
-    StateListener::Ptr addStateListener(const StateDelegate & s){
+    StateListenerConstSharedPtr addStateListener(const StateDelegate & s){
         return state_dispatcher_.createListener(s);
     }
 
@@ -223,9 +228,9 @@ private:
     boost::mutex cond_mutex;
     boost::condition_variable cond;
 
-    const boost::shared_ptr<can::CommInterface> interface_;
-    const boost::shared_ptr<SyncCounter> sync_;
-    can::CommInterface::FrameListener::Ptr nmt_listener_;
+    const can::CommInterfaceSharedPtr interface_;
+    const SyncCounterSharedPtr sync_;
+    can::FrameListenerConstSharedPtr nmt_listener_;
 
     ObjectStorage::Entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_UNSIGNED16>::type> heartbeat_;
 
@@ -243,20 +248,20 @@ private:
     void setHeartbeatInterval() { if(heartbeat_.valid()) heartbeat_.set(heartbeat_.desc().value().get<uint16_t>()); }
     bool checkHeartbeat();
 };
+typedef boost::shared_ptr<Node> NodeSharedPtr;
 
 template<typename T> class Chain{
-protected:
-    std::vector<boost::shared_ptr<T> > elements;
 public:
+    typedef boost::shared_ptr<T> MemberSharedPtr;
     void call(void (T::*func)(void)){
-        typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
+        typename std::vector<MemberSharedPtr>::iterator it = elements.begin();
         while(it != elements.end()){
             ((**it).*func)();
             ++it;
         }
     }
     template<typename V> void call(void (T::*func)(const V&), const std::vector<V> &vs){
-        typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
+        typename std::vector<MemberSharedPtr>::iterator it = elements.begin();
         typename std::vector<V>::const_iterator it_v = vs.begin();
         while(it_v != vs.end() &&  it != elements.end()){
             ((**it).*func)(*it_v);
@@ -266,21 +271,23 @@ public:
     template<typename V> void call(void (T::*func)(V&), std::vector<V> &vs){
         vs.resize(elements.size());
 
-        typename std::vector<boost::shared_ptr<T> >::iterator it = elements.begin();
+        typename std::vector<MemberSharedPtr>::iterator it = elements.begin();
         typename std::vector<V>::iterator it_v = vs.begin();
         while(it_v != vs.end() &&  it != elements.end()){
             ((**it).*func)(*it_v);
             ++it; ++it_v;
         }
     }
-    void add(boost::shared_ptr<T> t){
+    void add(MemberSharedPtr t){
         elements.push_back(t);
     }
+protected:
+    std::vector<MemberSharedPtr> elements;
 };
 
 template<typename T> class NodeChain: public Chain<T>{
 public:
-    const std::vector<boost::shared_ptr<T> >& getElements() { return Chain<T>::elements; }
+    const std::vector<typename Chain<T>::MemberSharedPtr>& getElements() { return Chain<T>::elements; }
     void start() { this->call(&T::start); }
     void stop() { this->call(&T::stop); }
     void reset() { this->call(&T::reset); }
@@ -292,18 +299,21 @@ class SyncLayer: public Layer, public SyncCounter{
 public:
     SyncLayer(const SyncProperties &p) : Layer("Sync layer"), SyncCounter(p) {}
 };
+typedef boost::shared_ptr<SyncLayer> SyncLayerSharedPtr;
 
 class Master: boost::noncopyable {
 public:
-    virtual boost::shared_ptr<SyncLayer> getSync(const SyncProperties &properties) = 0;
+    virtual SyncLayerSharedPtr getSync(const SyncProperties &properties) = 0;
     virtual ~Master() {}
 
+    typedef boost::shared_ptr<Master> MasterSharedPtr;
     class Allocator {
     public:
-        virtual boost::shared_ptr<Master> allocate(const std::string &name, boost::shared_ptr<can::CommInterface> interface) = 0;
+        virtual MasterSharedPtr allocate(const std::string &name, can::CommInterfaceSharedPtr interface) = 0;
         virtual ~Allocator() {}
     };
 };
+typedef Master::MasterSharedPtr MasterSharedPtr;
 
 class Settings
 {
@@ -325,33 +335,6 @@ public:
 private:
     virtual bool getRepr(const std::string &n, std::string & repr) const = 0;
 };
-
-
-/*template<typename InterfaceType, typename MasterType, typename NodeType> class Bus: boost::noncopyable{
-    boost::weak_ptr <InterfaceType> weak_interface_;
-    boost::weak_ptr <MasterType> weak_master_;
-
-    const String device_;
-    const unsigned int bitrate_;
-public:
-    Bus(const String &device, unsigned int bitrate) : device_(device), bitrate_(bitrate) {}
-    boost::shared_ptr<InterfaceType> getInterface(){
-        boost::shared_ptr<InterfaceType> interface = weak_interface_.lock();
-        if(!interface){
-            weak_interface_ = interface = boost::make_shared<InterfaceType>();
-            interface_
-        }
-        return interface;
-    }
-    boost::shared_ptr<MasterType> getMaster(){
-        boost::shared_ptr<MasterType> master = weak_master_.lock();
-        if(!master){
-            boost::shared_ptr<InterfaceType> interface = getInterface();
-            if(interface) weak_master_ = master = boost::make_shared<MasterType>(interface);
-        }
-        return master;
-    }
-};*/
 
 } // canopen
 #endif // !H_CANOPEN

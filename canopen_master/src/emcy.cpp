@@ -46,7 +46,7 @@ void EMCYHandler::handleEMCY(const can::Frame & msg){
     has_error_ = (em.data.error_register & ~32) != 0;
 }
 
-EMCYHandler::EMCYHandler(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectStorage> storage): Layer("EMCY handler"), storage_(storage), has_error_(true){
+EMCYHandler::EMCYHandler(const can::CommInterfaceSharedPtr interface, const ObjectStorageSharedPtr storage): Layer("EMCY handler"), storage_(storage), has_error_(true){
     storage_->entry(error_register_, 0x1001);
     try{
         storage_->entry(num_errors_, 0x1003,0);

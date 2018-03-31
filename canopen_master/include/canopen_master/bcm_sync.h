@@ -30,9 +30,9 @@ class BCMsync : public Layer {
 
     bool sync_running_;
     can::BCMsocket bcm_;
-    boost::shared_ptr<can::SocketCANDriver>  driver_;
+    can::SocketCANDriverSharedPtr  driver_;
     uint16_t sync_ms_;
-    can::CommInterface::FrameListener::Ptr handler_;
+    can::FrameListenerConstSharedPtr handler_;
 
     std::vector<can::Frame> sync_frames_;
 
@@ -64,7 +64,7 @@ class BCMsync : public Layer {
             int id = frame.id & ALL_NODES_MASK;
             if(skipNode(id)) return;
 
-            if(frame.dlc > 0 && frame.data[0] ==  canopen::Node::Stopped) started_nodes_.erase(id); 
+            if(frame.dlc > 0 && frame.data[0] ==  canopen::Node::Stopped) started_nodes_.erase(id);
         }
 
         // toggle sync if needed
@@ -91,7 +91,7 @@ protected:
         report.add("known_nodes", join(known_nodes_, ", "));
         report.add("started_nodes", join(started_nodes_, ", "));
     }
- 
+
     virtual void handleInit(LayerStatus &status){
         boost::mutex::scoped_lock lock(mutex_);
         started_nodes_.clear();
@@ -125,7 +125,7 @@ protected:
     virtual void handleHalt(LayerStatus &status) {
         boost::mutex::scoped_lock lock(mutex_);
         if(sync_running_){
-            bcm_.stopTX(sync_frames_.front());        
+            bcm_.stopTX(sync_frames_.front());
             sync_running_ = false;
             started_nodes_.clear();
         }
@@ -140,7 +140,7 @@ public:
     static const uint32_t HEARTBEAT_ID = 0x700;
     static const uint32_t NMT_ID = 0x000;
 
-    BCMsync(const std::string &device, boost::shared_ptr<can::SocketCANDriver>  driver, const SyncProperties &sync_properties)
+    BCMsync(const std::string &device, can::SocketCANDriverSharedPtr  driver, const SyncProperties &sync_properties)
     : Layer(device + " SyncLayer"), device_(device), sync_running_(false), sync_ms_(sync_properties.period_ms_), driver_(driver) {
         if(sync_properties.overflow_ == 0){
             sync_frames_.resize(1);

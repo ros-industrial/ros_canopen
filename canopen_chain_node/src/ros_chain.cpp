@@ -16,8 +16,8 @@
 
 namespace canopen {
 
-PublishFunc::func_type PublishFunc::create(ros::NodeHandle &nh,  const std::string &name, boost::shared_ptr<canopen::Node> node, const std::string &key, bool force){
-    boost::shared_ptr<ObjectStorage> s = node->getStorage();
+PublishFunc::func_type PublishFunc::create(ros::NodeHandle &nh,  const std::string &name, canopen::NodeSharedPtr node, const std::string &key, bool force){
+    ObjectStorageSharedPtr s = node->getStorage();
 
     switch(ObjectDict::DataTypes(s->dict_->get(key)->data_type)){
         case ObjectDict::DEFTYPE_INTEGER8:       return create< std_msgs::Int8    >(nh, name, s->entry<ObjectStorage::DataType<ObjectDict::DEFTYPE_INTEGER8>::type>(key), force);
@@ -43,7 +43,7 @@ PublishFunc::func_type PublishFunc::create(ros::NodeHandle &nh,  const std::stri
 }
 
 void RosChain::logState(const can::State &s){
-    boost::shared_ptr<can::DriverInterface> interface = interface_;
+    can::DriverInterfaceSharedPtr interface = interface_;
     std::string msg;
     if(interface && !interface->translateError(s.internal_error, msg)) msg  =  "Undefined"; ;
     ROS_INFO_STREAM("Current state: " << s.driver_state << " device error: " << s.error_code << " internal_error: " << s.internal_error << " (" << msg << ")");
@@ -186,7 +186,7 @@ bool RosChain::handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::
 }
 
 bool RosChain::handle_get_object(canopen_chain_node::GetObject::Request  &req, canopen_chain_node::GetObject::Response &res){
-    std::map<std::string, boost::shared_ptr<canopen::Node> >::iterator it = nodes_lookup_.find(req.node);
+    std::map<std::string, canopen::NodeSharedPtr >::iterator it = nodes_lookup_.find(req.node);
     if(it == nodes_lookup_.end()){
         res.message = "node not found";
     }else{
@@ -201,7 +201,7 @@ bool RosChain::handle_get_object(canopen_chain_node::GetObject::Request  &req, c
 }
 
 bool RosChain::handle_set_object(canopen_chain_node::SetObject::Request  &req, canopen_chain_node::SetObject::Response &res){
-    std::map<std::string, boost::shared_ptr<canopen::Node> >::iterator it = nodes_lookup_.find(req.node);
+    std::map<std::string, canopen::NodeSharedPtr >::iterator it = nodes_lookup_.find(req.node);
     if(it == nodes_lookup_.end()){
         res.message = "node not found";
     }else{
@@ -459,14 +459,14 @@ bool RosChain::setup_nodes(){
         catch(...){
         }
 
-        boost::shared_ptr<ObjectDict>  dict = ObjectDict::fromFile(eds, overlay);
+        ObjectDictSharedPtr  dict = ObjectDict::fromFile(eds, overlay);
         if(!dict){
             ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
             return false;
         }
-        boost::shared_ptr<canopen::Node> node = boost::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
+        canopen::NodeSharedPtr node = boost::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
 
-        boost::shared_ptr<Logger> logger = boost::make_shared<Logger>(node);
+        LoggerSharedPtr logger = boost::make_shared<Logger>(node);
 
         if(!nodeAdded(merged, node, logger)) return false;
 
@@ -508,7 +508,7 @@ bool RosChain::setup_nodes(){
     }
     return true;
 }
-bool RosChain::nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger){
+bool RosChain::nodeAdded(XmlRpc::XmlRpcValue &params, const canopen::NodeSharedPtr &node, const LoggerSharedPtr &logger){
     return true;
 }
 

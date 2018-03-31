@@ -52,7 +52,7 @@ TEST(TopicToSocketCANTest, checkCorrectData)
   ros::NodeHandle nh(""), nh_param("~");
 
   // create the dummy interface
-  boost::shared_ptr<can::DummyInterface> driver_ = boost::make_shared<can::DummyInterface>(true);
+  can::DummyInterfaceSharedPtr driver_ = boost::make_shared<can::DummyInterface>(true);
 
   // start the to topic bridge.
   socketcan_bridge::TopicToSocketCAN to_socketcan_bridge(&nh, &nh_param, driver_);
@@ -68,7 +68,7 @@ TEST(TopicToSocketCANTest, checkCorrectData)
   frameCollector frame_collector_;
 
   //  driver->createMsgListener(&frameCallback);
-  can::CommInterface::FrameListener::Ptr frame_listener_ = driver_->createMsgListener(
+  can::FrameListenerConstSharedPtr frame_listener_ = driver_->createMsgListener(
             can::CommInterface::FrameDelegate(&frame_collector_, &frameCollector::frameCallback));
 
   // create a message
@@ -114,7 +114,7 @@ TEST(TopicToSocketCANTest, checkInvalidFrameHandling)
   ros::NodeHandle nh(""), nh_param("~");
 
   // create the dummy interface
-  boost::shared_ptr<can::DummyInterface> driver_ = boost::make_shared<can::DummyInterface>(true);
+  can::DummyInterfaceSharedPtr driver_ = boost::make_shared<can::DummyInterface>(true);
 
   // start the to topic bridge.
   socketcan_bridge::TopicToSocketCAN to_socketcan_bridge(&nh, &nh_param, driver_);
@@ -127,7 +127,7 @@ TEST(TopicToSocketCANTest, checkInvalidFrameHandling)
   frameCollector frame_collector_;
 
   //  add callback to the dummy interface.
-  can::CommInterface::FrameListener::Ptr frame_listener_ = driver_->createMsgListener(
+  can::FrameListenerConstSharedPtr frame_listener_ = driver_->createMsgListener(
           can::CommInterface::FrameDelegate(&frame_collector_, &frameCollector::frameCallback));
 
   // create a message

@@ -63,7 +63,7 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    boost::shared_ptr<can::SocketCANDriver> driver = boost::make_shared<can::SocketCANDriver>();
+    can::SocketCANDriverSharedPtr driver = boost::make_shared<can::SocketCANDriver>();
     canopen::SyncProperties sync_properties(can::MsgHeader(sync_nh.param("sync_id", 0x080)), sync_ms, sync_overflow);
 
     boost::shared_ptr<canopen::BCMsync> sync = boost::make_shared<canopen::BCMsync>(can_device, driver, sync_properties);

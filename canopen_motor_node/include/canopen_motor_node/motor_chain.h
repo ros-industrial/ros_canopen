@@ -15,11 +15,11 @@ namespace canopen {
 class MotorChain : public canopen::RosChain {
     ClassAllocator<canopen::MotorBase> motor_allocator_;
     boost::shared_ptr< canopen::LayerGroupNoDiag<canopen::MotorBase> > motors_;
-    boost::shared_ptr<RobotLayer> robot_layer_;
+    RobotLayerSharedPtr robot_layer_;
 
     boost::shared_ptr<ControllerManagerLayer> cm_;
 
-    virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<Node> &node, const boost::shared_ptr<Logger> &logger);
+    virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const canopen::NodeSharedPtr &node, const LoggerSharedPtr &logger);
 
 public:
     MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv);
