@@ -16,7 +16,7 @@
 
 namespace canopen {
 
-PublishFunc::func_type PublishFunc::create(ros::NodeHandle &nh,  const std::string &name, canopen::NodeSharedPtr node, const std::string &key, bool force){
+PublishFunc::FuncType PublishFunc::create(ros::NodeHandle &nh,  const std::string &name, canopen::NodeSharedPtr node, const std::string &key, bool force){
     ObjectStorageSharedPtr s = node->getStorage();
 
     switch(ObjectDict::DataTypes(s->dict_->get(key)->data_type)){
@@ -142,7 +142,7 @@ bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigge
 void RosChain::handleWrite(LayerStatus &status, const LayerState &current_state) {
     LayerStack::handleWrite(status, current_state);
     if(current_state > Shutdown){
-        for(std::vector<boost::function<void() > >::iterator it = publishers_.begin(); it != publishers_.end(); ++it) (*it)();
+        for(std::vector<PublishFunc::FuncType>::iterator it = publishers_.begin(); it != publishers_.end(); ++it) (*it)();
     }
 }
 
@@ -485,7 +485,7 @@ bool RosChain::setup_nodes(){
                 for(int i = 0; i < objs.size(); ++i){
                     std::pair<std::string, bool> obj_name = parseObjectName(objs[i]);
 
-                    boost::function<void()> pub = PublishFunc::create(nh_, node_name +"_"+obj_name.first, node, obj_name.first, obj_name.second);
+                    PublishFunc::FuncType pub = PublishFunc::create(nh_, node_name +"_"+obj_name.first, node, obj_name.first, obj_name.second);
                     if(!pub){
                         ROS_ERROR_STREAM("Could not create publisher for '" << obj_name.first << "'");
                         return false;

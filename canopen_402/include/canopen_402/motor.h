@@ -379,7 +379,8 @@ private:
 
     boost::mutex map_mutex_;
     boost::unordered_map<uint16_t, ModeSharedPtr > modes_;
-    boost::unordered_map<uint16_t, boost::function<void()> > mode_allocators_;
+    typedef boost::function<void()> AllocFuncType;
+    boost::unordered_map<uint16_t, AllocFuncType> mode_allocators_;
 
     ModeSharedPtr selected_mode_;
     uint16_t mode_id_;

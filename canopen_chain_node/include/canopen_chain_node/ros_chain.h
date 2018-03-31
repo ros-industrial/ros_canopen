@@ -18,16 +18,17 @@ namespace canopen{
 
 class PublishFunc{
 public:
-    typedef boost::function<void()> func_type;
+    typedef boost::function<void()> func_type ROS_DEPRECATED;
+    typedef boost::function<void()> FuncType;
 
-    static func_type create(ros::NodeHandle &nh,  const std::string &name, canopen::NodeSharedPtr node, const std::string &key, bool force);
+    static FuncType create(ros::NodeHandle &nh,  const std::string &name, canopen::NodeSharedPtr node, const std::string &key, bool force);
 private:
     template <typename Tpub, typename Tobj, bool forced> static void publish(ros::Publisher &pub, ObjectStorage::Entry<Tobj> &entry){
 		Tpub msg;
 		msg.data = (const typename Tpub::_data_type &)(forced? entry.get() : entry.get_cached());
         pub.publish(msg);
     }
-    template<typename Tpub, typename Tobj> static func_type create(ros::NodeHandle &nh,  const std::string &name, ObjectStorage::Entry<Tobj> entry, bool force){
+    template<typename Tpub, typename Tobj> static FuncType create(ros::NodeHandle &nh,  const std::string &name, ObjectStorage::Entry<Tobj> entry, bool force){
         if(!entry.valid()) return 0;
         ros::Publisher pub = nh.advertise<Tpub>(name, 1);
         if(force){
@@ -167,7 +168,7 @@ protected:
     std::map<std::string, canopen::NodeSharedPtr > nodes_lookup_;
     canopen::SyncLayerSharedPtr sync_;
     std::vector<LoggerSharedPtr > loggers_;
-    std::vector<PublishFunc::func_type> publishers_;
+    std::vector<PublishFunc::FuncType> publishers_;
 
     can::StateListenerConstSharedPtr state_listener_;
 

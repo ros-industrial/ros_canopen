@@ -447,7 +447,7 @@ struct PrintValue {
     }
 };
 
-boost::function<std::string()> ObjectStorage::getStringReader(const ObjectDict::Key &key, bool cached){
+ObjectStorage::ReadStringFuncType ObjectStorage::getStringReader(const ObjectDict::Key &key, bool cached){
     return PrintValue::getReader(*this, key, cached);
 }
 
@@ -474,6 +474,6 @@ struct WriteStringValue {
     }
 };
 
-boost::function<void (const std::string&)> ObjectStorage::getStringWriter(const ObjectDict::Key &key, bool cached){
+ObjectStorage::WriteStringFuncType ObjectStorage::getStringWriter(const ObjectDict::Key &key, bool cached){
     return WriteStringValue::getWriter(*this, key, cached);
 }

@@ -465,7 +465,7 @@ void Motor402::handleDiag(LayerReport &report){
     }
 }
 void Motor402::handleInit(LayerStatus &status){
-    for(boost::unordered_map<uint16_t, boost::function<void()> >::iterator it = mode_allocators_.begin(); it != mode_allocators_.end(); ++it){
+    for(boost::unordered_map<uint16_t, AllocFuncType>::iterator it = mode_allocators_.begin(); it != mode_allocators_.end(); ++it){
         (it->second)();
     }
 

@@ -505,8 +505,10 @@ public:
             return false;
         }
     }
-     boost::function<std::string()> getStringReader(const ObjectDict::Key &key, bool cached = false);
-     boost::function<void(const std::string &)> getStringWriter(const ObjectDict::Key &key, bool cached = false);
+    typedef boost::function<std::string()> ReadStringFuncType;
+    ReadStringFuncType getStringReader(const ObjectDict::Key &key, bool cached = false);
+    typedef boost::function<void(const std::string &)>  WriteStringFuncType;
+    WriteStringFuncType getStringWriter(const ObjectDict::Key &key, bool cached = false);
 
     const ObjectDictConstSharedPtr dict_;
     const uint8_t node_id_;
