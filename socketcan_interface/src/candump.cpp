@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
     if(argc == 4 ){
         try
         {
-            g_loader = boost::make_shared<class_loader::ClassLoader>(argv[2]);
+            g_loader = make_shared<class_loader::ClassLoader>(argv[2]);
             g_driver = g_loader->createInstance<DriverInterface>(argv[3]);
         }
 
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
             return 1;
         }
     }else{
-        g_driver = boost::make_shared<SocketCANInterface>();
+        g_driver = make_shared<SocketCANInterface>();
     }
 
 

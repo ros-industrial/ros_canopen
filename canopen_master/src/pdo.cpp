@@ -121,7 +121,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const ObjectStorageSharedPtr &storage
             if(!init.is_empty()) mapentry.set(init.get<uint32_t>());
 
             PDOmap param(mapentry.get_cached());
-            BufferSharedPtr b = boost::make_shared<Buffer>(param.length/8);
+            BufferSharedPtr b = make_shared<Buffer>(param.length/8);
             if(param.index < 0x1000){
                 // TODO: check DummyUsage
             }else{

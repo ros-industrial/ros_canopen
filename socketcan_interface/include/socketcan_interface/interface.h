@@ -4,6 +4,7 @@
 #include <boost/array.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 #include "FastDelegate.h"
 
@@ -126,8 +127,8 @@ public:
     typedef FrameListener::ListenerConstSharedPtr FrameListenerConstSharedPtr;
 
     /**
+    *
      * enqueue frame for sending
-     *
      * @param[in] msg: message to be enqueued
      * @return true if frame was enqueued succesfully, otherwise false
      */
@@ -196,6 +197,7 @@ public:
 };
 typedef boost::shared_ptr<DriverInterface> DriverInterfaceSharedPtr;
 
+using boost::make_shared;
 
 } // namespace can
 

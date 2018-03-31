@@ -13,6 +13,8 @@
 
 namespace canopen{
 
+using boost::make_shared;
+
 class TypeGuard{
     const std::type_info& (*get_type)();
     size_t type_size;
@@ -461,10 +463,10 @@ public:
 
             if(!e->def_val.is_empty()){
                 T val = NodeIdOffset<T>::apply(e->def_val, node_id_);
-                data = boost::make_shared<Data>(key, e,val, read_delegate_, write_delegate_);
+                data = make_shared<Data>(key, e,val, read_delegate_, write_delegate_);
             }else{
                 if(!e->def_val.type().valid() ||  e->def_val.type() == type) {
-                    data = boost::make_shared<Data>(key,e,type, read_delegate_, write_delegate_);
+                    data = make_shared<Data>(key,e,type, read_delegate_, write_delegate_);
                 }else{
                     THROW_WITH_KEY(std::bad_cast(), key);
                 }
