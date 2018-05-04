@@ -2,7 +2,7 @@
 #include <boost/unordered_set.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/make_shared.hpp>
-#include <class_loader/class_loader.h>
+#include <class_loader/class_loader.hpp>
 #include <socketcan_interface/socketcan.h>
 
 using namespace can;

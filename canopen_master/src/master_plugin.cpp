@@ -1,4 +1,4 @@
-#include <class_loader/class_loader.h>
+#include <class_loader/class_loader.hpp>
 #include <socketcan_interface/reader.h>
 #include <canopen_master/canopen.h>
 
