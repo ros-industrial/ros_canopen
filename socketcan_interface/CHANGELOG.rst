@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.8 (2018-05-04)
+------------------
 * Revert "pull make_shared into namespaces"
   This reverts commit 9b2cd05df76d223647ca81917d289ca6330cdee6.
 * Contributors: Mathias Lüdtke
