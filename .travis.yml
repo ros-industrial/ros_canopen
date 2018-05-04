@@ -9,17 +9,15 @@ cache:
 env:
   global:
     - CCACHE_DIR=$HOME/.ccache
-
   matrix:
-    - ROS_DISTRO="kinetic" ROS_REPO=ros-shadow-fixed
-    - ROS_DISTRO="kinetic" ROS_REPO=ros CATKIN_LINT=pedantic
-    - ROS_DISTRO="lunar"   ROS_REPO=ros-shadow-fixed
-    - ROS_DISTRO="lunar"   ROS_REPO=ros
-    - ROS_DISTRO="kinetic" ROSDEP_SKIP_KEYS=muparser EXPECT_EXIT_CODE=1
-    - ROS_DISTRO="kinetic" ABICHECK_URL='github:ros-industrial/ros_canopen#kinetic'
+    - ROS_DISTRO="melodic" ROS_REPO=ros-shadow-fixed
+    - ROS_DISTRO="melodic" ROS_REPO=ros CATKIN_LINT=pedantic
+    - ROS_DISTRO="melodic" ROSDEP_SKIP_KEYS=muparser EXPECT_EXIT_CODE=1
+    - ROS_DISTRO="melodic" ABICHECK_URL='github:ros-industrial/ros_canopen#melodic'
+
 matrix:
   allow_failures:
-    - env: ROS_DISTRO="kinetic" ABICHECK_URL='github:ros-industrial/ros_canopen#kinetic'
+    - env: ROS_DISTRO="melodic" ABICHECK_URL='github:ros-industrial/ros_canopen#melodic'
 
 install:
   - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config
