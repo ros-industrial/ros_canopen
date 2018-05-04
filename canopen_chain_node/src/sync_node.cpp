@@ -63,10 +63,10 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    can::SocketCANDriverSharedPtr driver = can::make_shared<can::SocketCANDriver>();
+    can::SocketCANDriverSharedPtr driver = boost::make_shared<can::SocketCANDriver>();
     canopen::SyncProperties sync_properties(can::MsgHeader(sync_nh.param("sync_id", 0x080)), sync_ms, sync_overflow);
 
-    boost::shared_ptr<canopen::BCMsync> sync = canopen::make_shared<canopen::BCMsync>(can_device, driver, sync_properties);
+    boost::shared_ptr<canopen::BCMsync> sync = boost::make_shared<canopen::BCMsync>(can_device, driver, sync_properties);
 
     std::vector<int> nodes;
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv){
 
     canopen::LayerStack stack("SyncNodeLayer");
 
-    stack.add(canopen::make_shared<canopen::CANLayer>(driver, can_device, false));
+    stack.add(boost::make_shared<canopen::CANLayer>(driver, can_device, false));
     stack.add(sync);
 
     diagnostic_updater::Updater diag_updater(nh, nh_priv);

@@ -97,14 +97,14 @@ template<typename SyncType> class WrapMaster: public Master{
     can::CommInterfaceSharedPtr interface_;
 public:
     virtual SyncLayerSharedPtr getSync(const SyncProperties &properties){
-        return make_shared<SyncType>(properties, interface_);
+        return boost::make_shared<SyncType>(properties, interface_);
     }
     WrapMaster(can::CommInterfaceSharedPtr interface) : interface_(interface)  {}
 
     class Allocator : public Master::Allocator{
     public:
         virtual MasterSharedPtr allocate(const std::string &name,  can::CommInterfaceSharedPtr interface){
-            return make_shared<WrapMaster>(interface);
+            return boost::make_shared<WrapMaster>(interface);
         }
     };
 };
