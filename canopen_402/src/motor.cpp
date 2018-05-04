@@ -353,7 +353,7 @@ bool Motor402::switchMode(LayerStatus &status, uint16_t mode) {
 }
 
 bool Motor402::switchState(LayerStatus &status, const State402::InternalState &target){
-    time_point abstime = get_abs_time(boost::chrono::seconds(5));
+    time_point abstime = get_abs_time(state_switch_timeout_);
     State402::InternalState state = state_handler_.getState();
     target_state_ = target;
     while(state != target_state_){
