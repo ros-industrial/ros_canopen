@@ -5,7 +5,9 @@ language: generic
 env:
   matrix:
     - ROS_DISTRO="kinetic" PRERELEASE=true
+    - ROS_DISTRO="kinetic" PRERELEASE=true OS_NAME=debian OS_CODE_NAME=jessie
     - ROS_DISTRO="lunar"   PRERELEASE=true
+    - ROS_DISTRO="lunar"   PRERELEASE=true OS_NAME=debian OS_CODE_NAME=stretch
 install:
   - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config  
 script: 
