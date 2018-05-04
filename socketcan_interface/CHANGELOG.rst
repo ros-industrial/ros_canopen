@@ -2,6 +2,26 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* pull make_shared into namespaces
+* added types for all shared_ptrs
+* fix catkin_lint warnings in filter tests
+* migrate to new classloader headers
+* find and link the thread library properly
+* compile also with boost >= 1.66.0
+* explicitly include iostream to compile with boost >= 1.65.0
+* address catkin_lint errors/warnings
+* added test for FilteredFrameListener
+* fix string parsers
+* default to relaxed filter handling
+  works for standard and extended frames
+* fix string handling of extended frames
+* added filter parsers
+  should work for vector<unsigned int>, vector<string> and custom vector-like classes
+* implemented mask and range filters for can::Frame
+* Contributors: Lukas Bulwahn, Mathias Lüdtke
+
 0.7.6 (2017-08-30)
 ------------------
 * make can::Header/Frame::isValid() const

@@ -2,6 +2,14 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* added types for all function objects
+* added types for all shared_ptrs
+* error if muparser is not available
+* address catkin_lint errors/warnings
+* Contributors: Mathias Lüdtke
+
 0.7.6 (2017-08-30)
 ------------------
 

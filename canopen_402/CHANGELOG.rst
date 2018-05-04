@@ -2,6 +2,16 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added state_switch_timeout parameter to motor.
+* added types for all function objects
+* pull make_shared into namespaces
+* added types for all shared_ptrs
+* migrate to new classloader headers
+* address catkin_lint errors/warnings
+* Contributors: Alexander Gutenkunst, Mathias Lüdtke
+
 0.7.6 (2017-08-30)
 ------------------
 

@@ -2,6 +2,18 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* pull make_shared into namespaces
+* added types for all shared_ptrs
+* address catkin_lint errors/warnings
+* protect tests from accessing front() or back() of empty list
+* added checkMaskFilter for socketcan_bridge
+* remove isValid work-around
+* added unit test for can id pass filter
+* add CAN filter to socketcan_bridge nodes
+* Contributors: Benjamin Maidel, Mathias Lüdtke
+
 0.7.6 (2017-08-30)
 ------------------
 
