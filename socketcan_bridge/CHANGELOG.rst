@@ -2,6 +2,24 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.8 (2018-05-04)
+------------------
+* Revert "pull make_shared into namespaces"
+  This reverts commit 9b2cd05df76d223647ca81917d289ca6330cdee6.
+* Contributors: Mathias Lüdtke
+
+0.7.7 (2018-05-04)
+------------------
+* pull make_shared into namespaces
+* added types for all shared_ptrs
+* address catkin_lint errors/warnings
+* protect tests from accessing front() or back() of empty list
+* added checkMaskFilter for socketcan_bridge
+* remove isValid work-around
+* added unit test for can id pass filter
+* add CAN filter to socketcan_bridge nodes
+* Contributors: Benjamin Maidel, Mathias Lüdtke
+
 0.7.6 (2017-08-30)
 ------------------
 

@@ -2,6 +2,24 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.8 (2018-05-04)
+------------------
+* Revert "pull make_shared into namespaces"
+  This reverts commit 9b2cd05df76d223647ca81917d289ca6330cdee6.
+* Contributors: Mathias Lüdtke
+
+0.7.7 (2018-05-04)
+------------------
+* added types for all function objects
+* pull make_shared into namespaces
+* added types for all shared_ptrs
+* migrate to new classloader headers
+* throw bad_cast if datatype is not supported
+* special handling of std::bad_cast
+* address catkin_lint errors/warnings
+* removed IPC/SHM based sync masters
+* Contributors: Mathias Lüdtke
+
 0.7.6 (2017-08-30)
 ------------------
 

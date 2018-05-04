@@ -263,7 +263,7 @@ bool RosChain::setup_bus(){
         return false;
     }
 
-    add(make_shared<CANLayer>(interface_, can_device, loopback));
+    add(boost::make_shared<CANLayer>(interface_, can_device, loopback));
 
     return true;
 }
@@ -464,9 +464,9 @@ bool RosChain::setup_nodes(){
             ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
             return false;
         }
-        canopen::NodeSharedPtr node = make_shared<canopen::Node>(interface_, dict, node_id, sync_);
+        canopen::NodeSharedPtr node = boost::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
 
-        LoggerSharedPtr logger = make_shared<Logger>(node);
+        LoggerSharedPtr logger = boost::make_shared<Logger>(node);
 
         if(!nodeAdded(merged, node, logger)) return false;
 
@@ -501,7 +501,7 @@ bool RosChain::setup_nodes(){
         nodes_->add(node);
         nodes_lookup_.insert(std::make_pair(node_name, node));
 
-        boost::shared_ptr<canopen::EMCYHandler> emcy = make_shared<canopen::EMCYHandler>(interface_, node->getStorage());
+        boost::shared_ptr<canopen::EMCYHandler> emcy = boost::make_shared<canopen::EMCYHandler>(interface_, node->getStorage());
         emcy_handlers_->add(emcy);
         logger->add(emcy);
 
