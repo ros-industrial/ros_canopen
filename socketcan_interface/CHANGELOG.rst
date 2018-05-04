@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.7 (2018-05-04)
+------------------
 * pull make_shared into namespaces
 * added types for all shared_ptrs
 * fix catkin_lint warnings in filter tests

@@ -2,8 +2,8 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.7 (2018-05-04)
+------------------
 * added types for all function objects
 * added types for all shared_ptrs
 * error if muparser is not available

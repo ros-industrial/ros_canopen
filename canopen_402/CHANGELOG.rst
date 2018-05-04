@@ -2,8 +2,8 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.7 (2018-05-04)
+------------------
 * Added state_switch_timeout parameter to motor.
 * added types for all function objects
 * pull make_shared into namespaces
