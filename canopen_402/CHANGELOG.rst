@@ -2,6 +2,12 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Revert "pull make_shared into namespaces"
+  This reverts commit 9b2cd05df76d223647ca81917d289ca6330cdee6.
+* Contributors: Mathias Lüdtke
+
 0.7.7 (2018-05-04)
 ------------------
 * Added state_switch_timeout parameter to motor.
