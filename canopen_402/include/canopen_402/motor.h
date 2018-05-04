@@ -137,7 +137,7 @@ public:
     virtual bool setTarget(const double &val) { LOG("not implemented"); return false; }
     virtual ~Mode() {}
 };
-
+typedef boost::shared_ptr<Mode> ModeSharedPtr;
 
 template<typename T> class ModeTargetHelper : public Mode {
     T target_;
@@ -183,7 +183,7 @@ public:
 template<uint16_t ID, typename TYPE, uint16_t OBJ, uint8_t SUB, uint16_t CW_MASK> class ModeForwardHelper : public ModeTargetHelper<TYPE> {
     canopen::ObjectStorage::Entry<TYPE> target_entry_;
 public:
-    ModeForwardHelper(boost::shared_ptr<ObjectStorage> storage) : ModeTargetHelper<TYPE>(ID) {
+    ModeForwardHelper(ObjectStorageSharedPtr storage) : ModeTargetHelper<TYPE>(ID) {
         if(SUB) storage->entry(target_entry_, OBJ, SUB);
         else storage->entry(target_entry_, OBJ);
     }
@@ -223,7 +223,7 @@ public:
         CW_Immediate =  Command402::CW_Operation_mode_specific1,
         CW_Blending =  Command402::CW_Operation_mode_specific3,
     };
-    ProfiledPositionMode(boost::shared_ptr<ObjectStorage> storage) : ModeTargetHelper(MotorBase::Profiled_Position) {
+    ProfiledPositionMode(ObjectStorageSharedPtr storage) : ModeTargetHelper(MotorBase::Profiled_Position) {
         storage->entry(target_position_, 0x607A);
     }
     virtual bool start() { sw_ = 0; last_target_= std::numeric_limits<double>::quiet_NaN(); return ModeTargetHelper::start(); }
@@ -278,7 +278,7 @@ class DefaultHomingMode: public HomingMode{
     };
     bool error(canopen::LayerStatus &status, const std::string& msg) { execute_= false; status.error(msg); return false; }
 public:
-    DefaultHomingMode(boost::shared_ptr<ObjectStorage> storage) {
+    DefaultHomingMode(ObjectStorageSharedPtr storage) {
         storage->entry(homing_method_, 0x6098);
     }
     virtual bool start();
@@ -292,7 +292,7 @@ class Motor402 : public MotorBase
 {
 public:
 
-    Motor402(const std::string &name, boost::shared_ptr<ObjectStorage> storage, const canopen::Settings &settings)
+    Motor402(const std::string &name, ObjectStorageSharedPtr storage, const canopen::Settings &settings)
     : MotorBase(name), status_word_(0),control_word_(0),
       switching_state_(State402::InternalState(settings.get_optional<unsigned int>("switching_state", static_cast<unsigned int>(State402::Operation_Enable)))),
       monitor_mode_(settings.get_optional<bool>("monitor_mode", true)),
@@ -324,7 +324,7 @@ public:
         return mode_allocators_.insert(std::make_pair(mode, boost::bind(&Motor402::createAndRegister<T,T1,T2>, this, mode, t1, t2))).second;
     }
 
-    virtual void registerDefaultModes(boost::shared_ptr<ObjectStorage> storage){
+    virtual void registerDefaultModes(ObjectStorageSharedPtr storage){
         registerMode<ProfiledPositionMode> (MotorBase::Profiled_Position, storage);
         registerMode<VelocityMode> (MotorBase::Velocity, storage);
         registerMode<ProfiledVelocityMode> (MotorBase::Profiled_Velocity, storage);
@@ -338,7 +338,7 @@ public:
 
     class Allocator : public MotorBase::Allocator{
     public:
-        virtual boost::shared_ptr<MotorBase> allocate(const std::string &name, boost::shared_ptr<ObjectStorage> storage, const canopen::Settings &settings);
+        virtual MotorBaseSharedPtr allocate(const std::string &name, ObjectStorageSharedPtr storage, const canopen::Settings &settings);
     };
 protected:
     virtual void handleRead(LayerStatus &status, const LayerState &current_state);
@@ -351,19 +351,19 @@ protected:
 
 private:
     template<typename T> void createAndRegister0(uint16_t mode){
-        if(isModeSupportedByDevice(mode)) registerMode(mode, boost::shared_ptr<Mode>(new T()));
+        if(isModeSupportedByDevice(mode)) registerMode(mode, ModeSharedPtr(new T()));
     }
     template<typename T, typename T1> void createAndRegister(uint16_t mode, const T1& t1){
-        if(isModeSupportedByDevice(mode)) registerMode(mode, boost::shared_ptr<Mode>(new T(t1)));
+        if(isModeSupportedByDevice(mode)) registerMode(mode, ModeSharedPtr(new T(t1)));
     }
     template<typename T, typename T1, typename T2> void createAndRegister(uint16_t mode, const T1& t1, const T2& t2){
-        if(isModeSupportedByDevice(mode)) registerMode(mode, boost::shared_ptr<Mode>(new T(t1,t2)));
+        if(isModeSupportedByDevice(mode)) registerMode(mode, ModeSharedPtr(new T(t1,t2)));
     }
 
     virtual bool isModeSupportedByDevice(uint16_t mode);
-    void registerMode(uint16_t id, const boost::shared_ptr<Mode> &m);
+    void registerMode(uint16_t id, const ModeSharedPtr &m);
 
-    boost::shared_ptr<Mode> allocMode(uint16_t mode);
+    ModeSharedPtr allocMode(uint16_t mode);
 
     bool readState(LayerStatus &status, const LayerState &current_state);
     bool switchMode(LayerStatus &status, uint16_t mode);
@@ -379,10 +379,11 @@ private:
     State402 state_handler_;
 
     boost::mutex map_mutex_;
-    boost::unordered_map<uint16_t, boost::shared_ptr<Mode> > modes_;
-    boost::unordered_map<uint16_t, boost::function<void()> > mode_allocators_;
+    boost::unordered_map<uint16_t, ModeSharedPtr > modes_;
+    typedef boost::function<void()> AllocFuncType;
+    boost::unordered_map<uint16_t, AllocFuncType> mode_allocators_;
 
-    boost::shared_ptr<Mode> selected_mode_;
+    ModeSharedPtr selected_mode_;
     uint16_t mode_id_;
     boost::condition_variable mode_cond_;
     boost::mutex mode_mutex_;

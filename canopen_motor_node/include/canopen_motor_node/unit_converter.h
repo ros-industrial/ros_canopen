@@ -12,9 +12,10 @@
 namespace canopen {
 class UnitConverter{
 public:
-    typedef boost::function<double * (const std::string &) > get_var_func_type;
+    typedef boost::function<double * (const std::string &) > get_var_func_type __attribute__((deprecated));
+    typedef boost::function<double * (const std::string &) > GetVarFuncType;
 
-    UnitConverter(const std::string &expression, get_var_func_type var_func)
+    UnitConverter(const std::string &expression, GetVarFuncType var_func)
     : var_func_(var_func)
     {
         parser_.SetVarFactory(UnitConverter::createVariable, this);
@@ -51,7 +52,7 @@ private:
         return p;
     }
     variable_ptr_list var_list_;
-    get_var_func_type var_func_;
+    GetVarFuncType var_func_;
 
     mu::Parser parser_;
 

@@ -14,7 +14,7 @@ public:
    void handle(const can::Frame &f){
         responses.push_back(can::tostring(f, true));
     }
-    can::CommInterface::FrameListener::Ptr listener;
+    can::FrameListenerConstSharedPtr listener;
 };
 
 // Declare a test

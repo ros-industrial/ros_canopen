@@ -23,7 +23,7 @@ bool HandleLayer::select(const MotorBase::OperationMode &m){
     return true;
 }
 
-HandleLayer::HandleLayer(const std::string &name, const boost::shared_ptr<MotorBase> & motor, const boost::shared_ptr<ObjectStorage> storage,  XmlRpc::XmlRpcValue & options)
+HandleLayer::HandleLayer(const std::string &name, const MotorBaseSharedPtr & motor, const ObjectStorageSharedPtr storage,  XmlRpc::XmlRpcValue & options)
 : HandleLayerBase(name + " Handle"), motor_(motor), variables_(storage), jsh_(name, &pos_, &vel_, &eff_), jph_(jsh_, &cmd_pos_), jvh_(jsh_, &cmd_vel_), jeh_(jsh_, &cmd_eff_), jh_(0), forward_command_(false),
   filter_pos_("double"), filter_vel_("double"), filter_eff_("double"), options_(options), enable_limits_(true)
 {
@@ -91,8 +91,8 @@ bool HandleLayer::forwardForMode(const MotorBase::OperationMode &m){
 }
 
 
-template<typename T> void addLimitsHandle(std::vector<LimitsHandleBase::Ptr> &limits, const T &t) {
-    limits.push_back(LimitsHandleBase::Ptr( (LimitsHandleBase *) new LimitsHandle<T> (t) ));
+template<typename T> void addLimitsHandle(std::vector<LimitsHandleBaseSharedPtr> &limits, const T &t) {
+    limits.push_back(LimitsHandleBaseSharedPtr( (LimitsHandleBase *) new LimitsHandle<T> (t) ));
 }
 
 hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::PositionJointInterface &iface,
@@ -203,7 +203,7 @@ void HandleLayer::handleInit(LayerStatus &status){
 }
 
 void HandleLayer::enforceLimits(const ros::Duration &period, bool reset){
-    for(std::vector<LimitsHandleBase::Ptr>::iterator it = limits_.begin(); it != limits_.end(); ++it){
+    for(std::vector<LimitsHandleBaseSharedPtr>::iterator it = limits_.begin(); it != limits_.end(); ++it){
         if(reset) (*it)->reset();
         if(enable_limits_) (*it)->enforce(period);
     }

@@ -37,6 +37,7 @@ public:
     virtual void enforceLimits(const ros::Duration &period, bool reset) = 0;
     virtual void enableLimits(bool enable) = 0;
 };
+typedef boost::shared_ptr<HandleLayerBase> HandleLayerBaseSharedPtr;
 
 }  // namespace canopen
 

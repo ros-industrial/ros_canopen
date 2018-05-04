@@ -14,7 +14,7 @@ class BufferedReader {
     std::deque<can::Frame> buffer_;
     boost::mutex mutex_;
     boost::condition_variable cond_;
-    CommInterface::FrameListener::Ptr listener_;
+    CommInterface::FrameListenerConstSharedPtr listener_;
     bool enabled_;
     size_t max_len_;
 
@@ -77,12 +77,12 @@ public:
         enabled_ = false;
     }
 
-    void listen(boost::shared_ptr<CommInterface> interface){
+    void listen(CommInterfaceSharedPtr interface){
         boost::mutex::scoped_lock lock(mutex_);
         listener_ = interface->createMsgListener(CommInterface::FrameDelegate(this, &BufferedReader::handleFrame));
         buffer_.clear();
     }
-    void listen(boost::shared_ptr<CommInterface> interface, const Frame::Header& h){
+    void listen(CommInterfaceSharedPtr interface, const Frame::Header& h){
         boost::mutex::scoped_lock lock(mutex_);
         listener_ = interface->createMsgListener(h, CommInterface::FrameDelegate(this, &BufferedReader::handleFrame));
         buffer_.clear();

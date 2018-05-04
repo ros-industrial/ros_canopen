@@ -23,12 +23,12 @@ public:
     virtual void enforce(const ros::Duration &period) = 0;
     virtual void reset() = 0;
     virtual ~LimitsHandleBase();
-    typedef boost::shared_ptr<LimitsHandleBase> Ptr;
+    typedef boost::shared_ptr<LimitsHandleBase> Ptr ROS_DEPRECATED;
 };
-
+typedef boost::shared_ptr<LimitsHandleBase> LimitsHandleBaseSharedPtr;
 
 class ObjectVariables {
-    const boost::shared_ptr<ObjectStorage> storage_;
+    const ObjectStorageSharedPtr storage_;
     struct Getter {
         boost::shared_ptr<double> val_ptr;
         boost::function<bool(double&)> func;
@@ -49,7 +49,7 @@ public:
         typedef typename ObjectStorage::DataType<dt>::type type;
         return list.getters_.insert(std::make_pair(key, Getter(list.storage_->entry<type>(key)))).first->second;
     }
-    ObjectVariables(const boost::shared_ptr<ObjectStorage> storage) : storage_(storage) {}
+    ObjectVariables(const ObjectStorageSharedPtr storage) : storage_(storage) {}
     bool sync(){
         boost::mutex::scoped_lock lock(mutex_);
         bool ok = true;
@@ -82,7 +82,7 @@ template<> inline double* ObjectVariables::func<canopen::ObjectDict::DEFTYPE_DOM
 
 
 class HandleLayer: public canopen::HandleLayerBase {
-    boost::shared_ptr<canopen::MotorBase> motor_;
+    canopen::MotorBaseSharedPtr motor_;
     double pos_, vel_, eff_;
 
     double cmd_pos_, cmd_vel_, cmd_eff_;
@@ -122,10 +122,10 @@ class HandleLayer: public canopen::HandleLayerBase {
     }
 
     bool select(const canopen::MotorBase::OperationMode &m);
-    std::vector<LimitsHandleBase::Ptr> limits_;
+    std::vector<LimitsHandleBaseSharedPtr> limits_;
     bool enable_limits_;
 public:
-    HandleLayer(const std::string &name, const boost::shared_ptr<canopen::MotorBase> & motor, const boost::shared_ptr<canopen::ObjectStorage> storage,  XmlRpc::XmlRpcValue & options);
+    HandleLayer(const std::string &name, const canopen::MotorBaseSharedPtr & motor, const canopen::ObjectStorageSharedPtr storage,  XmlRpc::XmlRpcValue & options);
     static double * assignVariable(const std::string &name, double * ptr, const std::string &req) { return name == req ? ptr : 0; }
 
     CanSwitchResult canSwitch(const canopen::MotorBase::OperationMode &m);

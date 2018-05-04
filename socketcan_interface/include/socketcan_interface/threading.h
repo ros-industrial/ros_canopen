@@ -11,7 +11,7 @@ namespace can{
 class StateWaiter{
     boost::mutex mutex_;
     boost::condition_variable cond_;
-    can::StateInterface::StateListener::Ptr state_listener_;
+    can::StateInterface::StateListenerConstSharedPtr state_listener_;
     can::State state_;
     void updateState(const can::State &s){
         boost::mutex::scoped_lock lock(mutex_);

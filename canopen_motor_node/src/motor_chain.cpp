@@ -28,7 +28,7 @@ private:
 MotorChain::MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv) :
         RosChain(nh, nh_priv), motor_allocator_("canopen_402", "canopen::MotorBase::Allocator") {}
 
-bool MotorChain::nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<canopen::Node> &node, const boost::shared_ptr<Logger> &logger)
+bool MotorChain::nodeAdded(XmlRpc::XmlRpcValue &params, const canopen::NodeSharedPtr &node, const LoggerSharedPtr &logger)
 {
     std::string name = params["name"];
     std::string &joint = name;
@@ -45,7 +45,7 @@ bool MotorChain::nodeAdded(XmlRpc::XmlRpcValue &params, const boost::shared_ptr<
     XmlRpcSettings settings;
     if(params.hasMember("motor_layer")) settings = params["motor_layer"];
 
-    boost::shared_ptr<MotorBase> motor;
+    MotorBaseSharedPtr motor;
 
     try{
         motor = motor_allocator_.allocateInstance(alloc_name, name + "_motor", node->getStorage(), settings);

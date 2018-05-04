@@ -9,10 +9,10 @@ namespace can {
 
 class FrameFilter {
 public:
-  typedef boost::shared_ptr<FrameFilter> Ptr;
   virtual bool pass(const can::Frame &frame) const = 0;
   virtual ~FrameFilter() {}
 };
+typedef boost::shared_ptr<FrameFilter> FrameFilterSharedPtr;
 
 class FrameMaskFilter : public FrameFilter {
 public:
@@ -46,8 +46,8 @@ private:
 
 class FilteredFrameListener : public CommInterface::FrameListener {
 public:
-  typedef std::vector<FrameFilter::Ptr> FilterVector;
-  FilteredFrameListener(boost::shared_ptr<CommInterface> comm, const Callable &callable, const FilterVector &filters)
+  typedef std::vector<FrameFilterSharedPtr> FilterVector;
+  FilteredFrameListener(CommInterfaceSharedPtr comm, const Callable &callable, const FilterVector &filters)
   : CommInterface::FrameListener(callable),
     filters_(filters),
     listener_(comm->createMsgListener(Callable(this, &FilteredFrameListener::filter)))
@@ -61,8 +61,8 @@ private:
       }
     }
   }
-  const std::vector<FrameFilter::Ptr> filters_;
-  CommInterface::FrameListener::Ptr listener_;
+  const std::vector<FrameFilterSharedPtr> filters_;
+  CommInterface::FrameListenerConstSharedPtr listener_;
 };
 
 } // namespace can
