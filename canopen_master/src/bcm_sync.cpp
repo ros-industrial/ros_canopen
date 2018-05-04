@@ -42,7 +42,7 @@ int main(int argc, char** argv){
         }
     }
 
-    boost::shared_ptr<can::SocketCANDriver> driver = boost::make_shared<can::SocketCANDriver>();
+    can::SocketCANDriverSharedPtr driver = can::make_shared<can::SocketCANDriver>();
     if(!driver->init(can_device, false)){
         std::cout << "Could not initialize CAN" << std::endl;
         return 1;
@@ -60,7 +60,7 @@ int main(int argc, char** argv){
         std::cout << "Could not initialize sync" << std::endl;
         return 1;
     }
-    
+
     driver->run();
 
     return 0;

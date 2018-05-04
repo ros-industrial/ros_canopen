@@ -38,7 +38,7 @@ namespace socketcan_bridge
 class SocketCANToTopic
 {
   public:
-    SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param, boost::shared_ptr<can::DriverInterface> driver);
+    SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param, can::DriverInterfaceSharedPtr driver);
     void setup();
     void setup(const can::FilteredFrameListener::FilterVector &filters);
     void setup(XmlRpc::XmlRpcValue filters);
@@ -46,10 +46,10 @@ class SocketCANToTopic
 
   private:
     ros::Publisher can_topic_;
-    boost::shared_ptr<can::DriverInterface> driver_;
+    can::DriverInterfaceSharedPtr driver_;
 
-    can::CommInterface::FrameListener::Ptr frame_listener_;
-    can::StateInterface::StateListener::Ptr state_listener_;
+    can::FrameListenerConstSharedPtr frame_listener_;
+    can::StateListenerConstSharedPtr state_listener_;
 
 
     void frameCallback(const can::Frame& f);

@@ -145,25 +145,10 @@ private:
 };
 
 template<typename T> class VectorHelper{
-    typedef std::vector<boost::shared_ptr<T> > vector_type ;
-    vector_type layers;
-    boost::shared_mutex mutex;
-
-    template<typename Bound, typename Iterator, typename Data, typename FuncType> Iterator call(FuncType func, Data &status, const Iterator &begin, const Iterator &end){
-        bool okay_on_start = status.template bounded<Bound>();
-
-        for(Iterator it = begin; it != end; ++it){
-            ((**it).*func)(status);
-            if(okay_on_start && !status.template bounded<Bound>()){
-                return it;
-            }
-        }
-        return end;
-    }
-    template<typename Iterator, typename Data, typename FuncType> Iterator call(FuncType func, Data &status, const Iterator &begin, const Iterator &end){
-        return call<LayerStatus::Unbounded, Iterator, Data>(func, status, begin, end);
-    }
+public:
+    typedef boost::shared_ptr<T> VectorMemberSharedPtr;
 protected:
+    typedef std::vector<VectorMemberSharedPtr> vector_type ;
     template<typename Bound, typename Data, typename FuncType> typename vector_type::iterator call(FuncType func, Data &status){
         boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<Bound>(func, status, layers.begin(), layers.end());
@@ -183,12 +168,30 @@ protected:
     void destroy() { boost::unique_lock<boost::shared_mutex> lock(mutex); layers.clear(); }
 
 public:
-    virtual void add(const boost::shared_ptr<T> &l) { boost::unique_lock<boost::shared_mutex> lock(mutex); layers.push_back(l); }
+    virtual void add(const VectorMemberSharedPtr &l) { boost::unique_lock<boost::shared_mutex> lock(mutex); layers.push_back(l); }
 
     template<typename Bound, typename Data, typename FuncType> bool callFunc(FuncType func, Data &status){
         boost::shared_lock<boost::shared_mutex> lock(mutex);
         return call<Bound>(func, status, layers.begin(), layers.end()) == layers.end();
     }
+private:
+  vector_type layers;
+  boost::shared_mutex mutex;
+
+  template<typename Bound, typename Iterator, typename Data, typename FuncType> Iterator call(FuncType func, Data &status, const Iterator &begin, const Iterator &end){
+      bool okay_on_start = status.template bounded<Bound>();
+
+      for(Iterator it = begin; it != end; ++it){
+          ((**it).*func)(status);
+          if(okay_on_start && !status.template bounded<Bound>()){
+              return it;
+          }
+      }
+      return end;
+  }
+  template<typename Iterator, typename Data, typename FuncType> Iterator call(FuncType func, Data &status, const Iterator &begin, const Iterator &end){
+      return call<LayerStatus::Unbounded, Iterator, Data>(func, status, begin, end);
+  }
 };
 
 template<typename T=Layer> class LayerGroup : public Layer, public VectorHelper<T> {

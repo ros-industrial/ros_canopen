@@ -31,7 +31,7 @@
 #include <string>
 
 namespace can {
-template<> can::FrameFilter::Ptr tofilter(const XmlRpc::XmlRpcValue  &ct) {
+template<> can::FrameFilterSharedPtr tofilter(const XmlRpc::XmlRpcValue  &ct) {
   XmlRpc::XmlRpcValue t(ct);
   try{ // to read as integer
       uint32_t id = static_cast<int>(t);
@@ -46,7 +46,7 @@ template<> can::FrameFilter::Ptr tofilter(const XmlRpc::XmlRpcValue  &ct) {
 namespace socketcan_bridge
 {
   SocketCANToTopic::SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
-      boost::shared_ptr<can::DriverInterface> driver)
+      can::DriverInterfaceSharedPtr driver)
     {
       can_topic_ = nh->advertise<can_msgs::Frame>("received_messages", 10);
       driver_ = driver;

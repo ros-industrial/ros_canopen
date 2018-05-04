@@ -27,7 +27,7 @@ struct NMTcommand{
 
 #pragma pack(pop) /* pop previous alignment from stack */
 
-Node::Node(const boost::shared_ptr<can::CommInterface> interface, const boost::shared_ptr<ObjectDict> dict, uint8_t node_id, const boost::shared_ptr<SyncCounter> sync)
+Node::Node(const can::CommInterfaceSharedPtr interface, const ObjectDictSharedPtr dict, uint8_t node_id, const SyncCounterSharedPtr sync)
 : Layer("Node 301"), node_id_(node_id), interface_(interface), sync_(sync) , state_(Unknown), sdo_(interface, dict, node_id), pdo_(interface){
     try{
         getStorage()->entry(heartbeat_, 0x1017);
