@@ -92,7 +92,7 @@ public:
     };
 
 };
-typedef boost::shared_ptr<DummyInterface> DummyInterfaceSharedPtr;
+typedef std::shared_ptr<DummyInterface> DummyInterfaceSharedPtr;
 
 
 }

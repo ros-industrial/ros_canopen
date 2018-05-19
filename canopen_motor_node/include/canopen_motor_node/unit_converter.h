@@ -4,8 +4,9 @@
 
 #include <string>
 #include <list>
+#include <memory>
+
 #include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
 #include "muParser.h"
 #include <boost/math/special_functions/fpclassify.hpp> // for isnan
 
@@ -38,7 +39,7 @@ public:
     }
     double evaluate() { int num; return parser_.Eval(num)[0]; }
 private:
-    typedef boost::shared_ptr<double> variable_ptr;
+    typedef std::shared_ptr<double> variable_ptr;
     typedef std::list<variable_ptr> variable_ptr_list;
 
     static double* createVariable(const char *name, void * userdata) {

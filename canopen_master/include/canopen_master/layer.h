@@ -2,8 +2,8 @@
 #define H_CANOPEN_LAYER
 
 #include <vector>
+#include <memory>
 #include <boost/thread/shared_mutex.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 
@@ -146,7 +146,7 @@ private:
 
 template<typename T> class VectorHelper{
 public:
-    typedef boost::shared_ptr<T> VectorMemberSharedPtr;
+    typedef std::shared_ptr<T> VectorMemberSharedPtr;
 protected:
     typedef std::vector<VectorMemberSharedPtr> vector_type ;
     template<typename Bound, typename Data, typename FuncType> typename vector_type::iterator call(FuncType func, Data &status){

@@ -1,13 +1,14 @@
 #ifndef H_CAN_DISPATCHER
 #define H_CAN_DISPATCHER
 
-#include <socketcan_interface/interface.h>
+#include <memory>
 #include <list>
+
+#include <socketcan_interface/interface.h>
 #include <boost/thread/mutex.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <boost/foreach.hpp>
-#include <boost/weak_ptr.hpp>
 
 namespace can{
 
@@ -18,10 +19,10 @@ public:
     typedef typename Listener::ListenerConstSharedPtr ListenerConstSharedPtr;
 protected:
     class DispatcherBase;
-    typedef boost::shared_ptr<DispatcherBase> DispatcherBaseSharedPtr;
+    typedef std::shared_ptr<DispatcherBase> DispatcherBaseSharedPtr;
     class DispatcherBase : boost::noncopyable{
         class GuardedListener: public Listener{
-            boost::weak_ptr<DispatcherBase> guard_;
+            std::weak_ptr<DispatcherBase> guard_;
         public:
             GuardedListener(DispatcherBaseSharedPtr g, const Callable &callable): Listener(callable), guard_(g){}
             virtual ~GuardedListener() {
