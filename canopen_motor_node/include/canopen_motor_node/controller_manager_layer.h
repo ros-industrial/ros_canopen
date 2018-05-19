@@ -5,7 +5,7 @@
 #include <memory>
 
 #include <ros/node_handle.h>
-#include <boost/atomic.hpp>
+#include <atomic>
 #include <canopen_master/canopen.h>
 #include <canopen_motor_node/robot_layer.h>
 
@@ -22,7 +22,7 @@ class ControllerManagerLayer : public canopen::Layer {
     ros::NodeHandle nh_;
 
     canopen::time_point last_time_;
-    boost::atomic<bool> recover_;
+    std::atomic<bool> recover_;
     const ros::Duration fixed_period_;
 
 public:

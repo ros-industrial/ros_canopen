@@ -141,7 +141,7 @@ typedef std::shared_ptr<Mode> ModeSharedPtr;
 
 template<typename T> class ModeTargetHelper : public Mode {
     T target_;
-    boost::atomic<bool> has_target_;
+    std::atomic<bool> has_target_;
 
 public:
     ModeTargetHelper(uint16_t mode) : Mode (mode) {}
@@ -265,7 +265,7 @@ public:
 
 class DefaultHomingMode: public HomingMode{
     canopen::ObjectStorage::Entry<int8_t> homing_method_;
-    boost::atomic<bool> execute_;
+    std::atomic<bool> execute_;
 
     boost::mutex mutex_;
     boost::condition_variable cond_;
@@ -369,11 +369,11 @@ private:
     bool switchMode(LayerStatus &status, uint16_t mode);
     bool switchState(LayerStatus &status, const State402::InternalState &target);
 
-    boost::atomic<uint16_t> status_word_;
+    std::atomic<uint16_t> status_word_;
     uint16_t control_word_;
     boost::mutex cw_mutex_;
-    boost::atomic<bool> start_fault_reset_;
-    boost::atomic<State402::InternalState> target_state_;
+    std::atomic<bool> start_fault_reset_;
+    std::atomic<State402::InternalState> target_state_;
 
 
     State402 state_handler_;

@@ -4,7 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include <boost/atomic.hpp>
+#include <atomic>
 #include <boost/bind.hpp>
 #include <boost/thread/mutex.hpp>
 #include <filters/filter_chain.h>
@@ -97,8 +97,8 @@ class HandleLayer: public canopen::HandleLayerBase {
 
     hardware_interface::JointStateHandle jsh_;
     hardware_interface::JointHandle jph_, jvh_, jeh_;
-    boost::atomic<hardware_interface::JointHandle*> jh_;
-    boost::atomic<bool> forward_command_;
+    std::atomic<hardware_interface::JointHandle*> jh_;
+    std::atomic<bool> forward_command_;
 
     typedef std::unordered_map< MotorBase::OperationMode,hardware_interface::JointHandle* > CommandMap;
     CommandMap commands_;
