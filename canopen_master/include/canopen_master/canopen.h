@@ -128,8 +128,8 @@ class PDOMapper{
         int timeout;
     };
 
-    boost::unordered_set<RPDO::RPDOSharedPtr> rpdos_;
-    boost::unordered_set<TPDO::TPDOSharedPtr> tpdos_;
+    std::unordered_set<RPDO::RPDOSharedPtr> rpdos_;
+    std::unordered_set<TPDO::TPDOSharedPtr> tpdos_;
 
     const can::CommInterfaceSharedPtr interface_;
 

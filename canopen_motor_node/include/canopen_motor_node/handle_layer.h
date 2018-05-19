@@ -2,10 +2,10 @@
 #define CANOPEN_MOTOR_NODE_HANDLE_LAYER_H_
 
 #include <memory>
+#include <unordered_map>
 
 #include <boost/atomic.hpp>
 #include <boost/bind.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/thread/mutex.hpp>
 #include <filters/filter_chain.h>
 #include <hardware_interface/joint_command_interface.h>
@@ -42,7 +42,8 @@ class ObjectVariables {
         }
         operator double*() const { return val_ptr.get(); }
     };
-    boost::unordered_map<ObjectDict::Key, Getter> getters_;
+    typedef std::unordered_map<ObjectDict::Key, Getter, ObjectDict::KeyHash> GetterMap;
+    GetterMap getters_;
     boost::mutex mutex_;
 public:
     template<const uint16_t dt> static double* func(ObjectVariables &list, const canopen::ObjectDict::Key &key){
@@ -53,7 +54,7 @@ public:
     bool sync(){
         boost::mutex::scoped_lock lock(mutex_);
         bool ok = true;
-        for(boost::unordered_map<canopen::ObjectDict::Key, Getter>::iterator it = getters_.begin(); it != getters_.end(); ++it){
+        for(GetterMap::iterator it = getters_.begin(); it != getters_.end(); ++it){
             ok = it->second() && ok;
         }
         return ok;
@@ -63,7 +64,7 @@ public:
         try{
             if(n.find("obj") == 0){
                 canopen::ObjectDict::Key key(n.substr(3));
-                boost::unordered_map<ObjectDict::Key, Getter>::const_iterator it = getters_.find(key);
+                GetterMap::const_iterator it = getters_.find(key);
                 if(it != getters_.end()) return it->second;
                 return canopen::branch_type<ObjectVariables, double * (ObjectVariables &list, const canopen::ObjectDict::Key &k)>(storage_->dict_->get(key)->data_type)(*this, key);
             }
@@ -99,7 +100,7 @@ class HandleLayer: public canopen::HandleLayerBase {
     boost::atomic<hardware_interface::JointHandle*> jh_;
     boost::atomic<bool> forward_command_;
 
-    typedef boost::unordered_map< MotorBase::OperationMode,hardware_interface::JointHandle* > CommandMap;
+    typedef std::unordered_map< MotorBase::OperationMode,hardware_interface::JointHandle* > CommandMap;
     CommandMap commands_;
 
     template <typename T> hardware_interface::JointHandle* addHandle( T &iface, hardware_interface::JointHandle *jh,  const std::vector<MotorBase::OperationMode> & modes){

@@ -379,9 +379,9 @@ private:
     State402 state_handler_;
 
     boost::mutex map_mutex_;
-    boost::unordered_map<uint16_t, ModeSharedPtr > modes_;
+    std::unordered_map<uint16_t, ModeSharedPtr > modes_;
     typedef boost::function<void()> AllocFuncType;
-    boost::unordered_map<uint16_t, AllocFuncType> mode_allocators_;
+    std::unordered_map<uint16_t, AllocFuncType> mode_allocators_;
 
     ModeSharedPtr selected_mode_;
     uint16_t mode_id_;

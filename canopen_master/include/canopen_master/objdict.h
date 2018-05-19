@@ -1,11 +1,12 @@
 #ifndef H_OBJDICT
 #define H_OBJDICT
 
+#include <list>
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <socketcan_interface/FastDelegate.h>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/function.hpp>
 #include <typeinfo>
@@ -100,7 +101,7 @@ struct DeviceInfo{
     uint32_t product_number;
     uint32_t revision_number;
     std::string order_code;
-    boost::unordered_set<uint32_t> baudrates;
+    std::unordered_set<uint32_t> baudrates;
     bool simple_boot_up_master;
     bool simple_boot_up_slave;
     uint8_t granularity;
@@ -109,7 +110,7 @@ struct DeviceInfo{
     uint16_t nr_of_rx_pdo;
     uint16_t nr_of_tx_pdo;
     bool lss_supported;
-    boost::unordered_set<uint16_t> dummy_usage;
+    std::unordered_set<uint16_t> dummy_usage;
 };
 
 #define THROW_WITH_KEY(e,k) BOOST_THROW_EXCEPTION(boost::enable_error_info(e) << ObjectDict::key_info(k))
@@ -204,11 +205,13 @@ public:
     bool has(const Key &k) const{
         return dict_.find(k) != dict_.end();
     }
+
     bool insert(bool is_sub, EntryConstSharedPtr e){
-        std::pair<boost::unordered_map<Key, EntryConstSharedPtr>::iterator, bool>  res = dict_.insert(std::make_pair(is_sub?Key(e->index,e->sub_index):Key(e->index),e));
-        return res.second;
+        return dict_.insert(std::make_pair(is_sub?Key(e->index,e->sub_index):Key(e->index),e)).second;
     }
-    bool iterate(boost::unordered_map<Key, EntryConstSharedPtr>::const_iterator &it) const;
+
+    typedef std::unordered_map<Key, EntryConstSharedPtr, KeyHash>  ObjectDictMap;
+    bool iterate(ObjectDictMap::const_iterator &it) const;
     typedef std::list<std::pair<std::string, std::string> > Overlay;
     typedef std::shared_ptr<ObjectDict> ObjectDictSharedPtr;
     static ObjectDictSharedPtr fromFile(const std::string &path, const Overlay &overlay = Overlay());
@@ -226,11 +229,12 @@ protected:
         }
     }
 
-    boost::unordered_map<Key, EntryConstSharedPtr > dict_;
+    ObjectDictMap dict_;
 };
 typedef ObjectDict::ObjectDictSharedPtr ObjectDictSharedPtr;
 typedef std::shared_ptr<const ObjectDict> ObjectDictConstSharedPtr;
 
+[[deprecated]]
 std::size_t hash_value(ObjectDict::Key const& k);
 
 template<typename T> class NodeIdOffset{
@@ -444,7 +448,8 @@ public:
     void reset();
 
 protected:
-    boost::unordered_map<ObjectDict::Key, DataSharedPtr > storage_;
+    typedef std::unordered_map<ObjectDict::Key, DataSharedPtr, ObjectDict::KeyHash> ObjectStorageMap;
+    ObjectStorageMap storage_;
     boost::mutex mutex_;
 
     void init_nolock(const ObjectDict::Key &key, const ObjectDict::EntryConstSharedPtr &entry);
@@ -456,7 +461,7 @@ public:
     template<typename T> Entry<T> entry(const ObjectDict::Key &key){
         boost::mutex::scoped_lock lock(mutex_);
 
-        boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator it = storage_.find(key);
+        ObjectStorageMap::iterator it = storage_.find(key);
 
         if(it == storage_.end()){
             const ObjectDict::EntryConstSharedPtr e = dict_->get(key);
@@ -475,7 +480,7 @@ public:
                 }
             }
 
-            std::pair<boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
+            std::pair<ObjectStorageMap::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
             it = ok.first;
         }
 

@@ -319,13 +319,13 @@ void PDOMapper::RPDO::handleFrame(const can::Frame & msg){
 
 void PDOMapper::read(LayerStatus &status){
     boost::mutex::scoped_lock lock(mutex_);
-    for(boost::unordered_set<RPDO::RPDOSharedPtr >::iterator it = rpdos_.begin(); it != rpdos_.end(); ++it){
+    for(std::unordered_set<RPDO::RPDOSharedPtr >::iterator it = rpdos_.begin(); it != rpdos_.end(); ++it){
         (*it)->sync(status);
     }
 }
 bool PDOMapper::write(){
     boost::mutex::scoped_lock lock(mutex_);
-    for(boost::unordered_set<TPDO::TPDOSharedPtr >::iterator it = tpdos_.begin(); it != tpdos_.end(); ++it){
+    for(std::unordered_set<TPDO::TPDOSharedPtr >::iterator it = tpdos_.begin(); it != tpdos_.end(); ++it){
         (*it)->sync();
     }
     return true; // TODO: check for errors

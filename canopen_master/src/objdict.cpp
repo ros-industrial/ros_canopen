@@ -75,8 +75,8 @@ void ObjectStorage::Data::reset(){
     }
 }
 
-bool ObjectDict::iterate(boost::unordered_map<Key, EntryConstSharedPtr >::const_iterator &it) const{
-    if(it != boost::unordered_map<Key, EntryConstSharedPtr >::const_iterator()){
+bool ObjectDict::iterate(ObjectDict::ObjectDictMap::const_iterator &it) const{
+    if(it != ObjectDict::ObjectDictMap::const_iterator()){
         ++it;
     }else it = dict_.begin();
     return it != dict_.end();
@@ -296,8 +296,8 @@ ObjectDictSharedPtr ObjectDict::fromFile(const std::string &path, const ObjectDi
     read_optional(info.nr_of_tx_pdo, di, "NrOfTXPDO");
     read_optional(info.lss_supported, di, "LSS_Supported");
 
-    boost::unordered_set<uint32_t> baudrates;
-    boost::unordered_set<uint16_t> dummy_usage;
+    std::unordered_set<uint32_t> baudrates;
+    std::unordered_set<uint16_t> dummy_usage;
 
     BOOST_FOREACH(boost::property_tree::iptree::value_type &v, di){
         if(v.first.find("BaudRate_") == 0){
@@ -332,7 +332,7 @@ ObjectDictSharedPtr ObjectDict::fromFile(const std::string &path, const ObjectDi
 }
 
 size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
-    boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator it = storage_.find(key);
+    ObjectStorageMap::iterator it = storage_.find(key);
 
     if(it == storage_.end()){
 
@@ -345,7 +345,7 @@ size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const Object
 
         data = std::make_shared<Data>(key, e,e->def_val.type(),read_delegate_, write_delegate_);
 
-        std::pair<boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
+        std::pair<ObjectStorageMap::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
         it = ok.first;
         it->second->reset();
 
@@ -391,11 +391,11 @@ ObjectStorage::ObjectStorage(ObjectDictConstSharedPtr dict, uint8_t node_id, Rea
 void ObjectStorage::init_nolock(const ObjectDict::Key &key, const ObjectDict::EntryConstSharedPtr &entry){
 
     if(!entry->init_val.is_empty()){
-        boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator it = storage_.find(key);
+        ObjectStorageMap::iterator it = storage_.find(key);
 
         if(it == storage_.end()){
             DataSharedPtr data = std::make_shared<Data>(key,entry, entry->init_val.type(), read_delegate_, write_delegate_);
-            std::pair<boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
+            std::pair<ObjectStorageMap::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
             it = ok.first;
             if(!ok.second){
                 THROW_WITH_KEY(std::bad_alloc() , key);
@@ -411,7 +411,7 @@ void ObjectStorage::init(const ObjectDict::Key &key){
 void ObjectStorage::init_all(){
     boost::mutex::scoped_lock lock(mutex_);
 
-    boost::unordered_map<ObjectDict::Key, ObjectDict::EntryConstSharedPtr >::const_iterator entry_it;
+    ObjectDict::ObjectDictMap::const_iterator entry_it;
     while(dict_->iterate(entry_it)){
         init_nolock(entry_it->first, entry_it->second);
     }
@@ -419,7 +419,7 @@ void ObjectStorage::init_all(){
 
 void ObjectStorage::reset(){
     boost::mutex::scoped_lock lock(mutex_);
-    for(boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator it = storage_.begin(); it != storage_.end(); ++it){
+    for(ObjectStorageMap::iterator it = storage_.begin(); it != storage_.end(); ++it){
         it->second->reset();
     }
 }

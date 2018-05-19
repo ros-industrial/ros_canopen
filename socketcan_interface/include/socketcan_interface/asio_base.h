@@ -12,7 +12,7 @@ namespace can{
 
 
 template<typename Socket> class AsioDriver : public DriverInterface{
-    typedef FilteredDispatcher<const unsigned int, CommInterface::FrameListener> FrameDispatcher;
+    typedef FilteredDispatcher<unsigned int, CommInterface::FrameListener> FrameDispatcher;
     typedef SimpleDispatcher<StateInterface::StateListener> StateDispatcher;
     FrameDispatcher frame_dispatcher_;
     StateDispatcher state_dispatcher_;
