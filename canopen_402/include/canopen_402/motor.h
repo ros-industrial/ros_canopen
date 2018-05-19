@@ -210,7 +210,7 @@ typedef ModeForwardHelper<MotorBase::Interpolated_Position, int32_t, 0x60C1, 0x0
 
 class ProfiledPositionMode : public ModeTargetHelper<int32_t> {
     canopen::ObjectStorage::Entry<int32_t> target_position_;
-    int32_t last_target_;
+    double last_target_;
     uint16_t sw_;
 public:
     enum SW_masks {
