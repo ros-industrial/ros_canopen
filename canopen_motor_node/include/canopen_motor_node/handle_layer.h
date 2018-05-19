@@ -1,10 +1,11 @@
 #ifndef CANOPEN_MOTOR_NODE_HANDLE_LAYER_H_
 #define CANOPEN_MOTOR_NODE_HANDLE_LAYER_H_
 
+#include <memory>
+
 #include <boost/atomic.hpp>
 #include <boost/bind.hpp>
 #include <boost/unordered_map.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 #include <filters/filter_chain.h>
 #include <hardware_interface/joint_command_interface.h>
@@ -24,12 +25,12 @@ public:
     virtual void reset() = 0;
     virtual ~LimitsHandleBase();
 };
-typedef boost::shared_ptr<LimitsHandleBase> LimitsHandleBaseSharedPtr;
+typedef std::shared_ptr<LimitsHandleBase> LimitsHandleBaseSharedPtr;
 
 class ObjectVariables {
     const ObjectStorageSharedPtr storage_;
     struct Getter {
-        boost::shared_ptr<double> val_ptr;
+        std::shared_ptr<double> val_ptr;
         boost::function<bool(double&)> func;
         bool operator ()() { return func(*val_ptr); }
         template<typename T> Getter(const ObjectStorage::Entry<T> &entry): func(boost::bind(&Getter::readObject<T>, entry, _1)), val_ptr(new double) { }
@@ -87,8 +88,8 @@ class HandleLayer: public canopen::HandleLayerBase {
     double cmd_pos_, cmd_vel_, cmd_eff_;
 
     ObjectVariables variables_;
-    boost::scoped_ptr<UnitConverter>  conv_target_pos_, conv_target_vel_, conv_target_eff_;
-    boost::scoped_ptr<UnitConverter>  conv_pos_, conv_vel_, conv_eff_;
+    std::unique_ptr<UnitConverter>  conv_target_pos_, conv_target_vel_, conv_target_eff_;
+    std::unique_ptr<UnitConverter>  conv_pos_, conv_vel_, conv_eff_;
 
     filters::FilterChain<double> filter_pos_, filter_vel_, filter_eff_;
     XmlRpc::XmlRpcValue options_;
@@ -160,7 +161,7 @@ private:
 
 };
 
-typedef boost::shared_ptr<HandleLayer> HandleLayerSharedPtr;
+typedef std::shared_ptr<HandleLayer> HandleLayerSharedPtr;
 
 }  // namespace canopen
 

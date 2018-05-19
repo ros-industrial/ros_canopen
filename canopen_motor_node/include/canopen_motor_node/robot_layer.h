@@ -56,7 +56,7 @@ public:
     virtual void doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list, const std::list<hardware_interface::ControllerInfo> &stop_list);
 };
 
-typedef boost::shared_ptr<RobotLayer> RobotLayerSharedPtr;
+typedef std::shared_ptr<RobotLayer> RobotLayerSharedPtr;
 
 }  // namespace canopen
 

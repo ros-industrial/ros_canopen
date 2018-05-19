@@ -219,12 +219,12 @@ private:
 };
 
 typedef SocketCANInterface SocketCANDriver;
-typedef boost::shared_ptr<SocketCANDriver> SocketCANDriverSharedPtr;
-typedef boost::shared_ptr<SocketCANInterface> SocketCANInterfaceSharedPtr;
+typedef std::shared_ptr<SocketCANDriver> SocketCANDriverSharedPtr;
+typedef std::shared_ptr<SocketCANInterface> SocketCANInterfaceSharedPtr;
 
 template <typename T> class ThreadedInterface;
 typedef ThreadedInterface<SocketCANInterface> ThreadedSocketCANInterface;
-typedef boost::shared_ptr<ThreadedSocketCANInterface> ThreadedSocketCANInterfaceSharedPtr;
+typedef std::shared_ptr<ThreadedSocketCANInterface> ThreadedSocketCANInterfaceSharedPtr;
 
 
 } // namespace can

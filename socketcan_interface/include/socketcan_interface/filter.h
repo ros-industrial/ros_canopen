@@ -12,7 +12,7 @@ public:
   virtual bool pass(const can::Frame &frame) const = 0;
   virtual ~FrameFilter() {}
 };
-typedef boost::shared_ptr<FrameFilter> FrameFilterSharedPtr;
+typedef std::shared_ptr<FrameFilter> FrameFilterSharedPtr;
 
 class FrameMaskFilter : public FrameFilter {
 public:

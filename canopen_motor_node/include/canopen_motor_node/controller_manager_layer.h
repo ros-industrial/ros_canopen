@@ -2,8 +2,9 @@
 #ifndef CANOPEN_MOTOR_NODE_CONTROLLER_MANAGER_LAYER_H_
 #define CANOPEN_MOTOR_NODE_CONTROLLER_MANAGER_LAYER_H_
 
+#include <memory>
+
 #include <ros/node_handle.h>
-#include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
 #include <canopen_master/canopen.h>
 #include <canopen_motor_node/robot_layer.h>
@@ -16,7 +17,7 @@ namespace controller_manager {
 namespace canopen {
 
 class ControllerManagerLayer : public canopen::Layer {
-    boost::shared_ptr<controller_manager::ControllerManager> cm_;
+    std::shared_ptr<controller_manager::ControllerManager> cm_;
     canopen::RobotLayerSharedPtr robot_;
     ros::NodeHandle nh_;
 

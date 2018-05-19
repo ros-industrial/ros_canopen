@@ -137,7 +137,7 @@ public:
     virtual bool setTarget(const double &val) { LOG("not implemented"); return false; }
     virtual ~Mode() {}
 };
-typedef boost::shared_ptr<Mode> ModeSharedPtr;
+typedef std::shared_ptr<Mode> ModeSharedPtr;
 
 template<typename T> class ModeTargetHelper : public Mode {
     T target_;

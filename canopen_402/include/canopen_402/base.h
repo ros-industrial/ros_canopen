@@ -30,7 +30,7 @@ public:
     virtual uint16_t getMode() = 0;
     virtual void registerDefaultModes(ObjectStorageSharedPtr storage) {}
 
-    typedef boost::shared_ptr<MotorBase> MotorBaseSharedPtr;
+    typedef std::shared_ptr<MotorBase> MotorBaseSharedPtr;
 
     class Allocator {
     public:

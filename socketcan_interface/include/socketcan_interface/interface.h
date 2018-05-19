@@ -1,9 +1,10 @@
 #ifndef H_CAN_INTERFACE
 #define H_CAN_INTERFACE
 
+#include <memory>
+
 #include <boost/array.hpp>
 #include <boost/system/error_code.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "FastDelegate.h"
 
@@ -96,7 +97,7 @@ template <typename T,typename U> class Listener{
 public:
     typedef U Type;
     typedef T Callable;
-    typedef boost::shared_ptr<const Listener> ListenerConstSharedPtr;
+    typedef std::shared_ptr<const Listener> ListenerConstSharedPtr;
 
     Listener(const T &callable):callable_(callable){ }
     void operator()(const U & u) const { if(callable_) callable_(u); }
@@ -119,7 +120,7 @@ public:
 
     virtual ~StateInterface() {}
 };
-typedef boost::shared_ptr<StateInterface> StateInterfaceSharedPtr;
+typedef std::shared_ptr<StateInterface> StateInterfaceSharedPtr;
 typedef StateInterface::StateListenerConstSharedPtr StateListenerConstSharedPtr;
 
 class CommInterface{
@@ -155,7 +156,7 @@ public:
 
     virtual ~CommInterface() {}
 };
-typedef boost::shared_ptr<CommInterface> CommInterfaceSharedPtr;
+typedef std::shared_ptr<CommInterface> CommInterfaceSharedPtr;
 typedef CommInterface::FrameListenerConstSharedPtr FrameListenerConstSharedPtr;
 
 
@@ -197,7 +198,7 @@ public:
 
     virtual ~DriverInterface() {}
 };
-typedef boost::shared_ptr<DriverInterface> DriverInterfaceSharedPtr;
+typedef std::shared_ptr<DriverInterface> DriverInterfaceSharedPtr;
 
 
 } // namespace can

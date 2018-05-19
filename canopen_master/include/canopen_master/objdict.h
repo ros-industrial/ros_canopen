@@ -1,11 +1,12 @@
 #ifndef H_OBJDICT
 #define H_OBJDICT
 
+#include <memory>
+
 #include <socketcan_interface/FastDelegate.h>
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/function.hpp>
 #include <typeinfo>
 #include <vector>
@@ -183,7 +184,7 @@ public:
         const HoldAny & value() const { return !init_val.is_empty() ? init_val : def_val; }
 
     };
-    typedef boost::shared_ptr<const Entry> EntryConstSharedPtr;
+    typedef std::shared_ptr<const Entry> EntryConstSharedPtr;
 
     const Entry& operator()(uint16_t i) const{
         return *at(Key(i));
@@ -209,7 +210,7 @@ public:
     }
     bool iterate(boost::unordered_map<Key, EntryConstSharedPtr>::const_iterator &it) const;
     typedef std::list<std::pair<std::string, std::string> > Overlay;
-    typedef boost::shared_ptr<ObjectDict> ObjectDictSharedPtr;
+    typedef std::shared_ptr<ObjectDict> ObjectDictSharedPtr;
     static ObjectDictSharedPtr fromFile(const std::string &path, const Overlay &overlay = Overlay());
     const DeviceInfo device_info;
 
@@ -228,7 +229,7 @@ protected:
     boost::unordered_map<Key, EntryConstSharedPtr > dict_;
 };
 typedef ObjectDict::ObjectDictSharedPtr ObjectDictSharedPtr;
-typedef boost::shared_ptr<const ObjectDict> ObjectDictConstSharedPtr;
+typedef std::shared_ptr<const ObjectDict> ObjectDictConstSharedPtr;
 
 std::size_t hash_value(ObjectDict::Key const& k);
 
@@ -273,7 +274,7 @@ class ObjectStorage{
 public:
     typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, String &> ReadDelegate;
     typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, const String &> WriteDelegate;
-    typedef boost::shared_ptr<ObjectStorage> ObjectStorageSharedPtr;
+    typedef std::shared_ptr<ObjectStorage> ObjectStorageSharedPtr;
 
 protected:
     class Data: boost::noncopyable{
@@ -367,7 +368,7 @@ protected:
         void force_write();
 
     };
-    typedef boost::shared_ptr<Data> DataSharedPtr;
+    typedef std::shared_ptr<Data> DataSharedPtr;
 public:
     template<const uint16_t dt> struct DataType{
         typedef void type;
@@ -465,10 +466,10 @@ public:
 
             if(!e->def_val.is_empty()){
                 T val = NodeIdOffset<T>::apply(e->def_val, node_id_);
-                data = boost::make_shared<Data>(key, e,val, read_delegate_, write_delegate_);
+                data = std::make_shared<Data>(key, e,val, read_delegate_, write_delegate_);
             }else{
                 if(!e->def_val.type().valid() ||  e->def_val.type() == type) {
-                    data = boost::make_shared<Data>(key,e,type, read_delegate_, write_delegate_);
+                    data = std::make_shared<Data>(key,e,type, read_delegate_, write_delegate_);
                 }else{
                     THROW_WITH_KEY(std::bad_cast(), key);
                 }
