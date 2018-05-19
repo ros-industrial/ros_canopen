@@ -25,6 +25,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <socketcan_bridge/topic_to_socketcan.h>
+#include <socketcan_bridge/socketcan_to_topic.h>
 
 #include <can_msgs/Frame.h>
 #include <socketcan_interface/socketcan.h>
@@ -93,8 +94,10 @@ TEST(TopicToSocketCANTest, checkCorrectData)
   ros::WallDuration(1.0).sleep();
   ros::spinOnce();
 
-  can::Frame received;
-  received = frame_collector_.frames.back();
+  can_msgs::Frame received;
+  can::Frame f = frame_collector_.frames.back();
+  socketcan_bridge::convertSocketCANToMessage(f, received);
+
   EXPECT_EQ(received.id, msg.id);
   EXPECT_EQ(received.dlc, msg.dlc);
   EXPECT_EQ(received.is_extended, msg.is_extended);
