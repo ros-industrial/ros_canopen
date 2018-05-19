@@ -161,6 +161,8 @@ private:
 
 };
 
+typedef boost::shared_ptr<HandleLayer> HandleLayerSharedPtr;
+
 }  // namespace canopen
 
 
