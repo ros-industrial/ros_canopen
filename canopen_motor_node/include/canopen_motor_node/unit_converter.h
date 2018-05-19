@@ -8,7 +8,6 @@
 
 #include <boost/function.hpp>
 #include "muParser.h"
-#include <boost/math/special_functions/fpclassify.hpp> // for isnan
 
 namespace canopen {
 class UnitConverter{
@@ -68,8 +67,8 @@ private:
         return val;
     }
     static double smooth(double val, double old_val, double alpha){
-        if(boost::math::isnan(val)) return 0;
-        if(boost::math::isnan(old_val)) return val;
+        if(std::isnan(val)) return 0;
+        if(std::isnan(old_val)) return val;
         return alpha*val + (1.0-alpha)*old_val;
     }
     static double avg(const double *vals, int num)
@@ -78,7 +77,7 @@ private:
         int i=0;
         for (; i<num; ++i){
             const double &val = vals[i];
-            if(boost::math::isnan(val)) break;
+            if(std::isnan(val)) break;
             s += val;
         }
         return s / double(i+1);
