@@ -1,9 +1,9 @@
 #ifndef H_CAN_INTERFACE
 #define H_CAN_INTERFACE
 
+#include <array>
 #include <memory>
 
-#include <boost/array.hpp>
 #include <boost/system/error_code.hpp>
 
 #include "FastDelegate.h"
@@ -56,7 +56,7 @@ struct ErrorHeader : public Header{
 /** representation of a CAN frame */
 struct Frame: public Header{
     typedef unsigned char value_type;
-    boost::array<value_type, 8> data; ///< array for 8 data bytes with bounds checking
+    std::array<value_type, 8> data; ///< array for 8 data bytes with bounds checking
     unsigned char dlc; ///< len of data
 
     /** check if frame header and length are valid*/
@@ -73,7 +73,7 @@ struct Frame: public Header{
     Frame() : Header(), dlc(0) {}
     Frame(const Header &h, unsigned char l = 0) : Header(h), dlc(l) {}
 
-    value_type * c_array() { return data.c_array(); }
+    value_type * c_array() { return data.data(); }
     const value_type * c_array() const { return data.data(); }
 };
 
