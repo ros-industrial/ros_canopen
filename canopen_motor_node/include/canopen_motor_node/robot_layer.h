@@ -2,7 +2,8 @@
 #ifndef CANOPEN_MOTOR_NODE_ROBOT_LAYER_H_
 #define CANOPEN_MOTOR_NODE_ROBOT_LAYER_H_
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
+
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <joint_limits_interface/joint_limits_interface.h>
@@ -31,7 +32,7 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayerBase>, public hardware_int
     ros::NodeHandle nh_;
     urdf::Model urdf_;
 
-    typedef boost::unordered_map< std::string, HandleLayerBaseSharedPtr > HandleMap;
+    typedef std::unordered_map< std::string, HandleLayerBaseSharedPtr > HandleMap;
     HandleMap handles_;
     struct SwitchData {
         HandleLayerBaseSharedPtr handle;
@@ -39,7 +40,7 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayerBase>, public hardware_int
         bool enforce_limits;
     };
     typedef std::vector<SwitchData>  SwitchContainer;
-    typedef boost::unordered_map<std::string, SwitchContainer>  SwitchMap;
+    typedef std::unordered_map<std::string, SwitchContainer>  SwitchMap;
     SwitchMap switch_map_;
 
     boost::atomic<bool> first_init_;

@@ -1,12 +1,13 @@
 #ifndef H_CAN_DISPATCHER
 #define H_CAN_DISPATCHER
 
+#include <functional>
 #include <memory>
 #include <list>
+#include <unordered_map>
 
 #include <socketcan_interface/interface.h>
 #include <boost/thread/mutex.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <boost/foreach.hpp>
 
@@ -75,9 +76,9 @@ public:
     operator Callable() { return Callable(this,&SimpleDispatcher::dispatch); }
 };
 
-template<typename K, typename Listener, typename Hash = boost::hash<K> > class FilteredDispatcher: public SimpleDispatcher<Listener>{
+template<typename K, typename Listener, typename Hash = std::hash<K> > class FilteredDispatcher: public SimpleDispatcher<Listener>{
     typedef SimpleDispatcher<Listener> BaseClass;
-    boost::unordered_map<K, typename BaseClass::DispatcherBaseSharedPtr, Hash> filtered_;
+    std::unordered_map<K, typename BaseClass::DispatcherBaseSharedPtr, Hash> filtered_;
 public:
     using BaseClass::createListener;
     typename BaseClass::ListenerConstSharedPtr createListener(const K &key, const typename BaseClass::Callable &callable){

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
-#include <boost/unordered_set.hpp>
+#include <unordered_set>
+
 #include <boost/exception/diagnostic_information.hpp>
 #include <class_loader/class_loader.hpp>
 #include <socketcan_interface/socketcan.h>
