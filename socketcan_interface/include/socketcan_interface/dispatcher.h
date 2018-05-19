@@ -9,7 +9,6 @@
 #include <socketcan_interface/interface.h>
 #include <boost/thread/mutex.hpp>
 #include <boost/utility.hpp>
-#include <boost/foreach.hpp>
 
 namespace can{
 
