@@ -12,7 +12,6 @@
 namespace canopen {
 class UnitConverter{
 public:
-    typedef boost::function<double * (const std::string &) > get_var_func_type __attribute__((deprecated));
     typedef boost::function<double * (const std::string &) > GetVarFuncType;
 
     UnitConverter(const std::string &expression, GetVarFuncType var_func)

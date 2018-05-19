@@ -97,7 +97,6 @@ public:
     typedef U Type;
     typedef T Callable;
     typedef boost::shared_ptr<const Listener> ListenerConstSharedPtr;
-    typedef ListenerConstSharedPtr Ptr __attribute__((deprecated));
 
     Listener(const T &callable):callable_(callable){ }
     void operator()(const U & u) const { if(callable_) callable_(u); }

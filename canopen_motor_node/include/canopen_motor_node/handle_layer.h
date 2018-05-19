@@ -23,7 +23,6 @@ public:
     virtual void enforce(const ros::Duration &period) = 0;
     virtual void reset() = 0;
     virtual ~LimitsHandleBase();
-    typedef boost::shared_ptr<LimitsHandleBase> Ptr ROS_DEPRECATED;
 };
 typedef boost::shared_ptr<LimitsHandleBase> LimitsHandleBaseSharedPtr;
 

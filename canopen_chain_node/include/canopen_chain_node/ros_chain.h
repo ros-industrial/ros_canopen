@@ -18,7 +18,6 @@ namespace canopen{
 
 class PublishFunc{
 public:
-    typedef boost::function<void()> func_type ROS_DEPRECATED;
     typedef boost::function<void()> FuncType;
 
     static FuncType create(ros::NodeHandle &nh,  const std::string &name, canopen::NodeSharedPtr node, const std::string &key, bool force);
