@@ -2,7 +2,6 @@
 #include <socketcan_interface/string.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -299,7 +298,7 @@ ObjectDictSharedPtr ObjectDict::fromFile(const std::string &path, const ObjectDi
     std::unordered_set<uint32_t> baudrates;
     std::unordered_set<uint16_t> dummy_usage;
 
-    BOOST_FOREACH(boost::property_tree::iptree::value_type &v, di){
+    for(boost::property_tree::iptree::value_type &v: di){
         if(v.first.find("BaudRate_") == 0){
             uint16_t rate = int_from_string<uint16_t>(v.first.substr(9));
             if(v.second.get_value<bool>())
@@ -308,7 +307,7 @@ ObjectDictSharedPtr ObjectDict::fromFile(const std::string &path, const ObjectDi
     }
 
     if(pt.count("DummyUsage")){
-        BOOST_FOREACH(boost::property_tree::iptree::value_type &v, pt.get_child("DummyUsage")){
+        for(boost::property_tree::iptree::value_type &v: pt.get_child("DummyUsage")){
             if(v.first.find("Dummy") == 0){
                 // std::cout << ("0x"+v.first.substr(5)) << std::endl;
                 uint16_t dummy = int_from_string<uint16_t>("0x"+v.first.substr(5));
