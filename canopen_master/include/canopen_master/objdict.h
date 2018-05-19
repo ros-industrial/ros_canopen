@@ -281,7 +281,10 @@ public:
     typedef std::shared_ptr<ObjectStorage> ObjectStorageSharedPtr;
 
 protected:
-    class Data: boost::noncopyable{
+    class Data {
+        Data(const Data&) = delete; // prevent copies
+        Data& operator=(const Data&) = delete;
+
         boost::mutex mutex;
         String buffer;
         bool valid;

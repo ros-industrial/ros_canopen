@@ -8,7 +8,6 @@
 
 #include <socketcan_interface/interface.h>
 #include <boost/thread/mutex.hpp>
-#include <boost/utility.hpp>
 
 namespace can{
 
@@ -20,7 +19,10 @@ public:
 protected:
     class DispatcherBase;
     typedef std::shared_ptr<DispatcherBase> DispatcherBaseSharedPtr;
-    class DispatcherBase : boost::noncopyable{
+    class DispatcherBase {
+        DispatcherBase(const DispatcherBase&) = delete; // prevent copies
+        DispatcherBase& operator=(const DispatcherBase&) = delete;
+
         class GuardedListener: public Listener{
             std::weak_ptr<DispatcherBase> guard_;
         public:

@@ -301,8 +301,11 @@ public:
 };
 typedef std::shared_ptr<SyncLayer> SyncLayerSharedPtr;
 
-class Master: boost::noncopyable {
+class Master{
+    Master(const Master&) = delete; // prevent copies
+    Master& operator=(const Master&) = delete;
 public:
+    Master() = default;
     virtual SyncLayerSharedPtr getSync(const SyncProperties &properties) = 0;
     virtual ~Master() {}
 
