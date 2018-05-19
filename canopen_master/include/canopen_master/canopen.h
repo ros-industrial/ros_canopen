@@ -141,7 +141,7 @@ public:
 };
 
 class EMCYHandler : public Layer {
-    boost::atomic<bool> has_error_;
+    std::atomic<bool> has_error_;
     ObjectStorage::Entry<uint8_t> error_register_;
     ObjectStorage::Entry<uint8_t> num_errors_;
     can::FrameListenerConstSharedPtr emcy_listener_;

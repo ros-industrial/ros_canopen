@@ -197,7 +197,7 @@ protected:
     } hb_sender_;
     Timer heartbeat_timer_;
 
-    boost::atomic<bool> running_;
+    std::atomic<bool> running_;
     boost::mutex diag_mutex_;
 
     bool reset_errors_before_recover_;

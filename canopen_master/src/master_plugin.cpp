@@ -13,7 +13,7 @@ protected:
 
     std::set<void *> nodes_;
     boost::mutex nodes_mutex_;
-    boost::atomic<size_t> nodes_size_;
+    std::atomic<size_t> nodes_size_;
     
     virtual void handleShutdown(LayerStatus &status) {
     }

@@ -43,7 +43,7 @@ class RobotLayer : public LayerGroupNoDiag<HandleLayerBase>, public hardware_int
     typedef std::unordered_map<std::string, SwitchContainer>  SwitchMap;
     SwitchMap switch_map_;
 
-    boost::atomic<bool> first_init_;
+    std::atomic<bool> first_init_;
 
     void stopControllers(const std::vector<std::string> controllers);
 public:
