@@ -129,6 +129,10 @@ public:
         bool operator==(const Key &other) const { return hash == other.hash; }
         operator std::string() const;
     };
+    struct KeyHash {
+        std::size_t operator()(const Key& k) const { return k.hash; }
+    };
+
     enum Code{
         NULL_DATA = 0x00,
         DOMAIN_DATA = 0x02,
