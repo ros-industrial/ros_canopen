@@ -23,10 +23,10 @@ inline time_point get_abs_time() { return boost::chrono::high_resolution_clock::
 
 template<typename T> struct FrameOverlay: public can::Frame{
     T &data;
-    FrameOverlay(const Header &h) : can::Frame(h,sizeof(T)), data(*(T*) can::Frame::data.c_array()) {
+    FrameOverlay(const Header &h) : can::Frame(h,sizeof(T)), data(* (T*) can::Frame::c_array()) {
         can::Frame::data.fill(0);
     }
-    FrameOverlay(const can::Frame &f) : can::Frame(f), data(*(T*) can::Frame::data.c_array()) { }
+    FrameOverlay(const can::Frame &f) : can::Frame(f), data(* (T*) can::Frame::c_array()) { }
 };
 
 class SDOClient{

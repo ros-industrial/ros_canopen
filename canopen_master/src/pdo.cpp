@@ -251,7 +251,7 @@ void PDOMapper::TPDO::sync(){
 
     bool updated = false;
     size_t len = frame.dlc;
-    uint8_t * dest = frame.data.c_array();
+    can::Frame::value_type * dest = frame.c_array();
     for(std::vector< BufferSharedPtr >::iterator b_it = buffers.begin(); b_it != buffers.end(); ++b_it){
         Buffer &b = **b_it;
         if(len >= b.size){
