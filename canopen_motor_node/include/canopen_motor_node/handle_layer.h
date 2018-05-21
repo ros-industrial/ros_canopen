@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include <atomic>
-#include <boost/bind.hpp>
+#include <functional>
 #include <boost/thread/mutex.hpp>
 #include <filters/filter_chain.h>
 #include <hardware_interface/joint_command_interface.h>
@@ -31,9 +31,9 @@ class ObjectVariables {
     const ObjectStorageSharedPtr storage_;
     struct Getter {
         std::shared_ptr<double> val_ptr;
-        boost::function<bool(double&)> func;
+        std::function<bool(double&)> func;
         bool operator ()() { return func(*val_ptr); }
-        template<typename T> Getter(const ObjectStorage::Entry<T> &entry): func(boost::bind(&Getter::readObject<T>, entry, _1)), val_ptr(new double) { }
+        template<typename T> Getter(const ObjectStorage::Entry<T> &entry): func(std::bind(&Getter::readObject<T>, entry, std::placeholders::_1)), val_ptr(new double) { }
         template<typename T> static bool readObject(ObjectStorage::Entry<T> &entry, double &res){
             T val;
             if(!entry.get(val)) return false;

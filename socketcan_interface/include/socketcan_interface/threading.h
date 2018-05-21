@@ -3,10 +3,8 @@
 
 #include <socketcan_interface/interface.h>
 #include <boost/thread/thread.hpp>
-#include <boost/bind.hpp>
 
 namespace can{
-
 
 class StateWaiter{
     boost::mutex mutex_;

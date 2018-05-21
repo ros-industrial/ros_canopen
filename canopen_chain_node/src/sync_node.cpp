@@ -91,9 +91,9 @@ int main(int argc, char** argv){
 
     diagnostic_updater::Updater diag_updater(nh, nh_priv);
     diag_updater.setHardwareID(nh_priv.param("hardware_id", std::string("none")));
-    diag_updater.add("sync", boost::bind(report_diagnostics,boost::ref(stack), _1));
+    diag_updater.add("sync", std::bind(report_diagnostics,std::ref(stack), std::placeholders::_1));
 
-    ros::Timer diag_timer = nh.createTimer(ros::Duration(diag_updater.getPeriod()/2.0),boost::bind(&diagnostic_updater::Updater::update, &diag_updater));
+    ros::Timer diag_timer = nh.createTimer(ros::Duration(diag_updater.getPeriod()/2.0),std::bind(&diagnostic_updater::Updater::update, &diag_updater));
 
     ros::spin();
     return 0;

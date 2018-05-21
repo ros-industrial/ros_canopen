@@ -495,7 +495,7 @@ bool RosChain::setup_nodes(){
         if(!addLoggerEntries(merged, "log_error", diagnostic_updater::DiagnosticStatusWrapper::ERROR, *logger)) return false;
 
         loggers_.push_back(logger);
-        diag_updater_.add(it->first, boost::bind(&Logger::log, logger, _1));
+        diag_updater_.add(it->first, std::bind(&Logger::log, logger, std::placeholders::_1));
 
         std::string node_name = std::string(merged["name"]);
 
@@ -573,7 +573,7 @@ bool RosChain::setup_chain(){
     diag_updater_.setHardwareID(hw_id);
     diag_updater_.add("chain", this, &RosChain::report_diagnostics);
 
-    diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),boost::bind(&diagnostic_updater::Updater::update, &diag_updater_));
+    diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),std::bind(&diagnostic_updater::Updater::update, &diag_updater_));
 
     ros::NodeHandle nh_driver(nh_, "driver");
 

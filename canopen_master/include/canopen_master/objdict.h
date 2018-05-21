@@ -8,7 +8,7 @@
 
 #include <socketcan_interface/FastDelegate.h>
 #include <boost/thread/mutex.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <typeinfo>
 #include <vector>
 #include "exceptions.h"
@@ -516,9 +516,9 @@ public:
             return false;
         }
     }
-    typedef boost::function<std::string()> ReadStringFuncType;
+    typedef std::function<std::string()> ReadStringFuncType;
     ReadStringFuncType getStringReader(const ObjectDict::Key &key, bool cached = false);
-    typedef boost::function<void(const std::string &)>  WriteStringFuncType;
+    typedef std::function<void(const std::string &)>  WriteStringFuncType;
     WriteStringFuncType getStringWriter(const ObjectDict::Key &key, bool cached = false);
 
     const ObjectDictConstSharedPtr dict_;

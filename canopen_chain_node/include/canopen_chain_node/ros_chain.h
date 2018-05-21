@@ -40,9 +40,9 @@ public:
 class Logger: public DiagGroup<canopen::Layer>{
     const canopen::NodeSharedPtr node_;
 
-    std::vector<boost::function< void (diagnostic_updater::DiagnosticStatusWrapper &)> > entries_;
+    std::vector<std::function< void (diagnostic_updater::DiagnosticStatusWrapper &)> > entries_;
 
-    static void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, uint8_t level, const std::string &name, boost::function<std::string()> getter){
+    static void log_entry(diagnostic_updater::DiagnosticStatusWrapper &stat, uint8_t level, const std::string &name, std::function<std::string()> getter){
         if(stat.level >= level){
             try{
                 stat.add(name, getter());
@@ -60,7 +60,7 @@ public:
             ObjectDict::Key k(key);
             const ObjectDict::EntryConstSharedPtr entry = node_->getStorage()->dict_->get(k);
             std::string name = entry->desc.empty() ? key : entry->desc;
-            entries_.push_back(boost::bind(log_entry, _1, level, name, node_->getStorage()->getStringReader(k, !forced)));
+            entries_.push_back(std::bind(log_entry, std::placeholders::_1, level, name, node_->getStorage()->getStringReader(k, !forced)));
             return true;
         }
         catch(std::exception& e){

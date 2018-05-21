@@ -6,7 +6,7 @@
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 
 namespace can{
 
@@ -92,7 +92,7 @@ public:
             boost::asio::io_service::work work(io_service_);
             setDriverState(State::ready);
 
-            boost::thread post_thread(boost::bind(&boost::asio::io_service::run, &io_service_));
+            boost::thread post_thread([this]() { io_service_.run(); });
 
             triggerReadSome();
 
