@@ -44,7 +44,7 @@ int main(int argc, char** argv){
     int sync_ms;
     if(!sync_nh.getParam("interval_ms", sync_ms) || sync_ms <=0){
         ROS_ERROR_STREAM("Sync interval  "<< sync_ms << " is invalid");
-        return false;
+        return 1;
     }
 
     int sync_overflow = 0;
@@ -53,7 +53,7 @@ int main(int argc, char** argv){
     }
     if(sync_overflow == 1 || sync_overflow > 240){
         ROS_ERROR_STREAM("Sync overflow  "<< sync_overflow << " is invalid");
-        return false;
+        return 1;
     }
 
 
