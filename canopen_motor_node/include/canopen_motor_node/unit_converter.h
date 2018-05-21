@@ -6,13 +6,13 @@
 #include <list>
 #include <memory>
 
-#include <boost/function.hpp>
+#include <functional>
 #include "muParser.h"
 
 namespace canopen {
 class UnitConverter{
 public:
-    typedef boost::function<double * (const std::string &) > GetVarFuncType;
+    typedef std::function<double * (const std::string &) > GetVarFuncType;
 
     UnitConverter(const std::string &expression, GetVarFuncType var_func)
     : var_func_(var_func)

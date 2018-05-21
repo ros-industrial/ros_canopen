@@ -440,9 +440,9 @@ struct PrintValue {
         ObjectStorage::Entry<typename ObjectStorage::DataType<dt>::type> entry = storage.entry<typename ObjectStorage::DataType<dt>::type>(key);
         return formatValue<dt>(cached? entry.get_cached() : entry.get() );
     }
-    static boost::function<std::string()> getReader(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
+    static std::function<std::string()> getReader(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
         ObjectDict::DataTypes data_type = (ObjectDict::DataTypes) storage.dict_->get(key)->data_type;
-        return boost::bind(branch_type<PrintValue, std::string (ObjectStorage&, const ObjectDict::Key &, bool)>(data_type),boost::ref(storage), key, cached);
+        return std::bind(branch_type<PrintValue, std::string (ObjectStorage&, const ObjectDict::Key &, bool)>(data_type),std::ref(storage), key, cached);
     }
 };
 
@@ -462,14 +462,14 @@ struct WriteStringValue {
             entry.set(any.get<T>());
         }
     }
-    template<const ObjectDict::DataTypes dt> static boost::function<void (const std::string&)> func(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
+    template<const ObjectDict::DataTypes dt> static std::function<void (const std::string&)> func(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
         ObjectStorage::Entry<typename ObjectStorage::DataType<dt>::type> entry = storage.entry<typename ObjectStorage::DataType<dt>::type>(key);
         reader_type reader = branch_type<ReadAnyValue, HoldAny (boost::property_tree::iptree &, const std::string &)>(dt);
-        return boost::bind(&WriteStringValue::write<typename ObjectStorage::DataType<dt>::type >, entry, cached, reader, _1);
+        return std::bind(&WriteStringValue::write<typename ObjectStorage::DataType<dt>::type >, entry, cached, reader, std::placeholders::_1);
     }
-    static boost::function<void (const std::string&)> getWriter(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
+    static std::function<void (const std::string&)> getWriter(ObjectStorage& storage, const ObjectDict::Key &key, bool cached){
         ObjectDict::DataTypes data_type = (ObjectDict::DataTypes) storage.dict_->get(key)->data_type;
-        return branch_type<WriteStringValue,  boost::function<void (const std::string&)> (ObjectStorage&, const ObjectDict::Key &, bool)>(data_type)(storage, key, cached);
+        return branch_type<WriteStringValue,  std::function<void (const std::string&)> (ObjectStorage&, const ObjectDict::Key &, bool)>(data_type)(storage, key, cached);
     }
 };
 

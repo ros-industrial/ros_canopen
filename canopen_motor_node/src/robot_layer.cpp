@@ -19,7 +19,7 @@ void RobotLayer::stopControllers(const std::vector<std::string> controllers){
     controller_manager_msgs::SwitchController srv;
     srv.request.stop_controllers = controllers;
     srv.request.strictness = srv.request.BEST_EFFORT;
-    boost::thread call(boost::bind(ros::service::call<controller_manager_msgs::SwitchController>, "controller_manager/switch_controller", srv));
+    boost::thread call(std::bind(ros::service::call<controller_manager_msgs::SwitchController>, "controller_manager/switch_controller", srv));
     call.detach();
 }
 
