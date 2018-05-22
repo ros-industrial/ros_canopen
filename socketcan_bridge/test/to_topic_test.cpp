@@ -96,8 +96,10 @@ TEST(SocketCANToTopicTest, checkCorrectData)
   ASSERT_EQ(1, message_collector_.messages.size());
 
   // compare the received can_msgs::Frame message to the sent can::Frame.
-  can_msgs::Frame received;
-  received = message_collector_.messages.back();
+  can::Frame received;
+  can_msgs::Frame msg = message_collector_.messages.back();
+  socketcan_bridge::convertMessageToSocketCAN(msg, received);
+
   EXPECT_EQ(received.id, f.id);
   EXPECT_EQ(received.dlc, f.dlc);
   EXPECT_EQ(received.is_extended, f.is_extended);
@@ -198,8 +200,10 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   ASSERT_EQ(1, message_collector_.messages.size());
 
   // compare the received can_msgs::Frame message to the sent can::Frame.
-  can_msgs::Frame received;
-  received = message_collector_.messages.back();
+  can::Frame received;
+  can_msgs::Frame msg = message_collector_.messages.back();
+  socketcan_bridge::convertMessageToSocketCAN(msg, received);
+
   EXPECT_EQ(received.id, f.id);
   EXPECT_EQ(received.dlc, f.dlc);
   EXPECT_EQ(received.is_extended, f.is_extended);
