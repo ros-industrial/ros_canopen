@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.9 (2018-05-23)
+------------------
 * introduced ROSCANOPEN_MAKE_SHARED
 * added c_array access functons to can::Frame
 * Contributors: Mathias Lüdtke

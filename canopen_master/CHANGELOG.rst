@@ -2,8 +2,8 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.9 (2018-05-23)
+------------------
 * provided KeyHash
   for use with unordered containers
 * added c_array access functons to can::Frame

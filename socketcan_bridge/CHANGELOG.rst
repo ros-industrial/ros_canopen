@@ -2,8 +2,8 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.7.9 (2018-05-23)
+------------------
 * compare can_msgs::Frame and can::Frame properly
 * Contributors: Mathias Lüdtke
 
