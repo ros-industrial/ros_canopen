@@ -2,6 +2,13 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* provided KeyHash
+  for use with unordered containers
+* added c_array access functons to can::Frame
+* Contributors: Mathias Lüdtke
+
 0.7.8 (2018-05-04)
 ------------------
 * Revert "pull make_shared into namespaces"
