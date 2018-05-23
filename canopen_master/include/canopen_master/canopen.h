@@ -58,7 +58,7 @@ public:
     void init();
 
     SDOClient(const can::CommInterfaceSharedPtr interface, const ObjectDictSharedPtr dict, uint8_t node_id)
-    : interface_(interface), storage_(boost::make_shared<ObjectStorage>(dict, node_id, ObjectStorage::ReadDelegate(this, &SDOClient::read), ObjectStorage::WriteDelegate(this, &SDOClient::write))), reader_(false, 1)
+    : interface_(interface), storage_(std::make_shared<ObjectStorage>(dict, node_id, ObjectStorage::ReadDelegate(this, &SDOClient::read), ObjectStorage::WriteDelegate(this, &SDOClient::write))), reader_(false, 1)
     {
     }
 };
@@ -82,7 +82,7 @@ class PDOMapper{
         bool empty;
         std::vector<char> buffer;
     };
-    typedef boost::shared_ptr<Buffer> BufferSharedPtr;
+    typedef std::shared_ptr<Buffer> BufferSharedPtr;
 
     class PDO {
     protected:
@@ -93,7 +93,7 @@ class PDOMapper{
     };
 
     struct TPDO: public PDO{
-        typedef boost::shared_ptr<TPDO> TPDOSharedPtr;
+        typedef std::shared_ptr<TPDO> TPDOSharedPtr;
         void sync();
         static TPDOSharedPtr create(const can::CommInterfaceSharedPtr interface, const ObjectStorageSharedPtr &storage, const uint16_t &com_index, const uint16_t &map_index){
             TPDOSharedPtr tpdo(new TPDO(interface));
@@ -110,7 +110,7 @@ class PDOMapper{
 
     struct RPDO : public PDO{
         void sync(LayerStatus &status);
-        typedef boost::shared_ptr<RPDO> RPDOSharedPtr;
+        typedef std::shared_ptr<RPDO> RPDOSharedPtr;
         static RPDOSharedPtr create(const can::CommInterfaceSharedPtr interface, const ObjectStorageSharedPtr &storage, const uint16_t &com_index, const uint16_t &map_index){
             RPDOSharedPtr rpdo(new RPDO(interface));
             if(!rpdo->init(storage, com_index, map_index))
@@ -128,8 +128,8 @@ class PDOMapper{
         int timeout;
     };
 
-    boost::unordered_set<RPDO::RPDOSharedPtr> rpdos_;
-    boost::unordered_set<TPDO::TPDOSharedPtr> tpdos_;
+    std::unordered_set<RPDO::RPDOSharedPtr> rpdos_;
+    std::unordered_set<TPDO::TPDOSharedPtr> tpdos_;
 
     const can::CommInterfaceSharedPtr interface_;
 
@@ -141,7 +141,7 @@ public:
 };
 
 class EMCYHandler : public Layer {
-    boost::atomic<bool> has_error_;
+    std::atomic<bool> has_error_;
     ObjectStorage::Entry<uint8_t> error_register_;
     ObjectStorage::Entry<uint8_t> num_errors_;
     can::FrameListenerConstSharedPtr emcy_listener_;
@@ -179,7 +179,7 @@ public:
     virtual  void removeNode(void * const ptr) = 0;
     virtual ~SyncCounter() {}
 };
-typedef boost::shared_ptr<SyncCounter> SyncCounterSharedPtr;
+typedef std::shared_ptr<SyncCounter> SyncCounterSharedPtr;
 
 class Node : public Layer{
 public:
@@ -248,11 +248,11 @@ private:
     void setHeartbeatInterval() { if(heartbeat_.valid()) heartbeat_.set(heartbeat_.desc().value().get<uint16_t>()); }
     bool checkHeartbeat();
 };
-typedef boost::shared_ptr<Node> NodeSharedPtr;
+typedef std::shared_ptr<Node> NodeSharedPtr;
 
 template<typename T> class Chain{
 public:
-    typedef boost::shared_ptr<T> MemberSharedPtr;
+    typedef std::shared_ptr<T> MemberSharedPtr;
     void call(void (T::*func)(void)){
         typename std::vector<MemberSharedPtr>::iterator it = elements.begin();
         while(it != elements.end()){
@@ -299,14 +299,17 @@ class SyncLayer: public Layer, public SyncCounter{
 public:
     SyncLayer(const SyncProperties &p) : Layer("Sync layer"), SyncCounter(p) {}
 };
-typedef boost::shared_ptr<SyncLayer> SyncLayerSharedPtr;
+typedef std::shared_ptr<SyncLayer> SyncLayerSharedPtr;
 
-class Master: boost::noncopyable {
+class Master{
+    Master(const Master&) = delete; // prevent copies
+    Master& operator=(const Master&) = delete;
 public:
+    Master() = default;
     virtual SyncLayerSharedPtr getSync(const SyncProperties &properties) = 0;
     virtual ~Master() {}
 
-    typedef boost::shared_ptr<Master> MasterSharedPtr;
+    typedef std::shared_ptr<Master> MasterSharedPtr;
     class Allocator {
     public:
         virtual MasterSharedPtr allocate(const std::string &name, can::CommInterfaceSharedPtr interface) = 0;

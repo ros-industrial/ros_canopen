@@ -13,7 +13,7 @@ protected:
 
     std::set<void *> nodes_;
     boost::mutex nodes_mutex_;
-    boost::atomic<size_t> nodes_size_;
+    std::atomic<size_t> nodes_size_;
     
     virtual void handleShutdown(LayerStatus &status) {
     }
@@ -97,14 +97,14 @@ template<typename SyncType> class WrapMaster: public Master{
     can::CommInterfaceSharedPtr interface_;
 public:
     virtual SyncLayerSharedPtr getSync(const SyncProperties &properties){
-        return boost::make_shared<SyncType>(properties, interface_);
+        return std::make_shared<SyncType>(properties, interface_);
     }
     WrapMaster(can::CommInterfaceSharedPtr interface) : interface_(interface)  {}
 
     class Allocator : public Master::Allocator{
     public:
         virtual MasterSharedPtr allocate(const std::string &name,  can::CommInterfaceSharedPtr interface){
-            return boost::make_shared<WrapMaster>(interface);
+            return std::make_shared<WrapMaster>(interface);
         }
     };
 };

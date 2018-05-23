@@ -1,12 +1,14 @@
 #ifndef H_OBJDICT
 #define H_OBJDICT
 
+#include <list>
+#include <memory>
+#include <unordered_map>
+#include <unordered_set>
+
 #include <socketcan_interface/FastDelegate.h>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <typeinfo>
 #include <vector>
 #include "exceptions.h"
@@ -99,7 +101,7 @@ struct DeviceInfo{
     uint32_t product_number;
     uint32_t revision_number;
     std::string order_code;
-    boost::unordered_set<uint32_t> baudrates;
+    std::unordered_set<uint32_t> baudrates;
     bool simple_boot_up_master;
     bool simple_boot_up_slave;
     uint8_t granularity;
@@ -108,7 +110,7 @@ struct DeviceInfo{
     uint16_t nr_of_rx_pdo;
     uint16_t nr_of_tx_pdo;
     bool lss_supported;
-    boost::unordered_set<uint16_t> dummy_usage;
+    std::unordered_set<uint16_t> dummy_usage;
 };
 
 #define THROW_WITH_KEY(e,k) BOOST_THROW_EXCEPTION(boost::enable_error_info(e) << ObjectDict::key_info(k))
@@ -183,7 +185,7 @@ public:
         const HoldAny & value() const { return !init_val.is_empty() ? init_val : def_val; }
 
     };
-    typedef boost::shared_ptr<const Entry> EntryConstSharedPtr;
+    typedef std::shared_ptr<const Entry> EntryConstSharedPtr;
 
     const Entry& operator()(uint16_t i) const{
         return *at(Key(i));
@@ -203,13 +205,15 @@ public:
     bool has(const Key &k) const{
         return dict_.find(k) != dict_.end();
     }
+
     bool insert(bool is_sub, EntryConstSharedPtr e){
-        std::pair<boost::unordered_map<Key, EntryConstSharedPtr>::iterator, bool>  res = dict_.insert(std::make_pair(is_sub?Key(e->index,e->sub_index):Key(e->index),e));
-        return res.second;
+        return dict_.insert(std::make_pair(is_sub?Key(e->index,e->sub_index):Key(e->index),e)).second;
     }
-    bool iterate(boost::unordered_map<Key, EntryConstSharedPtr>::const_iterator &it) const;
+
+    typedef std::unordered_map<Key, EntryConstSharedPtr, KeyHash>  ObjectDictMap;
+    bool iterate(ObjectDictMap::const_iterator &it) const;
     typedef std::list<std::pair<std::string, std::string> > Overlay;
-    typedef boost::shared_ptr<ObjectDict> ObjectDictSharedPtr;
+    typedef std::shared_ptr<ObjectDict> ObjectDictSharedPtr;
     static ObjectDictSharedPtr fromFile(const std::string &path, const Overlay &overlay = Overlay());
     const DeviceInfo device_info;
 
@@ -225,11 +229,12 @@ protected:
         }
     }
 
-    boost::unordered_map<Key, EntryConstSharedPtr > dict_;
+    ObjectDictMap dict_;
 };
 typedef ObjectDict::ObjectDictSharedPtr ObjectDictSharedPtr;
-typedef boost::shared_ptr<const ObjectDict> ObjectDictConstSharedPtr;
+typedef std::shared_ptr<const ObjectDict> ObjectDictConstSharedPtr;
 
+[[deprecated]]
 std::size_t hash_value(ObjectDict::Key const& k);
 
 template<typename T> class NodeIdOffset{
@@ -273,10 +278,13 @@ class ObjectStorage{
 public:
     typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, String &> ReadDelegate;
     typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, const String &> WriteDelegate;
-    typedef boost::shared_ptr<ObjectStorage> ObjectStorageSharedPtr;
+    typedef std::shared_ptr<ObjectStorage> ObjectStorageSharedPtr;
 
 protected:
-    class Data: boost::noncopyable{
+    class Data {
+        Data(const Data&) = delete; // prevent copies
+        Data& operator=(const Data&) = delete;
+
         boost::mutex mutex;
         String buffer;
         bool valid;
@@ -367,7 +375,7 @@ protected:
         void force_write();
 
     };
-    typedef boost::shared_ptr<Data> DataSharedPtr;
+    typedef std::shared_ptr<Data> DataSharedPtr;
 public:
     template<const uint16_t dt> struct DataType{
         typedef void type;
@@ -443,7 +451,8 @@ public:
     void reset();
 
 protected:
-    boost::unordered_map<ObjectDict::Key, DataSharedPtr > storage_;
+    typedef std::unordered_map<ObjectDict::Key, DataSharedPtr, ObjectDict::KeyHash> ObjectStorageMap;
+    ObjectStorageMap storage_;
     boost::mutex mutex_;
 
     void init_nolock(const ObjectDict::Key &key, const ObjectDict::EntryConstSharedPtr &entry);
@@ -455,7 +464,7 @@ public:
     template<typename T> Entry<T> entry(const ObjectDict::Key &key){
         boost::mutex::scoped_lock lock(mutex_);
 
-        boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator it = storage_.find(key);
+        ObjectStorageMap::iterator it = storage_.find(key);
 
         if(it == storage_.end()){
             const ObjectDict::EntryConstSharedPtr e = dict_->get(key);
@@ -465,16 +474,16 @@ public:
 
             if(!e->def_val.is_empty()){
                 T val = NodeIdOffset<T>::apply(e->def_val, node_id_);
-                data = boost::make_shared<Data>(key, e,val, read_delegate_, write_delegate_);
+                data = std::make_shared<Data>(key, e,val, read_delegate_, write_delegate_);
             }else{
                 if(!e->def_val.type().valid() ||  e->def_val.type() == type) {
-                    data = boost::make_shared<Data>(key,e,type, read_delegate_, write_delegate_);
+                    data = std::make_shared<Data>(key,e,type, read_delegate_, write_delegate_);
                 }else{
                     THROW_WITH_KEY(std::bad_cast(), key);
                 }
             }
 
-            std::pair<boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
+            std::pair<ObjectStorageMap::iterator, bool>  ok = storage_.insert(std::make_pair(key, data));
             it = ok.first;
         }
 
@@ -507,9 +516,9 @@ public:
             return false;
         }
     }
-    typedef boost::function<std::string()> ReadStringFuncType;
+    typedef std::function<std::string()> ReadStringFuncType;
     ReadStringFuncType getStringReader(const ObjectDict::Key &key, bool cached = false);
-    typedef boost::function<void(const std::string &)>  WriteStringFuncType;
+    typedef std::function<void(const std::string &)>  WriteStringFuncType;
     WriteStringFuncType getStringWriter(const ObjectDict::Key &key, bool cached = false);
 
     const ObjectDictConstSharedPtr dict_;

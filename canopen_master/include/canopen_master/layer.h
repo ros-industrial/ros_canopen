@@ -2,9 +2,9 @@
 #define H_CANOPEN_LAYER
 
 #include <vector>
+#include <memory>
 #include <boost/thread/shared_mutex.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/atomic.hpp>
+#include <atomic>
 #include <boost/exception/diagnostic_information.hpp>
 
 namespace canopen{
@@ -14,7 +14,7 @@ class LayerStatus{
     enum State{
         OK = 0, WARN = 1, ERROR= 2, STALE = 3, UNBOUNDED = 3
     };
-    boost::atomic<State> state;
+    std::atomic<State> state;
     std::string reason_;
 
     virtual void set(const State &s, const std::string &r){
@@ -140,13 +140,13 @@ protected:
     virtual void handleRecover(LayerStatus &status)  = 0;
 
 private:
-    boost::atomic<LayerState> state;
+    std::atomic<LayerState> state;
 
 };
 
 template<typename T> class VectorHelper{
 public:
-    typedef boost::shared_ptr<T> VectorMemberSharedPtr;
+    typedef std::shared_ptr<T> VectorMemberSharedPtr;
 protected:
     typedef std::vector<VectorMemberSharedPtr> vector_type ;
     template<typename Bound, typename Data, typename FuncType> typename vector_type::iterator call(FuncType func, Data &status){

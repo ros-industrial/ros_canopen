@@ -3,10 +3,8 @@
 
 #include <socketcan_interface/interface.h>
 #include <boost/thread/thread.hpp>
-#include <boost/bind.hpp>
 
 namespace can{
-
 
 class StateWaiter{
     boost::mutex mutex_;
@@ -39,7 +37,7 @@ public:
 };
 
 template<typename WrappedInterface> class ThreadedInterface : public WrappedInterface{
-    boost::shared_ptr<boost::thread> thread_;
+    std::shared_ptr<boost::thread> thread_;
     void run_thread(){
         WrappedInterface::run();
     }
@@ -69,7 +67,7 @@ public:
     ThreadedInterface(): WrappedInterface() {}
     template<typename T1> ThreadedInterface(const T1 &t1): WrappedInterface(t1) {}
     template<typename T1, typename T2> ThreadedInterface(const T1 &t1, const T2 &t2): WrappedInterface(t1, t2) {}
-    
+
 };
 
 

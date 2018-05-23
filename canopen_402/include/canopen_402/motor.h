@@ -3,7 +3,7 @@
 
 #include <canopen_402/base.h>
 #include <canopen_master/canopen.h>
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/container/flat_map.hpp>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -137,18 +137,18 @@ public:
     virtual bool setTarget(const double &val) { LOG("not implemented"); return false; }
     virtual ~Mode() {}
 };
-typedef boost::shared_ptr<Mode> ModeSharedPtr;
+typedef std::shared_ptr<Mode> ModeSharedPtr;
 
 template<typename T> class ModeTargetHelper : public Mode {
     T target_;
-    boost::atomic<bool> has_target_;
+    std::atomic<bool> has_target_;
 
 public:
     ModeTargetHelper(uint16_t mode) : Mode (mode) {}
     bool hasTarget() { return has_target_; }
     T getTarget() { return target_; }
     virtual bool setTarget(const double &val) {
-        if(boost::math::isnan(val)){
+        if(std::isnan(val)){
             LOG("target command is not a number");
             return false;
         }
@@ -265,7 +265,7 @@ public:
 
 class DefaultHomingMode: public HomingMode{
     canopen::ObjectStorage::Entry<int8_t> homing_method_;
-    boost::atomic<bool> execute_;
+    std::atomic<bool> execute_;
 
     boost::mutex mutex_;
     boost::condition_variable cond_;
@@ -314,14 +314,11 @@ public:
     virtual bool isModeSupported(uint16_t mode);
     virtual uint16_t getMode();
 
-    template<typename T> bool registerMode(uint16_t mode) {
-        return mode_allocators_.insert(std::make_pair(mode, boost::bind(&Motor402::createAndRegister<T>, this, mode))).second;
-    }
-    template<typename T, typename T1> bool registerMode(uint16_t mode, const T1& t1) {
-        return mode_allocators_.insert(std::make_pair(mode, boost::bind(&Motor402::createAndRegister<T,T1>, this, mode, t1))).second;
-    }
-    template<typename T, typename T1, typename T2> bool registerMode(uint16_t mode, const T1& t1, const T2& t2) {
-        return mode_allocators_.insert(std::make_pair(mode, boost::bind(&Motor402::createAndRegister<T,T1,T2>, this, mode, t1, t2))).second;
+    template<typename T, typename ...Args>
+    bool registerMode(uint16_t mode, Args&&... args) {
+        return mode_allocators_.insert(std::make_pair(mode,  [args..., mode, this](){
+            if(isModeSupportedByDevice(mode)) registerMode(mode, ModeSharedPtr(new T(args...)));
+        })).second;
     }
 
     virtual void registerDefaultModes(ObjectStorageSharedPtr storage){
@@ -350,16 +347,6 @@ protected:
     virtual void handleRecover(LayerStatus &status);
 
 private:
-    template<typename T> void createAndRegister0(uint16_t mode){
-        if(isModeSupportedByDevice(mode)) registerMode(mode, ModeSharedPtr(new T()));
-    }
-    template<typename T, typename T1> void createAndRegister(uint16_t mode, const T1& t1){
-        if(isModeSupportedByDevice(mode)) registerMode(mode, ModeSharedPtr(new T(t1)));
-    }
-    template<typename T, typename T1, typename T2> void createAndRegister(uint16_t mode, const T1& t1, const T2& t2){
-        if(isModeSupportedByDevice(mode)) registerMode(mode, ModeSharedPtr(new T(t1,t2)));
-    }
-
     virtual bool isModeSupportedByDevice(uint16_t mode);
     void registerMode(uint16_t id, const ModeSharedPtr &m);
 
@@ -369,19 +356,19 @@ private:
     bool switchMode(LayerStatus &status, uint16_t mode);
     bool switchState(LayerStatus &status, const State402::InternalState &target);
 
-    boost::atomic<uint16_t> status_word_;
+    std::atomic<uint16_t> status_word_;
     uint16_t control_word_;
     boost::mutex cw_mutex_;
-    boost::atomic<bool> start_fault_reset_;
-    boost::atomic<State402::InternalState> target_state_;
+    std::atomic<bool> start_fault_reset_;
+    std::atomic<State402::InternalState> target_state_;
 
 
     State402 state_handler_;
 
     boost::mutex map_mutex_;
-    boost::unordered_map<uint16_t, ModeSharedPtr > modes_;
-    typedef boost::function<void()> AllocFuncType;
-    boost::unordered_map<uint16_t, AllocFuncType> mode_allocators_;
+    std::unordered_map<uint16_t, ModeSharedPtr > modes_;
+    typedef std::function<void()> AllocFuncType;
+    std::unordered_map<uint16_t, AllocFuncType> mode_allocators_;
 
     ModeSharedPtr selected_mode_;
     uint16_t mode_id_;

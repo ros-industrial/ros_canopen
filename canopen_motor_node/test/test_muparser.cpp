@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <canopen_motor_node/unit_converter.h>
 #include <canopen_motor_node/handle_layer.h>
-#include <boost/bind.hpp>
+#include <functional>
 
 using namespace canopen;
 
@@ -11,7 +11,7 @@ double * mapVariable(const std::string &, double *p) {
 
 TEST(TestMuparser, CheckNorm){
     double input = 0;
-    UnitConverter uc("norm(in,-1000,1000)", boost::bind(HandleLayer::assignVariable, _1, &input, "in"));
+    UnitConverter uc("norm(in,-1000,1000)", std::bind(HandleLayer::assignVariable, std::placeholders::_1, &input, "in"));
     input = 0; EXPECT_EQ(0, uc.evaluate());
     input = 10; EXPECT_EQ(10, uc.evaluate());
     input = -10; EXPECT_EQ(-10, uc.evaluate());

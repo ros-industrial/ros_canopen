@@ -44,7 +44,7 @@ int main(int argc, char** argv){
     int sync_ms;
     if(!sync_nh.getParam("interval_ms", sync_ms) || sync_ms <=0){
         ROS_ERROR_STREAM("Sync interval  "<< sync_ms << " is invalid");
-        return false;
+        return 1;
     }
 
     int sync_overflow = 0;
@@ -53,7 +53,7 @@ int main(int argc, char** argv){
     }
     if(sync_overflow == 1 || sync_overflow > 240){
         ROS_ERROR_STREAM("Sync overflow  "<< sync_overflow << " is invalid");
-        return false;
+        return 1;
     }
 
 
@@ -63,10 +63,10 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    can::SocketCANDriverSharedPtr driver = boost::make_shared<can::SocketCANDriver>();
+    can::SocketCANDriverSharedPtr driver = std::make_shared<can::SocketCANDriver>();
     canopen::SyncProperties sync_properties(can::MsgHeader(sync_nh.param("sync_id", 0x080)), sync_ms, sync_overflow);
 
-    boost::shared_ptr<canopen::BCMsync> sync = boost::make_shared<canopen::BCMsync>(can_device, driver, sync_properties);
+    std::shared_ptr<canopen::BCMsync> sync = std::make_shared<canopen::BCMsync>(can_device, driver, sync_properties);
 
     std::vector<int> nodes;
 
@@ -86,14 +86,14 @@ int main(int argc, char** argv){
 
     canopen::LayerStack stack("SyncNodeLayer");
 
-    stack.add(boost::make_shared<canopen::CANLayer>(driver, can_device, false));
+    stack.add(std::make_shared<canopen::CANLayer>(driver, can_device, false));
     stack.add(sync);
 
     diagnostic_updater::Updater diag_updater(nh, nh_priv);
     diag_updater.setHardwareID(nh_priv.param("hardware_id", std::string("none")));
-    diag_updater.add("sync", boost::bind(report_diagnostics,boost::ref(stack), _1));
+    diag_updater.add("sync", std::bind(report_diagnostics,std::ref(stack), std::placeholders::_1));
 
-    ros::Timer diag_timer = nh.createTimer(ros::Duration(diag_updater.getPeriod()/2.0),boost::bind(&diagnostic_updater::Updater::update, &diag_updater));
+    ros::Timer diag_timer = nh.createTimer(ros::Duration(diag_updater.getPeriod()/2.0),std::bind(&diagnostic_updater::Updater::update, &diag_updater));
 
     ros::spin();
     return 0;

@@ -19,7 +19,7 @@ void RobotLayer::stopControllers(const std::vector<std::string> controllers){
     controller_manager_msgs::SwitchController srv;
     srv.request.stop_controllers = controllers;
     srv.request.strictness = srv.request.BEST_EFFORT;
-    boost::thread call(boost::bind(ros::service::call<controller_manager_msgs::SwitchController>, "controller_manager/switch_controller", srv));
+    boost::thread call(std::bind(ros::service::call<controller_manager_msgs::SwitchController>, "controller_manager/switch_controller", srv));
     call.detach();
 }
 
@@ -137,7 +137,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
                         return false;
                     }
 
-                    boost::unordered_map< std::string, HandleLayerBaseSharedPtr >::const_iterator h_it = handles_.find(*res_it);
+                    std::unordered_map< std::string, HandleLayerBaseSharedPtr >::const_iterator h_it = handles_.find(*res_it);
 
                     const std::string & joint = *res_it;
 
@@ -179,7 +179,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
     }
 
     // perform mode switches
-    boost::unordered_set<HandleLayerBaseSharedPtr > to_stop;
+    std::unordered_set<HandleLayerBaseSharedPtr > to_stop;
     std::vector<std::string> failed_controllers;
     for (std::list<hardware_interface::ControllerInfo>::const_iterator controller_it = stop_list.begin(); controller_it != stop_list.end(); ++controller_it){
         SwitchContainer &to_switch = switch_map_.at(controller_it->name);
@@ -208,7 +208,7 @@ bool RobotLayer::prepareSwitch(const std::list<hardware_interface::ControllerInf
             to_stop.erase(it->handle);
         }
     }
-    for(boost::unordered_set<HandleLayerBaseSharedPtr >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
+    for(std::unordered_set<HandleLayerBaseSharedPtr >::iterator it = to_stop.begin(); it != to_stop.end(); ++it){
         (*it)->switchMode(MotorBase::No_Mode);
     }
     if(!failed_controllers.empty()){

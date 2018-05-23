@@ -1,10 +1,11 @@
 #ifndef CANOPEN_MOTOR_NODE_HANDLE_LAYER_H_
 #define CANOPEN_MOTOR_NODE_HANDLE_LAYER_H_
 
-#include <boost/atomic.hpp>
-#include <boost/bind.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <memory>
+#include <unordered_map>
+
+#include <atomic>
+#include <functional>
 #include <boost/thread/mutex.hpp>
 #include <filters/filter_chain.h>
 #include <hardware_interface/joint_command_interface.h>
@@ -23,17 +24,16 @@ public:
     virtual void enforce(const ros::Duration &period) = 0;
     virtual void reset() = 0;
     virtual ~LimitsHandleBase();
-    typedef boost::shared_ptr<LimitsHandleBase> Ptr ROS_DEPRECATED;
 };
-typedef boost::shared_ptr<LimitsHandleBase> LimitsHandleBaseSharedPtr;
+typedef std::shared_ptr<LimitsHandleBase> LimitsHandleBaseSharedPtr;
 
 class ObjectVariables {
     const ObjectStorageSharedPtr storage_;
     struct Getter {
-        boost::shared_ptr<double> val_ptr;
-        boost::function<bool(double&)> func;
+        std::shared_ptr<double> val_ptr;
+        std::function<bool(double&)> func;
         bool operator ()() { return func(*val_ptr); }
-        template<typename T> Getter(const ObjectStorage::Entry<T> &entry): func(boost::bind(&Getter::readObject<T>, entry, _1)), val_ptr(new double) { }
+        template<typename T> Getter(const ObjectStorage::Entry<T> &entry): func(std::bind(&Getter::readObject<T>, entry, std::placeholders::_1)), val_ptr(new double) { }
         template<typename T> static bool readObject(ObjectStorage::Entry<T> &entry, double &res){
             T val;
             if(!entry.get(val)) return false;
@@ -42,7 +42,8 @@ class ObjectVariables {
         }
         operator double*() const { return val_ptr.get(); }
     };
-    boost::unordered_map<ObjectDict::Key, Getter> getters_;
+    typedef std::unordered_map<ObjectDict::Key, Getter, ObjectDict::KeyHash> GetterMap;
+    GetterMap getters_;
     boost::mutex mutex_;
 public:
     template<const uint16_t dt> static double* func(ObjectVariables &list, const canopen::ObjectDict::Key &key){
@@ -53,7 +54,7 @@ public:
     bool sync(){
         boost::mutex::scoped_lock lock(mutex_);
         bool ok = true;
-        for(boost::unordered_map<canopen::ObjectDict::Key, Getter>::iterator it = getters_.begin(); it != getters_.end(); ++it){
+        for(GetterMap::iterator it = getters_.begin(); it != getters_.end(); ++it){
             ok = it->second() && ok;
         }
         return ok;
@@ -63,7 +64,7 @@ public:
         try{
             if(n.find("obj") == 0){
                 canopen::ObjectDict::Key key(n.substr(3));
-                boost::unordered_map<ObjectDict::Key, Getter>::const_iterator it = getters_.find(key);
+                GetterMap::const_iterator it = getters_.find(key);
                 if(it != getters_.end()) return it->second;
                 return canopen::branch_type<ObjectVariables, double * (ObjectVariables &list, const canopen::ObjectDict::Key &k)>(storage_->dict_->get(key)->data_type)(*this, key);
             }
@@ -88,18 +89,18 @@ class HandleLayer: public canopen::HandleLayerBase {
     double cmd_pos_, cmd_vel_, cmd_eff_;
 
     ObjectVariables variables_;
-    boost::scoped_ptr<UnitConverter>  conv_target_pos_, conv_target_vel_, conv_target_eff_;
-    boost::scoped_ptr<UnitConverter>  conv_pos_, conv_vel_, conv_eff_;
+    std::unique_ptr<UnitConverter>  conv_target_pos_, conv_target_vel_, conv_target_eff_;
+    std::unique_ptr<UnitConverter>  conv_pos_, conv_vel_, conv_eff_;
 
     filters::FilterChain<double> filter_pos_, filter_vel_, filter_eff_;
     XmlRpc::XmlRpcValue options_;
 
     hardware_interface::JointStateHandle jsh_;
     hardware_interface::JointHandle jph_, jvh_, jeh_;
-    boost::atomic<hardware_interface::JointHandle*> jh_;
-    boost::atomic<bool> forward_command_;
+    std::atomic<hardware_interface::JointHandle*> jh_;
+    std::atomic<bool> forward_command_;
 
-    typedef boost::unordered_map< MotorBase::OperationMode,hardware_interface::JointHandle* > CommandMap;
+    typedef std::unordered_map< MotorBase::OperationMode,hardware_interface::JointHandle* > CommandMap;
     CommandMap commands_;
 
     template <typename T> hardware_interface::JointHandle* addHandle( T &iface, hardware_interface::JointHandle *jh,  const std::vector<MotorBase::OperationMode> & modes){
@@ -161,7 +162,7 @@ private:
 
 };
 
-typedef boost::shared_ptr<HandleLayer> HandleLayerSharedPtr;
+typedef std::shared_ptr<HandleLayer> HandleLayerSharedPtr;
 
 }  // namespace canopen
 
