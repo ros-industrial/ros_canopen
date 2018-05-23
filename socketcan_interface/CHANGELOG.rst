@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.9 (2018-05-23)
+------------------
 * explicitly include iostream to compile with boost >= 1.65.0
 * Contributors: Lukas Bulwahn
 

@@ -2,8 +2,8 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.9 (2018-05-23)
+------------------
 * fix initialization bug in ProfiledPositionMode
 * Contributors: Mathias Lüdtke
 
