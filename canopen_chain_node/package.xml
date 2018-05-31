@@ -21,7 +21,7 @@
 
   <depend>canopen_master</depend>
   <depend>diagnostic_updater</depend>
-  <depend>pluginlib</depend>
+  <depend version_gte="1.11.2">pluginlib</depend>
   <depend>roslib</depend>
   <depend>roscpp</depend>
   <depend>socketcan_interface</depend> <!-- direct dependency needed for pluginlib look-up -->

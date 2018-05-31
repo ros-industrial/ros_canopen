@@ -16,7 +16,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>boost</depend>
-  <depend>class_loader</depend> 
+  <depend version_gte="0.3.9">class_loader</depend>
   <depend>linux-kernel-headers</depend>
 
   <test_depend>rosunit</test_depend>
