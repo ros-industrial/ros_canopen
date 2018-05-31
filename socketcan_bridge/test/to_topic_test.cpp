@@ -302,6 +302,7 @@ TEST(SocketCANToTopicTest, checkMaskFilter)
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "test_to_topic");
+  ros::NodeHandle nh;
   ros::WallDuration(1.0).sleep();
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
