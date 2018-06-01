@@ -349,14 +349,14 @@ bool SDOClient::processFrame(const can::Frame & msg){
                     }
                 }else{
                     // abort, size mismatch
-                    ROSCANOPEN_ERROR("abort, size mismatch" << buffer.size() << " " << resp.data.data_size());
+                    ROSCANOPEN_ERROR("canopen_master", "abort, size mismatch" << buffer.size() << " " << resp.data.data_size());
                     reason = 0x06070010; // Data type does not match, length of service parameter does not match
                 }
             }
             break;
         }
         case AbortTranserRequest::command:
-            ROSCANOPEN_ERROR("abort" << std::hex << (uint32_t) AbortTranserRequest(msg).data.index << "#"<< std::dec << (uint32_t) AbortTranserRequest(msg).data.sub_index << ", reason: " << AbortTranserRequest(msg).data.text());
+            ROSCANOPEN_ERROR("canopen_master", "abort" << std::hex << (uint32_t) AbortTranserRequest(msg).data.index << "#"<< std::dec << (uint32_t) AbortTranserRequest(msg).data.sub_index << ", reason: " << AbortTranserRequest(msg).data.text());
             offset = 0;
             return false;
             break;
@@ -417,11 +417,11 @@ void SDOClient::transmitAndWait(const canopen::ObjectDict::Entry &entry, const S
         if(!reader_.read(&msg,boost::chrono::seconds(1)))
         {
             abort(0x05040000); // SDO protocol timed out.
-            ROSCANOPEN_ERROR("Did not receive a response message");
+            ROSCANOPEN_ERROR("canopen_master", "Did not receive a response message");
             break;
         }
         if(!processFrame(msg)){
-            ROSCANOPEN_ERROR("Could not process message");
+            ROSCANOPEN_ERROR("canopen_master", "Could not process message");
             break;
         }
     }

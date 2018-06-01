@@ -22,8 +22,9 @@
   <depend>canopen_master</depend>
   <depend>diagnostic_updater</depend>
   <depend>pluginlib</depend>
-  <depend>roslib</depend>
+  <depend>rosconsole_bridge</depend>
   <depend>roscpp</depend>
+  <depend>roslib</depend>
   <depend>socketcan_interface</depend> <!-- direct dependency needed for pluginlib look-up -->
   <depend>std_srvs</depend>
 
