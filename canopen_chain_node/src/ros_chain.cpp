@@ -593,7 +593,7 @@ RosChain::~RosChain(){
         LayerStatus s;
         halt(s);
         shutdown(s);
-    }catch(...){ LOG("CATCH"); }
+    }catch(...){ ROS_ERROR("CATCH"); }
 }
 
 }

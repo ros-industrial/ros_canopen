@@ -134,7 +134,7 @@ public:
     virtual bool start() = 0;
     virtual bool read(const uint16_t &sw) = 0;
     virtual bool write(OpModeAccesser& cw) = 0;
-    virtual bool setTarget(const double &val) { LOG("not implemented"); return false; }
+    virtual bool setTarget(const double &val) { ROSCANOPEN_ERROR("not implemented"); return false; }
     virtual ~Mode() {}
 };
 typedef std::shared_ptr<Mode> ModeSharedPtr;
@@ -149,7 +149,7 @@ public:
     T getTarget() { return target_; }
     virtual bool setTarget(const double &val) {
         if(std::isnan(val)){
-            LOG("target command is not a number");
+            ROSCANOPEN_ERROR("target command is not a number");
             return false;
         }
 
@@ -162,15 +162,15 @@ public:
             target_= numeric_cast<T>(val);
         }
         catch(negative_overflow&) {
-            LOG("Command " << val << " does not fit into target, clamping to min limit");
+            ROSCANOPEN_WARN("Command " << val << " does not fit into target, clamping to min limit");
             target_= std::numeric_limits<T>::min();
         }
         catch(positive_overflow&) {
-            LOG("Command " << val << " does not fit into target, clamping to max limit");
+            ROSCANOPEN_WARN("Command " << val << " does not fit into target, clamping to max limit");
             target_= std::numeric_limits<T>::max();
         }
         catch(...){
-            LOG("Was not able to cast command " << val);
+            ROSCANOPEN_ERROR("Was not able to cast command " << val);
             return false;
         }
 
