@@ -11,6 +11,8 @@ find_package(catkin REQUIRED
     class_loader
 )
 
+find_package(console_bridge REQUIRED)
+
 find_package(Boost REQUIRED
   COMPONENTS
     chrono
@@ -28,12 +30,14 @@ catkin_package(
   CATKIN_DEPENDS
   DEPENDS
     Boost
+    console_bridge
 )
 
 include_directories(
   include
   ${Boost_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
+  ${console_bridge_INCLUDE_DIRS}
 )
 
 # ${PROJECT_NAME}_string
@@ -48,6 +52,7 @@ add_executable(socketcan_dump
 
 target_link_libraries(socketcan_dump
    ${PROJECT_NAME}_string
+   ${console_bridge_LIBRARIES}
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
    ${CMAKE_THREAD_LIBS_INIT}
@@ -60,6 +65,7 @@ add_executable(socketcan_bcm
 
 target_link_libraries(socketcan_bcm
    ${PROJECT_NAME}_string
+   ${console_bridge_LIBRARIES}
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
 )
@@ -69,6 +75,7 @@ add_library(${PROJECT_NAME}_plugin
   src/${PROJECT_NAME}_plugin.cpp
 )
 target_link_libraries(${PROJECT_NAME}_plugin
+  ${console_bridge_LIBRARIES}
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
@@ -103,6 +110,7 @@ if(CATKIN_ENABLE_TESTING)
   )
   target_link_libraries(${PROJECT_NAME}-test_dummy_interface
     ${PROJECT_NAME}_string
+    ${console_bridge_LIBRARIES}
     ${catkin_LIBRARIES}
   )
 
@@ -119,6 +127,7 @@ if(CATKIN_ENABLE_TESTING)
   )
   target_link_libraries(${PROJECT_NAME}-test_string
     ${PROJECT_NAME}_string
+    ${console_bridge_LIBRARIES}
     ${catkin_LIBRARIES}
   )
 
@@ -127,6 +136,7 @@ if(CATKIN_ENABLE_TESTING)
   )
   target_link_libraries(${PROJECT_NAME}-test_filter
     ${PROJECT_NAME}_string
+    ${console_bridge_LIBRARIES}
     ${catkin_LIBRARIES}
   )
 

@@ -217,17 +217,6 @@ using DriverInterfaceSharedPtr = std::shared_ptr<DriverInterface>;
 
 } // namespace can
 
-#include <iostream>
-#include <boost/thread/mutex.hpp>
-
-struct _cout_wrapper{
-    static boost::mutex& get_cout_mutex(){
-        static boost::mutex mutex;
-        return mutex;
-    }
-};
-
-#define LOG(log) { boost::mutex::scoped_lock _cout_lock(_cout_wrapper::get_cout_mutex()); std::cout << log << std::endl; }
-
+#include "logging.h"
 
 #endif

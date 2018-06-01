@@ -1,5 +1,6 @@
 #include <canopen_master/bcm_sync.h>
 #include <socketcan_interface/string.h>
+#include <iostream>
 
 int main(int argc, char** argv){
 
@@ -60,7 +61,7 @@ int main(int argc, char** argv){
         std::cout << "Could not initialize sync" << std::endl;
         return 1;
     }
-    
+
     driver->run();
 
     return 0;
