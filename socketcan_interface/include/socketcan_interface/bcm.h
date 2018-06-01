@@ -7,10 +7,12 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
- 
+
 #include <linux/can.h>
 #include <linux/can/bcm.h>
 #include <linux/can/error.h>
+
+#include <boost/chrono.hpp>
 
 namespace can {
 
