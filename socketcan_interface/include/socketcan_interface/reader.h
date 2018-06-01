@@ -21,7 +21,7 @@ class BufferedReader {
     void trim(){
         if(max_len_ > 0){
             while(buffer_.size() > max_len_){
-                LOG("buffer overflow, discarded oldest message " /*<< tostring(buffer_.front())*/); // enable message printing
+                ROSCANOPEN_ERROR("buffer overflow, discarded oldest message " /*<< tostring(buffer_.front())*/); // enable message printing
                 buffer_.pop_front();
             }
         }
@@ -33,7 +33,7 @@ class BufferedReader {
             trim();
             cond_.notify_one();
         }else{
-            LOG("discarded message " /*<< tostring(msg)*/); // enable message printing
+            ROSCANOPEN_WARN("discarded message " /*<< tostring(msg)*/); // enable message printing
         }
     }
 public:

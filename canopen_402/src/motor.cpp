@@ -60,7 +60,7 @@ State402::InternalState State402::read(uint16_t sw) {
         break;
 
     default:
-        LOG("Motor is currently in an unknown state: " << std::hex <<  state << std::dec);
+        ROSCANOPEN_WARN("Motor is currently in an unknown state: " << std::hex <<  state << std::dec);
     }
     boost::mutex::scoped_lock lock(mutex_);
     if(new_state != state_){
@@ -154,7 +154,7 @@ bool Command402::setTransition(uint16_t &cw, const State402::InternalState &from
         return true;
     }
     catch(...){
-        LOG("illegal tranistion " << from << " -> " << to);
+        ROSCANOPEN_WARN("illegal tranistion " << from << " -> " << to);
     }
     return false;
 }
@@ -254,7 +254,7 @@ bool Motor402::enterModeAndWait(uint16_t mode) {
     LayerStatus s;
     bool okay = mode != MotorBase::Homing && switchMode(s, mode);
     if(!s.bounded<LayerStatus::Ok>()){
-        LOG("Could not switch to mode " << mode << ", reason: " << s.reason());
+        ROSCANOPEN_ERROR("Could not switch to mode " << mode << ", reason: " << s.reason());
     }
     return okay;
 }
