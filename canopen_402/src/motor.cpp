@@ -265,7 +265,10 @@ uint16_t Motor402::getMode() {
 }
 
 bool Motor402::isModeSupportedByDevice(uint16_t mode){
-    return mode > 0 && supported_drive_modes_.valid() && (supported_drive_modes_.get_cached() & (1<<(mode-1)));
+    if(!supported_drive_modes_.valid()) {
+        BOOST_THROW_EXCEPTION( std::runtime_error("Supported drive modes (object 6502) is not valid"));
+    }
+    return mode > 0 && mode <= 32 && (supported_drive_modes_.get_cached() & (1<<(mode-1)));
 }
 void Motor402::registerMode(uint16_t id, const ModeSharedPtr &m){
     boost::mutex::scoped_lock map_lock(map_mutex_);
