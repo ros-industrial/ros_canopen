@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(canopen_motor_node)
 
+set(CMAKE_CXX_STANDARD 11)
+
 find_package(catkin REQUIRED
   COMPONENTS
     canopen_402
