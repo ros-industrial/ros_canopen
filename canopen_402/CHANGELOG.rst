@@ -2,8 +2,8 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.0 (2018-07-11)
+------------------
 * handle invalid supported drive modes object
 * made Mode402::registerMode a variadic template
 * use std::isnan

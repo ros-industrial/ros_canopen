@@ -2,8 +2,8 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.0 (2018-07-11)
+------------------
 * migrated to std::function and std::bind
 * use std::isnan
 * migrated to std::atomic

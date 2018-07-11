@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.0 (2018-07-11)
+------------------
 * migrated to std::function and std::bind
 * got rid of boost::noncopyable
 * replaced BOOST_FOREACH

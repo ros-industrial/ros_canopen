@@ -2,8 +2,8 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.0 (2018-07-11)
+------------------
 * migrated to std::function and std::bind
 * migrated to std::atomic
 * got rid of boost::noncopyable
