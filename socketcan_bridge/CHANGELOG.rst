@@ -2,6 +2,14 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* keep NodeHandle alive in socketcan_bridge tests
+* migrated to std::function and std::bind
+* migrated to std pointers
+* compare can_msgs::Frame and can::Frame properly
+* Contributors: Mathias Lüdtke
+
 0.7.8 (2018-05-04)
 ------------------
 * Revert "pull make_shared into namespaces"

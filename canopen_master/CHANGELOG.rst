@@ -2,6 +2,19 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* migrated to std::function and std::bind
+* migrated to std::atomic
+* got rid of boost::noncopyable
+* replaced BOOST_FOREACH
+* migrated to std::unordered_map and std::unordered_set
+* migrated to std pointers
+* provided KeyHash
+  for use with unordered containers
+* added c_array access functons to can::Frame
+* Contributors: Mathias Lüdtke
+
 0.7.8 (2018-05-04)
 ------------------
 * Revert "pull make_shared into namespaces"

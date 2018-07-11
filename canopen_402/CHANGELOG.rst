@@ -2,6 +2,17 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* handle invalid supported drive modes object
+* made Mode402::registerMode a variadic template
+* use std::isnan
+* migrated to std::atomic
+* migrated to std::unordered_map and std::unordered_set
+* migrated to std pointers
+* fix initialization bug in ProfiledPositionMode
+* Contributors: Mathias Lüdtke
+
 0.7.8 (2018-05-04)
 ------------------
 * Revert "pull make_shared into namespaces"

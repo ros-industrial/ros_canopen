@@ -2,6 +2,16 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* migrated to std::function and std::bind
+* make sync_node return proper error codes
+* refactored PublishFunc
+* migrated to std::atomic
+* migrated to std pointers
+* removed deprecated types
+* Contributors: Mathias Lüdtke
+
 0.7.8 (2018-05-04)
 ------------------
 * Revert "pull make_shared into namespaces"
