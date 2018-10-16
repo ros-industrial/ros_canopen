@@ -199,11 +199,9 @@ protected:
             if(frame_.can_id & CAN_ERR_FLAG){ // error message
                 input_.id = frame_.can_id & CAN_EFF_MASK;
                 input_.is_error = 1;
-
                 LOG("error: " << input_.id);
-                setInternalError(input_.id);
-                setNotReady();
 
+                handleErrorFrame();
             }else{
                 input_.is_extended = (frame_.can_id & CAN_EFF_FLAG) ? 1 :0;
                 input_.id = frame_.can_id & (input_.is_extended ? CAN_EFF_MASK : CAN_SFF_MASK);
@@ -213,6 +211,11 @@ protected:
 
         }
         frameReceived(error);
+    }
+
+    virtual void handleErrorFrame(){
+        setInternalError(input_.id);
+        setNotReady();
     }
 private:
     boost::mutex send_mutex_;
