@@ -69,7 +69,8 @@ namespace socketcan_bridge
       bool res = driver_->send(f);
       if (!res)
       {
-        ROS_ERROR("Failed to send message: %s.", can::tostring(f, true).c_str());
+        ROS_ERROR("Failed to send message: %s. Trying to recover.", can::tostring(f, true).c_str());
+        driver_->recover();
       }
     };
 
