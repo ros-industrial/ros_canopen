@@ -106,7 +106,7 @@ public:
 
 class StateInterface{
 public:
-    typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
+    typedef fastdelegate::FastDelegate<void, const State&> StateDelegate;
     typedef Listener<const StateDelegate, const State&> StateListener;
     typedef StateListener::ListenerConstSharedPtr StateListenerConstSharedPtr;
 
@@ -125,7 +125,7 @@ typedef StateInterface::StateListenerConstSharedPtr StateListenerConstSharedPtr;
 
 class CommInterface{
 public:
-    typedef fastdelegate::FastDelegate1<const Frame&> FrameDelegate;
+    typedef fastdelegate::FastDelegate<void, const Frame&> FrameDelegate;
     typedef Listener<const FrameDelegate, const Frame&> FrameListener;
     typedef FrameListener::ListenerConstSharedPtr FrameListenerConstSharedPtr;
 
