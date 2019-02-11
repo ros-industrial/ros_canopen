@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(can_msgs)
 
 if(NOT CMAKE_CXX_STANDARD)
@@ -6,24 +6,23 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-find_package(catkin REQUIRED
-  COMPONENTS
-    message_generation
-    std_msgs
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
+
+set(msg_files
+  "msg/Frame.msg"
+  DEPENDENCIES std_msgs
 )
 
-add_message_files(DIRECTORY msg
-  FILES
-    Frame.msg
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
 )
 
-generate_messages(
-  DEPENDENCIES
-    std_msgs
-)
+ament_export_dependencies(rosidl_default_runtime)
 
-catkin_package(
-  CATKIN_DEPENDS
-    message_runtime
-    std_msgs
-)
+ament_package()
