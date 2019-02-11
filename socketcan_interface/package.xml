@@ -13,10 +13,10 @@
   <url type="repository">https://github.com/ros-industrial/ros_canopen</url>
   <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
-  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>pluginlib</depend> 
   <depend>boost</depend>
+  <depend>pluginlib</depend> 
   <depend>linux-kernel-headers</depend>
 
   <test_depend>ament_lint_auto</test_depend>

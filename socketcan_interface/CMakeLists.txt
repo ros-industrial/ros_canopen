@@ -16,9 +16,10 @@ find_package(Boost REQUIRED
 )
 find_package(Threads REQUIRED)
 
-include_directories(include
-  ${pluginlib_INCLUDE_DIRS}
+include_directories(
+  include
   ${Boost_INCLUDE_DIRS}
+  ${pluginlib_INCLUDE_DIRS}
 )
 
 # ${PROJECT_NAME}_string
@@ -26,13 +27,23 @@ add_library(${PROJECT_NAME}_string SHARED
   src/string.cpp
 )
 
-# socketcan_dump
-add_executable(socketcan_dump src/candump.cpp)
-target_link_libraries(socketcan_dump
-  ${PROJECT_NAME}_string
-  ${pluginlib_LIBRARIES}
+target_link_libraries(${PROJECT_NAME}_string
   ${Boost_LIBRARIES}
-  ${CMAKE_THREAD_LIBS_INIT}
+)
+
+# socketcan_dump
+add_executable(socketcan_dump
+  src/candump.cpp
+)
+
+ament_target_dependencies(socketcan_dump
+  pluginlib
+)
+
+target_link_libraries(socketcan_dump
+   ${PROJECT_NAME}_string
+   ${Boost_LIBRARIES}
+   ${CMAKE_THREAD_LIBS_INIT}
 )
 
 # socketcan_bcm
@@ -47,26 +58,24 @@ add_library(${PROJECT_NAME}_plugin
   src/${PROJECT_NAME}_plugin.cpp
 )
 target_link_libraries(${PROJECT_NAME}_plugin
-  ${pluginlib_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 
-pluginlib_export_plugin_description_file(${PROJECT_NAME} socketcan_interface_plugin.xml)
-
-ament_export_dependencies(
-  ament_cmake
+ament_target_dependencies(${PROJECT_NAME}_plugin
   pluginlib
-  Boost
 )
 
+pluginlib_export_plugin_description_file(${PROJECT_NAME}_plugin socketcan_interface_plugin.xml)
+
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME}_string)
+ament_export_interfaces(${PROJECT_NAME}_plugin HAS_LIBRARY_TARGET)
 
 install(
   TARGETS
     socketcan_bcm
     socketcan_dump
     ${PROJECT_NAME}_string
+  EXPORT ${PROJECT_NAME}_plugin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
