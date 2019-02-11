@@ -10,27 +10,28 @@ namespace canopen{
 
 class Timer{
 public:
-    typedef fastdelegate::FastDelegate0<bool> TimerDelegate;
-    Timer():work(io), timer(io),thread(fastdelegate::FastDelegate0<size_t>(&io, &boost::asio::io_service::run)){
+    typedef fastdelegate::FastDelegate<bool> TimerDelegate;
+    Timer():work(io), timer(io),thread(fastdelegate::FastDelegate<size_t>(&io, &boost::asio::io_service::run)){
     }
     
     void stop(){
         boost::mutex::scoped_lock lock(mutex);
         timer.cancel();
     }
-    template<typename T> void start(const TimerDelegate &del, const  T &dur, bool start_now = true){
+    template<typename T>
+    void start(const TimerDelegate &del, const  T &dur, bool start_now = true){
         boost::mutex::scoped_lock lock(mutex);
         delegate = del;
         period = boost::chrono::duration_cast<boost::chrono::high_resolution_clock::duration>(dur);
         if(start_now){
             timer.expires_from_now(period);
-            timer.async_wait(fastdelegate::FastDelegate1<const boost::system::error_code&>(this, &Timer::handler));
+            timer.async_wait(fastdelegate::FastDelegate<void, const boost::system::error_code&>(this, &Timer::handler));
         }
     }
     void restart(){
         boost::mutex::scoped_lock lock(mutex);
         timer.expires_from_now(period);
-        timer.async_wait(fastdelegate::FastDelegate1<const boost::system::error_code&>(this, &Timer::handler));
+        timer.async_wait(fastdelegate::FastDelegate<void, const boost::system::error_code&>(this, &Timer::handler));
     }
     const  boost::chrono::high_resolution_clock::duration & getPeriod(){
         boost::mutex::scoped_lock lock(mutex);
@@ -55,7 +56,7 @@ private:
             boost::mutex::scoped_lock lock(mutex);
             if(delegate && delegate()){
                 timer.expires_at(timer.expires_at() + period);
-                timer.async_wait(fastdelegate::FastDelegate1<const boost::system::error_code&>(this, &Timer::handler));
+                timer.async_wait(fastdelegate::FastDelegate<void, const boost::system::error_code&>(this, &Timer::handler));
             }
             
         }

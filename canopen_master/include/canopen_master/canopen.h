@@ -200,7 +200,7 @@ public:
     bool reset_com();
     bool prepare();
 
-    typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
+    typedef fastdelegate::FastDelegate<void, const State&> StateDelegate;
     typedef can::Listener<const StateDelegate, const State&> StateListener;
     typedef StateListener::ListenerConstSharedPtr StateListenerConstSharedPtr;
 

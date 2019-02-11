@@ -276,8 +276,8 @@ public:
 
 class ObjectStorage{
 public:
-    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, String &> ReadDelegate;
-    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, const String &> WriteDelegate;
+    typedef fastdelegate::FastDelegate<void, const ObjectDict::Entry&, String &> ReadDelegate;
+    typedef fastdelegate::FastDelegate<void, const ObjectDict::Entry&, const String &> WriteDelegate;
     typedef std::shared_ptr<ObjectStorage> ObjectStorageSharedPtr;
 
 protected:
