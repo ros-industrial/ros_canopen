@@ -44,6 +44,8 @@
 //				  * Fully supported by CodePlay VectorC
 //                * Bugfix for Metrowerks: empty() was buggy because a valid MFP can be 0 on MWCC!
 //                * More optimal assignment,== and != operators for static function pointers.
+//
+// 11-Feb-19 1.5.1 * Changed compile-time checks to use static_assert.
 
 #ifndef FASTDELEGATE_H
 #define FASTDELEGATE_H
@@ -175,8 +177,8 @@ inline OutputClass horrible_cast(const InputClass input){
 	// Cause a compile-time error if in, out and u are not the same size.
 	// If the compile fails here, it means the compiler has peculiar
 	// unions which would prevent the cast from working.
-	typedef int ERROR_CantUseHorrible_cast[sizeof(InputClass)==sizeof(u) 
-		&& sizeof(InputClass)==sizeof(OutputClass) ? 1 : -1];
+  static_assert(sizeof(InputClass)==sizeof(u) &&
+      sizeof(InputClass)==sizeof(OutputClass), "Cant use horrible cast.");
 	u.in = input;
 	return u.out;
 }
@@ -292,7 +294,7 @@ struct SimplifyMemFunc {
 		GenericMemFuncType &bound_func) { 
 		// Unsupported member function type -- force a compile failure.
 	    // (it's illegal to have a array with negative size).
-		typedef char ERROR_Unsupported_member_function_pointer_on_this_compiler[N-100];
+    static_assert(N >= 100, "Unsupported member function pointer on this compiler.");
 		return 0; 
 	}
 };
@@ -349,9 +351,9 @@ struct SimplifyMemFunc< SINGLE_MEMFUNCPTR_SIZE + sizeof(int) >  {
 			}s;
         } u;
 		// Check that the horrible_cast will work
-		typedef int ERROR_CantUsehorrible_cast[sizeof(function_to_bind)==sizeof(u.s)? 1 : -1];
-        u.func = function_to_bind;
-		bound_func = u.s.funcaddress;
+    static_assert(sizeof(function_to_bind)==sizeof(u.s), "Can't use horrible cast.");
+    u.func = function_to_bind;
+    bound_func = u.s.funcaddress;
 		return reinterpret_cast<GenericClass *>(reinterpret_cast<char *>(pthis) + u.s.delta); 
 	}
 };
@@ -405,13 +407,14 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 2*sizeof(int) >
 			GenericVirtualClass::ProbePtrType virtfunc;
 			MicrosoftVirtualMFP s;
 		} u2;
-		// Check that the horrible_cast<>s will work
-		typedef int ERROR_CantUsehorrible_cast[sizeof(function_to_bind)==sizeof(u.s)
-			&& sizeof(function_to_bind)==sizeof(u.ProbeFunc)
-			&& sizeof(u2.virtfunc)==sizeof(u2.s) ? 1 : -1];
-   // Unfortunately, taking the address of a MF prevents it from being inlined, so 
-   // this next line can't be completely optimised away by the compiler.
-		u2.virtfunc = &GenericVirtualClass::GetThis;
+    // Check that the horrible_cast<>s will work
+    static_assert(sizeof(function_to_bind)==sizeof(u.s) &&
+        sizeof(function_to_bind)==sizeof(u.ProbeFunc) &&
+        sizeof(u2.virtfunc)==sizeof(u2.s),
+        "Cant use horrible cast.");
+    // Unfortunately, taking the address of a MF prevents it from being inlined, so 
+    // this next line can't be completely optimised away by the compiler.
+    u2.virtfunc = &GenericVirtualClass::GetThis;
 		u.s.codeptr = u2.s.codeptr;
 		return (pthis->*u.ProbeFunc)();
 	}
@@ -452,7 +455,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 		// We can generate correct code in this case. To prevent an incorrect call from
 		// ever being made, on MSVC6 we generate a warning, and call a function to 
 		// make the program crash instantly. 
-		typedef char ERROR_VC6CompilerBug[-100];
+    static_assert(true, "VC6 Compiler Bug");
 		return 0; 
 	}
 };
@@ -484,7 +487,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 			} s;
 		} u;
 		// Check that the horrible_cast will work
-		typedef int ERROR_CantUsehorrible_cast[sizeof(XFuncType)==sizeof(u.s)? 1 : -1];
+    static_assert(sizeof(XFuncType)==sizeof(u.s), "Can't use horrible cast.");
 		u.func = function_to_bind;
 		bound_func = u.s.funcaddress;
 		int virtual_delta = 0;
@@ -778,12 +781,12 @@ public:
 		// Ensure that there's a compilation failure if function pointers 
 		// and data pointers have different sizes.
 		// If you get this error, you need to #undef FASTDELEGATE_USESTATICFUNCTIONHACK.
-		typedef int ERROR_CantUseEvilMethod[sizeof(GenericClass *)==sizeof(function_to_bind) ? 1 : -1];
-		m_pthis = horrible_cast<GenericClass *>(function_to_bind);
+    static_assert(sizeof(GenericClass *)==sizeof(function_to_bind), "Can't use evil method.");
+    m_pthis = horrible_cast<GenericClass *>(function_to_bind);
 		// MSVC, SunC++ and DMC accept the following (non-standard) code:
-//		m_pthis = static_cast<GenericClass *>(static_cast<void *>(function_to_bind));
+    //		m_pthis = static_cast<GenericClass *>(static_cast<void *>(function_to_bind));
 		// BCC32, Comeau and DMC accept this method. MSVC7.1 needs __int64 instead of long
-//		m_pthis = reinterpret_cast<GenericClass *>(reinterpret_cast<long>(function_to_bind));
+    //		m_pthis = reinterpret_cast<GenericClass *>(reinterpret_cast<long>(function_to_bind));
 	}
 	// ******** EVIL, EVIL CODE! *******
 	// This function will be called with an invalid 'this' pointer!!
@@ -793,7 +796,7 @@ public:
 		// Ensure that there's a compilation failure if function pointers 
 		// and data pointers have different sizes.
 		// If you get this error, you need to #undef FASTDELEGATE_USESTATICFUNCTIONHACK.
-		typedef int ERROR_CantUseEvilMethod[sizeof(UnvoidStaticFuncPtr)==sizeof(this) ? 1 : -1];
+    static_assert(sizeof(UnvoidStaticFuncPtr)==sizeof(this), "Can't use evil method.");
 		return horrible_cast<UnvoidStaticFuncPtr>(this);
 	}
 #endif // !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
