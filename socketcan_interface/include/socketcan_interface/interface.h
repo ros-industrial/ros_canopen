@@ -125,6 +125,12 @@ public:
         return this->createStateListener(std::bind(callable, inst, std::placeholders::_1));
     }
 
+    template <class Inst, class F>
+    static StateDelegate createStateDelegate(Inst instance, F&& callable)
+    {
+      return std::bind(callable, instance, std::placeholders::_1);
+    }
+
     virtual ~StateInterface() {}
 };
 using StateInterfaceSharedPtr = std::shared_ptr<StateInterface>;
@@ -166,6 +172,12 @@ public:
     virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&, const FrameFunc &delegate) = 0;
     template <typename Instance, typename Callable> inline FrameListenerConstSharedPtr createMsgListenerM(const Frame::Header& header, Instance inst, Callable callable) {
         return this->createMsgListener(header, std::bind(callable, inst, std::placeholders::_1));
+    }
+
+    template <class Inst, class F>
+    static FrameDelegate createFrameDelegate(Inst instance, F&& callable)
+    {
+      return std::bind(callable, instance, std::placeholders::_1);
     }
 
     virtual ~CommInterface() {}
