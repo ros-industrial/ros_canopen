@@ -15,12 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE__STRING_H_
-#define SOCKETCAN_INTERFACE__STRING_H_
+#ifndef SOCKETCAN_INTERFACE__STRING_HPP_
+#define SOCKETCAN_INTERFACE__STRING_HPP_
 
-#include "interface.h"
-#include "filter.h"
 #include <sstream>
+
+#include "interface.hpp"
+#include "filter.hpp"
 
 namespace can
 {
@@ -65,4 +66,4 @@ template <typename T> FilteredFrameListener::FilterVector tofilters(const T& v)
 std::ostream& operator <<(std::ostream& stream, const can::Header& h);
 std::ostream& operator <<(std::ostream& stream, const can::Frame& f);
 
-#endif  // SOCKETCAN_INTERFACE__STRING_H_
+#endif  // SOCKETCAN_INTERFACE__STRING_HPP_

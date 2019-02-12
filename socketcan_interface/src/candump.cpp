@@ -4,7 +4,8 @@
 
 #include <boost/exception/diagnostic_information.hpp>
 #include <class_loader/class_loader.hpp>
-#include <socketcan_interface/socketcan.h>
+
+#include "socketcan_interface/socketcan.hpp"
 
 using namespace can;
 
@@ -86,8 +87,6 @@ int main(int argc, char *argv[])
   {
     g_driver = std::make_shared<SocketCANInterface>();
   }
-
-
 
   FrameListenerConstSharedPtr frame_printer = g_driver->createMsgListener(print_frame);
   StateListenerConstSharedPtr error_printer = g_driver->createStateListener(print_error);

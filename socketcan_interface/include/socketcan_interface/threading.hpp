@@ -15,11 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE__THREADING_H_
-#define SOCKETCAN_INTERFACE__THREADING_H_
+#ifndef SOCKETCAN_INTERFACE__THREADING_HPP_
+#define SOCKETCAN_INTERFACE__THREADING_HPP_
 
-#include <socketcan_interface/interface.h>
 #include <boost/thread/thread.hpp>
+
+#include "interface.hpp"
 
 namespace can
 {
@@ -103,4 +104,4 @@ public:
 
 }  // namespace can
 
-#endif  // SOCKETCAN_INTERFACE__THREADING_H_
+#endif  // SOCKETCAN_INTERFACE__THREADING_HPP_

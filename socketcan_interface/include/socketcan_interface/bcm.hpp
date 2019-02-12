@@ -15,10 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE__BCM_H_
-#define SOCKETCAN_INTERFACE__BCM_H_
-
-#include <socketcan_interface/interface.h>
+#ifndef SOCKETCAN_INTERFACE__BCM_HPP_
+#define SOCKETCAN_INTERFACE__BCM_HPP_
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -30,6 +28,9 @@
 #include <linux/can/error.h>
 
 #include <boost/chrono.hpp>
+#include <string>
+
+#include "socketcan_interface/interface.hpp"
 
 namespace can
 {
@@ -41,7 +42,8 @@ class BCMsocket
   {
     size_t size;
     uint8_t *data;
-    Message(size_t n)
+
+    explicit Message(size_t n)
       : size(sizeof(bcm_msg_head) + sizeof(can_frame) * n), data(new uint8_t[size])
     {
       assert(n <= 256);
@@ -54,7 +56,7 @@ class BCMsocket
     }
     template<typename T> void setIVal2(T period)
     {
-      long long usec = boost::chrono::duration_cast<boost::chrono::microseconds>(period).count();
+      int64_t usec = boost::chrono::duration_cast<boost::chrono::microseconds>(period).count();
       head().ival2.tv_sec = usec / 1000000;
       head().ival2.tv_usec = usec % 1000000;
     }
@@ -73,6 +75,7 @@ class BCMsocket
       size = 0;
     }
   };
+
 public:
   BCMsocket(): s_(-1)
   {
@@ -83,7 +86,7 @@ public:
 
     if (s_ < 0) return false;
     struct ifreq ifr;
-    strcpy(ifr.ifr_name, device.c_str());
+    snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "%s", device.c_str());
     int ret = ioctl(s_, SIOCGIFINDEX, &ifr);
 
     if (ret != 0)
@@ -105,7 +108,8 @@ public:
     }
     return true;
   }
-  template<typename DurationType> bool startTX(DurationType period, Header header, size_t num, Frame *frames)
+  template<typename DurationType>
+  bool startTX(DurationType period, Header header, size_t num, Frame *frames)
   {
     Message msg(num);
     msg.setHeader(header);
@@ -116,11 +120,11 @@ public:
     head.opcode = TX_SETUP;
     head.flags |= SETTIMER | STARTTIMER;
 
-    for (size_t i = 0; i < num; ++i) // msg nr
+    for (size_t i = 0; i < num; ++i)  // msg nr
     {
       head.frames[i].can_dlc = frames[i].dlc;
       head.frames[i].can_id = head.can_id;
-      for (size_t j = 0; j < head.frames[i].can_dlc; ++j) // byte nr
+      for (size_t j = 0; j < head.frames[i].can_dlc; ++j)  // byte nr
       {
         head.frames[i].data[j] = frames[i].data[j];
       }
@@ -149,6 +153,6 @@ public:
   }
 };
 
-}
+}  // namespace can
 
-#endif  // SOCKETCAN_INTERFACE__BCM_H_
+#endif  // SOCKETCAN_INTERFACE__BCM_HPP_

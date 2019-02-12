@@ -15,10 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE__SOCKETCAN_H_
-#define SOCKETCAN_INTERFACE__SOCKETCAN_H_
+#ifndef SOCKETCAN_INTERFACE__SOCKETCAN_HPP_
+#define SOCKETCAN_INTERFACE__SOCKETCAN_HPP_
 
-#include <socketcan_interface/asio_base.h>
 #include <boost/bind.hpp>
 
 #include <sys/types.h>
@@ -30,10 +29,8 @@
 #include <linux/can/raw.h>
 #include <linux/can/error.h>
 
-#include <cstring>
-
-#include <socketcan_interface/dispatcher.h>
-#include <socketcan_interface/string.h>
+#include "socketcan_interface/asio_base.hpp"
+#include "socketcan_interface/dispatcher.hpp"
 
 namespace can
 {
@@ -113,7 +110,7 @@ public:
         }
       }
 
-      struct sockaddr_can addr = {0};
+      struct sockaddr_can addr = {};
       addr.can_family = AF_CAN;
       addr.can_ifindex = ifr.ifr_ifindex;
       ret = bind(sc, (struct sockaddr*)&addr, sizeof(addr));
@@ -214,7 +211,7 @@ protected:
   {
     boost::mutex::scoped_lock lock(send_mutex_); //TODO: timed try lock
 
-    can_frame frame = {0};
+    can_frame frame = {};
     frame.can_id = msg.id | (msg.is_extended ? CAN_EFF_FLAG : 0) | (msg.is_rtr ? CAN_RTR_FLAG : 0);;
     frame.can_dlc = msg.dlc;
 
@@ -279,4 +276,4 @@ using ThreadedSocketCANInterfaceSharedPtr = std::shared_ptr<ThreadedSocketCANInt
 
 }  // namespace can
 
-#endif  // SOCKETCAN_INTERFACE__SOCKETCAN_H_
+#endif  // SOCKETCAN_INTERFACE__SOCKETCAN_HPP_

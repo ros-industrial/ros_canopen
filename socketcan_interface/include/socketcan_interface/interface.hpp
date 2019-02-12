@@ -1,5 +1,5 @@
-#ifndef SOCKETCAN_INTERFACE__INTERFACE_H_
-#define SOCKETCAN_INTERFACE__INTERFACE_H_
+#ifndef SOCKETCAN_INTERFACE__INTERFACE_HPP_
+#define SOCKETCAN_INTERFACE__INTERFACE_HPP_
 
 #include <array>
 #include <memory>
@@ -251,4 +251,4 @@ using DriverInterfaceSharedPtr = std::shared_ptr<DriverInterface>;
 
 } // namespace can
 
-#endif  // SOCKETCAN_INTERFACE__INTERFACE_H_
+#endif  // SOCKETCAN_INTERFACE__INTERFACE_HPP_

@@ -1,5 +1,5 @@
 // Bring in my package's API, which is what I'm testing
-#include <socketcan_interface/string.h>
+#include "socketcan_interface/string.hpp"
 
 // Bring in gtest
 #include <gtest/gtest.h>

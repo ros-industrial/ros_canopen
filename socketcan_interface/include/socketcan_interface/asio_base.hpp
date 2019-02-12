@@ -18,16 +18,16 @@
 #ifndef SOCKETCAN_INTERFACE__ASIO_BASE_H_
 #define SOCKETCAN_INTERFACE__ASIO_BASE_H_
 
-#include <socketcan_interface/interface.h>
-#include <socketcan_interface/dispatcher.h>
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <functional>
 
+#include "dispatcher.hpp"
+#include "interface.hpp"
+
 namespace can
 {
-
 
 template<typename Socket> class AsioDriver : public DriverInterface
 {
@@ -42,7 +42,7 @@ template<typename Socket> class AsioDriver : public DriverInterface
 
 protected:
   boost::asio::io_service io_service_;
-#if BOOST_ASIO_VERSION >= 101200 // Boost 1.66+
+#if BOOST_ASIO_VERSION >= 101200  // Boost 1.66+
   boost::asio::io_context::strand strand_;
 #else
   boost::asio::strand strand_;
@@ -96,9 +96,7 @@ protected:
     {
       dispatchFrame(input_);
       triggerReadSome();
-    }
-    else
-    {
+    } else {
       setErrorCode(error);
       setNotReady();
     }
@@ -163,7 +161,8 @@ public:
   {
     return frame_dispatcher_.createListener(delegate);
   }
-  virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&h, const FrameDelegate &delegate)
+  virtual FrameListenerConstSharedPtr createMsgListener(
+    const Frame::Header&h, const FrameDelegate &delegate)
   {
     return frame_dispatcher_.createListener(h.key(), delegate);
   }
@@ -171,7 +170,6 @@ public:
   {
     return state_dispatcher_.createListener(delegate);
   }
-
 };
 
 }  // namespace can
