@@ -25,38 +25,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
-#define SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
+#ifndef SOCKETCAN_BRIDGE__SOCKETCAN_TO_TOPIC_HPP_
+#define SOCKETCAN_BRIDGE__SOCKETCAN_TO_TOPIC_HPP_
 
-#include <socketcan_interface/socketcan.h>
-#include <socketcan_interface/filter.h>
-#include <can_msgs/Frame.h>
-#include <ros/ros.h>
+#include <socketcan_interface/socketcan.hpp>
+#include <socketcan_interface/filter.hpp>
+#include <can_msgs/msg/frame.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 namespace socketcan_bridge
 {
 class SocketCANToTopic
 {
   public:
-    SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param, can::DriverInterfaceSharedPtr driver);
+    SocketCANToTopic(rclcpp::Node::SharedPtr node_ptr, can::DriverInterfaceSharedPtr driver);
     void setup();
     void setup(const can::FilteredFrameListener::FilterVector &filters);
-    void setup(XmlRpc::XmlRpcValue filters);
-    void setup(ros::NodeHandle nh);
+    // void setup(XmlRpc::XmlRpcValue filters);  // TODO: Find replacement for XmlRpc filters.
+    void setup(rclcpp::Node::SharedPtr node_ptr);
 
   private:
-    ros::Publisher can_topic_;
+    rclcpp::Node::SharedPtr node_ptr_;
+    std::shared_ptr<rclcpp::Publisher<can_msgs::msg::Frame>> can_topic_;
     can::DriverInterfaceSharedPtr driver_;
 
     can::FrameListenerConstSharedPtr frame_listener_;
     can::StateListenerConstSharedPtr state_listener_;
 
-
     void frameCallback(const can::Frame& f);
     void stateCallback(const can::State & s);
 };
 
-void convertSocketCANToMessage(const can::Frame& f, can_msgs::Frame& m)
+void convertSocketCANToMessage(const can::Frame& f, can_msgs::msg::Frame& m)
 {
   m.id = f.id;
   m.dlc = f.dlc;
@@ -69,8 +69,6 @@ void convertSocketCANToMessage(const can::Frame& f, can_msgs::Frame& m)
     m.data[i] = f.data[i];
   }
 };
+}  // namespace socketcan_bridge
 
-};  // namespace socketcan_bridge
-
-
-#endif  // SOCKETCAN_BRIDGE_SOCKETCAN_TO_TOPIC_H
+#endif  // SOCKETCAN_BRIDGE__SOCKETCAN_TO_TOPIC_HPP_
