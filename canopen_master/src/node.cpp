@@ -16,7 +16,7 @@ struct NMTcommand{
     };
     uint8_t command;
     uint8_t node_id;
-    
+
     struct Frame: public FrameOverlay<NMTcommand>{
         Frame(uint8_t node_id, const Command &c) : FrameOverlay(can::Header()) {
             data.command = c;
@@ -35,7 +35,7 @@ Node::Node(const can::CommInterfaceSharedPtr interface, const ObjectDictSharedPt
     catch(const std::out_of_range){
     }
 }
-    
+
 const Node::State Node::getState(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     return state_;
@@ -55,7 +55,7 @@ bool Node::reset_com(){
 bool Node::reset(){
     boost::timed_mutex::scoped_lock lock(mutex); // TODO: timed lock?
     getStorage()->reset();
-    
+
     interface_->send(NMTcommand::Frame(node_id_, NMTcommand::Reset));
     if(wait_for(BootUp, boost::chrono::seconds(10)) != 1){
         return false;
@@ -174,7 +174,7 @@ void Node::handleDiag(LayerReport &report){
     }
 }
 void Node::handleInit(LayerStatus &status){
-    nmt_listener_ = interface_->createMsgListener( can::MsgHeader(0x700 + node_id_), can::CommInterface::FrameDelegate(this, &Node::handleNMT));
+    nmt_listener_ = interface_->createMsgListener( can::MsgHeader(0x700 + node_id_), std::bind(&Node::handleNMT, this, std::placeholders::_1));
 
     sdo_.init();
     try{

@@ -114,7 +114,7 @@ protected:
             return;
         }
 
-        handler_ = driver_->createMsgListener(can::CommInterface::FrameDelegate(this, &BCMsync::handleFrame));
+        handler_ = driver_->createMsgListener(std::bind(&BCMsync::handleFrame, this, std::placeholders::_1));
     }
     virtual void handleShutdown(LayerStatus &status){
         boost::mutex::scoped_lock lock(mutex_);

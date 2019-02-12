@@ -260,7 +260,7 @@ bool RosChain::setup_bus(){
         return false;
     }
 
-    state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
+    state_listener_ = interface_->createStateListener(std::bind(&RosChain::logState, this, std::placeholders::_1));
 
     if(bus_nh.getParam("master_type",master_alloc)){
         ROS_ERROR("please migrate to master allocators");
@@ -361,7 +361,7 @@ bool RosChain::setup_heartbeat(){
 
         hb_sender_.interface = interface_;
 
-        heartbeat_timer_.start(Timer::TimerDelegate(&hb_sender_, &HeartbeatSender::send) , boost::chrono::duration<double>(1.0/rate), false);
+        heartbeat_timer_.start(std::bind(&HeartbeatSender::send, &hb_sender_), boost::chrono::duration<double>(1.0/rate), false);
 
         return true;
 

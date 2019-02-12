@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <socketcan_interface/FastDelegate.h>
 #include <boost/thread/mutex.hpp>
 #include <functional>
 #include <typeinfo>
@@ -276,8 +275,9 @@ public:
 
 class ObjectStorage{
 public:
-    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, String &> ReadDelegate;
-    typedef fastdelegate::FastDelegate2<const ObjectDict::Entry&, const String &> WriteDelegate;
+    using ReadFunc = std::function<void(const ObjectDict::Entry&, String &)>;
+    using WriteFunc = std::function<void(const ObjectDict::Entry&, const String &)>;
+
     typedef std::shared_ptr<ObjectStorage> ObjectStorageSharedPtr;
 
 protected:
@@ -289,8 +289,8 @@ protected:
         String buffer;
         bool valid;
 
-        ReadDelegate read_delegate;
-        WriteDelegate write_delegate;
+        ReadFunc read_delegate;
+        WriteFunc write_delegate;
 
         template <typename T> T & access(){
             if(!valid){
@@ -311,22 +311,22 @@ protected:
         const ObjectDict::Key key;
         size_t size() { boost::mutex::scoped_lock lock(mutex); return buffer.size(); }
 
-        template<typename T> Data(const ObjectDict::Key &k, const ObjectDict::EntryConstSharedPtr &e, const T &val, const ReadDelegate &r, const WriteDelegate &w)
+        template<typename T> Data(const ObjectDict::Key &k, const ObjectDict::EntryConstSharedPtr &e, const T &val, const ReadFunc &r, const WriteFunc &w)
         : valid(false), read_delegate(r), write_delegate(w), type_guard(TypeGuard::create<T>()), entry(e), key(k){
-            assert(!r.empty());
-            assert(!w.empty());
+            assert(r);
+            assert(w);
             assert(e);
             allocate<T>() = val;
         }
-        Data(const ObjectDict::Key &k, const ObjectDict::EntryConstSharedPtr &e, const TypeGuard &t, const ReadDelegate &r, const WriteDelegate &w)
+        Data(const ObjectDict::Key &k, const ObjectDict::EntryConstSharedPtr &e, const TypeGuard &t, const ReadFunc &r, const WriteFunc &w)
         : valid(false), read_delegate(r), write_delegate(w), type_guard(t), entry(e), key(k){
-            assert(!r.empty());
-            assert(!w.empty());
+            assert(r);
+            assert(w);
             assert(e);
             assert(t.valid());
             buffer.resize(t.get_size());
         }
-        void set_delegates(const ReadDelegate &r, const WriteDelegate &w){
+        void set_delegates(const ReadFunc &r, const WriteFunc &w){
             boost::mutex::scoped_lock lock(mutex);
             if(r) read_delegate = r;
             if(w) write_delegate = w;
@@ -457,9 +457,9 @@ protected:
 
     void init_nolock(const ObjectDict::Key &key, const ObjectDict::EntryConstSharedPtr &entry);
 
-    ReadDelegate read_delegate_;
-    WriteDelegate write_delegate_;
-    size_t map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
+    ReadFunc read_delegate_;
+    WriteFunc write_delegate_;
+    size_t map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadFunc & read_delegate, const WriteFunc & write_delegate);
 public:
     template<typename T> Entry<T> entry(const ObjectDict::Key &key){
         boost::mutex::scoped_lock lock(mutex_);
@@ -493,7 +493,7 @@ public:
         return Entry<T>(it->second);
     }
 
-    size_t map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate);
+    size_t map(uint16_t index, uint8_t sub_index, const ReadFunc & read_delegate, const WriteFunc & write_delegate);
 
     template<typename T> Entry<T> entry(uint16_t index){
         return entry<T>(ObjectDict::Key(index));
@@ -524,7 +524,7 @@ public:
     const ObjectDictConstSharedPtr dict_;
     const uint8_t node_id_;
 
-    ObjectStorage(ObjectDictConstSharedPtr dict, uint8_t node_id, ReadDelegate read_delegate, WriteDelegate write_delegate);
+    ObjectStorage(ObjectDictConstSharedPtr dict, uint8_t node_id, ReadFunc read_delegate, WriteFunc write_delegate);
 
     void init(const ObjectDict::Key &key);
     void init_all();

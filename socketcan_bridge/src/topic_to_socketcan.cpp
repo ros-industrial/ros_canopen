@@ -42,7 +42,7 @@ namespace socketcan_bridge
   void TopicToSocketCAN::setup()
     {
       state_listener_ = driver_->createStateListener(
-              can::StateInterface::StateDelegate(this, &TopicToSocketCAN::stateCallback));
+              std::bind(&TopicToSocketCAN::stateCallback, this, std::placeholders::_1));
     };
 
   void TopicToSocketCAN::msgCallback(const can_msgs::Frame::ConstPtr& msg)

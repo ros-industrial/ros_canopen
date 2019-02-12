@@ -55,10 +55,10 @@ public:
         return true;
     }
 
-    virtual FrameListenerConstSharedPtr createMsgListener(const FrameDelegate &delegate){
+    virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc &delegate){
         return frame_dispatcher_.createListener(delegate);
     }
-    virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&h , const FrameDelegate &delegate){
+    virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&h , const FrameFunc &delegate){
         return frame_dispatcher_.createListener(h, delegate);
     }
 
@@ -89,7 +89,7 @@ public:
         return true;
     };
 
-    virtual StateListenerConstSharedPtr createStateListener(const StateDelegate &delegate){
+    virtual StateListenerConstSharedPtr createStateListener(const StateFunc &delegate){
       return state_dispatcher_.createListener(delegate);
     };
 

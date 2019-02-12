@@ -79,12 +79,12 @@ public:
 
     void listen(CommInterfaceSharedPtr interface){
         boost::mutex::scoped_lock lock(mutex_);
-        listener_ = interface->createMsgListener(CommInterface::FrameDelegate(this, &BufferedReader::handleFrame));
+        listener_ = interface->createMsgListener(std::bind(&BufferedReader::handleFrame, this, std::placeholders::_1));
         buffer_.clear();
     }
     void listen(CommInterfaceSharedPtr interface, const Frame::Header& h){
         boost::mutex::scoped_lock lock(mutex_);
-        listener_ = interface->createMsgListener(h, CommInterface::FrameDelegate(this, &BufferedReader::handleFrame));
+        listener_ = interface->createMsgListener(h, std::bind(&BufferedReader::handleFrame, this, std::placeholders::_1));
         buffer_.clear();
     }
 

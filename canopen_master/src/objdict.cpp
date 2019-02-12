@@ -330,7 +330,7 @@ ObjectDictSharedPtr ObjectDict::fromFile(const std::string &path, const ObjectDi
     return dict;
 }
 
-size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
+size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadFunc & read_delegate, const WriteFunc & write_delegate){
     ObjectStorageMap::iterator it = storage_.find(key);
 
     if(it == storage_.end()){
@@ -363,7 +363,7 @@ size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const Object
     return it->second->size();
 }
 
-size_t ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
+size_t ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadFunc & read_delegate, const WriteFunc & write_delegate){
     boost::mutex::scoped_lock lock(mutex_);
 
     try{
@@ -380,11 +380,11 @@ size_t ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadDelegate 
     }
 }
 
-ObjectStorage::ObjectStorage(ObjectDictConstSharedPtr dict, uint8_t node_id, ReadDelegate read_delegate, WriteDelegate write_delegate)
+ObjectStorage::ObjectStorage(ObjectDictConstSharedPtr dict, uint8_t node_id, ReadFunc read_delegate, WriteFunc write_delegate)
 :read_delegate_(read_delegate), write_delegate_(write_delegate), dict_(dict), node_id_(node_id){
     assert(dict_);
-    assert(!read_delegate_.empty());
-    assert(!write_delegate_.empty());
+    assert(read_delegate_);
+    assert(write_delegate_);
 }
 
 void ObjectStorage::init_nolock(const ObjectDict::Key &key, const ObjectDict::EntryConstSharedPtr &entry){

@@ -61,7 +61,7 @@ public:
         }
 
     }
-    
+
     virtual void handleInit(LayerStatus &status){
 	if(thread_){
             status.warn("CAN thread already running");
@@ -71,8 +71,8 @@ public:
             can::StateWaiter waiter(driver_.get());
 
             thread_.reset(new boost::thread(&can::DriverInterface::run, driver_));
-            error_listener_ = driver_->createMsgListener(can::ErrorHeader(), can::CommInterface::FrameDelegate(this, &CANLayer::handleFrame));
-	    
+            error_listener_ = driver_->createMsgListener(can::ErrorHeader(),std::bind(&CANLayer::handleFrame, this, std::placeholders::_1));
+
 	    if(!waiter.wait(can::State::ready, boost::posix_time::seconds(1))){
 		status.error("CAN init timed out");
 	    }
@@ -96,7 +96,7 @@ public:
     }
 
     virtual void handleHalt(LayerStatus &status) { /* nothing to do */ }
-    
+
     virtual void handleRecover(LayerStatus &status){
         if(!driver_->getState().isReady()){
             handleShutdown(status);
