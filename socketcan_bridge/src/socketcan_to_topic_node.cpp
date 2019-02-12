@@ -25,42 +25,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ros/ros.h>
-#include <socketcan_bridge/socketcan_to_topic.h>
-#include <socketcan_interface/threading.h>
-#include <socketcan_interface/string.h>
+#include <rclcpp/rclcpp.hpp>
+#include <socketcan_bridge/socketcan_to_topic.hpp>
+#include <socketcan_interface/threading.hpp>
+#include <socketcan_interface/string.hpp>
 #include <string>
-
-
 
 int main(int argc, char *argv[])
 {
-  ros::init(argc, argv, "socketcan_to_topic_node");
-
-  ros::NodeHandle nh(""), nh_param("~");
+  rclcpp::init(argc, argv);
+  auto node = rclcpp::Node::make_shared("socketcan_to_topic_node");
 
   std::string can_device;
-  nh_param.param<std::string>("can_device", can_device, "can0");
+  node->get_parameter_or<std::string>("can_device", can_device, "can0");
 
   can::ThreadedSocketCANInterfaceSharedPtr driver = std::make_shared<can::ThreadedSocketCANInterface> ();
 
   if (!driver->init(can_device, 0))  // initialize device at can_device, 0 for no loopback.
   {
-    ROS_FATAL("Failed to initialize can_device at %s", can_device.c_str());
+    RCLCPP_FATAL(node->get_logger(), "Failed to initialize can_device at %s", can_device.c_str());
     return 1;
   }
     else
   {
-    ROS_INFO("Successfully connected to %s.", can_device.c_str());
+    RCLCPP_INFO(node->get_logger(), "Successfully connected to %s.", can_device.c_str());
   }
 
-  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver);
-  to_topic_bridge.setup(nh_param);
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(node, driver);
+  to_topic_bridge.setup(node);
 
-  ros::spin();
+  rclcpp::spin(node);
 
   driver->shutdown();
   driver.reset();
-
-  ros::waitForShutdown();
 }

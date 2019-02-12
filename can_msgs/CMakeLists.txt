@@ -10,14 +10,19 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(ament_cmake_auto REQUIRED)
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
 
-ament_auto_find_build_dependencies()
-ament_auto_generate_code()
+set(msg_files
+  "msg/Frame.msg"
+)
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
+  DEPENDENCIES std_msgs
+  ADD_LINTER_TESTS
+)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
-endif()
+ament_export_dependencies(rosidl_default_runtime)
 
-ament_auto_package()
+ament_package()

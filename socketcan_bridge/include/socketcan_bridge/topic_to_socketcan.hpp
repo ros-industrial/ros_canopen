@@ -28,43 +28,44 @@
 #ifndef SOCKETCAN_BRIDGE_TOPIC_TO_SOCKETCAN_H
 #define SOCKETCAN_BRIDGE_TOPIC_TO_SOCKETCAN_H
 
-#include <socketcan_interface/socketcan.h>
-#include <can_msgs/Frame.h>
-#include <ros/ros.h>
+#include <socketcan_interface/socketcan.hpp>
+#include <can_msgs/msg/frame.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 namespace socketcan_bridge
 {
 class TopicToSocketCAN
 {
   public:
-    TopicToSocketCAN(ros::NodeHandle* nh, ros::NodeHandle* nh_param, can::DriverInterfaceSharedPtr driver);
+    TopicToSocketCAN(rclcpp::Node::SharedPtr node_ptr, can::DriverInterfaceSharedPtr driver);
     void setup();
 
   private:
-    ros::Subscriber can_topic_;
+    rclcpp::Node::SharedPtr node_ptr_;
     can::DriverInterfaceSharedPtr driver_;
+    rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr can_topic_;
 
     can::StateListenerConstSharedPtr state_listener_;
 
-    void msgCallback(const can_msgs::Frame::ConstPtr& msg);
+    void msgCallback(const can_msgs::msg::Frame::SharedPtr msg);
     void stateCallback(const can::State & s);
 };
 
-void convertMessageToSocketCAN(const can_msgs::Frame& m, can::Frame& f)
+void convertMessageToSocketCAN(const can_msgs::msg::Frame::SharedPtr m,
+  can::Frame& f)
 {
-  f.id = m.id;
-  f.dlc = m.dlc;
-  f.is_error = m.is_error;
-  f.is_rtr = m.is_rtr;
-  f.is_extended = m.is_extended;
+  f.id = m->id;
+  f.dlc = m->dlc;
+  f.is_error = m->is_error;
+  f.is_rtr = m->is_rtr;
+  f.is_extended = m->is_extended;
 
   for (int i = 0; i < 8; i++)  // always copy all data, regardless of dlc.
   {
-    f.data[i] = m.data[i];
+    f.data[i] = m->data[i];
   }
-};
+}
 
 };  // namespace socketcan_bridge
-
 
 #endif  // SOCKETCAN_BRIDGE_TOPIC_TO_SOCKETCAN_H
