@@ -3,10 +3,9 @@
 
 #include <array>
 #include <memory>
+#include <functional>
 
 #include <boost/system/error_code.hpp>
-
-#include "FastDelegate.h"
 
 namespace can{
 
@@ -106,8 +105,8 @@ public:
 
 class StateInterface{
 public:
-    typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
-    typedef Listener<const StateDelegate, const State&> StateListener;
+    using StateFunc = std::function<void(const State&)>;
+    typedef Listener<const StateFunc, const State&> StateListener;
     typedef StateListener::ListenerConstSharedPtr StateListenerConstSharedPtr;
 
     /**
@@ -116,7 +115,7 @@ public:
      * @param[in] delegate: delegate to be bound by the listener
      * @return managed pointer to listener
      */
-    virtual StateListenerConstSharedPtr createStateListener(const StateDelegate &delegate) = 0;
+    virtual StateListenerConstSharedPtr createStateListener(const StateFunc &delegate) = 0;
 
     virtual ~StateInterface() {}
 };
@@ -125,8 +124,7 @@ typedef StateInterface::StateListenerConstSharedPtr StateListenerConstSharedPtr;
 
 class CommInterface{
 public:
-    typedef fastdelegate::FastDelegate1<const Frame&> FrameDelegate;
-    typedef Listener<const FrameDelegate, const Frame&> FrameListener;
+    typedef Listener<const FrameFunc, const Frame&> FrameListener;
     typedef FrameListener::ListenerConstSharedPtr FrameListenerConstSharedPtr;
 
     /**
@@ -143,7 +141,7 @@ public:
      * @param[in] delegate: delegate to be bound by the listener
      * @return managed pointer to listener
      */
-    virtual FrameListenerConstSharedPtr createMsgListener(const FrameDelegate &delegate) = 0;
+    virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc &delegate) = 0;
 
     /**
      * acquire a listener for the specified delegate, that will get called for messages with demanded ID
@@ -152,7 +150,7 @@ public:
      * @param[in] delegate: delegate to be bound listener
      * @return managed pointer to listener
      */
-    virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&, const FrameDelegate &delegate) = 0;
+    virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&, const FrameFunc &delegate) = 0;
 
     virtual ~CommInterface() {}
 };
