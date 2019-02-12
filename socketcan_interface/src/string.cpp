@@ -1,4 +1,4 @@
-#include <socketcan_interface/string.h>
+#include <socketcan_interface/string.hpp>
 #include <iomanip>
 
 namespace can

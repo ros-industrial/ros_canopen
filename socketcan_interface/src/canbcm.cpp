@@ -1,5 +1,5 @@
-#include <socketcan_interface/bcm.h>
-#include <socketcan_interface/string.h>
+#include "socketcan_interface/bcm.hpp"
+#include "socketcan_interface/string.hpp"
 
 using namespace can;
 

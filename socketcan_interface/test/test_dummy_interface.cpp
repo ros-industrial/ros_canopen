@@ -1,6 +1,6 @@
 // Bring in my package's API, which is what I'm testing
-#include <socketcan_interface/dispatcher.h>
-#include <socketcan_interface/dummy.h>
+#include "socketcan_interface/dispatcher.hpp"
+#include "socketcan_interface/dummy.hpp"
 
 // Bring in gtest
 #include <gtest/gtest.h>

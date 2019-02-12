@@ -15,15 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE__READER_H_
-#define SOCKETCAN_INTERFACE__READER_H_
+#ifndef SOCKETCAN_INTERFACE__READER_HPP_
+#define SOCKETCAN_INTERFACE__READER_HPP_
 
-#include <socketcan_interface/interface.h>
 #include <deque>
 
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/chrono.hpp>
+
+#include "interface.hpp"
 
 namespace can
 {
@@ -163,4 +164,4 @@ public:
 
 }  // namespace can
 
-#endif  // SOCKETCAN_INTERFACE__READER_H_
+#endif  // SOCKETCAN_INTERFACE__READER_HPP_

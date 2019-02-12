@@ -15,16 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE__DISPATCHER_H_
-#define SOCKETCAN_INTERFACE__DISPATCHER_H_
+#ifndef SOCKETCAN_INTERFACE__DISPATCHER_HPP_
+#define SOCKETCAN_INTERFACE__DISPATCHER_HPP_
+
+#include <boost/thread/mutex.hpp>
 
 #include <functional>
 #include <memory>
 #include <list>
 #include <unordered_map>
 
-#include <socketcan_interface/interface.h>
-#include <boost/thread/mutex.hpp>
+#include "interface.hpp"
 
 namespace can
 {
@@ -40,14 +41,15 @@ protected:
   using DispatcherBaseSharedPtr = std::shared_ptr<DispatcherBase>;
   class DispatcherBase
   {
-    DispatcherBase(const DispatcherBase&) = delete; // prevent copies
+    DispatcherBase(const DispatcherBase&) = delete;  // prevent copies
     DispatcherBase& operator=(const DispatcherBase&) = delete;
 
     class GuardedListener: public Listener
     {
       std::weak_ptr<DispatcherBase> guard_;
     public:
-      GuardedListener(DispatcherBaseSharedPtr g, const Callable &callable): Listener(callable), guard_(g) {}
+      GuardedListener(DispatcherBaseSharedPtr g, const Callable &callable) :
+        Listener(callable), guard_(g) {}
       virtual ~GuardedListener()
       {
         DispatcherBaseSharedPtr d = guard_.lock();
@@ -61,10 +63,13 @@ protected:
     boost::mutex &mutex_;
     std::list<const Listener* > listeners_;
   public:
-    DispatcherBase(boost::mutex &mutex) : mutex_(mutex) {}
+    explicit DispatcherBase(boost::mutex &mutex) : mutex_(mutex) {}
     void dispatch_nolock(const Type &obj) const
     {
-      for (typename std::list<const Listener* >::const_iterator it = listeners_.begin(); it != listeners_.end(); ++it)
+      for (
+        typename std::list<const Listener* >::const_iterator it = listeners_.begin();
+        it != listeners_.end();
+        ++it)
       {
         (**it)(obj);
       }
@@ -80,7 +85,8 @@ protected:
       return listeners_.size();
     }
 
-    static ListenerConstSharedPtr createListener(DispatcherBaseSharedPtr dispatcher, const  Callable &callable)
+    static ListenerConstSharedPtr createListener(
+      DispatcherBaseSharedPtr dispatcher, const  Callable &callable)
     {
       ListenerConstSharedPtr l(new GuardedListener(dispatcher, callable));
       dispatcher->listeners_.push_back(l.get());
@@ -111,7 +117,8 @@ public:
   }
 };
 
-template<typename K, typename Listener, typename Hash = std::hash<K> > class FilteredDispatcher: public SimpleDispatcher<Listener>
+template<typename K, typename Listener, typename Hash = std::hash<K>>
+class FilteredDispatcher: public SimpleDispatcher<Listener>
 {
   using BaseClass = SimpleDispatcher<Listener>;
   std::unordered_map<K, typename BaseClass::DispatcherBaseSharedPtr, Hash> filtered_;
@@ -143,4 +150,4 @@ public:
 
 }  // namespace can
 
-#endif  // SOCKETCAN_INTERFACE__DISPATCHER_H_
+#endif  // SOCKETCAN_INTERFACE__DISPATCHER_HPP_
