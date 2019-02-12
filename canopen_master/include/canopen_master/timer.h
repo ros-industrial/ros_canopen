@@ -16,9 +16,12 @@ class Timer{
 public:
     using TimerFunc = std::function<bool(void)>;
     using TimerDelegate [[deprecated("use TimerFunc instead")]] = can::DelegateHelper<TimerFunc>;
-
-    Timer():work(io), timer(io),thread(std::bind(
-        static_cast<size_t(boost::asio::io_service::*)(void)>(&boost::asio::io_service::run), &io))
+    Timer() :
+      work(io),
+      timer(io),
+      thread(std::bind(
+        static_cast<size_t(boost::asio::io_service::*)(void)>(
+          &boost::asio::io_service::run), &io))
     {
     }
 

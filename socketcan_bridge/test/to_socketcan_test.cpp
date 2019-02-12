@@ -59,7 +59,7 @@ TEST(TopicToSocketCANTest, checkCorrectData)
 
   //  driver->createMsgListener(&frameCallback);
   can::FrameListenerConstSharedPtr frame_listener_ = driver_->createMsgListener(
-            std::bind(&frameCollector::frameCallback, &frame_collector_, std::placeholders::_1));
+    std::bind(&frameCollector::frameCallback, &frame_collector_, std::placeholders::_1));
 
   // create a message
   can_msgs::msg::Frame msg;
@@ -120,7 +120,7 @@ TEST(TopicToSocketCANTest, checkInvalidFrameHandling)
 
   //  add callback to the dummy interface.
   can::FrameListenerConstSharedPtr frame_listener_ = driver_->createMsgListener(
-          std::bind(&frameCollector::frameCallback, &frame_collector_, std::placeholders::_1));
+    std::bind(&frameCollector::frameCallback, &frame_collector_, std::placeholders::_1));
 
   // create a message
   can_msgs::msg::Frame msg;

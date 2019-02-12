@@ -101,8 +101,16 @@ TEST(FilterTest, listenerTest)
   filters.push_back(can::tofilter("123:FFE"));
 
   can::FrameListenerConstSharedPtr listener(
+<<<<<<< HEAD
     new can::FilteredFrameListener(
       dummy, std::bind(&Counter::count, std::ref(counter), std::placeholders::_1), filters));
+=======
+      new can::FilteredFrameListener(
+        dummy,
+        can::CommInterface::FrameDelegate(
+          can::CommInterface::createFrameDelegate(&counter, &Counter::count)),
+        filters));
+>>>>>>> Replacing FastDelegate with std::function and std::bind.
 
   can::Frame f1 = can::toframe("123#");
   can::Frame f2 = can::toframe("124#");

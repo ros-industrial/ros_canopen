@@ -59,11 +59,10 @@ public:
 
     SDOClient(const can::CommInterfaceSharedPtr interface, const ObjectDictSharedPtr dict, uint8_t node_id)
     : interface_(interface),
-      storage_(std::make_shared<ObjectStorage>(dict, node_id,
-                                               std::bind(&SDOClient::read, this, std::placeholders::_1, std::placeholders::_2),
-                                               std::bind(&SDOClient::write, this, std::placeholders::_1, std::placeholders::_2))
-              ),
-      reader_(false, 1)
+    storage_(std::make_shared<ObjectStorage>(
+      dict, node_id, ObjectStorage::ReadDelegate(std::bind(&SDOClient::read, this, std::placeholders::_1, std::placeholders::_2)),
+      ObjectStorage::WriteDelegate(std::bind(&SDOClient::write, this, std::placeholders::_1, std::placeholders::_2)))),
+    reader_(false, 1)
     {
     }
 };
