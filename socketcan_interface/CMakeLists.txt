@@ -35,9 +35,9 @@ target_link_libraries(${PROJECT_NAME}_string
 ament_auto_add_executable(socketcan_dump src/candump.cpp)
 
 target_link_libraries(socketcan_dump
-   ${PROJECT_NAME}_string
-   ${Boost_LIBRARIES}
-   ${CMAKE_THREAD_LIBS_INIT}
+  ${PROJECT_NAME}_string
+  ${Boost_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
 )
 
 # socketcan_bcm
@@ -125,7 +125,6 @@ if(BUILD_TESTING)
   )
   target_compile_options(${PROJECT_NAME}-test_dispatcher PRIVATE -Wno-deprecated-declarations)
   )
-
 endif()
 
 ament_package()
