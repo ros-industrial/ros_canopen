@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE_FILTER_H
-#define SOCKETCAN_INTERFACE_FILTER_H
+#ifndef SOCKETCAN_INTERFACE__FILTER_H_
+#define SOCKETCAN_INTERFACE__FILTER_H_
 
 #include <vector>
 
@@ -94,6 +94,6 @@ private:
   CommInterface::FrameListenerConstSharedPtr listener_;
 };
 
-} // namespace can
+}  // namespace can
 
-#endif /*SOCKETCAN_INTERFACE_FILTER_H*/
+#endif  // SOCKETCAN_INTERFACE__FILTER_H_

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef H_CAN_BCM
-#define H_CAN_BCM
+#ifndef SOCKETCAN_INTERFACE__BCM_H_
+#define SOCKETCAN_INTERFACE__BCM_H_
 
 #include <socketcan_interface/interface.h>
 
@@ -151,4 +151,4 @@ public:
 
 }
 
-#endif
+#endif  // SOCKETCAN_INTERFACE__BCM_H_

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE_SOCKETCAN_H
-#define SOCKETCAN_INTERFACE_SOCKETCAN_H
+#ifndef SOCKETCAN_INTERFACE__SOCKETCAN_H_
+#define SOCKETCAN_INTERFACE__SOCKETCAN_H_
 
 #include <socketcan_interface/asio_base.h>
 #include <boost/bind.hpp>
@@ -279,4 +279,4 @@ using ThreadedSocketCANInterfaceSharedPtr = std::shared_ptr<ThreadedSocketCANInt
 
 }  // namespace can
 
-#endif  // SOCKETCAN_INTERFACE_SOCKETCAN_H
+#endif  // SOCKETCAN_INTERFACE__SOCKETCAN_H_

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef H_CAN_DISPATCHER
-#define H_CAN_DISPATCHER
+#ifndef SOCKETCAN_INTERFACE__DISPATCHER_H_
+#define SOCKETCAN_INTERFACE__DISPATCHER_H_
 
 #include <functional>
 #include <memory>
@@ -148,5 +148,6 @@ public:
   }
 };
 
-} // namespace can
-#endif
+}  // namespace can
+
+#endif  // SOCKETCAN_INTERFACE__DISPATCHER_H_

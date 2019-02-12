@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef H_ASIO_BASE
-#define H_ASIO_BASE
+#ifndef SOCKETCAN_INTERFACE__ASIO_BASE_H_
+#define SOCKETCAN_INTERFACE__ASIO_BASE_H_
 
 #include <socketcan_interface/interface.h>
 #include <socketcan_interface/dispatcher.h>
@@ -174,5 +174,6 @@ public:
 
 };
 
-} // namespace can
-#endif
+}  // namespace can
+
+#endif  // SOCKETCAN_INTERFACE__ASIO_BASE_H_
