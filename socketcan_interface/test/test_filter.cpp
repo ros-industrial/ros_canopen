@@ -69,13 +69,15 @@ TEST(FilterTest, rangeTest)
 
 }
 
-class Counter {
+class Counter
+{
 public:
-    size_t count_;
-    Counter(): count_(0) {}
-    void count(const can::Frame &frame) {
-      ++count_;
-    }
+  size_t count_;
+  Counter(): count_(0) {}
+  void count(const can::Frame &frame)
+  {
+    ++count_;
+  }
 };
 
 TEST(FilterTest, listenerTest)
@@ -87,7 +89,9 @@ TEST(FilterTest, listenerTest)
   can::FilteredFrameListener::FilterVector filters;
   filters.push_back(can::tofilter("123:FFE"));
 
-  can::FrameListenerConstSharedPtr  listener(new can::FilteredFrameListener(dummy,std::bind(&Counter::count, std::ref(counter), std::placeholders::_1), filters));
+  can::FrameListenerConstSharedPtr listener(
+    new can::FilteredFrameListener(
+      dummy,std::bind(&Counter::count, std::ref(counter), std::placeholders::_1), filters));
 
   can::Frame f1 = can::toframe("123#");
   can::Frame f2 = can::toframe("124#");
@@ -103,7 +107,8 @@ TEST(FilterTest, listenerTest)
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv){
-testing::InitGoogleTest(&argc, argv);
-return RUN_ALL_TESTS();
+int main(int argc, char **argv)
+{
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
