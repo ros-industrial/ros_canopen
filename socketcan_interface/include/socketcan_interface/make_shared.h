@@ -15,10 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE_MAKE_SHARED_H
-#define SOCKETCAN_INTERFACE_MAKE_SHARED_H
+#ifndef SOCKETCAN_INTERFACE__MAKE_SHARED_H_
+#define SOCKETCAN_INTERFACE__MAKE_SHARED_H_
 
 #include <memory>
 #define ROSCANOPEN_MAKE_SHARED std::make_shared
 
-#endif  // SOCKETCAN_INTERFACE_MAKE_SHARED_H
+#endif  // SOCKETCAN_INTERFACE__MAKE_SHARED_H_

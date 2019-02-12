@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKETCAN_INTERFACE_READER_H
-#define SOCKETCAN_INTERFACE_READER_H
+#ifndef SOCKETCAN_INTERFACE__READER_H_
+#define SOCKETCAN_INTERFACE__READER_H_
 
 #include <socketcan_interface/interface.h>
 #include <deque>
@@ -161,6 +161,6 @@ public:
 
 };
 
-} // namespace can
+}  // namespace can
 
-#endif  // SOCKETCAN_INTERFACE_READER_H
+#endif  // SOCKETCAN_INTERFACE__READER_H_
