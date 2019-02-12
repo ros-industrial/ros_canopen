@@ -27,6 +27,8 @@
 
 #include <string>
 
+#include "socketcan_interface/interface.hpp"
+
 namespace can
 {
 

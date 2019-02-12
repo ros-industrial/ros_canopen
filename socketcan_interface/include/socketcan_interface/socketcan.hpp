@@ -1,17 +1,19 @@
-// Copyright (c) 2016-2019, Fraunhofer, Mathias Lüdtke, AutonomouStuff
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+/*
+ * Copyright 2019 Fraunhofer
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #ifndef SOCKETCAN_INTERFACE__SOCKETCAN_HPP_
 #define SOCKETCAN_INTERFACE__SOCKETCAN_HPP_
@@ -27,12 +29,8 @@
 #include <linux/can/raw.h>
 #include <linux/can/error.h>
 
-#include <socketcan_interface/asio_base.hpp>
-#include <socketcan_interface/dispatcher.hpp>
-#include <socketcan_interface/string.hpp>
-
-#include <string>
-#include <memory>
+#include "asio_base.hpp"
+#include "dispatcher.hpp"
 
 namespace can
 {
@@ -41,10 +39,9 @@ class SocketCANInterface : public AsioDriver<boost::asio::posix::stream_descript
 {
   bool loopback_;
   int sc_;
-
 public:
   SocketCANInterface()
-  : loopback_(false), sc_(-1)
+    : loopback_(false), sc_(-1)
   {}
 
   virtual bool doesLoopBack() const
@@ -52,62 +49,61 @@ public:
     return loopback_;
   }
 
-  virtual bool init(const std::string & device, bool loopback)
+  virtual bool init(const std::string &device, bool loopback)
   {
     State s = getState();
-
-    if (s.driver_state == State::closed) {
+    if (s.driver_state == State::closed)
+    {
       sc_ = 0;
       device_ = device;
       loopback_ = loopback;
 
       int sc = socket(PF_CAN, SOCK_RAW, CAN_RAW);
-
-      if (sc < 0) {
+      if (sc < 0)
+      {
         setErrorCode(boost::system::error_code(sc, boost::system::system_category()));
         return false;
       }
 
       struct ifreq ifr;
-      snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "%s", device_.c_str());
+      strcpy(ifr.ifr_name, device_.c_str());
       int ret = ioctl(sc, SIOCGIFINDEX, &ifr);
 
-      if (ret != 0) {
+      if (ret != 0)
+      {
+        setErrorCode(boost::system::error_code(ret, boost::system::system_category()));
+        close(sc);
+        return false;
+      }
+      can_err_mask_t err_mask =
+        (CAN_ERR_TX_TIMEOUT    /* TX timeout (by netdevice driver) */
+         | CAN_ERR_LOSTARB      /* lost arbitration    / data[0]    */
+         | CAN_ERR_CRTL         /* controller problems / data[1]    */
+         | CAN_ERR_PROT         /* protocol violations / data[2..3] */
+         | CAN_ERR_TRX          /* transceiver status  / data[4]    */
+         | CAN_ERR_ACK           /* received no ACK on transmission */
+         | CAN_ERR_BUSOFF        /* bus off */
+         //CAN_ERR_BUSERROR      /* bus error (may flood!) */
+         | CAN_ERR_RESTARTED     /* controller restarted */
+        );
+
+      ret = setsockopt(sc, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
+                       &err_mask, sizeof(err_mask));
+
+      if (ret != 0)
+      {
         setErrorCode(boost::system::error_code(ret, boost::system::system_category()));
         close(sc);
         return false;
       }
 
-      can_err_mask_t err_mask = (
-        CAN_ERR_TX_TIMEOUT |    /* TX timeout (by netdevice driver) */
-        CAN_ERR_LOSTARB |    /* lost arbitration    / data[0]    */
-        CAN_ERR_CRTL |       /* controller problems / data[1]    */
-        CAN_ERR_PROT |       /* protocol violations / data[2..3] */
-        CAN_ERR_TRX |        /* transceiver status  / data[4]    */
-        CAN_ERR_ACK |         /* received no ACK on transmission */
-        CAN_ERR_BUSOFF |      /* bus off */
-        // CAN_ERR_BUSERROR |  /* bus error (may flood!) */
-        CAN_ERR_RESTARTED     /* controller restarted */
-      );
+      if (loopback_)
+      {
+        int recv_own_msgs = 1; /* 0 = disabled (default), 1 = enabled */
+        ret = setsockopt(sc, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs, sizeof(recv_own_msgs));
 
-      ret = setsockopt(sc, SOL_CAN_RAW, CAN_RAW_ERR_FILTER, &err_mask, sizeof(err_mask));
-
-      if (ret != 0) {
-        setErrorCode(boost::system::error_code(ret, boost::system::system_category()));
-        close(sc);
-        return false;
-      }
-
-      if (loopback_) {
-        int recv_own_msgs = 1;  // 0 = disabled (default), 1 = enabled
-        ret = setsockopt(
-          sc,
-          SOL_CAN_RAW,
-          CAN_RAW_RECV_OWN_MSGS,
-          &recv_own_msgs,
-          sizeof(recv_own_msgs));
-
-        if (ret != 0) {
+        if (ret != 0)
+        {
           setErrorCode(boost::system::error_code(ret, boost::system::system_category()));
           close(sc);
           return false;
@@ -117,9 +113,10 @@ public:
       struct sockaddr_can addr = {};
       addr.can_family = AF_CAN;
       addr.can_ifindex = ifr.ifr_ifindex;
-      ret = bind(sc, (struct sockaddr *)&addr, sizeof(addr));
+      ret = bind(sc, (struct sockaddr*)&addr, sizeof(addr));
 
-      if (ret != 0) {
+      if (ret != 0)
+      {
         setErrorCode(boost::system::error_code(ret, boost::system::system_category()));
         close(sc);
         return false;
@@ -130,81 +127,77 @@ public:
 
       setErrorCode(ec);
 
-      if (ec) {
+      if (ec)
+      {
         close(sc);
         return false;
       }
-
       setInternalError(0);
       setDriverState(State::open);
       sc_ = sc;
       return true;
     }
-
     return getState().isReady();
   }
-
   virtual bool recover()
   {
-    if (!getState().isReady()) {
+    if (!getState().isReady())
+    {
       shutdown();
       return init(device_, doesLoopBack());
     }
-
     return getState().isReady();
   }
-
   virtual bool translateError(unsigned int internal_error, std::string & str)
   {
-    bool ret = false;
 
-    if (!internal_error) {
+    bool ret = false;
+    if (!internal_error)
+    {
       str = "OK";
       ret = true;
     }
-
-    if (internal_error & CAN_ERR_TX_TIMEOUT) {
+    if (internal_error & CAN_ERR_TX_TIMEOUT)
+    {
       str += "TX timeout (by netdevice driver);";
       ret = true;
     }
-
-    if (internal_error & CAN_ERR_LOSTARB) {
+    if (internal_error & CAN_ERR_LOSTARB)
+    {
       str += "lost arbitration;";
       ret = true;
     }
-
-    if (internal_error & CAN_ERR_CRTL) {
+    if (internal_error & CAN_ERR_CRTL)
+    {
       str += "controller problems;";
       ret = true;
     }
-    if (internal_error & CAN_ERR_PROT) {
+    if (internal_error & CAN_ERR_PROT)
+    {
       str += "protocol violations;";
       ret = true;
     }
-
-    if (internal_error & CAN_ERR_TRX) {
+    if (internal_error & CAN_ERR_TRX)
+    {
       str += "transceiver status;";
       ret = true;
     }
-
-    if (internal_error & CAN_ERR_BUSOFF) {
+    if (internal_error & CAN_ERR_BUSOFF)
+    {
       str += "bus off;";
       ret = true;
     }
-
-    if (internal_error & CAN_ERR_RESTARTED) {
+    if (internal_error & CAN_ERR_RESTARTED)
+    {
       str += "ontroller restarted;";
       ret = true;
     }
-
     return ret;
   }
-
   int getInternalSocket()
   {
     return sc_;
   }
-
 protected:
   std::string device_;
   can_frame frame_;
@@ -212,34 +205,26 @@ protected:
   virtual void triggerReadSome()
   {
     boost::mutex::scoped_lock lock(send_mutex_);
-    socket_.async_read_some(
-      boost::asio::buffer(
-        &frame_,
-        sizeof(frame_)),
-      boost::bind(&SocketCANInterface::readFrame, this, boost::asio::placeholders::error));
+    socket_.async_read_some(boost::asio::buffer(&frame_, sizeof(frame_)), boost::bind(&SocketCANInterface::readFrame, this, boost::asio::placeholders::error));
   }
 
   virtual bool enqueue(const Frame & msg)
   {
-    boost::mutex::scoped_lock lock(send_mutex_);
+    boost::mutex::scoped_lock lock(send_mutex_); //TODO: timed try lock
 
     can_frame frame = {};
-    frame.can_id = msg.id | (msg.is_extended ? CAN_EFF_FLAG : 0) | (msg.is_rtr ? CAN_RTR_FLAG : 0);
+    frame.can_id = msg.id | (msg.is_extended ? CAN_EFF_FLAG : 0) | (msg.is_rtr ? CAN_RTR_FLAG : 0);;
     frame.can_dlc = msg.dlc;
 
-    for (int i = 0; i < frame.can_dlc; ++i) {
+
+    for (int i = 0; i < frame.can_dlc; ++i)
       frame.data[i] = msg.data[i];
-    }
 
     boost::system::error_code ec;
-    boost::asio::write(
-      socket_,
-      boost::asio::buffer(&frame, sizeof(frame)),
-      boost::asio::transfer_all(),
-      ec);
-
-    if (ec) {
-      ROSCANOPEN_ERROR("socketcan_interface", "FAILED " << ec);
+    boost::asio::write(socket_, boost::asio::buffer(&frame, sizeof(frame)), boost::asio::transfer_all(), ec);
+    if (ec)
+    {
+      LOG("FAILED " << ec);
       setErrorCode(ec);
       setNotReady();
       return false;
@@ -248,44 +233,49 @@ protected:
     return true;
   }
 
-  void readFrame(const boost::system::error_code & error)
+  void readFrame(const boost::system::error_code& error)
   {
-    if (!error) {
+    if (!error)
+    {
       input_.dlc = frame_.can_dlc;
-
-      for (int i = 0; i < frame_.can_dlc && i < 8; ++i) {
+      for (int i = 0; i < frame_.can_dlc && i < 8; ++i)
+      {
         input_.data[i] = frame_.data[i];
       }
 
-      if (frame_.can_id & CAN_ERR_FLAG) {  // error message
+      if (frame_.can_id & CAN_ERR_FLAG) // error message
+      {
         input_.id = frame_.can_id & CAN_EFF_MASK;
         input_.is_error = 1;
 
-        ROSCANOPEN_ERROR("socketcan_interface", "internal error: " << input_.id);
+        LOG("error: " << input_.id);
         setInternalError(input_.id);
         setNotReady();
-      } else {
+
+      }
+      else
+      {
         input_.is_extended = (frame_.can_id & CAN_EFF_FLAG) ? 1 : 0;
         input_.id = frame_.can_id & (input_.is_extended ? CAN_EFF_MASK : CAN_SFF_MASK);
         input_.is_error = 0;
         input_.is_rtr = (frame_.can_id & CAN_RTR_FLAG) ? 1 : 0;
       }
-    }
 
+    }
     frameReceived(error);
   }
-
 private:
   boost::mutex send_mutex_;
 };
 
-using SocketCANDriver = SocketCANInterface;
-using SocketCANDriverSharedPtr = std::shared_ptr<SocketCANDriver>;
-using SocketCANInterfaceSharedPtr = std::shared_ptr<SocketCANInterface>;
+typedef SocketCANInterface SocketCANDriver;
+typedef std::shared_ptr<SocketCANDriver> SocketCANDriverSharedPtr;
+typedef std::shared_ptr<SocketCANInterface> SocketCANInterfaceSharedPtr;
 
 template <typename T> class ThreadedInterface;
-using ThreadedSocketCANInterface = ThreadedInterface<SocketCANInterface>;
-using ThreadedSocketCANInterfaceSharedPtr = std::shared_ptr<ThreadedSocketCANInterface>;
+typedef ThreadedInterface<SocketCANInterface> ThreadedSocketCANInterface;
+typedef std::shared_ptr<ThreadedSocketCANInterface> ThreadedSocketCANInterfaceSharedPtr;
+
 
 }  // namespace can
 
