@@ -17,6 +17,12 @@ find_package(Boost REQUIRED
   thread
 )
 
+find_package(Boost REQUIRED
+  COMPONENTS
+  system
+  thread
+)
+
 include_directories(include
   ${socketcan_interface_INCLUDE_DIRS}
   ${rclcpp_INCLUDE_DIRS}
@@ -43,9 +49,6 @@ target_link_libraries(socketcan_to_topic
 # topic_to_socketcan
 add_library(topic_to_socketcan SHARED
   src/topic_to_socketcan.cpp
-)
-target_link_libraries(topic_to_socketcan
-  ${socketcan_interface_LIBRARIES}
 )
 
 # socketcan_to_topic_node
@@ -87,11 +90,11 @@ ament_target_dependencies(${PROJECT_NAME}_node
 
 install(
   TARGETS
-    ${PROJECT_NAME}_node
+#    ${PROJECT_NAME}_node
     socketcan_to_topic
-    socketcan_to_topic_node
+#    socketcan_to_topic_node
     topic_to_socketcan
-    topic_to_socketcan_node
+#    topic_to_socketcan_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
