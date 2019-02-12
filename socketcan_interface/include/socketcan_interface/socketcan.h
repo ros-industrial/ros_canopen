@@ -1,5 +1,22 @@
-#ifndef H_SOCKETCAN_DRIVER
-#define H_SOCKETCAN_DRIVER
+/*
+ * Copyright 2019 Fraunhofer
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef SOCKETCAN_INTERFACE_SOCKETCAN_H
+#define SOCKETCAN_INTERFACE_SOCKETCAN_H
 
 #include <socketcan_interface/asio_base.h>
 #include <boost/bind.hpp>
@@ -230,5 +247,6 @@ using ThreadedSocketCANInterface = ThreadedInterface<SocketCANInterface>;
 using ThreadedSocketCANInterfaceSharedPtr = std::shared_ptr<ThreadedSocketCANInterface>;
 
 
-} // namespace can
-#endif
+}  // namespace can
+
+#endif  // SOCKETCAN_INTERFACE_SOCKETCAN_H
