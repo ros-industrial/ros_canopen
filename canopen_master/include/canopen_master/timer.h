@@ -28,7 +28,7 @@ public:
     }
     template<typename T> void start(const TimerFunc &del, const  T &dur, bool start_now = true){
         boost::mutex::scoped_lock lock(mutex);
-        delegate = del;
+        delegate.reset(new TimerDelegate(del));
         period = boost::chrono::duration_cast<boost::chrono::high_resolution_clock::duration>(dur);
         if(start_now){
             timer.expires_from_now(period);
@@ -61,7 +61,7 @@ private:
     void handler(const boost::system::error_code& ec){
         if(!ec){
             boost::mutex::scoped_lock lock(mutex);
-            if(delegate && delegate()){
+            if(delegate != nullptr && *delegate && (*delegate)()){
                 timer.expires_at(timer.expires_at() + period);
                 timer.async_wait(std::bind(&Timer::handler, this, std::placeholders::_1));
             }

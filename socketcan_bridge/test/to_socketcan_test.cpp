@@ -70,7 +70,6 @@ TEST(TopicToSocketCANTest, checkCorrectData)
 
   //  driver->createMsgListener(&frameCallback);
   can::FrameListenerConstSharedPtr frame_listener_ = driver_->createMsgListener(
-
             std::bind(&frameCollector::frameCallback, &frame_collector_, std::placeholders::_1));
 
   // create a message
