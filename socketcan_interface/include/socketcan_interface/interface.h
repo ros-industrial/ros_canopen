@@ -116,6 +116,9 @@ public:
      * @return managed pointer to listener
      */
     virtual StateListenerConstSharedPtr createStateListener(const StateFunc &delegate) = 0;
+    template <typename Instance, typename Callable> inline StateListenerConstSharedPtr createStateListenerM(Instance inst, Callable callable) {
+        return this->createStateListener(std::bind(callable, inst, std::placeholders::_1));
+    }
 
     virtual ~StateInterface() {}
 };
@@ -142,6 +145,9 @@ public:
      * @return managed pointer to listener
      */
     virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc &delegate) = 0;
+    template <typename Instance, typename Callable> inline FrameListenerConstSharedPtr createMsgListenerM(Instance inst, Callable callable) {
+        return this->createMsgListener(std::bind(callable, inst, std::placeholders::_1));
+    }
 
     /**
      * acquire a listener for the specified delegate, that will get called for messages with demanded ID
@@ -151,6 +157,9 @@ public:
      * @return managed pointer to listener
      */
     virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&, const FrameFunc &delegate) = 0;
+    template <typename Instance, typename Callable> inline FrameListenerConstSharedPtr createMsgListenerM(const Frame::Header& header, Instance inst, Callable callable) {
+        return this->createMsgListener(header, std::bind(callable, inst, std::placeholders::_1));
+    }
 
     virtual ~CommInterface() {}
 };
