@@ -260,7 +260,7 @@ bool RosChain::setup_bus(){
         return false;
     }
 
-    state_listener_ = interface_->createStateListener(std::bind(&RosChain::logState, this, std::placeholders::_1));
+    state_listener_ = interface_->createStateListenerM(this, &RosChain::logState);
 
     if(bus_nh.getParam("master_type",master_alloc)){
         ROS_ERROR("please migrate to master allocators");

@@ -71,7 +71,7 @@ public:
             can::StateWaiter waiter(driver_.get());
 
             thread_.reset(new boost::thread(&can::DriverInterface::run, driver_));
-            error_listener_ = driver_->createMsgListener(can::ErrorHeader(),std::bind(&CANLayer::handleFrame, this, std::placeholders::_1));
+            error_listener_ = driver_->createMsgListenerM(can::ErrorHeader(),this, &CANLayer::handleFrame);
 
 	    if(!waiter.wait(can::State::ready, boost::posix_time::seconds(1))){
 		status.error("CAN init timed out");

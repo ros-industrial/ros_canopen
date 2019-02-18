@@ -225,7 +225,7 @@ bool PDOMapper::RPDO::init(const ObjectStorageSharedPtr &storage, const uint16_t
 
     transmission_type = dict(com_index, SUB_COM_TRANSMISSION_TYPE).value().get<uint8_t>();
 
-    listener_ = interface_->createMsgListener(pdoid.header(), std::bind(&RPDO::handleFrame, this, std::placeholders::_1));
+    listener_ = interface_->createMsgListenerM(pdoid.header(), this, &RPDO::handleFrame);
 
     return true;
 }

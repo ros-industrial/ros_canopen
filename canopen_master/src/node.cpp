@@ -174,7 +174,7 @@ void Node::handleDiag(LayerReport &report){
     }
 }
 void Node::handleInit(LayerStatus &status){
-    nmt_listener_ = interface_->createMsgListener( can::MsgHeader(0x700 + node_id_), std::bind(&Node::handleNMT, this, std::placeholders::_1));
+    nmt_listener_ = interface_->createMsgListenerM(can::MsgHeader(0x700 + node_id_), this, &Node::handleNMT);
 
     sdo_.init();
     try{
