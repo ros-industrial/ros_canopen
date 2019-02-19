@@ -14,6 +14,8 @@
 #include <vector>
 #include "exceptions.h"
 
+#include <socketcan_interface/helpers.hpp>
+
 namespace canopen{
 
 class TypeGuard{

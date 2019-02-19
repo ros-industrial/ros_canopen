@@ -63,15 +63,6 @@ class BufferedReader
       ROSCANOPEN_WARN("socketcan_interface", "discarded message " /*<< tostring(msg)*/); // enable message printing
     }
   }
-  void listen(CommInterfaceSharedPtr interface){
-      boost::mutex::scoped_lock lock(mutex_);
-      listener_ = interface->createMsgListenerM(this, &BufferedReader::handleFrame);
-      buffer_.clear();
-  }
-  void listen(CommInterfaceSharedPtr interface, const Frame::Header& h){
-      boost::mutex::scoped_lock lock(mutex_);
-      listener_ = interface->createMsgListenerM(h, this, &BufferedReader::handleFrame);
-      buffer_.clear();
 public:
   class ScopedEnabler
   {
@@ -126,13 +117,13 @@ public:
   void listen(CommInterfaceSharedPtr interface)
   {
     boost::mutex::scoped_lock lock(mutex_);
-    listener_ = interface->createMsgListener(CommInterface::FrameDelegate(this, &BufferedReader::handleFrame));
+    listener_ = interface->createMsgListenerM(this, &BufferedReader::handleFrame);
     buffer_.clear();
   }
   void listen(CommInterfaceSharedPtr interface, const Frame::Header& h)
   {
     boost::mutex::scoped_lock lock(mutex_);
-    listener_ = interface->createMsgListener(h, CommInterface::FrameDelegate(this, &BufferedReader::handleFrame));
+    listener_ = interface->createMsgListenerM(h, this, &BufferedReader::handleFrame);
     buffer_.clear();
   }
 
