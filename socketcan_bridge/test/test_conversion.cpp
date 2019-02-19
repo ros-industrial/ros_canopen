@@ -38,7 +38,7 @@
 TEST(ConversionTest, socketCANToTopicStandard)
 {
   can::Frame f;
-  can_msgs::msg::Frame m;
+  auto m = can_msgs::msg::Frame();
   f.id = 127;
   f.dlc = 8;
   f.is_error = false;
@@ -65,7 +65,7 @@ TEST(ConversionTest, socketCANToTopicStandard)
 TEST(ConversionTest, socketCANToTopicFlags)
 {
   can::Frame f;
-  can_msgs::msg::Frame m;
+  auto m = can_msgs::msg::Frame();
 
   f.is_error = true;
   socketcan_bridge::convertSocketCANToMessage(f, m);
@@ -87,7 +87,7 @@ TEST(ConversionTest, socketCANToTopicFlags)
 TEST(ConversionTest, topicToSocketCANStandard)
 {
   can::Frame f;
-  can_msgs::msg::Frame m;
+  auto m = can_msgs::msg::Frame();
   m.id = 127;
   m.dlc = 8;
   m.is_error = false;
@@ -97,7 +97,7 @@ TEST(ConversionTest, topicToSocketCANStandard)
   {
     m.data[i] = i;
   }
-  socketcan_bridge::convertMessageToSocketCAN(m, f);
+  socketcan_bridge::convertMessageToSocketCAN(std::make_shared<can_msgs::msg::Frame>(m), f);
   EXPECT_EQ(127, f.id);
   EXPECT_EQ(8, f.dlc);
   EXPECT_EQ(false, f.is_error);
@@ -114,20 +114,23 @@ TEST(ConversionTest, topicToSocketCANStandard)
 TEST(ConversionTest, topicToSocketCANFlags)
 {
   can::Frame f;
-  can_msgs::msg::Frame m;
+  auto m = can_msgs::msg::Frame();
 
   m.is_error = true;
-  socketcan_bridge::convertMessageToSocketCAN(m, f);
+  socketcan_bridge::convertMessageToSocketCAN(
+      std::make_shared<can_msgs::msg::Frame>(m), f);
   EXPECT_EQ(true, f.is_error);
   m.is_error = false;
 
   m.is_rtr = true;
-  socketcan_bridge::convertMessageToSocketCAN(m, f);
+  socketcan_bridge::convertMessageToSocketCAN(
+      std::make_shared<can_msgs::msg::Frame>(m), f);
   EXPECT_EQ(true, f.is_rtr);
   m.is_rtr = false;
 
   m.is_extended = true;
-  socketcan_bridge::convertMessageToSocketCAN(m, f);
+  socketcan_bridge::convertMessageToSocketCAN(
+      std::make_shared<can_msgs::msg::Frame>(m), f);
   EXPECT_EQ(true, f.is_extended);
   m.is_extended = false;
 }
