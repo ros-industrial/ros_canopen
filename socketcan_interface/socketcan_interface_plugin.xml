@@ -1,4 +1,4 @@
-<library path="socketcan_interface_plugin">
+<library path="socketcan_interface">
   <class
     name="socketcan_interface/SocketCANInterface"
     type="can::SocketCANInterface"

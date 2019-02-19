@@ -22,13 +22,17 @@ include_directories(include
 )
 
 # ${PROJECT_NAME}_string
-add_library(${PROJECT_NAME}_string src/string.cpp)
+add_library(${PROJECT_NAME}_string SHARED
+  src/string.cpp
+)
 
 # socketcan_dump
 add_executable(socketcan_dump src/candump.cpp)
 target_link_libraries(socketcan_dump
+  ${PROJECT_NAME}_string
   ${pluginlib_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
 )
 
 # socketcan_bcm
@@ -39,13 +43,15 @@ target_link_libraries(socketcan_bcm
 )
 
 # ${PROJECT_NAME}_plugin
-add_library(${PROJECT_NAME}_plugin src/${PROJECT_NAME}_plugin.cpp)
+add_library(${PROJECT_NAME}_plugin
+  src/${PROJECT_NAME}_plugin.cpp
+)
 target_link_libraries(${PROJECT_NAME}_plugin
-  ${PROJECT_NAME}_string
+  ${pluginlib_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 
-pluginlib_export_plugin_description_file(${PROJECT_NAME}_plugin socketcan_interface_plugin.xml)
+pluginlib_export_plugin_description_file(${PROJECT_NAME} socketcan_interface_plugin.xml)
 
 ament_export_dependencies(
   ament_cmake
@@ -54,13 +60,12 @@ ament_export_dependencies(
 )
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME}_plugin)
+ament_export_libraries(${PROJECT_NAME}_string)
 
 install(
   TARGETS
     socketcan_bcm
     socketcan_dump
-    ${PROJECT_NAME}_plugin
     ${PROJECT_NAME}_string
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
