@@ -29,6 +29,7 @@
 #include <linux/can/raw.h>
 #include <linux/can/error.h>
 
+#include <socketcan_interface/asio_base.hpp>
 #include <socketcan_interface/dispatcher.hpp>
 #include <socketcan_interface/string.hpp>
 
