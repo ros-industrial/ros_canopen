@@ -9,6 +9,8 @@
 #include "socketcan_interface/delegates.h"
 #include "logging.h"
 
+#include <socketcan_interface/helpers.hpp>
+
 namespace can
 {
 
@@ -75,8 +77,6 @@ struct ErrorHeader : public Header
 {
   ErrorHeader(unsigned int i = 0) : Header(i, false, false, true) {}
 };
-
-
 
 /** representation of a CAN frame */
 struct Frame: public Header
