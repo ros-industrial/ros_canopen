@@ -117,6 +117,7 @@ if(BUILD_TESTING)
   target_link_libraries(test_conversion
     topic_to_socketcan
     socketcan_to_topic
+    ${Boost_LIBRARIES}
   )
 
 #  add_rostest_gtest(test_to_socketcan
