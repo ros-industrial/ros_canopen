@@ -92,7 +92,8 @@ public:
   {
     return frame_dispatcher_.createListener(delegate);
   }
-  virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&h, const FrameFunc &delegate)
+  virtual FrameListenerConstSharedPtr createMsgListener(
+    const Frame::Header&h, const FrameFunc &delegate)
   {
     return frame_dispatcher_.createListener(h.key(), delegate);
   }
