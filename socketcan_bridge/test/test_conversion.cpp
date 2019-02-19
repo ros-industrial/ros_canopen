@@ -24,11 +24,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <socketcan_bridge/topic_to_socketcan.h>
-#include <socketcan_bridge/socketcan_to_topic.h>
+#include <socketcan_bridge/topic_to_socketcan.hpp>
+#include <socketcan_bridge/socketcan_to_topic.hpp>
 
-#include <can_msgs/Frame.h>
-#include <socketcan_interface/socketcan.h>
+#include <can_msgs/msg/frame.hpp>
+#include <socketcan_interface/socketcan.hpp>
 
 // Bring in gtest
 #include <gtest/gtest.h>
@@ -38,7 +38,7 @@
 TEST(ConversionTest, socketCANToTopicStandard)
 {
   can::Frame f;
-  can_msgs::Frame m;
+  can_msgs::msg::Frame m;
   f.id = 127;
   f.dlc = 8;
   f.is_error = false;
@@ -65,7 +65,7 @@ TEST(ConversionTest, socketCANToTopicStandard)
 TEST(ConversionTest, socketCANToTopicFlags)
 {
   can::Frame f;
-  can_msgs::Frame m;
+  can_msgs::msg::Frame m;
 
   f.is_error = true;
   socketcan_bridge::convertSocketCANToMessage(f, m);
@@ -87,7 +87,7 @@ TEST(ConversionTest, socketCANToTopicFlags)
 TEST(ConversionTest, topicToSocketCANStandard)
 {
   can::Frame f;
-  can_msgs::Frame m;
+  can_msgs::msg::Frame m;
   m.id = 127;
   m.dlc = 8;
   m.is_error = false;
@@ -114,7 +114,7 @@ TEST(ConversionTest, topicToSocketCANStandard)
 TEST(ConversionTest, topicToSocketCANFlags)
 {
   can::Frame f;
-  can_msgs::Frame m;
+  can_msgs::msg::Frame m;
 
   m.is_error = true;
   socketcan_bridge::convertMessageToSocketCAN(m, f);
