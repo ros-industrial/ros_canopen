@@ -16,7 +16,7 @@
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
   <depend>pluginlib</depend> 
-  <depend>Boost</depend>
+  <depend>boost</depend>
   <depend>linux-kernel-headers</depend>
 
   <test_depend>ament_lint_auto</test_depend>
