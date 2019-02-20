@@ -16,13 +16,13 @@
 #ifndef SOCKETCAN_INTERFACE__READER_HPP_
 #define SOCKETCAN_INTERFACE__READER_HPP_
 
-#include <deque>
-
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/chrono.hpp>
 
-#include "interface.hpp"
+#include <socketcan_interface/interface.hpp>
+
+#include <deque>
 
 namespace can
 {
@@ -50,14 +50,11 @@ class BufferedReader
   void handleFrame(const can::Frame & msg)
   {
     boost::mutex::scoped_lock lock(mutex_);
-    if (enabled_)
-    {
+    if (enabled_) {
       buffer_.push_back(msg);
       trim();
       cond_.notify_one();
-    }
-    else
-    {
+    } else {
       ROSCANOPEN_WARN("socketcan_interface", "discarded message " /*<< tostring(msg)*/); // enable message printing
     }
   }
@@ -67,15 +64,19 @@ public:
     BufferedReader &reader_;
     bool before_;
   public:
-    ScopedEnabler(BufferedReader &reader) : reader_(reader), before_(reader_.setEnabled(true)) {}
+    explicit ScopedEnabler(BufferedReader &reader)
+    : reader_(reader), before_(reader_.setEnabled(true))
+    {}
     ~ScopedEnabler()
     {
       reader_.setEnabled(before_);
     }
   };
 
-  BufferedReader() : enabled_(true), max_len_(0) {}
-  BufferedReader(bool enable, size_t max_len = 0) : enabled_(enable), max_len_(max_len) {}
+  BufferedReader()
+  : enabled_(true), max_len_(0) {}
+  explicit BufferedReader(bool enable, size_t max_len = 0)
+  : enabled_(enable), max_len_(max_len) {}
 
   void flush()
   {
@@ -148,7 +149,6 @@ public:
     }
     return true;
   }
-
 };
 
 }  // namespace can

@@ -27,8 +27,7 @@ template <typename T> class DelegateHelper : public T
   template <typename Object, typename Instance, typename ...Args>
   DelegateHelper(Object &&o, typename T::result_type (Instance::*member)(Args... args)) :
       T(
-        [&o, fn=std::mem_fn(member)](Args... args) ->
-        typename T::result_type
+        [&o, fn = std::mem_fn(member)](Args... args) -> typename T::result_type
         {
           return fn(o, args...);
         })
@@ -36,7 +35,7 @@ template <typename T> class DelegateHelper : public T
   }
 
   template <typename Callable>
-  DelegateHelper(Callable &&c) : T(c)
+  explicit DelegateHelper(Callable && c) : T(c)
   {}
 };
 

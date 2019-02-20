@@ -16,14 +16,17 @@
 #ifndef SOCKETCAN_INTERFACE__INTERFACE_HPP_
 #define SOCKETCAN_INTERFACE__INTERFACE_HPP_
 
-#include <array>
-#include <memory>
-#include <functional>
-
 #include <boost/system/error_code.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include "socketcan_interface/delegates.h"
 #include "socketcan_interface/logging.h"
+
+#include <iostream>
+#include <string>
+#include <array>
+#include <memory>
+#include <functional>
 
 namespace can
 {
@@ -36,10 +39,11 @@ struct Header
   static const unsigned int RTR_MASK = (1u << 30);
   static const unsigned int EXTENDED_MASK = (1u << 31);
 
-  unsigned int id: 29; ///< CAN ID (11 or 29 bits valid, depending on is_extended member
-  unsigned int is_error: 1; ///< marks an error frame (only used internally)
-  unsigned int is_rtr: 1; ///< frame is a remote transfer request
-  unsigned int is_extended: 1; ///< frame uses 29 bit CAN identifier
+  unsigned int id: 29;  // CAN ID (11 or 29 bits valid, depending on is_extended member
+  unsigned int is_error: 1;  // marks an error frame (only used internally)
+  unsigned int is_rtr: 1;  // frame is a remote transfer request
+  unsigned int is_extended: 1;  // frame uses 29 bit CAN identifier
+
   /** check if frame header is valid*/
   bool isValid() const
   {
@@ -67,31 +71,34 @@ struct Header
       */
 
   Header()
-    : id(0), is_error(0), is_rtr(0), is_extended(0) {}
+  : id(0), is_error(0), is_rtr(0), is_extended(0) {}
 
   Header(unsigned int i, bool extended, bool rtr, bool error)
-    : id(i), is_error(error ? 1 : 0), is_rtr(rtr ? 1 : 0), is_extended(extended ? 1 : 0) {}
+  : id(i), is_error(error ? 1 : 0), is_rtr(rtr ? 1 : 0), is_extended(extended ? 1 : 0) {}
 };
 
 struct MsgHeader : public Header
 {
-  MsgHeader(unsigned int i = 0, bool rtr = false) : Header(i, false, rtr, false) {}
+  explicit MsgHeader(unsigned int i = 0, bool rtr = false)
+  : Header(i, false, rtr, false) {}
 };
 struct ExtendedHeader : public Header
 {
-  ExtendedHeader(unsigned int i = 0, bool rtr = false) : Header(i, true, rtr, false) {}
+  explicit ExtendedHeader(unsigned int i = 0, bool rtr = false)
+  : Header(i, true, rtr, false) {}
 };
 struct ErrorHeader : public Header
 {
-  ErrorHeader(unsigned int i = 0) : Header(i, false, false, true) {}
+  explicit ErrorHeader(unsigned int i = 0)
+  : Header(i, false, false, true) {}
 };
 
 /** representation of a CAN frame */
 struct Frame: public Header
 {
   typedef unsigned char value_type;
-  std::array<value_type, 8> data; ///< array for 8 data bytes with bounds checking
-  unsigned char dlc; ///< len of data
+  std::array<value_type, 8> data;  //< array for 8 data bytes with bounds checking
+  unsigned char dlc;  //< len of data
 
   /** check if frame header and length are valid*/
   bool isValid() const
@@ -105,8 +112,11 @@ struct Frame: public Header
    * @param[in] extended: uses 29 bit identifier, defaults to false
    * @param[in] rtr: is rtr frame, defaults to false
    */
-  Frame() : Header(), dlc(0) {}
-  Frame(const Header &h, unsigned char l = 0) : Header(h), dlc(l) {}
+  Frame()
+  : Header(), dlc(0) {}
+
+  Frame(const Header &h, unsigned char l = 0)  // NOLINT
+  : Header(h), dlc(l) {}
 
   value_type * c_array()
   {
@@ -126,8 +136,8 @@ public:
   {
     closed, open, ready
   } driver_state;
-  boost::system::error_code error_code; ///< device access error
-  unsigned int internal_error; ///< driver specific error
+  boost::system::error_code error_code;  //< device access error
+  unsigned int internal_error;  //< driver specific error
 
   State() : driver_state(closed), internal_error(0) {}
   virtual bool isReady() const
@@ -146,7 +156,7 @@ public:
   using Callable = T;
   using ListenerConstSharedPtr = std::shared_ptr<const Listener>;
 
-  Listener(const T &callable): callable_(callable) { }
+  explicit Listener(const T &callable): callable_(callable) { }
   void operator()(const U & u) const
   {
     if (callable_) callable_(u);
@@ -169,7 +179,9 @@ public:
    * @return managed pointer to listener
    */
   virtual StateListenerConstSharedPtr createStateListener(const StateFunc &delegate) = 0;
-  template <typename Instance, typename Callable> inline StateListenerConstSharedPtr createStateListenerM(Instance inst, Callable callable) {
+
+  template <typename Instance, typename Callable>
+  inline StateListenerConstSharedPtr createStateListenerM(Instance inst, Callable callable) {
       return this->createStateListener(std::bind(callable, inst, std::placeholders::_1));
   }
 
@@ -201,8 +213,10 @@ public:
    * @return managed pointer to listener
    */
   virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc &delegate) = 0;
-  template <typename Instance, typename Callable> inline FrameListenerConstSharedPtr createMsgListenerM(Instance inst, Callable callable) {
-      return this->createMsgListener(std::bind(callable, inst, std::placeholders::_1));
+
+  template <typename Instance, typename Callable>
+  inline FrameListenerConstSharedPtr createMsgListenerM(Instance inst, Callable callable) {
+    return this->createMsgListener(std::bind(callable, inst, std::placeholders::_1));
   }
 
   /**
@@ -212,16 +226,19 @@ public:
    * @param[in] delegate: delegate to be bound listener
    * @return managed pointer to listener
    */
-  virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&, const FrameFunc &delegate) = 0;
-  template <typename Instance, typename Callable> inline FrameListenerConstSharedPtr createMsgListenerM(const Frame::Header& header, Instance inst, Callable callable) {
-      return this->createMsgListener(header, std::bind(callable, inst, std::placeholders::_1));
+  virtual FrameListenerConstSharedPtr createMsgListener(
+    const Frame::Header&, const FrameFunc &delegate) = 0;
+
+  template <typename Instance, typename Callable>
+  inline FrameListenerConstSharedPtr createMsgListenerM(
+    const Frame::Header& header, Instance inst, Callable callable) {
+    return this->createMsgListener(header, std::bind(callable, inst, std::placeholders::_1));
   }
 
   virtual ~CommInterface() {}
 };
 using CommInterfaceSharedPtr = std::shared_ptr<CommInterface>;
 using FrameListenerConstSharedPtr = CommInterface::FrameListenerConstSharedPtr;
-
 
 class DriverInterface : public CommInterface, public StateInterface
 {
@@ -264,6 +281,6 @@ public:
 };
 using DriverInterfaceSharedPtr = std::shared_ptr<DriverInterface>;
 
-} // namespace can
+}  // namespace can
 
 #endif  // SOCKETCAN_INTERFACE__INTERFACE_HPP_

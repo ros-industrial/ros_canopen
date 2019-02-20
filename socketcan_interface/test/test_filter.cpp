@@ -13,14 +13,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "socketcan_interface/filter.hpp"
-
-#include "socketcan_interface/string.hpp"
-#include "socketcan_interface/dummy.hpp"
-
-// Bring in gtest
 #include <gtest/gtest.h>
 
+#include <string>
+
+#include "socketcan_interface/filter.hpp"
+#include "socketcan_interface/string.hpp"
+#include "socketcan_interface/dummy.hpp"
 
 TEST(FilterTest, simpleMask)
 {
@@ -55,7 +54,6 @@ TEST(FilterTest, maskTests)
   EXPECT_FALSE(f3->pass(can::toframe(msg1)));
   EXPECT_TRUE(f3->pass(can::toframe(msg2)));
   EXPECT_TRUE(f3->pass(can::toframe(msg3)));
-
 }
 
 TEST(FilterTest, rangeTest)
@@ -79,7 +77,6 @@ TEST(FilterTest, rangeTest)
   EXPECT_TRUE(f3->pass(can::toframe(msg1)));
   EXPECT_TRUE(f3->pass(can::toframe(msg2)));
   EXPECT_FALSE(f3->pass(can::toframe(msg3)));
-
 }
 
 class Counter
@@ -87,7 +84,8 @@ class Counter
 public:
   size_t count_;
   Counter(): count_(0) {}
-  void count(const can::Frame &frame)
+
+  void count(const can::Frame & frame)
   {
     ++count_;
   }
@@ -95,7 +93,6 @@ public:
 
 TEST(FilterTest, listenerTest)
 {
-
   Counter counter;
   can::CommInterfaceSharedPtr dummy(new can::DummyInterface(true));
 
@@ -104,7 +101,7 @@ TEST(FilterTest, listenerTest)
 
   can::FrameListenerConstSharedPtr listener(
     new can::FilteredFrameListener(
-      dummy,std::bind(&Counter::count, std::ref(counter), std::placeholders::_1), filters));
+      dummy, std::bind(&Counter::count, std::ref(counter), std::placeholders::_1), filters));
 
   can::Frame f1 = can::toframe("123#");
   can::Frame f2 = can::toframe("124#");
@@ -116,7 +113,6 @@ TEST(FilterTest, listenerTest)
   EXPECT_EQ(1, counter.count_);
   dummy->send(f3);
   EXPECT_EQ(2, counter.count_);
-
 }
 
 // Run all the tests that were declared with TEST()
