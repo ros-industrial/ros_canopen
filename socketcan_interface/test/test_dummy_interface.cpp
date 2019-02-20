@@ -22,7 +22,7 @@
 #include "socketcan_interface/dummy.hpp"
 
 class DummyInterfaceTest
-  : public ::testing::Test
+: public ::testing::Test
 {
 public:
   std::list<std::string> responses;

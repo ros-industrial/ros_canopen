@@ -18,7 +18,10 @@
 
 #include <boost/thread/thread.hpp>
 
-#include "interface.hpp"
+#include <memory>
+#include <string>
+
+#include "socketcan_interface/interface.hpp"
 
 namespace can
 {
@@ -29,7 +32,7 @@ class StateWaiter
   boost::condition_variable cond_;
   can::StateInterface::StateListenerConstSharedPtr state_listener_;
   can::State state_;
-  void updateState(const can::State &s)
+  void updateState(const can::State & s)
   {
     boost::mutex::scoped_lock lock(mutex_);
     state_ = s;
@@ -37,49 +40,58 @@ class StateWaiter
     cond_.notify_all();
   }
 public:
-  template<typename InterfaceType> StateWaiter(InterfaceType *interface)
+  template<typename InterfaceType>
+  explicit StateWaiter(InterfaceType * interface)
   {
     state_ = interface->getState();
-    state_listener_ = interface->createStateListener(std::bind(&StateWaiter::updateState, this, std::placeholders::_1));
+    state_listener_ = interface->createStateListener(
+      std::bind(&StateWaiter::updateState, this, std::placeholders::_1));
   }
-  template<typename DurationType> bool wait(const can::State::DriverState &s, const DurationType &duration)
+
+  template<typename DurationType>
+  bool wait(const can::State::DriverState & s, const DurationType & duration)
   {
     boost::mutex::scoped_lock cond_lock(mutex_);
     boost::system_time abs_time = boost::get_system_time() + duration;
-    while(s != state_.driver_state)
-    {
-      if(!cond_.timed_wait(cond_lock,abs_time))
-      {
+
+    while(s != state_.driver_state) {
+      if (!cond_.timed_wait(cond_lock, abs_time)) {
         return false;
       }
     }
+
     return true;
   }
 };
 
-template<typename WrappedInterface> class ThreadedInterface : public WrappedInterface
+template<typename WrappedInterface>
+class ThreadedInterface
+: public WrappedInterface
 {
   std::shared_ptr<boost::thread> thread_;
+
   void run_thread()
   {
     WrappedInterface::run();
   }
+
 public:
-  virtual bool init(const std::string &device, bool loopback)
+  virtual bool init(const std::string & device, bool loopback)
   {
-    if (!thread_ && WrappedInterface::init(device, loopback))
-    {
+    if (!thread_ && WrappedInterface::init(device, loopback)) {
       StateWaiter waiter(this);
       thread_.reset(new boost::thread(&ThreadedInterface::run_thread, this));
       return waiter.wait(can::State::ready, boost::posix_time::seconds(1));
     }
+
     return WrappedInterface::getState().isReady();
   }
+
   virtual void shutdown()
   {
     WrappedInterface::shutdown();
-    if (thread_)
-    {
+
+    if (thread_) {
       thread_->interrupt();
       thread_->join();
       thread_.reset();
@@ -87,16 +99,20 @@ public:
   }
   void join()
   {
-    if (thread_)
-    {
+    if (thread_) {
       thread_->join();
     }
   }
-  virtual ~ThreadedInterface() {}
-  ThreadedInterface(): WrappedInterface() {}
-  template<typename T1> ThreadedInterface(const T1 &t1): WrappedInterface(t1) {}
-  template<typename T1, typename T2> ThreadedInterface(const T1 &t1, const T2 &t2): WrappedInterface(t1, t2) {}
 
+  virtual ~ThreadedInterface() {}
+  ThreadedInterface()
+  : WrappedInterface() {}
+  template<typename T1>
+  explicit ThreadedInterface(const T1 & t1)
+  : WrappedInterface(t1) {}
+  template<typename T1, typename T2>
+  ThreadedInterface(const T1 & t1, const T2 & t2)
+  : WrappedInterface(t1, t2) {}
 };
 
 
