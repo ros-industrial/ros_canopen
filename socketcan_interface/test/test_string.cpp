@@ -13,11 +13,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "socketcan_interface/string.hpp"
-
-// Bring in gtest
 #include <gtest/gtest.h>
 
+#include <string>
+
+#include "socketcan_interface/string.hpp"
 
 TEST(StringTest, stringconversion)
 {

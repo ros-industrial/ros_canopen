@@ -13,12 +13,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <iostream>
+
 #include "socketcan_interface/bcm.hpp"
 #include "socketcan_interface/string.hpp"
 
-using namespace can;
-
-#include <iostream>
+using namespace can;  // NOLINT
 
 int main(int argc, char *argv[])
 {

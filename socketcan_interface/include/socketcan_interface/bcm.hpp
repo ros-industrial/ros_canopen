@@ -47,7 +47,7 @@ class BCMsocket
     }
     bcm_msg_head& head()
     {
-      return *(bcm_msg_head*)data;
+      return *reinterpret_cast<bcm_msg_head * >(data);
     }
     template<typename T> void setIVal2(T period)
     {
@@ -90,7 +90,7 @@ public:
       return false;
     }
 
-    struct sockaddr_can addr = {0};
+    struct sockaddr_can addr = {};
     addr.can_family = AF_CAN;
     addr.can_ifindex = ifr.ifr_ifindex;
 
@@ -104,7 +104,7 @@ public:
     return true;
   }
   template<typename DurationType>
-  bool startTX(DurationType period, Header header, size_t num, Frame *frames)
+  bool startTX(DurationType period, Header header, size_t num, Frame * frames)
   {
     Message msg(num);
     msg.setHeader(header);
@@ -115,12 +115,10 @@ public:
     head.opcode = TX_SETUP;
     head.flags |= SETTIMER | STARTTIMER;
 
-    for (size_t i = 0; i < num; ++i)  // msg nr
-    {
+    for (size_t i = 0; i < num; ++i) {  // msg nr
       head.frames[i].can_dlc = frames[i].dlc;
       head.frames[i].can_id = head.can_id;
-      for (size_t j = 0; j < head.frames[i].can_dlc; ++j)  // byte nr
-      {
+      for (size_t j = 0; j < head.frames[i].can_dlc; ++j) {  // byte nr
         head.frames[i].data[j] = frames[i].data[j];
       }
     }
@@ -135,8 +133,7 @@ public:
   }
   void shutdown()
   {
-    if (s_ > 0)
-    {
+    if (s_ > 0) {
       close(s_);
       s_ = -1;
     }

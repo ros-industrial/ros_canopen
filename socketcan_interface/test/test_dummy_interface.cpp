@@ -13,23 +13,28 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <gtest/gtest.h>
+
+#include <string>
+#include <list>
+
 #include "socketcan_interface/dispatcher.hpp"
 #include "socketcan_interface/dummy.hpp"
 
-// Bring in gtest
-#include <gtest/gtest.h>
-
-class DummyInterfaceTest : public ::testing::Test
+class DummyInterfaceTest
+: public ::testing::Test
 {
 public:
   std::list<std::string> responses;
   can::DummyInterface dummy;
-  DummyInterfaceTest() : dummy(true), listener(dummy.createMsgListenerM(this, &DummyInterfaceTest::handle)) { }
+  DummyInterfaceTest()
+  : dummy(true), listener(dummy.createMsgListenerM(this, &DummyInterfaceTest::handle)) { }
 
-  void handle(const can::Frame &f)
+  void handle(const can::Frame & f)
   {
     responses.push_back(can::tostring(f, true));
   }
+
   can::FrameListenerConstSharedPtr listener;
 };
 
