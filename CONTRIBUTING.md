@@ -1,3 +1,7 @@
+Any contribution that you make to this repository will
+be under the GNU Lesser General Public License, as dictated by that
+[license](https://opensource.org/licenses/LGPL-3.0).
+
 ROS-Industrial is a community project. We welcome contributions from any source, from those who are extremely active to casual users. The following sections outline the steps on how to contribute to ROS-Industrial. It assumes there is an existing repository to which one would like to contribute (item 1 in the figure above) and one is familiar with the Git "Fork and Branch" workflow, detailed [here](http://blog.scottlowe.org/2015/01/27/using-fork-branch-git-workflow/).
 
 1. Before any development is undertaken, a contributor would communicate a need and/or issue to the ROS-Industrial community. This can be done by submitting an issue on the appropriate GitHub repo, the [issues repo](https://github.com/ros-industrial/ros_industrial_issues), or by posting a message in the [ROS-Industrial category on ROS Discourse](//swri-ros-pkg-dev@googlegroups.com). . Doing so may save you time if similar development is underway and ensure that whatever approach you take is acceptable to the community of reviewers once it is submitted.
