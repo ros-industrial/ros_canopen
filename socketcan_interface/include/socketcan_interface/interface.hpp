@@ -39,10 +39,10 @@ struct Header
   static const unsigned int RTR_MASK = (1u << 30);
   static const unsigned int EXTENDED_MASK = (1u << 31);
 
-  unsigned int id: 29;  // CAN ID (11 or 29 bits valid, depending on is_extended member
-  unsigned int is_error: 1;  // marks an error frame (only used internally)
-  unsigned int is_rtr: 1;  // frame is a remote transfer request
-  unsigned int is_extended: 1;  // frame uses 29 bit CAN identifier
+  unsigned int id : 29;  // CAN ID (11 or 29 bits valid, depending on is_extended member
+  unsigned int is_error : 1;  // marks an error frame (only used internally)
+  unsigned int is_rtr : 1;  // frame is a remote transfer request
+  unsigned int is_extended : 1;  // frame uses 29 bit CAN identifier
 
   /** check if frame header is valid*/
   bool isValid() const
@@ -94,7 +94,7 @@ struct ErrorHeader : public Header
 };
 
 /** representation of a CAN frame */
-struct Frame: public Header
+struct Frame : public Header
 {
   typedef unsigned char value_type;
   std::array<value_type, 8> data;  //< array for 8 data bytes with bounds checking
@@ -103,7 +103,7 @@ struct Frame: public Header
   /** check if frame header and length are valid*/
   bool isValid() const
   {
-    return (dlc <= 8)  &&  Header::isValid();
+    return (dlc <= 8) && Header::isValid();
   }
   /**
    * constructor with default parameters
@@ -115,13 +115,14 @@ struct Frame: public Header
   Frame()
   : Header(), dlc(0) {}
 
-  Frame(const Header &h, unsigned char l = 0)  // NOLINT
+  Frame(const Header & h, unsigned char l = 0)  // NOLINT
   : Header(h), dlc(l) {}
 
   value_type * c_array()
   {
     return data.data();
   }
+
   const value_type * c_array() const
   {
     return data.data();
@@ -139,7 +140,8 @@ public:
   boost::system::error_code error_code;  //< device access error
   unsigned int internal_error;  //< driver specific error
 
-  State() : driver_state(closed), internal_error(0) {}
+  State()
+  : driver_state(closed), internal_error(0) {}
   virtual bool isReady() const
   {
     return driver_state == ready;
@@ -148,19 +150,26 @@ public:
 };
 
 /** template for Listener interface */
-template <typename T, typename U> class Listener
+template<typename T, typename U>
+class Listener
 {
   const T callable_;
+
 public:
   using Type = U;
   using Callable = T;
   using ListenerConstSharedPtr = std::shared_ptr<const Listener>;
 
-  explicit Listener(const T &callable): callable_(callable) { }
+  explicit Listener(const T & callable)
+  : callable_(callable) {}
+
   void operator()(const U & u) const
   {
-    if (callable_) callable_(u);
+    if (callable_) {
+      callable_(u);
+    }
   }
+
   virtual ~Listener() {}
 };
 
@@ -178,11 +187,12 @@ public:
    * @param[in] delegate: delegate to be bound by the listener
    * @return managed pointer to listener
    */
-  virtual StateListenerConstSharedPtr createStateListener(const StateFunc &delegate) = 0;
+  virtual StateListenerConstSharedPtr createStateListener(const StateFunc & delegate) = 0;
 
-  template <typename Instance, typename Callable>
-  inline StateListenerConstSharedPtr createStateListenerM(Instance inst, Callable callable) {
-      return this->createStateListener(std::bind(callable, inst, std::placeholders::_1));
+  template<typename Instance, typename Callable>
+  inline StateListenerConstSharedPtr createStateListenerM(Instance inst, Callable callable)
+  {
+    return this->createStateListener(std::bind(callable, inst, std::placeholders::_1));
   }
 
   virtual ~StateInterface() {}
@@ -212,10 +222,11 @@ public:
    * @param[in] delegate: delegate to be bound by the listener
    * @return managed pointer to listener
    */
-  virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc &delegate) = 0;
+  virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc & delegate) = 0;
 
-  template <typename Instance, typename Callable>
-  inline FrameListenerConstSharedPtr createMsgListenerM(Instance inst, Callable callable) {
+  template<typename Instance, typename Callable>
+  inline FrameListenerConstSharedPtr createMsgListenerM(Instance inst, Callable callable)
+  {
     return this->createMsgListener(std::bind(callable, inst, std::placeholders::_1));
   }
 
@@ -227,11 +238,12 @@ public:
    * @return managed pointer to listener
    */
   virtual FrameListenerConstSharedPtr createMsgListener(
-    const Frame::Header&, const FrameFunc &delegate) = 0;
+    const Frame::Header & header, const FrameFunc & delegate) = 0;
 
-  template <typename Instance, typename Callable>
+  template<typename Instance, typename Callable>
   inline FrameListenerConstSharedPtr createMsgListenerM(
-    const Frame::Header& header, Instance inst, Callable callable) {
+    const Frame::Header & header, Instance inst, Callable callable)
+  {
     return this->createMsgListener(header, std::bind(callable, inst, std::placeholders::_1));
   }
 
@@ -240,7 +252,8 @@ public:
 using CommInterfaceSharedPtr = std::shared_ptr<CommInterface>;
 using FrameListenerConstSharedPtr = CommInterface::FrameListenerConstSharedPtr;
 
-class DriverInterface : public CommInterface, public StateInterface
+class DriverInterface
+  : public CommInterface, public StateInterface
 {
 public:
   /**
@@ -250,7 +263,7 @@ public:
    * @param[in] loopback: loop-back own messages
    * @return true if device was initialized succesfully, false otherwise
    */
-  virtual bool init(const std::string &device, bool loopback) = 0;
+  virtual bool init(const std::string & device, bool loopback) = 0;
 
   /**
    * Recover interface after errors and emergency stops
@@ -275,10 +288,11 @@ public:
 
   virtual bool doesLoopBack() const = 0;
 
-  virtual void run()  = 0;
+  virtual void run() = 0;
 
   virtual ~DriverInterface() {}
 };
+
 using DriverInterfaceSharedPtr = std::shared_ptr<DriverInterface>;
 
 }  // namespace can

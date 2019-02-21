@@ -32,7 +32,6 @@ bool dec2hex(char & h, const uint8_t & d, bool lc);
 
 std::string byte2hex(const uint8_t & d, bool pad, bool lc);
 
-
 std::string buffer2hex(const std::string & in, bool lc);
 
 std::string tostring(const Header & h, bool lc);
@@ -43,13 +42,17 @@ std::string tostring(const Frame & f, bool lc);
 
 Frame toframe(const std::string & s);
 
-template<class T> FrameFilterSharedPtr tofilter(const T  & ct);
-template<> FrameFilterSharedPtr tofilter(const std::string & s);
-template<> FrameFilterSharedPtr tofilter(const uint32_t & id);
+template<class T>
+FrameFilterSharedPtr tofilter(const T & ct);
+template<>
+FrameFilterSharedPtr tofilter(const std::string & s);
+template<>
+FrameFilterSharedPtr tofilter(const uint32_t & id);
 
 FrameFilterSharedPtr tofilter(const char * s);
 
-template <typename T> FilteredFrameListener::FilterVector tofilters(const T & v)
+template<typename T>
+FilteredFrameListener::FilterVector tofilters(const T & v)
 {
   FilteredFrameListener::FilterVector filters;
   for (size_t i = 0; i < static_cast<size_t>(v.size()); ++i) {
@@ -60,7 +63,7 @@ template <typename T> FilteredFrameListener::FilterVector tofilters(const T & v)
 }
 }  // namespace can
 
-std::ostream & operator <<(std::ostream & stream, const can::Header & h);
-std::ostream & operator <<(std::ostream & stream, const can::Frame & f);
+std::ostream & operator<<(std::ostream & stream, const can::Header & h);
+std::ostream & operator<<(std::ostream & stream, const can::Frame & f);
 
 #endif  // SOCKETCAN_INTERFACE__STRING_HPP_
