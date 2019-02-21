@@ -40,6 +40,7 @@ class SocketCANInterface : public AsioDriver<boost::asio::posix::stream_descript
 {
   bool loopback_;
   int sc_;
+
 public:
   SocketCANInterface()
   : loopback_(false), sc_(-1)
@@ -77,15 +78,15 @@ public:
       }
 
       can_err_mask_t err_mask = (
-         CAN_ERR_TX_TIMEOUT    /* TX timeout (by netdevice driver) */
-         | CAN_ERR_LOSTARB      /* lost arbitration    / data[0]    */
-         | CAN_ERR_CRTL         /* controller problems / data[1]    */
-         | CAN_ERR_PROT         /* protocol violations / data[2..3] */
-         | CAN_ERR_TRX          /* transceiver status  / data[4]    */
-         | CAN_ERR_ACK           /* received no ACK on transmission */
-         | CAN_ERR_BUSOFF        /* bus off */
-         // CAN_ERR_BUSERROR      /* bus error (may flood!) */
-         | CAN_ERR_RESTARTED     /* controller restarted */
+        CAN_ERR_TX_TIMEOUT |    /* TX timeout (by netdevice driver) */
+        CAN_ERR_LOSTARB |    /* lost arbitration    / data[0]    */
+        CAN_ERR_CRTL |       /* controller problems / data[1]    */
+        CAN_ERR_PROT |       /* protocol violations / data[2..3] */
+        CAN_ERR_TRX |        /* transceiver status  / data[4]    */
+        CAN_ERR_ACK |         /* received no ACK on transmission */
+        CAN_ERR_BUSOFF |      /* bus off */
+        // CAN_ERR_BUSERROR |  /* bus error (may flood!) */
+        CAN_ERR_RESTARTED     /* controller restarted */
       );
 
       ret = setsockopt(sc, SOL_CAN_RAW, CAN_RAW_ERR_FILTER, &err_mask, sizeof(err_mask));
@@ -115,10 +116,9 @@ public:
       struct sockaddr_can addr = {};
       addr.can_family = AF_CAN;
       addr.can_ifindex = ifr.ifr_ifindex;
-      ret = bind(sc, (struct sockaddr*)&addr, sizeof(addr));
+      ret = bind(sc, (struct sockaddr *)&addr, sizeof(addr));
 
-      if (ret != 0)
-      {
+      if (ret != 0) {
         setErrorCode(boost::system::error_code(ret, boost::system::system_category()));
         close(sc);
         return false;
@@ -129,16 +129,17 @@ public:
 
       setErrorCode(ec);
 
-      if (ec)
-      {
+      if (ec) {
         close(sc);
         return false;
       }
+
       setInternalError(0);
       setDriverState(State::open);
       sc_ = sc;
       return true;
     }
+
     return getState().isReady();
   }
 
@@ -202,6 +203,7 @@ public:
   {
     return sc_;
   }
+
 protected:
   std::string device_;
   can_frame frame_;
@@ -210,9 +212,10 @@ protected:
   {
     boost::mutex::scoped_lock lock(send_mutex_);
     socket_.async_read_some(
-        boost::asio::buffer(&frame_,
-          sizeof(frame_)),
-        boost::bind(&SocketCANInterface::readFrame, this, boost::asio::placeholders::error));
+      boost::asio::buffer(
+        &frame_,
+        sizeof(frame_)),
+      boost::bind(&SocketCANInterface::readFrame, this, boost::asio::placeholders::error));
   }
 
   virtual bool enqueue(const Frame & msg)
@@ -220,12 +223,12 @@ protected:
     boost::mutex::scoped_lock lock(send_mutex_);
 
     can_frame frame = {};
-    frame.can_id = msg.id | (msg.is_extended ? CAN_EFF_FLAG : 0) | (msg.is_rtr ? CAN_RTR_FLAG : 0);;
+    frame.can_id = msg.id | (msg.is_extended ? CAN_EFF_FLAG : 0) | (msg.is_rtr ? CAN_RTR_FLAG : 0);
     frame.can_dlc = msg.dlc;
 
-
-    for (int i = 0; i < frame.can_dlc; ++i)
+    for (int i = 0; i < frame.can_dlc; ++i) {
       frame.data[i] = msg.data[i];
+    }
 
     boost::system::error_code ec;
     boost::asio::write(
@@ -260,7 +263,6 @@ protected:
         LOG("error: " << input_.id);
         setInternalError(input_.id);
         setNotReady();
-
       } else {
         input_.is_extended = (frame_.can_id & CAN_EFF_FLAG) ? 1 : 0;
         input_.id = frame_.can_id & (input_.is_extended ? CAN_EFF_MASK : CAN_SFF_MASK);
@@ -271,6 +273,7 @@ protected:
 
     frameReceived(error);
   }
+
 private:
   boost::mutex send_mutex_;
 };
@@ -279,7 +282,8 @@ typedef SocketCANInterface SocketCANDriver;
 typedef std::shared_ptr<SocketCANDriver> SocketCANDriverSharedPtr;
 typedef std::shared_ptr<SocketCANInterface> SocketCANInterfaceSharedPtr;
 
-template <typename T> class ThreadedInterface;
+template<typename T>
+class ThreadedInterface;
 typedef ThreadedInterface<SocketCANInterface> ThreadedSocketCANInterface;
 typedef std::shared_ptr<ThreadedSocketCANInterface> ThreadedSocketCANInterfaceSharedPtr;
 

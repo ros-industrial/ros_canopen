@@ -39,6 +39,7 @@ class StateWaiter
     lock.unlock();
     cond_.notify_all();
   }
+
 public:
   template<typename InterfaceType>
   explicit StateWaiter(InterfaceType * interface)
@@ -54,7 +55,7 @@ public:
     boost::mutex::scoped_lock cond_lock(mutex_);
     boost::system_time abs_time = boost::get_system_time() + duration;
 
-    while(s != state_.driver_state) {
+    while (s != state_.driver_state) {
       if (!cond_.timed_wait(cond_lock, abs_time)) {
         return false;
       }
@@ -66,7 +67,7 @@ public:
 
 template<typename WrappedInterface>
 class ThreadedInterface
-: public WrappedInterface
+  : public WrappedInterface
 {
   std::shared_ptr<boost::thread> thread_;
 
