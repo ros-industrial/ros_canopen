@@ -27,7 +27,7 @@ namespace can
 class FrameFilter
 {
 public:
-  virtual bool pass(const can::Frame &frame) const = 0;
+  virtual bool pass(const can::Frame & frame) const = 0;
   virtual ~FrameFilter() {}
 };
 typedef std::shared_ptr<FrameFilter> FrameFilterSharedPtr;
@@ -39,28 +39,32 @@ public:
   static const uint32_t MASK_RELAXED = ~Frame::EXTENDED_MASK;
   explicit FrameMaskFilter(
     uint32_t can_id, uint32_t mask = MASK_RELAXED, bool invert = false)
-    : mask_(mask), masked_id_(can_id & mask), invert_(invert)
+  : mask_(mask), masked_id_(can_id & mask), invert_(invert)
   {}
-  virtual bool pass(const can::Frame &frame) const
+  virtual bool pass(const can::Frame & frame) const
   {
     return ((mask_ & frame) == masked_id_) != invert_;
   }
+
 private:
   const uint32_t mask_;
   const uint32_t masked_id_;
   const bool invert_;
 };
 
-class FrameRangeFilter  : public FrameFilter
+class FrameRangeFilter
+  : public FrameFilter
 {
 public:
   FrameRangeFilter(uint32_t min_id, uint32_t max_id, bool invert = false)
-    : min_id_(min_id), max_id_(max_id), invert_(invert)
+  : min_id_(min_id), max_id_(max_id), invert_(invert)
   {}
-  virtual bool pass(const can::Frame &frame) const
+
+  virtual bool pass(const can::Frame & frame) const
   {
     return (min_id_ <= frame && frame <= max_id_) != invert_;
   }
+
 private:
   const uint32_t min_id_;
   const uint32_t max_id_;
@@ -72,34 +76,33 @@ class FilteredFrameListener : public CommInterface::FrameListener
 public:
   typedef std::vector<FrameFilterSharedPtr> FilterVector;
   FilteredFrameListener(
-    CommInterfaceSharedPtr comm, const Callable &callable, const FilterVector &filters)
-    : CommInterface::FrameListener(callable),
-      filters_(filters),
-      listener_(comm->createMsgListener([this](const Frame &frame)
+    CommInterfaceSharedPtr comm, const Callable & callable, const FilterVector & filters)
+  : CommInterface::FrameListener(callable),
+    filters_(filters),
+    listener_(comm->createMsgListener([this](const Frame & frame)
       {
         for (FilterVector::const_iterator it = this->filters_.begin();
-            it != this->filters_.end(); ++it)
+        it != this->filters_.end(); ++it)
         {
-          if ((*it)->pass(frame))
-          {
+          if ((*it)->pass(frame)) {
             (*this)(frame);
             break;
           }
         }
       }))
   {}
+
 private:
-  void filter(const Frame &frame)
+  void filter(const Frame & frame)
   {
-    for (FilterVector::const_iterator it = filters_.begin(); it != filters_.end(); ++it)
-    {
-      if ((*it)->pass(frame))
-      {
+    for (FilterVector::const_iterator it = filters_.begin(); it != filters_.end(); ++it) {
+      if ((*it)->pass(frame)) {
         (*this)(frame);
         break;
       }
     }
   }
+
   const std::vector<FrameFilterSharedPtr> filters_;
   CommInterface::FrameListenerConstSharedPtr listener_;
 };
