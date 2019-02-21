@@ -83,7 +83,8 @@ class Counter
 {
 public:
   size_t count_;
-  Counter(): count_(0) {}
+  Counter()
+  : count_(0) {}
 
   void count(const can::Frame & frame)
   {
@@ -116,7 +117,7 @@ TEST(FilterTest, listenerTest)
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

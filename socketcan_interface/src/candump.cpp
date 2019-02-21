@@ -27,7 +27,7 @@ using namespace can;  // NOLINT
 
 void print_error(const State & s);
 
-void print_frame(const Frame &f)
+void print_frame(const Frame & f)
 {
   if (f.is_error) {
     std::cout << "E " << std::hex << f.id << std::dec;
@@ -64,7 +64,7 @@ void print_error(const State & s)
   std::cout << "('" << err << "') asio: " << s.error_code << std::endl;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
   if (argc != 2 && argc != 4) {
     std::cout << "usage: " << argv[0] << " DEVICE [PLUGIN_PATH PLUGIN_NAME]" << std::endl;
@@ -75,8 +75,8 @@ int main(int argc, char *argv[])
     try {
       g_loader = std::make_shared<class_loader::ClassLoader>(argv[2]);
       g_driver = g_loader->createUniqueInstance<DriverInterface>(argv[3]);
-    } catch (std::exception& ex) {
-      std::cerr << boost::diagnostic_information(ex) << std::endl;;
+    } catch (std::exception & ex) {
+      std::cerr << boost::diagnostic_information(ex) << std::endl;
       return 1;
     }
   } else {
