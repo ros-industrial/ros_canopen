@@ -36,33 +36,39 @@ class BCMsocket
   struct Message
   {
     size_t size;
-    uint8_t *data;
+    uint8_t * data;
 
     explicit Message(size_t n)
-      : size(sizeof(bcm_msg_head) + sizeof(can_frame) * n), data(new uint8_t[size])
+    : size(sizeof(bcm_msg_head) + sizeof(can_frame) * n), data(new uint8_t[size])
     {
       assert(n <= 256);
       memset(data, 0, size);
       head().nframes = n;
     }
-    bcm_msg_head& head()
+
+    bcm_msg_head & head()
     {
-      return *reinterpret_cast<bcm_msg_head * >(data);
+      return *reinterpret_cast<bcm_msg_head *>(data);
     }
-    template<typename T> void setIVal2(T period)
+
+    template<typename T>
+    void setIVal2(T period)
     {
       int64_t usec = boost::chrono::duration_cast<boost::chrono::microseconds>(period).count();
       head().ival2.tv_sec = usec / 1000000;
       head().ival2.tv_usec = usec % 1000000;
     }
+
     void setHeader(Header header)
     {
       head().can_id = header.id | (header.is_extended ? CAN_EFF_FLAG : 0);
     }
+
     bool write(int s)
     {
       return ::write(s, data, size) > 0;
     }
+
     ~Message()
     {
       delete[] data;
@@ -72,20 +78,24 @@ class BCMsocket
   };
 
 public:
-  BCMsocket(): s_(-1)
+  BCMsocket()
+  : s_(-1)
   {
   }
-  bool init(const std::string &device)
+
+  bool init(const std::string & device)
   {
     s_ = socket(PF_CAN, SOCK_DGRAM, CAN_BCM);
 
-    if (s_ < 0) return false;
+    if (s_ < 0) {
+      return false;
+    }
+
     struct ifreq ifr;
     snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "%s", device.c_str());
     int ret = ioctl(s_, SIOCGIFINDEX, &ifr);
 
-    if (ret != 0)
-    {
+    if (ret != 0) {
       shutdown();
       return false;
     }
@@ -96,13 +106,14 @@ public:
 
     ret = connect(s_, (struct sockaddr *)&addr, sizeof(addr));
 
-    if (ret < 0)
-    {
+    if (ret < 0) {
       shutdown();
       return false;
     }
+
     return true;
   }
+
   template<typename DurationType>
   bool startTX(DurationType period, Header header, size_t num, Frame * frames)
   {
@@ -110,7 +121,7 @@ public:
     msg.setHeader(header);
     msg.setIVal2(period);
 
-    bcm_msg_head &head = msg.head();
+    bcm_msg_head & head = msg.head();
 
     head.opcode = TX_SETUP;
     head.flags |= SETTIMER | STARTTIMER;

@@ -38,15 +38,14 @@ class BufferedReader
 
   void trim()
   {
-    if (max_len_ > 0)
-    {
-      while (buffer_.size() > max_len_)
-      {
+    if (max_len_ > 0) {
+      while (buffer_.size() > max_len_) {
         ROSCANOPEN_ERROR("socketcan_interface", "buffer overflow, discarded oldest message " /*<< tostring(buffer_.front())*/); // enable message printing
         buffer_.pop_front();
       }
     }
   }
+
   void handleFrame(const can::Frame & msg)
   {
     boost::mutex::scoped_lock lock(mutex_);
@@ -61,12 +60,14 @@ class BufferedReader
 public:
   class ScopedEnabler
   {
-    BufferedReader &reader_;
+    BufferedReader & reader_;
     bool before_;
+
   public:
-    explicit ScopedEnabler(BufferedReader &reader)
+    explicit ScopedEnabler(BufferedReader & reader)
     : reader_(reader), before_(reader_.setEnabled(true))
     {}
+
     ~ScopedEnabler()
     {
       reader_.setEnabled(before_);
@@ -75,6 +76,7 @@ public:
 
   BufferedReader()
   : enabled_(true), max_len_(0) {}
+
   explicit BufferedReader(bool enable, size_t max_len = 0)
   : enabled_(enable), max_len_(max_len) {}
 
@@ -97,7 +99,7 @@ public:
   bool setEnabled(bool enabled)
   {
     boost::mutex::scoped_lock lock(mutex_);
-    bool  before = enabled_;
+    bool before = enabled_;
     enabled_ = enabled;
     return before;
   }
@@ -119,34 +121,35 @@ public:
     listener_ = interface->createMsgListenerM(this, &BufferedReader::handleFrame);
     buffer_.clear();
   }
-  void listen(CommInterfaceSharedPtr interface, const Frame::Header& h)
+  void listen(CommInterfaceSharedPtr interface, const Frame::Header & h)
   {
     boost::mutex::scoped_lock lock(mutex_);
     listener_ = interface->createMsgListenerM(h, this, &BufferedReader::handleFrame);
     buffer_.clear();
   }
 
-  template<typename DurationType> bool read(can::Frame * msg, const DurationType &duration)
+  template<typename DurationType>
+  bool read(can::Frame * msg, const DurationType & duration)
   {
     return readUntil(msg, boost::chrono::high_resolution_clock::now() + duration);
   }
+
   bool readUntil(can::Frame * msg, boost::chrono::high_resolution_clock::time_point abs_time)
   {
     boost::mutex::scoped_lock lock(mutex_);
 
-    while (buffer_.empty() && cond_.wait_until(lock, abs_time)  != boost::cv_status::timeout)
+    while (buffer_.empty() && cond_.wait_until(lock, abs_time) != boost::cv_status::timeout)
     {}
 
-    if (buffer_.empty())
-    {
+    if (buffer_.empty()) {
       return false;
     }
 
-    if (msg)
-    {
+    if (msg) {
       *msg = buffer_.front();
       buffer_.pop_front();
     }
+
     return true;
   }
 };

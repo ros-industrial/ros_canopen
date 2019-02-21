@@ -27,7 +27,8 @@
 namespace can
 {
 
-template<typename Socket> class AsioDriver : public DriverInterface
+template<typename Socket>
+class AsioDriver : public DriverInterface
 {
   using FrameDispatcher = FilteredDispatcher<unsigned int, CommInterface::FrameListener>;
   using StateDispatcher = SimpleDispatcher<StateInterface::StateListener>;
@@ -51,15 +52,14 @@ protected:
   virtual void triggerReadSome() = 0;
   virtual bool enqueue(const Frame & msg) = 0;
 
-  void dispatchFrame(const Frame &msg)
+  void dispatchFrame(const Frame & msg)
   {
     strand_.post([this, msg]{ frame_dispatcher_.dispatch(msg.key(), msg);} ); // copies msg
   }
-  void setErrorCode(const boost::system::error_code& error)
+  void setErrorCode(const boost::system::error_code & error)
   {
     boost::mutex::scoped_lock lock(state_mutex_);
-    if (state_.error_code != error)
-    {
+    if (state_.error_code != error) {
       state_.error_code = error;
       state_dispatcher_.dispatch(state_);
     }
@@ -67,8 +67,7 @@ protected:
   void setInternalError(unsigned int internal_error)
   {
     boost::mutex::scoped_lock lock(state_mutex_);
-    if (state_.internal_error != internal_error)
-    {
+    if (state_.internal_error != internal_error) {
       state_.internal_error = internal_error;
       state_dispatcher_.dispatch(state_);
     }
@@ -77,8 +76,7 @@ protected:
   void setDriverState(State::DriverState state)
   {
     boost::mutex::scoped_lock lock(state_mutex_);
-    if (state_.driver_state != state)
-    {
+    if (state_.driver_state != state) {
       state_.driver_state = state;
       state_dispatcher_.dispatch(state_);
     }
@@ -88,10 +86,9 @@ protected:
     setDriverState(socket_.is_open() ? State::open : State::closed);
   }
 
-  void frameReceived(const boost::system::error_code& error)
+  void frameReceived(const boost::system::error_code & error)
   {
-    if (!error)
-    {
+    if (!error) {
       dispatchFrame(input_);
       triggerReadSome();
     } else {
@@ -101,7 +98,7 @@ protected:
   }
 
   AsioDriver()
-    : strand_(io_service_), socket_(io_service_)
+  : strand_(io_service_), socket_(io_service_)
   {}
 
 public:
@@ -119,16 +116,15 @@ public:
   {
     setNotReady();
 
-    if (getState().driver_state == State::open)
-    {
+    if (getState().driver_state == State::open) {
       io_service_.reset();
       boost::asio::io_service::work work(io_service_);
       setDriverState(State::ready);
 
       boost::thread post_thread([this]()
-      {
-        io_service_.run();
-      });
+        {
+          io_service_.run();
+        });
 
       triggerReadSome();
 
@@ -147,24 +143,24 @@ public:
 
   virtual void shutdown()
   {
-    if (socket_.is_open())
-    {
+    if (socket_.is_open()) {
       socket_.cancel();
       socket_.close();
     }
+
     io_service_.stop();
   }
 
-  virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc &delegate)
+  virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc & delegate)
   {
     return frame_dispatcher_.createListener(delegate);
   }
   virtual FrameListenerConstSharedPtr createMsgListener(
-    const Frame::Header&h, const FrameFunc &delegate)
+    const Frame::Header & h, const FrameFunc & delegate)
   {
     return frame_dispatcher_.createListener(h.key(), delegate);
   }
-  virtual StateListenerConstSharedPtr createStateListener(const StateFunc &delegate)
+  virtual StateListenerConstSharedPtr createStateListener(const StateFunc & delegate)
   {
     return state_dispatcher_.createListener(delegate);
   }
