@@ -57,13 +57,14 @@ class BufferedReader
       ROSCANOPEN_WARN("socketcan_interface", "discarded message " /*<< tostring(msg)*/); // enable message printing
     }
   }
+
 public:
   class ScopedEnabler
   {
     BufferedReader & reader_;
     bool before_;
 
-  public:
+public:
     explicit ScopedEnabler(BufferedReader & reader)
     : reader_(reader), before_(reader_.setEnabled(true))
     {}

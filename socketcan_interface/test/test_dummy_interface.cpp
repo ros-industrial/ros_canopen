@@ -22,13 +22,13 @@
 #include "socketcan_interface/dummy.hpp"
 
 class DummyInterfaceTest
-: public ::testing::Test
+  : public ::testing::Test
 {
 public:
   std::list<std::string> responses;
   can::DummyInterface dummy;
   DummyInterfaceTest()
-  : dummy(true), listener(dummy.createMsgListenerM(this, &DummyInterfaceTest::handle)) { }
+  : dummy(true), listener(dummy.createMsgListenerM(this, &DummyInterfaceTest::handle)) {}
 
   void handle(const can::Frame & f)
   {
@@ -54,7 +54,7 @@ TEST_F(DummyInterfaceTest, testCase1)
 
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

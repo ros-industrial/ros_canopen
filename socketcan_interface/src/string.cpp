@@ -21,7 +21,7 @@
 namespace can
 {
 
-bool hex2dec(uint8_t& d, const char& h)
+bool hex2dec(uint8_t & d, const char & h)
 {
   if ('0' <= h && h <= '9') {
     d = h - '0';
@@ -41,10 +41,11 @@ bool hex2buffer(std::string & out, const std::string & in_raw, bool pad)
   std::string in(in_raw);
 
   if ((in.size() % 2) != 0) {
-    if (pad)
+    if (pad) {
       in.insert(0, "0");
-    else
+    } else {
       return false;
+    }
   }
 
   out.resize(in.size() >> 1);
@@ -138,7 +139,7 @@ uint32_t tohex(const std::string & s)
   return h;
 }
 
-Header toheader(const std::string& s)
+Header toheader(const std::string & s)
 {
   unsigned int h = tohex(s);
   return Header(
@@ -156,7 +157,7 @@ std::string tostring(const Frame & f, bool lc)
     s[i] = f.data[i];
   }
 
-  return tostring((const Header&)(f), lc) + '#' + buffer2hex(s, lc);
+  return tostring((const Header &)(f), lc) + '#' + buffer2hex(s, lc);
 }
 
 Frame toframe(const std::string & s)
@@ -185,7 +186,8 @@ Frame toframe(const std::string & s)
   return frame;
 }
 
-template<> FrameFilterSharedPtr tofilter(const std::string  & s)
+template<>
+FrameFilterSharedPtr tofilter(const std::string & s)
 {
   FrameFilter * filter = 0;
   size_t delim = s.find_first_of(":~-_");
@@ -215,7 +217,8 @@ template<> FrameFilterSharedPtr tofilter(const std::string  & s)
 
   return FrameFilterSharedPtr(filter);
 }
-template<> FrameFilterSharedPtr tofilter(const uint32_t & id)
+template<>
+FrameFilterSharedPtr tofilter(const uint32_t & id)
 {
   return FrameFilterSharedPtr(new FrameMaskFilter(id));
 }
@@ -227,12 +230,12 @@ FrameFilterSharedPtr tofilter(const char * s)
 
 }  // namespace can
 
-std::ostream& operator <<(std::ostream & stream, const can::Header & h)
+std::ostream & operator<<(std::ostream & stream, const can::Header & h)
 {
   return stream << can::tostring(h, true);
 }
 
-std::ostream& operator <<(std::ostream & stream, const can::Frame & f)
+std::ostream & operator<<(std::ostream & stream, const can::Frame & f)
 {
   return stream << can::tostring(f, true);
 }
