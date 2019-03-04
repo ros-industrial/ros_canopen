@@ -124,4 +124,12 @@ if(CATKIN_ENABLE_TESTING)
     ${PROJECT_NAME}_string
     ${catkin_LIBRARIES}
   )
+
+  catkin_add_gtest(${PROJECT_NAME}-test_dispatcher
+    test/test_dispatcher.cpp
+  )
+  target_link_libraries(${PROJECT_NAME}-test_dispatcher
+    ${PROJECT_NAME}_string
+    ${catkin_LIBRARIES}
+  )
 endif()
