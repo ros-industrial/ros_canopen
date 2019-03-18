@@ -2,6 +2,11 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* keep NodeHandle alive in socketcan_bridge tests
+* Contributors: Mathias Lüdtke
+
 0.7.9 (2018-05-23)
 ------------------
 * compare can_msgs::Frame and can::Frame properly

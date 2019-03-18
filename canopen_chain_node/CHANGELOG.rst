@@ -2,6 +2,12 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* require minimum version of class_loader and pluginlib
+* make sync_node return proper error codes
+* Contributors: Mathias Lüdtke
+
 0.7.9 (2018-05-23)
 ------------------
 

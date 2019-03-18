@@ -2,6 +2,12 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* require minimum version of class_loader and pluginlib
+* handle invalid supported drive modes object
+* Contributors: Mathias Lüdtke
+
 0.7.9 (2018-05-23)
 ------------------
 * fix initialization bug in ProfiledPositionMode
