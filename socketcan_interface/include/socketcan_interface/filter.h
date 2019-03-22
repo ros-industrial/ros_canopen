@@ -12,7 +12,7 @@ public:
   virtual bool pass(const can::Frame &frame) const = 0;
   virtual ~FrameFilter() {}
 };
-typedef std::shared_ptr<FrameFilter> FrameFilterSharedPtr;
+using FrameFilterSharedPtr = std::shared_ptr<FrameFilter>;
 
 class FrameMaskFilter : public FrameFilter {
 public:
@@ -46,7 +46,7 @@ private:
 
 class FilteredFrameListener : public CommInterface::FrameListener {
 public:
-  typedef std::vector<FrameFilterSharedPtr> FilterVector;
+  using FilterVector = std::vector<FrameFilterSharedPtr>;
   FilteredFrameListener(CommInterfaceSharedPtr comm, const Callable &callable, const FilterVector &filters)
   : CommInterface::FrameListener(callable),
     filters_(filters),

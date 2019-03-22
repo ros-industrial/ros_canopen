@@ -11,9 +11,9 @@
 namespace can{
 
 class DummyInterface : public DriverInterface{
-    typedef FilteredDispatcher<unsigned int, CommInterface::FrameListener> FrameDispatcher;
-    typedef SimpleDispatcher<StateInterface::StateListener> StateDispatcher;
-    typedef std::unordered_multimap<std::string, Frame> Map;
+    using FrameDispatcher = FilteredDispatcher<unsigned int, CommInterface::FrameListener>;
+    using StateDispatcher = SimpleDispatcher<StateInterface::StateListener>;
+    using Map = std::unordered_map<std::string, Frame>;
     FrameDispatcher frame_dispatcher_;
     StateDispatcher state_dispatcher_;
     State state_;
@@ -94,7 +94,7 @@ public:
     };
 
 };
-typedef std::shared_ptr<DummyInterface> DummyInterfaceSharedPtr;
+using DummyInterfaceSharedPtr = std::shared_ptr<DummyInterface>;
 
 
 }

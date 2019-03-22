@@ -56,7 +56,7 @@ struct ErrorHeader : public Header{
 
 /** representation of a CAN frame */
 struct Frame: public Header{
-    typedef unsigned char value_type;
+    using value_type = unsigned char;
     std::array<value_type, 8> data; ///< array for 8 data bytes with bounds checking
     unsigned char dlc; ///< len of data
 
@@ -96,9 +96,9 @@ public:
 template <typename T,typename U> class Listener{
     const T callable_;
 public:
-    typedef U Type;
-    typedef T Callable;
-    typedef std::shared_ptr<const Listener> ListenerConstSharedPtr;
+    using Type = U;
+    using Callable = T;
+    using ListenerConstSharedPtr = std::shared_ptr<const Listener>;
 
     Listener(const T &callable):callable_(callable){ }
     void operator()(const U & u) const { if(callable_) callable_(u); }
@@ -109,8 +109,8 @@ class StateInterface{
 public:
     using StateFunc = std::function<void(const State&)>;
     using StateDelegate [[deprecated("use StateFunc instead")]] = DelegateHelper<StateFunc>;
-    typedef Listener<const StateFunc, const State&> StateListener;
-    typedef StateListener::ListenerConstSharedPtr StateListenerConstSharedPtr;
+    using StateListener = Listener<const StateFunc, const State&>;
+    using StateListenerConstSharedPtr = StateListener::ListenerConstSharedPtr;
 
     /**
      * acquire a listener for the specified delegate, that will get called for all state changes
@@ -125,15 +125,15 @@ public:
 
     virtual ~StateInterface() {}
 };
-typedef std::shared_ptr<StateInterface> StateInterfaceSharedPtr;
-typedef StateInterface::StateListenerConstSharedPtr StateListenerConstSharedPtr;
+using StateInterfaceSharedPtr = std::shared_ptr<StateInterface>;
+using StateListenerConstSharedPtr = StateInterface::StateListenerConstSharedPtr;
 
 class CommInterface{
 public:
     using FrameFunc = std::function<void(const Frame&)>;
     using FrameDelegate [[deprecated("use FrameFunc instead")]] = DelegateHelper<FrameFunc>;
-    typedef Listener<const FrameFunc, const Frame&> FrameListener;
-    typedef FrameListener::ListenerConstSharedPtr FrameListenerConstSharedPtr;
+    using FrameListener = Listener<const FrameFunc, const Frame&>;
+    using FrameListenerConstSharedPtr = FrameListener::ListenerConstSharedPtr;
 
     /**
      * enqueue frame for sending
@@ -168,8 +168,8 @@ public:
 
     virtual ~CommInterface() {}
 };
-typedef std::shared_ptr<CommInterface> CommInterfaceSharedPtr;
-typedef CommInterface::FrameListenerConstSharedPtr FrameListenerConstSharedPtr;
+using CommInterfaceSharedPtr = std::shared_ptr<CommInterface>;
+using FrameListenerConstSharedPtr = CommInterface::FrameListenerConstSharedPtr;
 
 
 class DriverInterface : public CommInterface, public StateInterface {
@@ -210,7 +210,7 @@ public:
 
     virtual ~DriverInterface() {}
 };
-typedef std::shared_ptr<DriverInterface> DriverInterfaceSharedPtr;
+using DriverInterfaceSharedPtr = std::shared_ptr<DriverInterface>;
 
 
 } // namespace can
