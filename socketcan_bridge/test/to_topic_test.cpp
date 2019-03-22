@@ -33,7 +33,10 @@
 
 #include <gtest/gtest.h>
 #include <ros/ros.h>
+
 #include <list>
+#include <string>
+#include <vector>
 
 class msgCollector
 {
@@ -48,7 +51,8 @@ class msgCollector
     }
 };
 
-std::string convertMessageToString(const can_msgs::Frame &msg, bool lc=true) {
+std::string convertMessageToString(const can_msgs::Frame &msg, bool lc = true)
+{
   can::Frame f;
   socketcan_bridge::convertMessageToSocketCAN(msg, f);
   return can::tostring(f, lc);
@@ -81,7 +85,8 @@ TEST(SocketCANToTopicTest, checkCorrectData)
   f.is_error = false;
   f.id = 0x1337;
   f.dlc = 8;
-  for (uint8_t i=0; i < f.dlc; i++)
+
+  for (uint8_t i = 0; i < f.dlc; i++)
   {
     f.data[i] = i;
   }
@@ -146,7 +151,7 @@ TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
   EXPECT_EQ(message_collector_.messages.size(), 0);
 
   f.is_extended = true;
-  f.id = (1<<11)+1;  // now it should be alright.
+  f.id = (1 << 11) + 1;  // now it should be alright.
 
   driver_->send(f);
   ros::WallDuration(1.0).sleep();
@@ -161,7 +166,7 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   // create the dummy interface
   can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
 
-  //create can_id vector with id that should be passed and published to ros
+  // create can_id vector with id that should be passed and published to ros
   std::vector<unsigned int> pass_can_ids;
   pass_can_ids.push_back(0x1337);
 
@@ -185,7 +190,8 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   f.is_error = false;
   f.id = 0x1337;
   f.dlc = 8;
-  for (uint8_t i=0; i < f.dlc; i++)
+
+  for (uint8_t i = 0; i < f.dlc; i++)
   {
     f.data[i] = i;
   }
@@ -219,7 +225,7 @@ TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
   // create the dummy interface
   can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
 
-  //create can_id vector with id that should not be received on can bus
+  // create can_id vector with id that should not be received on can bus
   std::vector<unsigned int> pass_can_ids;
   pass_can_ids.push_back(0x300);
 
@@ -243,7 +249,8 @@ TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
   f.is_error = false;
   f.id = 0x1337;
   f.dlc = 8;
-  for (uint8_t i=0; i < f.dlc; i++)
+
+  for (uint8_t i = 0; i < f.dlc; i++)
   {
     f.data[i] = i;
   }
