@@ -218,13 +218,13 @@ private:
     boost::mutex send_mutex_;
 };
 
-typedef SocketCANInterface SocketCANDriver;
-typedef std::shared_ptr<SocketCANDriver> SocketCANDriverSharedPtr;
-typedef std::shared_ptr<SocketCANInterface> SocketCANInterfaceSharedPtr;
+using SocketCANDriver = SocketCANInterface;
+using SocketCANDriverSharedPtr = std::shared_ptr<SocketCANDriver>;
+using SocketCANInterfaceSharedPtr = std::shared_ptr<SocketCANInterface>;
 
 template <typename T> class ThreadedInterface;
-typedef ThreadedInterface<SocketCANInterface> ThreadedSocketCANInterface;
-typedef std::shared_ptr<ThreadedSocketCANInterface> ThreadedSocketCANInterfaceSharedPtr;
+using ThreadedSocketCANInterface = ThreadedInterface<SocketCANInterface>;
+using ThreadedSocketCANInterfaceSharedPtr = std::shared_ptr<ThreadedSocketCANInterface>;
 
 
 } // namespace can

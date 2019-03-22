@@ -13,12 +13,12 @@ namespace can{
 
 template< typename Listener > class SimpleDispatcher{
 public:
-    typedef typename Listener::Callable Callable;
-    typedef typename Listener::Type Type;
-    typedef typename Listener::ListenerConstSharedPtr ListenerConstSharedPtr;
+    using Callable = typename Listener::Callable;
+    using Type = typename Listener::Type;
+    using ListenerConstSharedPtr = typename Listener::ListenerConstSharedPtr;
 protected:
     class DispatcherBase;
-    typedef std::shared_ptr<DispatcherBase> DispatcherBaseSharedPtr;
+    using DispatcherBaseSharedPtr = std::shared_ptr<DispatcherBase>;
     class DispatcherBase {
         DispatcherBase(const DispatcherBase&) = delete; // prevent copies
         DispatcherBase& operator=(const DispatcherBase&) = delete;
@@ -78,7 +78,7 @@ public:
 };
 
 template<typename K, typename Listener, typename Hash = std::hash<K> > class FilteredDispatcher: public SimpleDispatcher<Listener>{
-    typedef SimpleDispatcher<Listener> BaseClass;
+    using BaseClass = SimpleDispatcher<Listener>;
     std::unordered_map<K, typename BaseClass::DispatcherBaseSharedPtr, Hash> filtered_;
 public:
     using BaseClass::createListener;
