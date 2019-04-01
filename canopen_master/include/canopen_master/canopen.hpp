@@ -1,13 +1,13 @@
 #ifndef H_CANOPEN
 #define H_CANOPEN
 
-#include <socketcan_interface/interface.h>
-#include <socketcan_interface/dispatcher.h>
-#include <socketcan_interface/reader.h>
-#include "exceptions.h"
-#include "layer.h"
-#include "objdict.h"
-#include "timer.h"
+#include <socketcan_interface/interface.hpp>
+#include <socketcan_interface/dispatcher.hpp>
+#include <socketcan_interface/reader.hpp>
+#include "exceptions.hpp"
+#include "layer.hpp"
+#include "objdict.hpp"
+#include "timer.hpp"
 #include <stdexcept>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/chrono/system_clocks.hpp>

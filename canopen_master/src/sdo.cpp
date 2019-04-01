@@ -1,4 +1,4 @@
-#include <canopen_master/canopen.h>
+#include <canopen_master/canopen.hpp>
 
 using namespace canopen;
 

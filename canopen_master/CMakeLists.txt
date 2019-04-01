@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(canopen_master)
 
 if(NOT CMAKE_CXX_STANDARD)
@@ -6,11 +6,9 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-find_package(catkin REQUIRED
-  COMPONENTS
-    class_loader
-    socketcan_interface
-)
+find_package(ament_cmake REQUIRED)
+find_package(class_loader REQUIRED)
+find_package(socketcan_interface REQUIRED)
 
 find_package(Boost REQUIRED
   COMPONENTS
@@ -19,19 +17,18 @@ find_package(Boost REQUIRED
     thread
 )
 
-catkin_package(
-  INCLUDE_DIRS
-    include
-  LIBRARIES
-    ${PROJECT_NAME}
-  CATKIN_DEPENDS
-    socketcan_interface
-  DEPENDS
-    Boost
+include_directories(include
+  ${class_loader_INCLUDE_DIRS}
+  ${socketcan_interface_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
 )
-include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_library(${PROJECT_NAME}
+link_directories(
+  ${socketcan_interface_LIBRARY_DIRS}
+  ${Boost_LIBRARY_DIRS}
+)
+
+add_library(${PROJECT_NAME} SHARED
   src/emcy.cpp
   src/node.cpp
   src/objdict.cpp
@@ -39,57 +36,80 @@ add_library(${PROJECT_NAME}
   src/sdo.cpp
 )
 target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
+  ${class_loader_LIBRARIES}
+  ${socketcan_interface_LIBRARIES}
   ${Boost_LIBRARIES}
 )
+
+ament_target_dependencies(${PROJECT_NAME}
+  socketcan_interface
+)
+
 
 add_library(${PROJECT_NAME}_plugin
   src/master_plugin.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_plugin
-  ${catkin_LIBRARIES}
+  ${class_loader_LIBRARIES}
+  ${socketcan_interface_LIBRARIES}
   ${Boost_LIBRARIES}
   ${PROJECT_NAME}
 )
+
+pluginlib_export_plugin_description_file(${PROJECT_NAME} master_plugin.xml)
 
 # canopen_bcm_sync
 add_executable(canopen_bcm_sync
   src/bcm_sync.cpp
 )
 target_link_libraries(canopen_bcm_sync
+  ${class_loader_LIBRARIES}
+  ${socketcan_interface_LIBRARIES}
   ${Boost_LIBRARIES}
-  ${catkin_LIBRARIES}
 )
+
+ament_export_dependencies(
+  ament_cmake
+  Boost
+)
+
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
 
 install(
   TARGETS
     canopen_bcm_sync
     ${PROJECT_NAME}
-   ${PROJECT_NAME}_plugin
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    ${PROJECT_NAME}_plugin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
 )
 
 install(
-  DIRECTORY
-    include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
+  DIRECTORY include/
+  DESTINATION include
 )
 
-install(
-  FILES
-    master_plugin.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
 
-if(CATKIN_ENABLE_TESTING)
-  catkin_add_gtest(${PROJECT_NAME}-test_parser
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+
+  ament_lint_auto_find_test_dependencies()
+
+  find_package(ament_cmake_gtest REQUIRED)
+
+  ament_add_gtest(test_parser
     test/test_parser.cpp
   )
-  target_link_libraries(${PROJECT_NAME}-test_parser
+
+  target_link_libraries(test_parser
     ${PROJECT_NAME}
+    ${Boost_LIBRARIES}
   )
+
 endif()
+
+ament_package()

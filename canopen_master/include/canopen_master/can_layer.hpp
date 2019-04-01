@@ -1,9 +1,9 @@
 #ifndef H_CAN_LAYER
 #define H_CAN_LAYER
 
-#include <socketcan_interface/threading.h>
-#include "layer.h"
 #include <socketcan_interface/string.h>
+#include <socketcan_interface/threading.hpp>
+#include "canopen_master/layer.hpp"
 
 namespace canopen{
 

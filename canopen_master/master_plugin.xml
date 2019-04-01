@@ -1,8 +1,14 @@
-<library path="lib/libcanopen_master_plugin">
-  <class type="canopen::SimpleMaster::Allocator" base_class_type="canopen::Master::Allocator">
+<library path="canopen_master_plugin">
+  <class
+    name="canopen_master/SimpleMasterAllocator"
+    type="canopen::SimpleMaster::Allocator"
+    base_class_type="canopen::Master::Allocator">
     <description>Allocator for SimpleMaster instances</description>
   </class>
-  <class type="canopen::ExternalMaster::Allocator" base_class_type="canopen::Master::Allocator">
+  <class
+    name="canopen_master/ExternalMasterAllocator"
+    type="canopen::ExternalMaster::Allocator"
+    base_class_type="canopen::Master::Allocator">
     <description>Allocator for ExternalMaster instances</description>
   </class>
 </library>
