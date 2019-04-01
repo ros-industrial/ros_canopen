@@ -1,6 +1,6 @@
 // Bring in my package's API, which is what I'm testing
 #include <boost/property_tree/ptree.hpp>
-#include <canopen_master/objdict.h>
+#include <canopen_master/objdict.hpp>
 
 // Bring in gtest
 #include <gtest/gtest.h>

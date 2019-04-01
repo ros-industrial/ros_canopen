@@ -1,9 +1,9 @@
 #ifndef H_BCM_SYNC
 #define H_BCM_SYNC
 
-#include <socketcan_interface/bcm.h>
-#include <socketcan_interface/socketcan.h>
-#include <canopen_master/canopen.h>
+#include <socketcan_interface/bcm.hpp>
+#include <socketcan_interface/socketcan.hpp>
+#include <canopen_master/canopen.hpp>
 
 namespace canopen {
 
