@@ -1,0 +1,10 @@
+repositories:
+  # xacro:
+  #   type: git
+  #   url: https://github.com/samiamlabs/xacro.git
+  #   version: ros2
+
+  diagnostics:
+    type: git
+    url: https://github.com/ros/diagnostics.git
+    version: ros2-devel
