@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(canopen_chain_node)
 
 if(NOT CMAKE_CXX_STANDARD)
@@ -6,55 +6,44 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-find_package(catkin REQUIRED
-  COMPONENTS
-    canopen_master
-    diagnostic_updater
-    message_generation
-    pluginlib
-    rosconsole_bridge
-    roscpp
-    roslib
-    socketcan_interface
-    std_msgs
-    std_srvs
-)
+find_package(ament_cmake REQUIRED)
+
+find_package(canopen_master)
+
+find_package(diagnostic_updater)
+# find_package(rosidl_default_generators)
+find_package(pluginlib)
+find_package(rclcpp)
+find_package(socketcan_interface)
+find_package(std_msgs)
+find_package(std_srvs)
 
 find_package(Boost REQUIRED
   COMPONENTS
     filesystem
+    chrono
+    thread
 )
 
-add_service_files(DIRECTORY srv
-                  FILES
-                  GetObject.srv
-                  SetObject.srv)
+# set(srv_files
+#   "srv/GetObject.srv"
+#   "srv/SetObject.srv"
+# )
+#
+# rosidl_generate_interfaces(${PROJECT_NAME}_interfaces
+#   ${srv_files}
+#   ADD_LINTER_TESTS
+# )
 
-generate_messages(DEPENDENCIES)
-
-catkin_package(
-  INCLUDE_DIRS
-    include
-  LIBRARIES
-    canopen_ros_chain
-  CATKIN_DEPENDS
-    canopen_master
-    diagnostic_updater
-    message_runtime
-    pluginlib
-    rosconsole_bridge
-    roscpp
-    socketcan_interface
-    std_srvs
-  DEPENDS
-    Boost
-)
-
-include_directories(
-  include
+include_directories(include
+  ${socketcan_interface_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
 )
+
+# link_directories(
+#   ${socketcan_interface_LIBRARY_DIRS}
+#   ${Boost_LIBRARY_DIRS}
+# )
 
 # canopen_ros_chain
 add_library(canopen_ros_chain
@@ -63,11 +52,13 @@ add_library(canopen_ros_chain
 )
 target_link_libraries(canopen_ros_chain
   ${Boost_LIBRARIES}
-  ${catkin_LIBRARIES}
 )
-add_dependencies(canopen_ros_chain
-  ${catkin_EXPORTED_TARGETS}
-  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+
+ament_target_dependencies(canopen_ros_chain
+  canopen_master
+  std_srvs
+  std_msgs
+  # ${${PROJECT_NAME}_EXPORTED_TARGETS}
 )
 
 # canopen_chain_node
@@ -75,9 +66,8 @@ add_executable(${PROJECT_NAME}
   src/chain_node.cpp
 )
 target_link_libraries(${PROJECT_NAME}
-  canopen_ros_chain
+  # canopen_ros_chain
   ${Boost_LIBRARIES}
-  ${catkin_LIBRARIES}
 )
 
 # canopen_sync_node
@@ -87,28 +77,41 @@ add_executable(canopen_sync_node
 )
 target_link_libraries(canopen_sync_node
   ${Boost_LIBRARIES}
-  ${catkin_LIBRARIES}
 )
+
+ament_target_dependencies(canopen_sync_node
+  canopen_master
+  diagnostic_updater
+  socketcan_interface
+  rclcpp
+)
+
+ament_export_dependencies(
+  rosidl_default_runtime
+  ament_cmake
+  Boost
+)
+
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
 
 install(
   TARGETS
     ${PROJECT_NAME}
     canopen_ros_chain
     canopen_sync_node
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
-  DIRECTORY
-    include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
+  DIRECTORY include/
+  DESTINATION include
 )
 
-install(
-  DIRECTORY
-    launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# Install launch files.
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
 )
+
+ament_package()

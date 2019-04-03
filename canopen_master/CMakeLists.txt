@@ -71,6 +71,7 @@ target_link_libraries(canopen_bcm_sync
 
 ament_export_dependencies(
   ament_cmake
+  socketcan_interface
   Boost
 )
 

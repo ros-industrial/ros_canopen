@@ -1,6 +1,4 @@
-#include <ros/package.h>
-
-#include <canopen_chain_node/ros_chain.h>
+#include <canopen_chain_node/ros_chain.hpp>
 
 #include <std_msgs/Int8.h>
 #include <std_msgs/Int16.h>
