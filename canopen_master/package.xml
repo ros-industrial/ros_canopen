@@ -19,10 +19,7 @@
   <depend>class_loader</depend>
   <depend>socketcan_interface</depend>
 
-  <test_depend>rosunit</test_depend>
-
   <export>
     <build_type>ament_cmake</build_type>
-    <!-- <canopen_master plugin="${prefix}/master_plugin.xml" /> -->
   </export>
 </package>
