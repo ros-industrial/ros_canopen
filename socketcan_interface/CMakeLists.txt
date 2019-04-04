@@ -43,7 +43,7 @@ target_link_libraries(socketcan_bcm
 )
 
 # ${PROJECT_NAME}_plugin
-add_library(${PROJECT_NAME}_plugin
+add_library(${PROJECT_NAME}_plugin SHARED
   src/${PROJECT_NAME}_plugin.cpp
 )
 target_link_libraries(${PROJECT_NAME}_plugin
@@ -61,6 +61,7 @@ ament_export_dependencies(
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}_string)
+ament_export_libraries(${PROJECT_NAME}_plugin)
 
 install(
   TARGETS

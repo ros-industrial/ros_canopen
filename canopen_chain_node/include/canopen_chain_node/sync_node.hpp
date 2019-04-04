@@ -21,7 +21,7 @@ private:
   void get_parameters();
   void init_sync_layer();
   void init_diagnostics();
-  void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
+  void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper & stat);
 
   int sync_overflow_;
   std::string can_device_;

@@ -14,12 +14,13 @@ import launch_ros.actions
 def generate_launch_description():
     params_file = launch.substitutions.LaunchConfiguration(
         'params',
-        default=[launch.substitutions.ThisLaunchFileDir(), '/sync_node_params.yaml'])
+        default=[launch.substitutions.ThisLaunchFileDir(),
+                 '/chain_node_params.yaml'])
 
     return LaunchDescription([
         launch_ros.actions.Node(
             package='canopen_chain_node',
-            node_executable='canopen_sync_node',
+            node_executable='canopen_chain_node',
             output='screen',
             parameters=[params_file]),
     ])
