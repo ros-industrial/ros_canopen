@@ -46,7 +46,7 @@ ament_target_dependencies(${PROJECT_NAME}
 )
 
 
-add_library(${PROJECT_NAME}_plugin
+add_library(${PROJECT_NAME}_plugin SHARED
   src/master_plugin.cpp
 )
 
@@ -72,11 +72,13 @@ target_link_libraries(canopen_bcm_sync
 ament_export_dependencies(
   ament_cmake
   socketcan_interface
+  pluginlib
   Boost
 )
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
+ament_export_libraries(${PROJECT_NAME}_plugin)
 
 install(
   TARGETS
