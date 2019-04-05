@@ -170,7 +170,7 @@ protected:
   std::map<std::string, canopen::NodeSharedPtr> nodes_lookup_;
   canopen::SyncLayerSharedPtr sync_;
   std::vector<LoggerSharedPtr> loggers_;
-  // std::vector<PublishFuncType> publishers_;
+  std::vector<PublishFuncType> publishers_;
 
   can::StateListenerConstSharedPtr state_listener_;
 
@@ -181,9 +181,7 @@ protected:
 
   boost::mutex mutex_;
 
-  // ros::NodeHandle nh_;
-  // ros::NodeHandle nh_priv_;
-  // ros::ServiceServer srv_init_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_init_;
   // ros::ServiceServer srv_recover_;
   // ros::ServiceServer srv_halt_;
   // ros::ServiceServer srv_shutdown_;
@@ -210,7 +208,10 @@ protected:
   void logState(const can::State & s);
   void run();
 
-  // virtual bool handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);
+  virtual void handleInit(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response);
+
   // virtual bool handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);
 
   // virtual void handleWrite(LayerStatus &status, const LayerState &current_state);

@@ -22,5 +22,6 @@ def generate_launch_description():
             package='canopen_chain_node',
             node_executable='canopen_chain_node',
             output='screen',
+            node_namespace='canopen_driver',
             parameters=[params_file]),
     ])

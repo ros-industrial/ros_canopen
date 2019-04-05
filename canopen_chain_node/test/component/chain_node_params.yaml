@@ -1,32 +1,33 @@
-canopen_chain_node:
-  ros__parameters:
+canopen_driver:
+  canopen_chain_node:
+    ros__parameters:
 
-    hardware_id: 'I/0 1'
-    reset_errors_before_recover: true
+      hardware_id: 'I/0 1'
+      reset_errors_before_recover: true
 
-    bus:
-      device: 'can0' # socketcan network
-      loopback: false # socket should loop back messages
-      driver_plugin: 'socketcan_interface/SocketCANInterface'
-      master_allocator: 'canopen_master/SimpleMasterAllocator'
+      bus:
+        device: 'can0' # socketcan network
+        loopback: false # socket should loop back messages
+        driver_plugin: 'socketcan_interface/SocketCANInterface'
+        master_allocator: 'canopen_master/SimpleMasterAllocator'
 
-    sync:
-      overflow: 10 # overflow sync counter at value or do not set it (0, default)
-      interval_ms: 10 # set to 0 to disable sync
-      update_ms: 10 # update interval of control loop, must be set explecitly if sync is disabled
+      sync:
+        overflow: 10 # overflow sync counter at value or do not set it (0, default)
+        interval_ms: 10 # set to 0 to disable sync
+        update_ms: 10 # update interval of control loop, must be set explecitly if sync is disabled
 
-    heartbeat:
-      msg: "704#05" # message to send, cansend format: heartbeat of node 704 with status 5=Started
-      rate: 10.0
+      heartbeat:
+        msg: "704#05" # message to send, cansend format: heartbeat of node 704 with status 5=Started
+        rate: 10.0
 
-    defaults:
-      eds_pkg: 'canopen_chain_node' # optional package  name for relative path
-      eds_file: 'test/ISD860.dcf' # path to EDS/DCF file
+      defaults:
+        eds_pkg: 'canopen_chain_node' # optional package  name for relative path
+        eds_file: 'test/ISD860.dcf' # path to EDS/DCF file
 
-    # TODO(sam): figure out how to do this with "dynamicly nested" values
-    nodes: ['node1']
-    node1:
-      id: 1
-      eds_pkg: 'canopen_chain_node' # optional package  name for relative path
-      eds_file: 'test/ISD860.dcf' # path to EDS/DCF file
-      publish: ['obj:1001'] # list of objects to be published (one topic per node)
+      # TODO(sam): figure out how to do this with "dynamicly nested" values
+      nodes: ['node1']
+      node1:
+        id: 4
+        eds_pkg: 'canopen_chain_node' # optional package  name for relative path
+        eds_file: 'test/ISD860.dcf' # path to EDS/DCF file
+        publish: ['obj:1001'] # list of objects to be published (one topic per node)
