@@ -24,7 +24,6 @@ PublishFuncType RosChain::createPublisher(
   const std::string & name, ObjectStorageSharedPtr storage,
   const std::string & key, const bool force)
 {
-  RCLCPP_INFO(this->get_logger(), "createPublisher");
   using data_type = typename ObjectStorage::DataType<dt>::type;
   using entry_type = ObjectStorage::Entry<data_type>;
 
@@ -51,8 +50,6 @@ PublishFuncType RosChain::createPublishFunc(
   const std::string & name, canopen::NodeSharedPtr node,
   const std::string & key, bool force)
 {
-  RCLCPP_INFO(this->get_logger(), "createPublisherFunc");
-
   ObjectStorageSharedPtr storage = node->getStorage();
 
   switch (ObjectDict::DataTypes(storage->dict_->get(key)->data_type)) {
@@ -109,7 +106,6 @@ PublishFuncType RosChain::createPublishFunc(
 
 void RosChain::logState(const can::State & s)
 {
-  RCLCPP_INFO(this->get_logger(), "logState");
   can::DriverInterfaceSharedPtr interface = interface_;
   std::string msg;
   if (interface && !interface->translateError(s.internal_error, msg)) {
@@ -125,7 +121,6 @@ void RosChain::logState(const can::State & s)
 
 void RosChain::run()
 {
-  RCLCPP_INFO(this->get_logger(), "run");
   running_ = true;
   time_point abs_time = boost::chrono::high_resolution_clock::now();
   while (running_) {
@@ -219,23 +214,27 @@ void RosChain::handle_recover(
   }
 }
 
-void RosChain::handleWrite(LayerStatus &status, const LayerState &current_state) {
-    LayerStack::handleWrite(status, current_state);
-    if(current_state > Shutdown){
-        for(const PublishFuncType& func: publishers_) func();
+void RosChain::handleWrite(LayerStatus & status, const LayerState & current_state)
+{
+  LayerStack::handleWrite(status, current_state);
+  if (current_state > Shutdown) {
+    for (const PublishFuncType & func: publishers_) {
+      func();
     }
+  }
 }
 
-void RosChain::handleShutdown(LayerStatus &status){
-    boost::mutex::scoped_lock lock(diag_mutex_);
-    heartbeat_timer_.stop();
-    LayerStack::handleShutdown(status);
-    if(running_){
-        running_ = false;
-        thread_->interrupt();
-        thread_->join();
-        thread_.reset();
-    }
+void RosChain::handleShutdown(LayerStatus & status)
+{
+  boost::mutex::scoped_lock lock(diag_mutex_);
+  heartbeat_timer_.stop();
+  LayerStack::handleShutdown(status);
+  if (running_) {
+    running_ = false;
+    thread_->interrupt();
+    thread_->join();
+    thread_.reset();
+  }
 }
 
 void RosChain::handle_shutdown(
@@ -269,40 +268,46 @@ void RosChain::handle_halt(
   }
 }
 
-// bool RosChain::handle_get_object(canopen_chain_node::GetObject::Request  &req, canopen_chain_node::GetObject::Response &res){
-//     std::map<std::string, canopen::NodeSharedPtr >::iterator it = nodes_lookup_.find(req.node);
-//     if(it == nodes_lookup_.end()){
-//         res.message = "node not found";
-//     }else{
-//         try {
-//             res.value = it->second->getStorage()->getStringReader(canopen::ObjectDict::Key(req.object), req.cached)();
-//             res.success = true;
-//         } catch(std::exception& e) {
-//             res.message = boost::diagnostic_information(e);
-//         }
-//     }
-//     return true;
-// }
+void RosChain::handle_get_object(
+  const std::shared_ptr<canopen_msgs::srv::GetObject::Request> request,
+  std::shared_ptr<canopen_msgs::srv::GetObject::Response> response)
+{
+  std::map<std::string, canopen::NodeSharedPtr>::iterator it =
+    nodes_lookup_.find(request->node);
+  if (it == nodes_lookup_.end()) {
+    response->message = "node not found";
+  } else {
+    try {
+      response->value = it->second->getStorage()->getStringReader(
+        canopen::ObjectDict::Key(request->object), request->cached)();
+      response->success = true;
+    } catch (std::exception & e) {
+      response->message = boost::diagnostic_information(e);
+    }
+  }
+}
 
-// bool RosChain::handle_set_object(canopen_chain_node::SetObject::Request  &req, canopen_chain_node::SetObject::Response &res){
-//     std::map<std::string, canopen::NodeSharedPtr >::iterator it = nodes_lookup_.find(req.node);
-//     if(it == nodes_lookup_.end()){
-//         res.message = "node not found";
-//     }else{
-//         try {
-//             it->second->getStorage()->getStringWriter(canopen::ObjectDict::Key(req.object), req.cached)(req.value);
-//             res.success = true;
-//         } catch(std::exception& e) {
-//             res.message = boost::diagnostic_information(e);
-//         }
-//     }
-//     return true;
-// }
+void RosChain::handle_set_object(
+  const std::shared_ptr<canopen_msgs::srv::SetObject::Request> request,
+  std::shared_ptr<canopen_msgs::srv::SetObject::Response> response)
+{
+  std::map<std::string, canopen::NodeSharedPtr>::iterator it =
+    nodes_lookup_.find(request->node);
+  if (it == nodes_lookup_.end()) {
+    response->message = "node not found";
+  } else {
+    try {
+      it->second->getStorage()->getStringWriter(
+        canopen::ObjectDict::Key(request->object), request->cached)(request->value);
+      response->success = true;
+    } catch (std::exception & e) {
+      response->message = boost::diagnostic_information(e);
+    }
+  }
+}
 
 bool RosChain::setup_bus()
 {
-  RCLCPP_INFO(this->get_logger(), "setup_bus");
-
   std::string can_device;
   std::string driver_plugin;
   std::string master_alloc;
@@ -365,7 +370,6 @@ bool RosChain::setup_bus()
 
 bool RosChain::setup_sync()
 {
-  RCLCPP_INFO(this->get_logger(), "setup_sync");
   int sync_ms;
   int sync_overflow;
 
@@ -420,8 +424,6 @@ bool RosChain::setup_sync()
 
 bool RosChain::setup_heartbeat()
 {
-  RCLCPP_INFO(this->get_logger(), "setup_heartbeat");
-
   std::string msg;
   double rate = 0;
 
@@ -501,7 +503,6 @@ bool RosChain::setup_heartbeat()
 
 bool RosChain::setup_nodes()
 {
-  RCLCPP_INFO(this->get_logger(), "setup_heartbeat");
   nodes_.reset(new canopen::LayerGroupNoDiag<canopen::Node>("301 layer"));
   add(nodes_);
 
@@ -675,7 +676,6 @@ bool RosChain::nodeAdded(const canopen::NodeSharedPtr & node, const LoggerShared
 
 void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper & stat)
 {
-  RCLCPP_INFO(this->get_logger(), "report_diagnostics");
   boost::mutex::scoped_lock lock(diag_mutex_);
   LayerReport r;
   if (getLayerState() == Off) {
@@ -703,12 +703,10 @@ RosChain::RosChain()
   running_(false),
   reset_errors_before_recover_(false)
 {
-  RCLCPP_INFO(this->get_logger(), "constructor");
 }
 
 bool RosChain::setup()
 {
-  RCLCPP_INFO(this->get_logger(), "setup");
   boost::mutex::scoped_lock lock(mutex_);
   bool okay = setup_chain();
   if (okay) {add(emcy_handlers_);}
@@ -717,8 +715,6 @@ bool RosChain::setup()
 
 bool RosChain::setup_chain()
 {
-  RCLCPP_INFO(this->get_logger(), "setup_chain");
-
   std::string hardware_id;
   get_parameter_or_set("hardware_id", hardware_id, std::string("none"));
   get_parameter_or_set("reset_errors_before_recover",
@@ -752,8 +748,15 @@ bool RosChain::setup_chain()
       &RosChain::handle_shutdown, this,
       std::placeholders::_1, std::placeholders::_2));
 
-  // srv_get_object_ = nh_driver.advertiseService("get_object",&RosChain::handle_get_object, this);
-  // srv_set_object_ = nh_driver.advertiseService("set_object",&RosChain::handle_set_object, this);
+  srv_get_object_ = create_service<canopen_msgs::srv::GetObject>(
+    "get_object", std::bind(
+      &RosChain::handle_get_object, this,
+      std::placeholders::_1, std::placeholders::_2));
+
+  srv_set_object_ = create_service<canopen_msgs::srv::SetObject>(
+    "set_object", std::bind(
+      &RosChain::handle_set_object, this,
+      std::placeholders::_1, std::placeholders::_2));
 
   return setup_bus() && setup_sync() && setup_heartbeat() && setup_nodes();
 }
