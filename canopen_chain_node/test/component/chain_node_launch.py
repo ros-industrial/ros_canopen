@@ -10,6 +10,8 @@ from launch import LaunchDescription
 
 import launch_ros.actions
 
+# TODO(sam): add automatic launch tests
+
 
 def generate_launch_description():
     params_file = launch.substitutions.LaunchConfiguration(
