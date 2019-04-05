@@ -5,8 +5,8 @@
 #include <sys/stat.h>
 #include <canopen_master/canopen.hpp>
 #include <canopen_master/can_layer.hpp>
-// #include <canopen_chain_node/msg/GetObject.hpp>
-// #include <canopen_chain_node/msg/SetObject.hpp>
+#include <canopen_msgs/srv/get_object.hpp>
+#include <canopen_msgs/srv/set_object.hpp>
 #include <socketcan_interface/string.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <std_srvs/srv/trigger.hpp>
@@ -185,8 +185,9 @@ protected:
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_recover_;
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_halt_;
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_shutdown_;
-  // ros::ServiceServer srv_get_object_;
-  // ros::ServiceServer srv_set_object_;
+  rclcpp::Service<canopen_msgs::srv::GetObject>::SharedPtr srv_get_object_;
+  rclcpp::Service<canopen_msgs::srv::SetObject>::SharedPtr srv_set_object_;
+
   time_duration update_duration_;
 
   struct HeartbeatSender
@@ -216,8 +217,8 @@ protected:
     const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
     std::shared_ptr<std_srvs::srv::Trigger::Response> response);
 
-  virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
-  virtual void handleShutdown(LayerStatus &status);
+  virtual void handleWrite(LayerStatus & status, const LayerState & current_state);
+  virtual void handleShutdown(LayerStatus & status);
 
   virtual void handle_shutdown(
     const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
@@ -227,8 +228,13 @@ protected:
     const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
     std::shared_ptr<std_srvs::srv::Trigger::Response> response);
 
-  // bool handle_get_object(canopen_chain_node::GetObject::Request  &req, canopen_chain_node::GetObject::Response &res);
-  // bool handle_set_object(canopen_chain_node::SetObject::Request  &req, canopen_chain_node::SetObject::Response &res);
+  virtual void handle_get_object(
+    const std::shared_ptr<canopen_msgs::srv::GetObject::Request> request,
+    std::shared_ptr<canopen_msgs::srv::GetObject::Response> response);
+
+  virtual void handle_set_object(
+    const std::shared_ptr<canopen_msgs::srv::SetObject::Request> request,
+    std::shared_ptr<canopen_msgs::srv::SetObject::Response> response);
 
   bool setup_bus();
   bool setup_sync();

@@ -13,12 +13,12 @@ find_package(class_loader REQUIRED)
 find_package(canopen_master REQUIRED)
 
 find_package(diagnostic_updater REQUIRED)
-# find_package(rosidl_default_generators)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(socketcan_interface REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(canopen_msgs REQUIRED)
 
 find_package(Boost REQUIRED
   COMPONENTS
@@ -27,21 +27,8 @@ find_package(Boost REQUIRED
     thread
 )
 
-# set(srv_files
-#   "srv/GetObject.srv"
-#   "srv/SetObject.srv"
-# )
-#
-# rosidl_generate_interfaces(${PROJECT_NAME}_interfaces
-#   ${srv_files}
-#   ADD_LINTER_TESTS
-# )
-
 include_directories(
   include
-  # ${Boost_INCLUDE_DIRS}
-  # ${socketcan_interface_INCLUDE_DIRS}
-  # ${diagnostic_updater_INCLUDE_DIRS}
 )
 
 # create ament index resource which references the libraries in the binary dir
@@ -61,6 +48,7 @@ target_link_libraries(canopen_ros_chain
 ament_target_dependencies(canopen_ros_chain
   "class_loader"
   "canopen_master"
+  "canopen_msgs"
   "std_srvs"
   "std_msgs"
   "diagnostic_updater"
