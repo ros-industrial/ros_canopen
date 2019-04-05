@@ -109,70 +109,80 @@ void RosChain::logState(const can::State & s)
 {
   RCLCPP_INFO(this->get_logger(), "logState");
   can::DriverInterfaceSharedPtr interface = interface_;
-  // std::string msg;
-  // if(interface && !interface->translateError(s.internal_error, msg)) msg  =  "Undefined"; ;
-  // ROS_INFO_STREAM("Current state: " << s.driver_state << " device error: " << s.error_code << " internal_error: " << s.internal_error << " (" << msg << ")");
+  std::string msg;
+  if (interface && !interface->translateError(s.internal_error, msg)) {
+    msg = "Undefined";
+  }
+
+  // TODO(sam): get this log working
+  // RCLCPP_INFO(this->get_logger(),
+  //   "Current state : %s device error: %s internal_error: %d (%s)",
+  //   s.driver_state, s.error_code.message(),
+  //   s.internal_error, msg.c_str());
 }
 
-// void RosChain::run(){
-//     running_ = true;
-//     time_point abs_time = boost::chrono::high_resolution_clock::now();
-//     while(running_){
-//         LayerStatus s;
-//         try{
-//             read(s);
-//             write(s);
-//             if(!s.bounded<LayerStatus::Warn>()) ROS_ERROR_STREAM_THROTTLE(10, s.reason());
-//             else if(!s.bounded<LayerStatus::Ok>()) ROS_WARN_STREAM_THROTTLE(10, s.reason());
-//         }
-//         catch(const canopen::Exception& e){
-//             ROS_ERROR_STREAM_THROTTLE(1, boost::diagnostic_information(e));
-//         }
-//         if(!sync_){
-//             abs_time += update_duration_;
-//             boost::this_thread::sleep_until(abs_time);
-//         }
-//     }
-// }
+void RosChain::run()
+{
+  RCLCPP_INFO(this->get_logger(), "run");
+  running_ = true;
+  time_point abs_time = boost::chrono::high_resolution_clock::now();
+  while (running_) {
+    LayerStatus s;
+    try {
+      read(s);
+      write(s);
+      // TODO(sam): Throttle logs
+      if (!s.bounded<LayerStatus::Warn>()) {
+        RCLCPP_ERROR(this->get_logger(), s.reason());
+      } else if (!s.bounded<LayerStatus::Ok>()) {
+        RCLCPP_WARN(this->get_logger(), s.reason());
+      }
+    } catch (const canopen::Exception & e) {
+      RCLCPP_ERROR(this->get_logger(), boost::diagnostic_information(e));
+    }
+    if (!sync_) {
+      abs_time += update_duration_;
+      boost::this_thread::sleep_until(abs_time);
+    }
+  }
+}
 
-// bool RosChain::handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
-//     ROS_INFO("Initializing XXX");
-//     boost::mutex::scoped_lock lock(mutex_);
-//     if(getLayerState() > Off){
-//         res.success = true;
-//         res.message = "already initialized";
-//         return true;
-//     }
-//     thread_.reset(new boost::thread(&RosChain::run, this));
-//     LayerReport status;
-//     try{
-//         init(status);
-//         res.success = status.bounded<LayerStatus::Ok>();
-//         res.message = status.reason();
-//         if(!status.bounded<LayerStatus::Warn>()){
-//             diag(status);
-//             res.message = status.reason();
-//         }else{
-//             heartbeat_timer_.restart();
-//             return true;
-//         }
-//     }
-//     catch( const std::exception &e){
-//         std::string info = boost::diagnostic_information(e);
-//         ROS_ERROR_STREAM(info);
-//         res.message = info;
-//         status.error(res.message);
-//     }
-//     catch(...){
-//         res.message = "Unknown exception";
-//         status.error(res.message);
-//     }
-//
-//     res.success = false;
-//     shutdown(status);
-//
-//     return true;
-// }
+void RosChain::handleInit(
+  const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+  std::shared_ptr<std_srvs::srv::Trigger::Response> response)
+{
+  RCLCPP_INFO(this->get_logger(), "Initializing XXX");
+
+  boost::mutex::scoped_lock lock(mutex_);
+  if (getLayerState() > Off) {
+    response->success = true;
+    response->message = "already initialized";
+  }
+  thread_.reset(new boost::thread(&RosChain::run, this));
+  LayerReport status;
+  try {
+    init(status);
+    response->success = status.bounded<LayerStatus::Ok>();
+    response->message = status.reason();
+    if (!status.bounded<LayerStatus::Warn>()) {
+      diag(status);
+      response->message = status.reason();
+    } else {
+      heartbeat_timer_.restart();
+    }
+  } catch (const std::exception & e) {
+    std::string info = boost::diagnostic_information(e);
+    RCLCPP_ERROR(this->get_logger(), info);
+    response->message = info;
+    status.error(response->message);
+  } catch (...) {
+    response->message = "Unknown exception";
+    status.error(response->message);
+  }
+
+  response->success = false;
+  shutdown(status);
+}
 
 // bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
 //     ROS_INFO("Recovering XXX");
@@ -297,7 +307,7 @@ bool RosChain::setup_bus()
   RCLCPP_INFO(this->get_logger(), "can device: %s", can_device.c_str());
 
   if (!get_parameter_or("bus.driver_plugin", driver_plugin,
-    std::string("can::SocketCANInterface")))
+    std::string("socketcan_interface/SocketCANInterface")))
   {
     RCLCPP_WARN(this->get_logger(),
       "driver_plugin not specified, using can::SocketCANInterface");
@@ -343,7 +353,6 @@ bool RosChain::setup_bus()
   add(std::make_shared<CANLayer>(interface_, can_device, loopback));
 
   return true;
->>>>>>> Create publishers
 }
 
 bool RosChain::handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
@@ -381,165 +390,6 @@ bool RosChain::handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::
 
     res.success = false;
     shutdown(status);
-
-    return true;
-}
-bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
-    ROS_INFO("Recovering XXX");
-    boost::mutex::scoped_lock lock(mutex_);
-    res.success = false;
-
-    if(getLayerState() > Init){
-        LayerReport status;
-        try{
-            if(!reset_errors_before_recover_ || emcy_handlers_->callFunc<LayerStatus::Warn>(&EMCYHandler::resetErrors, status)){
-                recover(status);
-            }
-            if(!status.bounded<LayerStatus::Warn>()){
-                diag(status);
-            }
-            res.success = status.bounded<LayerStatus::Warn>();
-            res.message = status.reason();
-        }
-        catch( const std::exception &e){
-            std::string info = boost::diagnostic_information(e);
-            ROS_ERROR_STREAM(info);
-            res.message = info;
-        }
-        catch(...){
-            res.message = "Unknown exception";
-        }
-    }else{
-        res.message = "not running";
-    }
-    return true;
-}
-
-void RosChain::handleWrite(LayerStatus &status, const LayerState &current_state) {
-    LayerStack::handleWrite(status, current_state);
-    if(current_state > Shutdown){
-        for(const PublishFuncType& func: publishers_) func();
-    }
-}
-
-void RosChain::handleShutdown(LayerStatus &status){
-    boost::mutex::scoped_lock lock(diag_mutex_);
-    heartbeat_timer_.stop();
-    LayerStack::handleShutdown(status);
-    if(running_){
-        running_ = false;
-        thread_->interrupt();
-        thread_->join();
-        thread_.reset();
-    }
-}
-
-bool RosChain::handle_shutdown(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
-    ROS_INFO("Shuting down XXX");
-    boost::mutex::scoped_lock lock(mutex_);
-    res.success = true;
-    if(getLayerState() > Init){
-        LayerStatus s;
-        halt(s);
-        shutdown(s);
-    }else{
-        res.message = "not running";
-    }
-    return true;
-}
-
-bool RosChain::handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
-    ROS_INFO("Halting down XXX");
-    boost::mutex::scoped_lock lock(mutex_);
-     res.success = true;
-     if(getLayerState() > Init){
-        LayerStatus s;
-        halt(s);
-    }else{
-        res.message = "not running";
-    }
-    return true;
-}
-
-bool RosChain::handle_get_object(canopen_chain_node::GetObject::Request  &req, canopen_chain_node::GetObject::Response &res){
-    std::map<std::string, canopen::NodeSharedPtr >::iterator it = nodes_lookup_.find(req.node);
-    if(it == nodes_lookup_.end()){
-        res.message = "node not found";
-    }else{
-        try {
-            res.value = it->second->getStorage()->getStringReader(canopen::ObjectDict::Key(req.object), req.cached)();
-            res.success = true;
-        } catch(std::exception& e) {
-            res.message = boost::diagnostic_information(e);
-        }
-    }
-    return true;
-}
-
-bool RosChain::handle_set_object(canopen_chain_node::SetObject::Request  &req, canopen_chain_node::SetObject::Response &res){
-    std::map<std::string, canopen::NodeSharedPtr >::iterator it = nodes_lookup_.find(req.node);
-    if(it == nodes_lookup_.end()){
-        res.message = "node not found";
-    }else{
-        try {
-            it->second->getStorage()->getStringWriter(canopen::ObjectDict::Key(req.object), req.cached)(req.value);
-            res.success = true;
-        } catch(std::exception& e) {
-            res.message = boost::diagnostic_information(e);
-        }
-    }
-    return true;
-}
-
-bool RosChain::setup_bus(){
-    ros::NodeHandle bus_nh(nh_priv_,"bus");
-    std::string can_device;
-    std::string driver_plugin;
-    std::string master_alloc;
-    bool loopback;
-
-    if(!bus_nh.getParam("device",can_device)){
-        ROS_ERROR("Device not set");
-        return false;
-    }
-
-    bus_nh.param("loopback",loopback, false);
-
-    bus_nh.param("driver_plugin",driver_plugin, std::string("can::SocketCANInterface"));
-
-    try{
-        interface_ =  driver_loader_.createInstance(driver_plugin);
-    }
-
-    catch(pluginlib::PluginlibException& ex){
-        ROS_ERROR_STREAM(ex.what());
-        return false;
-    }
-
-    state_listener_ = interface_->createStateListenerM(this, &RosChain::logState);
-
-    if(bus_nh.getParam("master_type",master_alloc)){
-        ROS_ERROR("please migrate to master allocators");
-        return false;
-    }
-
-    bus_nh.param("master_allocator",master_alloc, std::string("canopen::SimpleMaster::Allocator"));
-
-    try{
-        master_= master_allocator_.allocateInstance(master_alloc, can_device, interface_);
-    }
-    catch( const std::exception &e){
-        std::string info = boost::diagnostic_information(e);
-        ROS_ERROR_STREAM(info);
-        return false;
-    }
-
-    if(!master_){
-        ROS_ERROR_STREAM("Could not allocate master.");
-        return false;
-    }
-
-    add(std::make_shared<CANLayer>(interface_, can_device, loopback));
 
     return true;
 }
@@ -726,41 +576,17 @@ bool RosChain::setup_nodes()
         return false;
       }
 
-      // publishers_.push_back(pub);
+      publishers_.push_back(pub);
     }
 
+    nodes_->add(node);
+    nodes_lookup_.insert(std::make_pair(node_name, node));
+    std::shared_ptr<canopen::EMCYHandler> emcy =
+      std::make_shared<canopen::EMCYHandler>(interface_, node->getStorage());
+    emcy_handlers_->add(emcy);
+    logger->add(emcy);
+    nodes_lookup_.insert(std::make_pair(node_name, node));
   }
-
-
-  //
-  //     if(merged.hasMember("publish")){
-  //         try{
-  //             XmlRpc::XmlRpcValue objs = merged["publish"];
-  //             for(int i = 0; i < objs.size(); ++i){
-  //                 std::pair<std::string, bool> obj_name = parseObjectName(objs[i]);
-  //
-  //                 PublishFuncType pub = createPublishFunc(nh_, node_name +"_"+obj_name.first, node, obj_name.first, obj_name.second);
-  //                 if(!pub){
-  //                     ROS_ERROR_STREAM("Could not create publisher for '" << obj_name.first << "'");
-  //                     return false;
-  //                 }
-  //                 publishers_.push_back(pub);
-  //             }
-  //         }
-  //         catch(...){
-  //             ROS_ERROR("Could not parse publish parameter");
-  //             return false;
-  //         }
-  //     }
-  //     nodes_->add(node);
-  //     nodes_lookup_.insert(std::make_pair(node_name, node));
-  //
-  //     std::shared_ptr<canopen::EMCYHandler> emcy = std::make_shared<canopen::EMCYHandler>(interface_, node->getStorage());
-  //     emcy_handlers_->add(emcy);
-  //     logger->add(emcy);
-  //
-  // }
-
 
   return true;
 }
@@ -773,21 +599,23 @@ bool RosChain::nodeAdded(const canopen::NodeSharedPtr & node, const LoggerShared
 void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper & stat)
 {
   RCLCPP_INFO(this->get_logger(), "report_diagnostics");
-  // boost::mutex::scoped_lock lock(diag_mutex_);
-  // LayerReport r;
-  // if(getLayerState() == Off){
-  //     stat.summary(stat.WARN,"Not initailized");
-  // }else if(!running_){
-  //     stat.summary(stat.ERROR,"Thread is not running");
-  // }else{
-  //     diag(r);
-  //     if(r.bounded<LayerStatus::Unbounded>()){ // valid
-  //         stat.summary(r.get(), r.reason());
-  //         for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
-  //             stat.add(it->first, it->second);
-  //         }
-  //     }
-  // }
+  boost::mutex::scoped_lock lock(diag_mutex_);
+  LayerReport r;
+  if (getLayerState() == Off) {
+    stat.summary(stat.WARN, "Not initailized");
+  } else if (!running_) {
+    stat.summary(stat.ERROR, "Thread is not running");
+  } else {
+    diag(r);
+    if (r.bounded<LayerStatus::Unbounded>()) { // valid
+      stat.summary(r.get(), r.reason());
+      for (std::vector<std::pair<std::string, std::string>>::const_iterator it =
+        r.values().begin(); it != r.values().end(); ++it)
+      {
+        stat.add(it->first, it->second);
+      }
+    }
+  }
 }
 
 void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
@@ -835,15 +663,19 @@ bool RosChain::setup_chain(){
 
     ros::NodeHandle nh_driver(nh_, "driver");
 
-    srv_init_ = nh_driver.advertiseService("init",&RosChain::handle_init, this);
-    srv_recover_ = nh_driver.advertiseService("recover",&RosChain::handle_recover, this);
-    srv_halt_ = nh_driver.advertiseService("halt",&RosChain::handle_halt, this);
-    srv_shutdown_ = nh_driver.advertiseService("shutdown",&RosChain::handle_shutdown, this);
+  srv_init_ = create_service<std_srvs::srv::Trigger>(
+    "init", std::bind(
+      &RosChain::handleInit, this,
+      std::placeholders::_1, std::placeholders::_2));
 
-    srv_get_object_ = nh_driver.advertiseService("get_object",&RosChain::handle_get_object, this);
-    srv_set_object_ = nh_driver.advertiseService("set_object",&RosChain::handle_set_object, this);
+  // srv_recover_ = nh_driver.advertiseService("recover",&RosChain::handle_recover, this);
+  // srv_halt_ = nh_driver.advertiseService("halt",&RosChain::handle_halt, this);
+  // srv_shutdown_ = nh_driver.advertiseService("shutdown",&RosChain::handle_shutdown, this);
+  //
+  // srv_get_object_ = nh_driver.advertiseService("get_object",&RosChain::handle_get_object, this);
+  // srv_set_object_ = nh_driver.advertiseService("set_object",&RosChain::handle_set_object, this);
 
-    return setup_bus() && setup_sync() && setup_heartbeat() && setup_nodes();
+  return setup_bus() && setup_sync() && setup_heartbeat() && setup_nodes();
 }
 
 RosChain::~RosChain(){
