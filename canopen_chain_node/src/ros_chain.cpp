@@ -2,68 +2,110 @@
 
 #include <canopen_chain_node/ros_chain.hpp>
 
-#include <std_msgs/msg/int8.h>
-#include <std_msgs/msg/int16.h>
-#include <std_msgs/msg/int32.h>
-#include <std_msgs/msg/int64.h>
-#include <std_msgs/msg/u_int8.h>
-#include <std_msgs/msg/u_int16.h>
-#include <std_msgs/msg/u_int32.h>
-#include <std_msgs/msg/u_int64.h>
-#include <std_msgs/msg/float32.h>
-#include <std_msgs/msg/float64.h>
-#include <std_msgs/msg/string.h>
+#include <std_msgs/msg/int8.hpp>
+#include <std_msgs/msg/int16.hpp>
+#include <std_msgs/msg/int32.hpp>
+#include <std_msgs/msg/int64.hpp>
+#include <std_msgs/msg/u_int8.hpp>
+#include <std_msgs/msg/u_int16.hpp>
+#include <std_msgs/msg/u_int32.hpp>
+#include <std_msgs/msg/u_int64.hpp>
+#include <std_msgs/msg/float32.hpp>
+#include <std_msgs/msg/float64.hpp>
+#include <std_msgs/msg/string.hpp>
 
 using namespace can;
 
 namespace canopen
 {
 
-// template<typename Tpub, int dt>
-// static PublishFuncType create(ros::NodeHandle &nh,  const std::string &name, ObjectStorageSharedPtr storage, const std::string &key, const bool force){
-//     using data_type = typename ObjectStorage::DataType<dt>::type;
-//     using entry_type = ObjectStorage::Entry<data_type>;
-//
-//     entry_type entry = storage->entry<data_type>(key);
-//     if(!entry.valid()) return 0;
-//
-//     const ros::Publisher pub = nh.advertise<Tpub>(name, 1);
-//
-//     typedef const data_type(entry_type::*getter_type)(void);
-//     const getter_type getter = force ? static_cast<getter_type>(&entry_type::get) : static_cast<getter_type>(&entry_type::get_cached);
-//
-//     return [force, pub, entry, getter] () mutable {
-//         Tpub msg;
-//         msg.data = (const typename Tpub::_data_type &) (entry.*getter)();
-//         pub.publish(msg);
-//     };
-// }
+template<typename Tpub, int dt>
+PublishFuncType RosChain::createPublisher(
+  const std::string & name, ObjectStorageSharedPtr storage,
+  const std::string & key, const bool force)
+{
+  RCLCPP_INFO(this->get_logger(), "createPublisher");
+  using data_type = typename ObjectStorage::DataType<dt>::type;
+  using entry_type = ObjectStorage::Entry<data_type>;
 
-// PublishFuncType createPublishFunc(ros::NodeHandle &nh,  const std::string &name, canopen::NodeSharedPtr node, const std::string &key, bool force){
-//     ObjectStorageSharedPtr s = node->getStorage();
-//
-//     switch(ObjectDict::DataTypes(s->dict_->get(key)->data_type)){
-//         case ObjectDict::DEFTYPE_INTEGER8:       return create< std_msgs::Int8,    ObjectDict::DEFTYPE_INTEGER8       >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_INTEGER16:      return create< std_msgs::Int16,   ObjectDict::DEFTYPE_INTEGER16      >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_INTEGER32:      return create< std_msgs::Int32,   ObjectDict::DEFTYPE_INTEGER32      >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_INTEGER64:      return create< std_msgs::Int64,   ObjectDict::DEFTYPE_INTEGER64      >(nh, name, s, key, force);
-//
-//         case ObjectDict::DEFTYPE_UNSIGNED8:      return create< std_msgs::UInt8,   ObjectDict::DEFTYPE_UNSIGNED8      >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_UNSIGNED16:     return create< std_msgs::UInt16,  ObjectDict::DEFTYPE_UNSIGNED16     >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_UNSIGNED32:     return create< std_msgs::UInt32,  ObjectDict::DEFTYPE_UNSIGNED32     >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_UNSIGNED64:     return create< std_msgs::UInt64,  ObjectDict::DEFTYPE_UNSIGNED64     >(nh, name, s, key, force);
-//
-//         case ObjectDict::DEFTYPE_REAL32:         return create< std_msgs::Float32, ObjectDict::DEFTYPE_REAL32         >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_REAL64:         return create< std_msgs::Float64, ObjectDict::DEFTYPE_REAL64         >(nh, name, s, key, force);
-//
-//         case ObjectDict::DEFTYPE_VISIBLE_STRING: return create< std_msgs::String,  ObjectDict::DEFTYPE_VISIBLE_STRING >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_OCTET_STRING:   return create< std_msgs::String,  ObjectDict::DEFTYPE_DOMAIN         >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_UNICODE_STRING: return create< std_msgs::String,  ObjectDict::DEFTYPE_UNICODE_STRING >(nh, name, s, key, force);
-//         case ObjectDict::DEFTYPE_DOMAIN:         return create< std_msgs::String,  ObjectDict::DEFTYPE_DOMAIN         >(nh, name, s, key, force);
-//
-//         default: return 0;
-//     }
-// }
+  entry_type entry = storage->entry<data_type>(key);
+  if (!entry.valid()) {
+    return 0;
+  }
+
+  auto pub = this->create_publisher<Tpub>(name);
+
+  typedef const data_type (entry_type::* getter_type)(void);
+  const getter_type getter =
+    force ? static_cast<getter_type>(&entry_type::get) :
+    static_cast<getter_type>(&entry_type::get_cached);
+
+  return [force, pub, entry, getter]() mutable {
+           Tpub msg;
+           msg.data = (const typename Tpub::_data_type &)(entry.*getter)();
+           pub->publish(msg);
+         };
+}
+
+PublishFuncType RosChain::createPublishFunc(
+  const std::string & name, canopen::NodeSharedPtr node,
+  const std::string & key, bool force)
+{
+  RCLCPP_INFO(this->get_logger(), "createPublisherFunc");
+
+  ObjectStorageSharedPtr storage = node->getStorage();
+
+  switch (ObjectDict::DataTypes(storage->dict_->get(key)->data_type)) {
+
+    case ObjectDict::DEFTYPE_INTEGER8:
+      return createPublisher<std_msgs::msg::Int8, ObjectDict::DEFTYPE_INTEGER8>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_INTEGER16:
+      return createPublisher<std_msgs::msg::Int16, ObjectDict::DEFTYPE_INTEGER16>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_INTEGER32:
+      return createPublisher<std_msgs::msg::Int32, ObjectDict::DEFTYPE_INTEGER32>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_INTEGER64:
+      return createPublisher<std_msgs::msg::Int64, ObjectDict::DEFTYPE_INTEGER64>(
+        name, storage, key, force);
+
+    case ObjectDict::DEFTYPE_UNSIGNED8:
+      return createPublisher<std_msgs::msg::UInt8, ObjectDict::DEFTYPE_UNSIGNED8>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_UNSIGNED16:
+      return createPublisher<std_msgs::msg::UInt16, ObjectDict::DEFTYPE_UNSIGNED16>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_UNSIGNED32:
+      return createPublisher<std_msgs::msg::UInt32, ObjectDict::DEFTYPE_UNSIGNED32>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_UNSIGNED64:
+      return createPublisher<std_msgs::msg::UInt64, ObjectDict::DEFTYPE_UNSIGNED64>(
+        name, storage, key, force);
+
+    case ObjectDict::DEFTYPE_REAL32:
+      return createPublisher<std_msgs::msg::Float32, ObjectDict::DEFTYPE_REAL32>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_REAL64:
+      return createPublisher<std_msgs::msg::Float64, ObjectDict::DEFTYPE_REAL64>(
+        name, storage, key, force);
+
+    case ObjectDict::DEFTYPE_VISIBLE_STRING:
+      return createPublisher<std_msgs::msg::String, ObjectDict::DEFTYPE_VISIBLE_STRING>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_OCTET_STRING:
+      return createPublisher<std_msgs::msg::String, ObjectDict::DEFTYPE_DOMAIN>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_UNICODE_STRING:
+      return createPublisher<std_msgs::msg::String, ObjectDict::DEFTYPE_UNICODE_STRING>(
+        name, storage, key, force);
+    case ObjectDict::DEFTYPE_DOMAIN:
+      return createPublisher<std_msgs::msg::String, ObjectDict::DEFTYPE_DOMAIN>(
+        name, storage, key, force);
+
+    default: return 0;
+  }
+}
 
 void RosChain::logState(const can::State & s)
 {
@@ -254,9 +296,11 @@ bool RosChain::setup_bus()
     RCLCPP_WARN(this->get_logger(),
       "CAN device not specified, using can0");
   }
-  RCLCPP_INFO(this->get_logger(), "can: %s", can_device.c_str());
+  RCLCPP_INFO(this->get_logger(), "can device: %s", can_device.c_str());
 
-  if (!get_parameter_or("bus.driver_plugin", driver_plugin, std::string("can::SocketCANInterface"))) {
+  if (!get_parameter_or("bus.driver_plugin", driver_plugin,
+    std::string("can::SocketCANInterface")))
+  {
     RCLCPP_WARN(this->get_logger(),
       "driver_plugin not specified, using can::SocketCANInterface");
   }
@@ -446,106 +490,158 @@ bool RosChain::setup_nodes()
 
   emcy_handlers_.reset(new canopen::LayerGroupNoDiag<canopen::EMCYHandler>("EMCY layer"));
 
-  // XmlRpc::XmlRpcValue nodes;
+  std::string default_eds_pkg;
+  if (!get_parameter_or("defaults.eds_pkg", default_eds_pkg, std::string(""))) {
+    RCLCPP_WARN(this->get_logger(),
+      "default eds_pkg not specified");
+  }
+  RCLCPP_INFO(this->get_logger(), "default eds_pkg: %s", default_eds_pkg.c_str());
+
+  std::string default_eds_file;
+  if (!get_parameter_or("defaults.eds_file", default_eds_file, std::string(""))) {
+    RCLCPP_WARN(this->get_logger(),
+      "default eds_file not specified");
+  }
+  RCLCPP_INFO(this->get_logger(), "default eds_file: %s", default_eds_file.c_str());
+
   std::vector<std::string> nodes;
   if (!get_parameter_or("nodes", nodes, {})) {
-    RCLCPP_WARN(this->get_logger(),
-      "no nodes!");
+    RCLCPP_ERROR(this->get_logger(),
+      "no nodes were spiecified!");
     return false;
   }
 
-  // MergedXmlRpcStruct defaults;
-  // nh_priv_.getParam("defaults", defaults);
-  //
-  // if(nodes.getType() ==  XmlRpc::XmlRpcValue::TypeArray){
-  //     XmlRpc::XmlRpcValue new_stuct;
-  //     for(size_t i = 0; i < nodes.size(); ++i){
-  //         if(nodes[i].hasMember("name")){
-  //             std::string &name = nodes[i]["name"];
-  //             new_stuct[name] = nodes[i];
-  //         }else{
-  //             ROS_ERROR_STREAM("Node at list index " << i << " has no name");
-  //             return false;
-  //         }
-  //     }
-  //     nodes = new_stuct;
-  // }
-  //
-  // for(XmlRpc::XmlRpcValue::iterator it = nodes.begin(); it != nodes.end(); ++it){
-  //     int node_id;
-  //     try{
-  //         node_id = it->second["id"];
-  //     }
-  //     catch(...){
-  //         ROS_ERROR_STREAM("Node '" << it->first  << "' has no id");
-  //         return false;
-  //     }
-  //     MergedXmlRpcStruct merged(it->second, defaults);
-  //
-  //     if(!it->second.hasMember("name")){
-  //         merged["name"]=it->first;
-  //     }
-  //
-  //     ObjectDict::Overlay overlay;
-  //     if(merged.hasMember("dcf_overlay")){
-  //         XmlRpc::XmlRpcValue dcf_overlay = merged["dcf_overlay"];
-  //         if(dcf_overlay.getType() != XmlRpc::XmlRpcValue::TypeStruct){
-  //             ROS_ERROR_STREAM("dcf_overlay is no struct");
-  //             return false;
-  //         }
-  //         for(XmlRpc::XmlRpcValue::iterator ito = dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
-  //             if(ito->second.getType() != XmlRpc::XmlRpcValue::TypeString){
-  //                 ROS_ERROR_STREAM("dcf_overlay '" << ito->first << "' must be string");
-  //                 return false;
-  //             }
-  //             overlay.push_back(ObjectDict::Overlay::value_type(ito->first, ito->second));
-  //         }
-  //
-  //     }
-  //
-  //     std::string eds;
-  //
-  //     try{
-  //         eds = (std::string) merged["eds_file"];
-  //     }
-  //     catch(...){
-  //         ROS_ERROR_STREAM("EDS path '" << eds << "' invalid");
-  //         return false;
-  //     }
-  //
-  //     try{
-  //         if(merged.hasMember("eds_pkg")){
-  //             std::string pkg = merged["eds_pkg"];
-  //             std::string p = ros::package::getPath(pkg);
-  //             if(p.empty()){
-  //                     ROS_WARN_STREAM("Package '" << pkg << "' was not found");
-  //             }else{
-  //                 eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
-  //             }
-  //         }
-  //     }
-  //     catch(...){
-  //     }
-  //
-  //     ObjectDictSharedPtr  dict = ObjectDict::fromFile(eds, overlay);
-  //     if(!dict){
-  //         ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
-  //         return false;
-  //     }
-  //     canopen::NodeSharedPtr node = std::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
-  //
-  //     LoggerSharedPtr logger = std::make_shared<Logger>(node);
-  //
-  //     if(!nodeAdded(merged, node, logger)) return false;
-  //
-  //     if(!addLoggerEntries(merged, "log", diagnostic_updater::DiagnosticStatusWrapper::OK, *logger)) return false;
-  //     if(!addLoggerEntries(merged, "log_warn", diagnostic_updater::DiagnosticStatusWrapper::WARN, *logger)) return false;
-  //     if(!addLoggerEntries(merged, "log_error", diagnostic_updater::DiagnosticStatusWrapper::ERROR, *logger)) return false;
-  //
-  //     loggers_.push_back(logger);
-  //     diag_updater_.add(it->first, std::bind(&Logger::log, logger, std::placeholders::_1));
-  //
-  //     std::string node_name = std::string(merged["name"]);
+  for (auto & node_name : nodes) {
+    int node_id;
+    if (!get_parameter_or(node_name + ".id", node_id, 4)) {
+      RCLCPP_ERROR(this->get_logger(),
+        "no node id was spiecified for " + node_name);
+      return false;
+    }
+    RCLCPP_INFO(this->get_logger(), node_name + " node id: %d", node_id);
+
+    std::string eds_file;
+    if (!get_parameter_or(node_name + ".eds_file", eds_file, default_eds_file)) {
+      RCLCPP_WARN(this->get_logger(),
+        "eds_file not specified for " + node_name + ", using " + eds_file);
+    }
+    RCLCPP_INFO(this->get_logger(), node_name + " eds_file: %s", default_eds_file.c_str());
+
+    std::string eds_pkg;
+    if (!get_parameter_or(node_name + ".eds_pkg", eds_pkg, default_eds_pkg)) {
+      RCLCPP_WARN(this->get_logger(),
+        "eds_pkg not specified for " + node_name + ", using " + eds_pkg);
+    } else {
+      RCLCPP_INFO(this->get_logger(), node_name + " eds_pkg: %s", eds_pkg.c_str());
+    }
+
+    std::string eds_pkg_share_directory = "";
+    std::string eds_full_path = eds_file;
+    if (!eds_pkg.empty()) {
+      try {
+        eds_pkg_share_directory =
+          ament_index_cpp::get_package_share_directory(eds_pkg);
+      } catch (...) {
+        RCLCPP_ERROR(this->get_logger(),
+          "eds_pkg share directory not found!");
+        return false;
+      }
+
+      eds_full_path =
+        (boost::filesystem::path(eds_pkg_share_directory) / eds_file).make_preferred().native();
+    }
+    RCLCPP_INFO(this->get_logger(), node_name + " eds full path: %s",
+      eds_full_path.c_str());
+
+    ObjectDict::Overlay overlay;
+    // TODO(sam): parse overlay
+
+    // if(merged.hasMember("dcf_overlay")){
+    //     XmlRpc::XmlRpcValue dcf_overlay = merged["dcf_overlay"];
+    //     if(dcf_overlay.getType() != XmlRpc::XmlRpcValue::TypeStruct){
+    //         ROS_ERROR_STREAM("dcf_overlay is no struct");
+    //         return false;
+    //     }
+    //     for(XmlRpc::XmlRpcValue::iterator ito = dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
+    //         if(ito->second.getType() != XmlRpc::XmlRpcValue::TypeString){
+    //             ROS_ERROR_STREAM("dcf_overlay '" << ito->first << "' must be string");
+    //             return false;
+    //         }
+    //         overlay.push_back(ObjectDict::Overlay::value_type(ito->first, ito->second));
+    //     }
+    // }
+
+    auto exists =
+      [this](const std::string & name) -> bool
+      {
+        struct stat buffer;
+        return stat(name.c_str(), &buffer) == 0;
+      };
+
+    if (!exists(eds_full_path)) {
+      RCLCPP_ERROR(this->get_logger(), node_name + " eds file: %s does not exist!",
+        eds_full_path.c_str());
+      return false;
+    }
+
+    ObjectDictSharedPtr dict = ObjectDict::fromFile(eds_full_path, overlay);
+    if (!dict) {
+      RCLCPP_ERROR(this->get_logger(),
+        "EDS '" + eds_file + "' could not be parsed");
+      return false;
+    }
+
+    canopen::NodeSharedPtr node = std::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
+    LoggerSharedPtr logger = std::make_shared<Logger>(node);
+
+    // TODO(sam): figure out what this is supposed to do...
+    if (!nodeAdded(node, logger)) {
+      return false;
+    }
+
+    // if(!addLoggerEntries(merged, "log", diagnostic_updater::DiagnosticStatusWrapper::OK, *logger)) return false;
+    // if(!addLoggerEntries(merged, "log_warn", diagnostic_updater::DiagnosticStatusWrapper::WARN, *logger)) return false;
+    // if(!addLoggerEntries(merged, "log_error", diagnostic_updater::DiagnosticStatusWrapper::ERROR, *logger)) return false;
+
+    loggers_.push_back(logger);
+    diag_updater_.add(node_name, std::bind(&Logger::log, logger, std::placeholders::_1));
+
+
+    std::vector<std::string> publish;
+    if (!get_parameter_or(node_name + ".publish", publish, {})) {
+      RCLCPP_INFO(this->get_logger(),
+        "no objects to be published were spiecified");
+    }
+
+    for (auto & object : publish) {
+      std::string object_name = object.substr(object.find(":") + 1);
+      bool force = false;
+      if (object_name.back() == '!') {
+        force = true;
+        object_name.pop_back();
+      }
+
+      RCLCPP_INFO(this->get_logger(),
+        "%s object to be published: %s, force: %d", node_name.c_str(),
+        object_name.c_str(), force);
+
+      PublishFuncType pub =
+        createPublishFunc(node_name + "_" + object_name,
+          node, object_name, force);
+
+      if (!pub) {
+        RCLCPP_ERROR(this->get_logger(),
+          "%s could not create publisher for object: '%s'", node_name.c_str(),
+          object_name.c_str());
+        return false;
+      }
+
+      // publishers_.push_back(pub);
+    }
+
+  }
+
+
   //
   //     if(merged.hasMember("publish")){
   //         try{
@@ -574,12 +670,15 @@ bool RosChain::setup_nodes()
   //     logger->add(emcy);
   //
   // }
+
+
   return true;
 }
 
-// bool RosChain::nodeAdded(XmlRpc::XmlRpcValue &params, const canopen::NodeSharedPtr &node, const LoggerSharedPtr &logger){
-//     return true;
-// }
+bool RosChain::nodeAdded(const canopen::NodeSharedPtr & node, const LoggerSharedPtr & logger)
+{
+  return true;
+}
 
 void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper & stat)
 {

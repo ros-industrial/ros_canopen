@@ -2,6 +2,7 @@
 #define H_CANOPEN_ROS_CHAIN
 
 #include <memory>
+#include <sys/stat.h>
 #include <canopen_master/canopen.hpp>
 #include <canopen_master/can_layer.hpp>
 // #include <canopen_chain_node/msg/GetObject.hpp>
@@ -12,33 +13,14 @@
 #include <diagnostic_updater/diagnostic_updater.hpp>
 #include <boost/filesystem/path.hpp>
 #include <pluginlib/class_loader.hpp>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 using namespace std::chrono_literals;
 
 namespace canopen
 {
 
-// typedef std::function<void()> PublishFuncType;
-// PublishFuncType createPublishFunc(ros::NodeHandle &nh,  const std::string &name, canopen::NodeSharedPtr node, const std::string &key, bool force);
-
-// class MergedXmlRpcStruct : public XmlRpc::XmlRpcValue{
-//     MergedXmlRpcStruct(const XmlRpc::XmlRpcValue& a) :XmlRpc::XmlRpcValue(a){ assertStruct(); }
-// public:
-//     MergedXmlRpcStruct(){ assertStruct(); }
-//     MergedXmlRpcStruct(const XmlRpc::XmlRpcValue& a, const MergedXmlRpcStruct &b, bool recursive= true) :XmlRpc::XmlRpcValue(a){
-//         assertStruct();
-//
-//         for(ValueStruct::const_iterator it = b._value.asStruct->begin(); it != b._value.asStruct->end(); ++it){
-//             std::pair<XmlRpc::XmlRpcValue::iterator,bool> res =  _value.asStruct->insert(*it);
-//
-//             if(recursive && !res.second && res.first->second.getType() == XmlRpc::XmlRpcValue::TypeStruct && it->second.getType() == XmlRpc::XmlRpcValue::TypeStruct){
-//                 res.first->second = MergedXmlRpcStruct(res.first->second, it->second); // recursive struct merge with implicit cast
-//             }
-//         }
-//
-//
-//     }
-// };
+typedef std::function<void ()> PublishFuncType;
 
 class Logger : public DiagGroup<canopen::Layer>
 {
@@ -84,22 +66,28 @@ public:
     DiagGroup::add(std::static_pointer_cast<canopen::Layer>(n));
   }
 
-  // virtual void log(diagnostic_updater::DiagnosticStatusWrapper &stat){
-  //     if(node_->getState() == canopen::Node::Unknown){
-  //         stat.summary(stat.WARN,"Not initailized");
-  //     }else{
-  //         LayerReport r;
-  //         diag(r);
-  //         if(r.bounded<LayerStatus::Unbounded>()){ // valid
-  //             stat.summary(r.get(), r.reason());
-  //             for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
-  //                 stat.add(it->first, it->second);
-  //             }
-  //             for(size_t i=0; i < entries_.size(); ++i) entries_[i](stat);
-  //         }
-  //     }
-  // }
-  // virtual ~Logger() {}
+  virtual void log(diagnostic_updater::DiagnosticStatusWrapper & stat)
+  {
+    if (node_->getState() == canopen::Node::Unknown) {
+      stat.summary(stat.WARN, "Not initailized");
+    } else {
+      LayerReport r;
+      diag(r);
+      if (r.bounded<LayerStatus::Unbounded>()) { // valid
+        stat.summary(r.get(), r.reason());
+        for (std::vector<std::pair<std::string, std::string>>::const_iterator it =
+          r.values().begin(); it != r.values().end(); ++it)
+        {
+          stat.add(it->first, it->second);
+        }
+        for (size_t i = 0; i < entries_.size(); ++i) {
+          entries_[i](stat);
+        }
+      }
+    }
+  }
+
+  virtual ~Logger() {}
 };
 typedef std::shared_ptr<Logger> LoggerSharedPtr;
 
@@ -238,11 +226,20 @@ protected:
   bool setup_sync();
   bool setup_heartbeat();
   bool setup_nodes();
-  // virtual bool nodeAdded(XmlRpc::XmlRpcValue &params, const canopen::NodeSharedPtr &node, const LoggerSharedPtr &logger);
+  virtual bool nodeAdded(const canopen::NodeSharedPtr & node, const LoggerSharedPtr & logger);
 
   void report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper & stat);
 
   virtual bool setup_chain();
+
+  PublishFuncType createPublishFunc(
+    const std::string & name, canopen::NodeSharedPtr node,
+    const std::string & key, bool force);
+
+  template<typename Tpub, int dt>
+  PublishFuncType createPublisher(
+    const std::string & name, ObjectStorageSharedPtr storage,
+    const std::string & key, const bool force);
 
 public:
   RosChain();
