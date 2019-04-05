@@ -55,7 +55,7 @@ public:
         node_->getStorage()->getStringReader(k, !forced)));
       return true;
     } catch (std::exception & e) {
-      // ROS_ERROR_STREAM(boost::diagnostic_information(e));
+      // RCLCPP_ERROR(this->get_logger(), boost::diagnostic_information(e));
       return false;
     }
   }
@@ -182,9 +182,9 @@ protected:
   boost::mutex mutex_;
 
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_init_;
-  // ros::ServiceServer srv_recover_;
-  // ros::ServiceServer srv_halt_;
-  // ros::ServiceServer srv_shutdown_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_recover_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_halt_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_shutdown_;
   // ros::ServiceServer srv_get_object_;
   // ros::ServiceServer srv_set_object_;
   time_duration update_duration_;
@@ -208,17 +208,24 @@ protected:
   void logState(const can::State & s);
   void run();
 
-  virtual void handleInit(
+  virtual void handle_init(
     const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
     std::shared_ptr<std_srvs::srv::Trigger::Response> response);
 
-  // virtual bool handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);
+  virtual void handle_recover(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response);
 
-  // virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
-  // virtual void handleShutdown(LayerStatus &status);
+  virtual void handleWrite(LayerStatus &status, const LayerState &current_state);
+  virtual void handleShutdown(LayerStatus &status);
 
-  // virtual bool handle_shutdown(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);
-  // virtual bool handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res);
+  virtual void handle_shutdown(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response);
+
+  virtual void handle_halt(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response);
 
   // bool handle_get_object(canopen_chain_node::GetObject::Request  &req, canopen_chain_node::GetObject::Response &res);
   // bool handle_set_object(canopen_chain_node::SetObject::Request  &req, canopen_chain_node::SetObject::Response &res);
