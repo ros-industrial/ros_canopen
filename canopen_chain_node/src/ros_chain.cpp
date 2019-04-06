@@ -162,8 +162,10 @@ void RosChain::handle_init(
     if (!status.bounded<LayerStatus::Warn>()) {
       diag(status);
       response->message = status.reason();
+      return;
     } else {
       heartbeat_timer_.restart();
+      return;
     }
   } catch (const std::exception & e) {
     std::string info = boost::diagnostic_information(e);
