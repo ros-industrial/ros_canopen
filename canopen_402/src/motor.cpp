@@ -1,4 +1,4 @@
-#include <canopen_402/motor.h>
+#include <canopen_402/motor.hpp>
 #include <boost/thread/reverse_lock.hpp>
 
 namespace canopen

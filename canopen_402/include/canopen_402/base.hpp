@@ -1,7 +1,7 @@
 #ifndef CANOPEN_402_BASE_H
 #define CANOPEN_402_BASE_H
 
-#include <canopen_master/canopen.h>
+#include <canopen_master/canopen.hpp>
 
 namespace canopen
 {

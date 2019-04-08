@@ -14,14 +14,12 @@
   <url type="repository">https://github.com/ros-industrial/ros_canopen</url>
   <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>canopen_master</depend>
   <depend>class_loader</depend>
 
-  <test_depend>rosunit</test_depend>
-
   <export>
-     <canopen_402 plugin="${prefix}/canopen_402_plugin.xml" />
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

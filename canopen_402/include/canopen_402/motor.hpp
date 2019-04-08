@@ -1,8 +1,8 @@
 #ifndef CANOPEN_402_MOTOR_H
 #define CANOPEN_402_MOTOR_H
 
-#include <canopen_402/base.h>
-#include <canopen_master/canopen.h>
+#include <canopen_402/base.hpp>
+#include <canopen_master/canopen.hpp>
 #include <functional>
 #include <boost/container/flat_map.hpp>
 
