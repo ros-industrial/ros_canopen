@@ -1,8 +1,21 @@
-#ifndef H_CANOPEN_ROS_CHAIN
-#define H_CANOPEN_ROS_CHAIN
+// Copyright (c) 2016-2019, Mathias Lüdtke, Samuel Lindgren
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <memory>
-#include <sys/stat.h>
+#ifndef CANOPEN_CHAIN_NODE__ROS_CHAIN_HPP_
+#define CANOPEN_CHAIN_NODE__ROS_CHAIN_HPP_
+
 #include <canopen_master/canopen.hpp>
 #include <canopen_master/can_layer.hpp>
 #include <canopen_msgs/srv/get_object.hpp>
@@ -15,7 +28,15 @@
 #include <pluginlib/class_loader.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
-using namespace std::chrono_literals;
+#include <sys/stat.h>
+#include <memory>
+#include <vector>
+#include <string>
+#include <utility>
+#include <map>
+
+
+using namespace std::literals::chrono_literals;
 
 namespace canopen
 {
@@ -42,7 +63,7 @@ class Logger : public DiagGroup<canopen::Layer>
   }
 
 public:
-  Logger(canopen::NodeSharedPtr node)
+  explicit Logger(canopen::NodeSharedPtr node)
   : node_(node) {add(node_);}
 
   bool add(uint8_t level, const std::string & key, bool forced)
@@ -73,7 +94,7 @@ public:
     } else {
       LayerReport r;
       diag(r);
-      if (r.bounded<LayerStatus::Unbounded>()) { // valid
+      if (r.bounded<LayerStatus::Unbounded>()) {  // valid
         stat.summary(r.get(), r.reason());
         for (std::vector<std::pair<std::string, std::string>>::const_iterator it =
           r.values().begin(); it != r.values().end(); ++it)
@@ -256,11 +277,11 @@ protected:
     const std::string & key, const bool force);
 
 public:
-  RosChain(std::string node_name = "canopen_chain_node");
+  explicit RosChain(std::string node_name = "canopen_chain_node");
   bool setup();
   virtual ~RosChain();
 };
 
-} //namespace canopen
+}  // namespace canopen
 
-#endif
+#endif  // CANOPEN_CHAIN_NODE__ROS_CHAIN_HPP_
