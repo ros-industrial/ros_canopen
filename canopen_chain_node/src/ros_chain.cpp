@@ -545,7 +545,7 @@ bool RosChain::setup_nodes()
       RCLCPP_WARN(this->get_logger(),
         "eds_file not specified for " + node_name + ", using " + eds_file);
     }
-    RCLCPP_INFO(this->get_logger(), node_name + " eds_file: %s", default_eds_file.c_str());
+    RCLCPP_INFO(this->get_logger(), node_name + " eds_file: %s", eds_file.c_str());
 
     std::string eds_pkg;
     if (!get_parameter_or(node_name + ".eds_pkg", eds_pkg, default_eds_pkg)) {
@@ -697,8 +697,8 @@ void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper & 
   }
 }
 
-RosChain::RosChain()
-: Node("canopen_chain_node"),
+RosChain::RosChain(std::string node_name)
+: Node(node_name),
   LayerStack("ROS stack"),
   driver_loader_("socketcan_interface", "can::DriverInterface"),
   master_allocator_("canopen_master", "canopen::Master::Allocator"),

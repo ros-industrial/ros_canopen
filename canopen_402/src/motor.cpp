@@ -352,7 +352,12 @@ bool Motor402::switchMode(LayerStatus &status, uint16_t mode) {
     if(!switchState(status, State402::Operation_Enable)) return false;
 
     return okay;
+}
 
+bool Motor402::switchState(const State402::InternalState & target)
+{
+  LayerStatus status;
+  return switchState(status, target);
 }
 
 bool Motor402::switchState(LayerStatus &status, const State402::InternalState &target){
@@ -403,13 +408,17 @@ bool Motor402::readState(LayerStatus &status, const LayerState &current_state){
         }
     }
 
+    op_mode_display_atomic_ = new_mode;
+
     return true;
 }
+
 void Motor402::handleRead(LayerStatus &status, const LayerState &current_state){
     if(current_state > Off){
         readState(status, current_state);
     }
 }
+
 void Motor402::handleWrite(LayerStatus &status, const LayerState &current_state){
     if(current_state > Off){
         boost::mutex::scoped_lock lock(cw_mutex_);
@@ -434,31 +443,108 @@ void Motor402::handleWrite(LayerStatus &status, const LayerState &current_state)
         }
     }
 }
+
 void Motor402::handleDiag(LayerReport &report){
     uint16_t sw = status_word_;
     State402::InternalState state = state_handler_.getState();
 
     switch(state){
-    case State402::Not_Ready_To_Switch_On:
-    case State402::Switch_On_Disabled:
-    case State402::Ready_To_Switch_On:
-    case State402::Switched_On:
-        report.warn("Motor operation is not enabled");
-    case State402::Operation_Enable:
-        break;
+      case State402::Not_Ready_To_Switch_On:
+      case State402::Switch_On_Disabled:
+      case State402::Ready_To_Switch_On:
+      case State402::Switched_On:
+          report.warn("Motor operation is not enabled");
+      case State402::Operation_Enable:
+          break;
 
-    case State402::Quick_Stop_Active:
-        report.error("Quick stop is active");
+      case State402::Quick_Stop_Active:
+          report.error("Quick stop is active");
+          break;
+      case State402::Fault:
+      case State402::Fault_Reaction_Active:
+          report.error("Motor has fault");
+          break;
+      case State402::Unknown:
+          report.error("State is unknown");
+          // report.add("status_word", sw);
+          break;
+    }
+
+    switch (op_mode_display_atomic_) {
+      case 0:
+        report.add("Operation Mode Display", "No mode assigned [0]");
         break;
-    case State402::Fault:
-    case State402::Fault_Reaction_Active:
-        report.error("Motor has fault");
+      case 1:
+        report.add("Operation Mode Display", "Profile Position Mode [1]");
         break;
-    case State402::Unknown:
-        report.error("State is unknown");
-        report.add("status_word", sw);
+      case 2:
+        report.add("Operation Mode Display", "Velocity [2]");
+        break;
+      case 3:
+        report.add("Operation Mode Display", "Profiled velocity mode [3]");
+        break;
+      case 4:
+        report.add("Operation Mode Display", "Torque profiled mode [4]");
+        break;
+      case 5:
+        report.add("Operation Mode Display", "Reserved [5]");
+        break;
+      case 6:
+        report.add("Operation Mode Display", "Homing mode [6]");
+        break;
+      case 7:
+        report.add("Operation Mode Display", "Interpolated position mode [7]");
+        break;
+      default:
+        report.add("Operation Mode Display", "Unknown");
         break;
     }
+
+    uint16_t bitmask = 0b1111;
+    uint16_t first_bits = sw & bitmask;
+
+    // 402 state machine
+    if (first_bits == 0b0000) {
+
+      if (sw & (1<<State402::SW_Switch_on_disabled)) {
+        report.add("402 State Machine", "Switch on disabled");
+      } else {
+        report.add("402 State Machine", "Not ready to switch on");
+      }
+    } else if (first_bits == 0b0001) {
+      report.add("402 State Machine", "Not ready to switch on");
+    } else if (first_bits == 0b0011) {
+      report.add("402 State Machine", "Switched on");
+    } else if (first_bits == 0b0111) {
+      if (sw & (1<<State402::SW_Quick_stop)) {
+        report.add("402 State Machine", "Operation enabled");
+      } else {
+        report.add("402 State Machine", "Quick stop active");
+      }
+    } else if (first_bits == 0b1111) {
+      report.add("402 State Machine", "Fault reaction active");
+    } else if (first_bits == 0b1000) {
+      report.add("402 State Machine", "Fault");
+    } else {
+      report.add("402 State Machine", "Unknown state");
+    }
+
+    report.add("Ready to switch on", bool(sw & (1<<State402::SW_Ready_To_Switch_On)));
+    report.add("Switched on", bool(sw & (1<<State402::SW_Switched_On)));
+    report.add("Operation enabled", bool(sw & (1<<State402::SW_Operation_enabled)));
+    report.add("Fault", bool(sw & (1<<State402::SW_Fault)));
+    report.add("Voltage enabled", bool(sw & (1<<State402::SW_Voltage_enabled)));
+    report.add("Quick stop (inactive when true)", bool(sw & (1<<State402::SW_Quick_stop)));
+    report.add("Switch on disabled", bool(sw & (1<<State402::SW_Switch_on_disabled)));
+    report.add("Homing/CALLS waring", bool(sw & (1<<State402::SW_Warning)));
+    report.add("Homing/CALLS active", bool(sw & (1<<State402::SW_Manufacturer_specific0)));
+    report.add("Remote", bool(sw & (1<<State402::SW_Remote)));
+    report.add("Target Reached", bool(sw & (1<<State402::SW_Target_reached)));
+    report.add("Internal limit active", bool(sw & (1<<State402::SW_Internal_limit)));
+    report.add("Set-point acknowledge/Speed is 0", bool(sw & (1<<State402::SW_Operation_mode_specific0)));
+    report.add("Following/Max. slippage error", bool(sw & (1<<State402::SW_Operation_mode_specific1)));
+    report.add("Event has occured", bool(sw & (1<<State402::SW_Manufacturer_specific1)));
+    report.add("Axis is on", bool(sw & (1<<State402::SW_Manufacturer_specific2)));
 
     if(sw & (1<<State402::SW_Warning)){
         report.warn("Warning bit is set");
