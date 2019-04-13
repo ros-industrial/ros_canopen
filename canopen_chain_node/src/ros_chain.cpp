@@ -1,4 +1,17 @@
-// #include <ros/package.h>
+// Copyright (c) 2016-2019, Mathias Lüdtke, Samuel Lindgren
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <canopen_chain_node/ros_chain.hpp>
 
@@ -14,7 +27,13 @@
 #include <std_msgs/msg/float64.hpp>
 #include <std_msgs/msg/string.hpp>
 
-using namespace can;
+#include <string>
+#include <memory>
+#include <map>
+#include <vector>
+#include <utility>
+
+// using namespace can;
 
 namespace canopen
 {
@@ -53,7 +72,6 @@ PublishFuncType RosChain::createPublishFunc(
   ObjectStorageSharedPtr storage = node->getStorage();
 
   switch (ObjectDict::DataTypes(storage->dict_->get(key)->data_type)) {
-
     case ObjectDict::DEFTYPE_INTEGER8:
       return createPublisher<std_msgs::msg::Int8, ObjectDict::DEFTYPE_INTEGER8>(
         name, storage, key, force);
@@ -66,7 +84,6 @@ PublishFuncType RosChain::createPublishFunc(
     case ObjectDict::DEFTYPE_INTEGER64:
       return createPublisher<std_msgs::msg::Int64, ObjectDict::DEFTYPE_INTEGER64>(
         name, storage, key, force);
-
     case ObjectDict::DEFTYPE_UNSIGNED8:
       return createPublisher<std_msgs::msg::UInt8, ObjectDict::DEFTYPE_UNSIGNED8>(
         name, storage, key, force);
@@ -79,14 +96,12 @@ PublishFuncType RosChain::createPublishFunc(
     case ObjectDict::DEFTYPE_UNSIGNED64:
       return createPublisher<std_msgs::msg::UInt64, ObjectDict::DEFTYPE_UNSIGNED64>(
         name, storage, key, force);
-
     case ObjectDict::DEFTYPE_REAL32:
       return createPublisher<std_msgs::msg::Float32, ObjectDict::DEFTYPE_REAL32>(
         name, storage, key, force);
     case ObjectDict::DEFTYPE_REAL64:
       return createPublisher<std_msgs::msg::Float64, ObjectDict::DEFTYPE_REAL64>(
         name, storage, key, force);
-
     case ObjectDict::DEFTYPE_VISIBLE_STRING:
       return createPublisher<std_msgs::msg::String, ObjectDict::DEFTYPE_VISIBLE_STRING>(
         name, storage, key, force);
@@ -220,7 +235,7 @@ void RosChain::handleWrite(LayerStatus & status, const LayerState & current_stat
 {
   LayerStack::handleWrite(status, current_state);
   if (current_state > Shutdown) {
-    for (const PublishFuncType & func: publishers_) {
+    for (const PublishFuncType & func : publishers_) {
       func();
     }
   }
@@ -411,7 +426,7 @@ bool RosChain::setup_sync()
       return false;
     }
 
-    // TODO: parse header
+    // TODO(sam): parse header
     sync_ = master_->getSync(SyncProperties(can::MsgHeader(0x80), sync_ms, sync_overflow));
 
     if (!sync_ && sync_ms) {
@@ -449,7 +464,7 @@ bool RosChain::setup_heartbeat()
 
   if (!got_any) {
     RCLCPP_INFO(this->get_logger(), "not producing heartbeat!");
-    return true; // nothing todo
+    return true;  // nothing to do
   }
 
   if (rate <= 0) {
@@ -482,15 +497,18 @@ bool RosChain::setup_heartbeat()
 //     return std::make_pair(obj_name, force);
 // }
 
-// bool addLoggerEntries(XmlRpc::XmlRpcValue merged, const std::string param, uint8_t level, Logger &logger){
+// bool addLoggerEntries(XmlRpc::XmlRpcValue merged,
+// const std::string param, uint8_t level, Logger &logger){
 //     if(merged.hasMember(param)){
 //         try{
 //             XmlRpc::XmlRpcValue objs = merged[param];
 //             for(int i = 0; i < objs.size(); ++i){
-//                 std::pair<std::string, bool> obj_name = parseObjectName(objs[i]);
+//                 std::pair<std::string, bool> obj_name =
+//                     parseObjectName(objs[i]);
 //
 //                 if(!logger.add(level, obj_name.first, obj_name.second)){
-//                     ROS_ERROR_STREAM("Could not create logger for '" << obj_name.first << "'");
+//                     ROS_ERROR_STREAM("Could not create logger for '" <<
+//                      obj_name.first << "'");
 //                     return false;
 //                 }
 //             }
@@ -582,12 +600,15 @@ bool RosChain::setup_nodes()
     //         ROS_ERROR_STREAM("dcf_overlay is no struct");
     //         return false;
     //     }
-    //     for(XmlRpc::XmlRpcValue::iterator ito = dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
+    //     for(XmlRpc::XmlRpcValue::iterator ito =
+    //      dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
     //         if(ito->second.getType() != XmlRpc::XmlRpcValue::TypeString){
-    //             ROS_ERROR_STREAM("dcf_overlay '" << ito->first << "' must be string");
+    //             ROS_ERROR_STREAM("dcf_overlay '" << ito->first << "'
+    //              must be string");
     //             return false;
     //         }
-    //         overlay.push_back(ObjectDict::Overlay::value_type(ito->first, ito->second));
+    //         overlay.push_back(ObjectDict::Overlay::value_type(ito->first,
+    //          ito->second));
     //     }
     // }
 
@@ -619,9 +640,12 @@ bool RosChain::setup_nodes()
       return false;
     }
 
-    // if(!addLoggerEntries(merged, "log", diagnostic_updater::DiagnosticStatusWrapper::OK, *logger)) return false;
-    // if(!addLoggerEntries(merged, "log_warn", diagnostic_updater::DiagnosticStatusWrapper::WARN, *logger)) return false;
-    // if(!addLoggerEntries(merged, "log_error", diagnostic_updater::DiagnosticStatusWrapper::ERROR, *logger)) return false;
+    // if(!addLoggerEntries(merged, "log",
+    //  diagnostic_updater::DiagnosticStatusWrapper::OK, *logger)) return false;
+    // if(!addLoggerEntries(merged, "log_warn",
+    // diagnostic_updater::DiagnosticStatusWrapper::WARN, *logger)) return false;
+    // if(!addLoggerEntries(merged, "log_error",
+    // diagnostic_updater::DiagnosticStatusWrapper::ERROR, *logger)) return false;
 
     loggers_.push_back(logger);
     diag_updater_.add(node_name, std::bind(&Logger::log, logger, std::placeholders::_1));
@@ -686,7 +710,7 @@ void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper & 
     stat.summary(stat.ERROR, "Thread is not running");
   } else {
     diag(r);
-    if (r.bounded<LayerStatus::Unbounded>()) { // valid
+    if (r.bounded<LayerStatus::Unbounded>()) {  // valid
       stat.summary(r.get(), r.reason());
       for (std::vector<std::pair<std::string, std::string>>::const_iterator it =
         r.values().begin(); it != r.values().end(); ++it)
@@ -774,4 +798,4 @@ RosChain::~RosChain()
   }
 }
 
-}
+}  // namespace canopen

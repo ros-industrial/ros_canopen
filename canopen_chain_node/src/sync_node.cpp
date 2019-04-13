@@ -1,12 +1,34 @@
+// Copyright (c) 2016-2019, Mathias Lüdtke, Samuel Lindgren
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 #include "canopen_chain_node/sync_node.hpp"
 
+#include <string>
+#include <utility>
+#include <vector>
+#include <memory>
 
-void SyncNode::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper & stat)
+void SyncNode::report_diagnostics(
+  diagnostic_updater::DiagnosticStatusWrapper & stat)
 {
   canopen::LayerReport r;
   read(r);
   diag(r);
-  if (getLayerState() != canopen::Layer::Off && r.bounded<canopen::LayerStatus::Unbounded>()) { // valid
+  if (getLayerState() != canopen::Layer::Off &&
+    r.bounded<canopen::LayerStatus::Unbounded>())
+  {  // valid
     stat.summary(r.get(), r.reason());
     for (std::vector<std::pair<std::string, std::string>>::const_iterator it = r.values().begin();
       it != r.values().end(); ++it)
@@ -44,7 +66,8 @@ void SyncNode::get_parameters()
       "sync overflow was not specified, so overflow is disabled per default");
   }
   if (sync_overflow_ == 1 || sync_overflow_ > 240) {
-    throw std::runtime_error("Sync overflow " + std::to_string(sync_overflow_) + "is invalid");
+    throw std::runtime_error("Sync overflow " + std::to_string(sync_overflow_) +
+            "is invalid");
   }
 
   if (!get_parameter_or("device", can_device_, std::string("can0"))) {
@@ -102,7 +125,8 @@ void SyncNode::init_sync_layer()
   } else {
     // TODO(sam): figure out if this does anything...
     // can::Frame f = can::toframe(heartbeat_msg_);
-    // if(f.isValid() && (f.id & ~canopen::BCMsync::ALL_NODES_MASK) == canopen::BCMsync::HEARTBEAT_ID){
+    // if(f.isValid() && (f.id & ~canopen::BCMsync::ALL_NODES_MASK) ==
+    // canopen::BCMsync::HEARTBEAT_ID){
     // monitored_nodes.push_back(f.id & canopen::BCMsync::ALL_NODES_MASK);
     sync->setIgnored(ignored_nodes_);
   }
