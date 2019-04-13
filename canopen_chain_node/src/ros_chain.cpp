@@ -552,7 +552,7 @@ bool RosChain::setup_nodes()
       RCLCPP_WARN(this->get_logger(),
         "eds_file not specified for " + node_name + ", using " + eds_file);
     }
-    RCLCPP_INFO(this->get_logger(), node_name + " eds_file: %s", default_eds_file.c_str());
+    RCLCPP_INFO(this->get_logger(), node_name + " eds_file: %s", eds_file.c_str());
 
     std::string eds_pkg;
     if (!get_parameter_or(node_name + ".eds_pkg", eds_pkg, default_eds_pkg)) {
@@ -704,26 +704,10 @@ void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper & 
   }
 }
 
-void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat){
-    boost::mutex::scoped_lock lock(diag_mutex_);
-    LayerReport r;
-    if(getLayerState() == Off){
-        stat.summary(stat.WARN,"Not initialized");
-    }else if(!running_){
-        stat.summary(stat.ERROR,"Thread is not running");
-    }else{
-        diag(r);
-        if(r.bounded<LayerStatus::Unbounded>()){ // valid
-            stat.summary(r.get(), r.reason());
-            for(std::vector<std::pair<std::string, std::string> >::const_iterator it = r.values().begin(); it != r.values().end(); ++it){
-                stat.add(it->first, it->second);
-            }
-        }
-    }
-}
-
-RosChain::RosChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv)
-: LayerStack("ROS stack"),driver_loader_("socketcan_interface", "can::DriverInterface"),
+RosChain::RosChain(std::string node_name)
+: Node(node_name),
+  LayerStack("ROS stack"),
+  driver_loader_("socketcan_interface", "can::DriverInterface"),
   master_allocator_("canopen_master", "canopen::Master::Allocator"),
   nh_(nh), nh_priv_(nh_priv),
   diag_updater_(nh_,nh_priv_),

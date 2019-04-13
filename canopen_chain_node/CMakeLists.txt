@@ -32,19 +32,20 @@ include_directories(
 )
 
 # create ament index resource which references the libraries in the binary dir
-set(node_plugins "")
+# set(node_plugins "")
 
 # canopen_ros_chain
 add_library(canopen_ros_chain SHARED
   src/ros_chain.cpp
   src/rosconsole_bridge.cpp
 )
-target_compile_definitions(canopen_ros_chain
-  PRIVATE "COMPOSITION_BUILDING_DLL")
+# target_compile_definitions(canopen_ros_chain
+#   PRIVATE "COMPOSITION_BUILDING_DLL")
 
 target_link_libraries(canopen_ros_chain
   ${Boost_LIBRARIES}
 )
+
 ament_target_dependencies(canopen_ros_chain
   "class_loader"
   "canopen_master"
@@ -54,8 +55,8 @@ ament_target_dependencies(canopen_ros_chain
   "diagnostic_updater"
   "socketcan_interface"
 )
-rclcpp_register_node_plugins(canopen_ros_chain "composition::RosChain")
-set(node_plugins "${node_plugins}composition::RosChain;$<TARGET_FILE:canopen_ros_chain>\n")
+# rclcpp_register_node_plugins(canopen_ros_chain "composition::RosChain")
+# set(node_plugins "${node_plugins}composition::RosChain;$<TARGET_FILE:canopen_ros_chain>\n")
 
 # canopen_chain_node
 add_executable(${PROJECT_NAME}
@@ -72,6 +73,7 @@ ament_target_dependencies(${PROJECT_NAME}
   "socketcan_interface"
   "std_srvs"
   "rclcpp"
+  "canopen_msgs"
 )
 
 # since the package installs libraries without exporting them
@@ -99,13 +101,18 @@ ament_target_dependencies(canopen_sync_node
 )
 
 ament_export_dependencies(
-  rosidl_default_runtime
   ament_cmake
+  canopen_master
+  diagnostic_updater
+  socketcan_interface
+  std_srvs
+  rclcpp
+  canopen_msgs
   Boost
 )
 
 ament_export_include_directories(include)
-# ament_export_libraries(${PROJECT_NAME})
+ament_export_libraries(canopen_ros_chain)
 
 install(TARGETS
   canopen_ros_chain
@@ -136,5 +143,10 @@ install(
   DIRECTORY test
   DESTINATION share/${PROJECT_NAME}
 )
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
 ament_package()

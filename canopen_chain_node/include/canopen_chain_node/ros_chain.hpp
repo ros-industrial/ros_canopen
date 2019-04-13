@@ -256,7 +256,7 @@ protected:
     const std::string & key, const bool force);
 
 public:
-  RosChain();
+  RosChain(std::string node_name = "canopen_chain_node");
   bool setup();
   virtual ~RosChain();
 };
