@@ -116,40 +116,11 @@ Command402::TransitionTable::TransitionTable(){
     // fault reset
     /*15*/ add(s::Fault, s::Switch_On_Disabled, Op((1<<CW_Fault_Reset), 0));
 }
-State402::InternalState Command402::nextStateForEnabling(State402::InternalState state){
-    switch(state){
-    case State402::Start:
-        return State402::Not_Ready_To_Switch_On;
 
-    case State402::Fault:
-    case State402::Not_Ready_To_Switch_On:
-        return State402::Switch_On_Disabled;
-
-    case State402::Switch_On_Disabled:
-        return State402::Ready_To_Switch_On;
-
-    case State402::Ready_To_Switch_On:
-        return State402::Switched_On;
-
-    case State402::Switched_On:
-    case State402::Quick_Stop_Active:
-    case State402::Operation_Enable:
-        return State402::Operation_Enable;
-
-    case State402::Fault_Reaction_Active:
-        return State402::Fault;
-    }
-}
-
-bool Command402::setTransition(uint16_t &cw, const State402::InternalState &from, const State402::InternalState &to, State402::InternalState *next){
+bool Command402::setTransition(uint16_t &cw, const State402::InternalState &from, const State402::InternalState &to){
     try{
         if(from != to){
-            State402::InternalState hop = to;
-            if(next){
-                if(to == State402::Operation_Enable) hop = nextStateForEnabling(from);
-                *next = hop;
-            }
-            transitions_.get(from, hop)(cw);
+            transitions_.get(from, to)(cw);
         }
         return true;
     }
@@ -290,6 +261,8 @@ ModeSharedPtr Motor402::allocMode(uint16_t mode){
 bool Motor402::switchMode(LayerStatus &status, uint16_t mode) {
 
     if(mode == MotorBase::No_Mode){
+        if(!switchState(status, no_mode_state_)) return false;
+
         boost::mutex::scoped_lock lock(mode_mutex_);
         selected_mode_.reset();
         try{ // try to set mode
@@ -352,22 +325,46 @@ bool Motor402::switchMode(LayerStatus &status, uint16_t mode) {
     if(!switchState(status, State402::Operation_Enable)) return false;
 
     return okay;
-
 }
+State402::InternalState Motor402::nextStateForEnabling(State402::InternalState state){
+    switch(state){
+    case State402::Start:
+        return State402::Not_Ready_To_Switch_On;
 
+    case State402::Fault:
+    case State402::Not_Ready_To_Switch_On:
+        return State402::Switch_On_Disabled;
+
+    case State402::Switch_On_Disabled:
+        return State402::Ready_To_Switch_On;
+
+    case State402::Ready_To_Switch_On:
+        return State402::Switched_On;
+
+    case State402::Switched_On:
+    case State402::Quick_Stop_Active:
+    case State402::Operation_Enable:
+        return State402::Operation_Enable;
+
+    case State402::Fault_Reaction_Active:
+        return State402::Fault;
+    }
+}
 bool Motor402::switchState(LayerStatus &status, const State402::InternalState &target){
     time_point abstime = get_abs_time(state_switch_timeout_);
     State402::InternalState state = state_handler_.getState();
     target_state_ = target;
     while(state != target_state_){
         boost::mutex::scoped_lock lock(cw_mutex_);
-        State402::InternalState next = State402::Unknown;
-        if(!Command402::setTransition(control_word_ ,state, target_state_ , &next)){
+        State402::InternalState hop = target_state_;
+        if(target_state_ == State402::Operation_Enable || target_state_ == no_mode_state_)
+            hop = nextStateForEnabling(state);
+        if(!Command402::setTransition(control_word_ ,state, hop)){
             status.error("Could not set transition");
             return false;
         }
         lock.unlock();
-        if(state != next && !state_handler_.waitForNewState(abstime, state)){
+        if(state != hop && !state_handler_.waitForNewState(abstime, state)){
             status.error("Transition timeout");
             return false;
         }
@@ -481,7 +478,13 @@ void Motor402::handleInit(LayerStatus &status){
         control_word_ = 0;
         start_fault_reset_ = true;
     }
-    if(!switchState(status, State402::Operation_Enable)){
+
+    bool no_mode;
+    {
+        boost::mutex::scoped_lock lock(mode_mutex_);
+        no_mode=!selected_mode_;
+    }
+    if(!switchState(status, no_mode ? no_mode_state_ : State402::Operation_Enable)){
         status.error("Could not enable motor");
         return;
     }
@@ -525,21 +528,24 @@ void Motor402::handleHalt(LayerStatus &status){
         target_state_ = state;
     }else{
         target_state_ = State402::Quick_Stop_Active;
-        if(!Command402::setTransition(control_word_ ,state, State402::Quick_Stop_Active, 0)){
+        if(!Command402::setTransition(control_word_ ,state, State402::Quick_Stop_Active)){
             status.warn("Could not quick stop");
         }
     }
 }
 void Motor402::handleRecover(LayerStatus &status){
     start_fault_reset_ = true;
+    bool no_mode;
     {
         boost::mutex::scoped_lock lock(mode_mutex_);
+        no_mode=!selected_mode_;
         if(selected_mode_ && !selected_mode_->start()){
             status.error("Could not restart mode.");
             return;
         }
     }
-    if(!switchState(status, State402::Operation_Enable)){
+
+    if(!switchState(status, no_mode ? no_mode_state_ : State402::Operation_Enable)){
         status.error("Could not enable motor");
         return;
     }
