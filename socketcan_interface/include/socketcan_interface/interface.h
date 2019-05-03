@@ -7,6 +7,8 @@
 
 #include <boost/system/error_code.hpp>
 
+#include "socketcan_interface/delegates.h"
+
 namespace can{
 
 /** Header for CAN id an meta data*/
@@ -106,6 +108,7 @@ public:
 class StateInterface{
 public:
     using StateFunc = std::function<void(const State&)>;
+    using StateDelegate [[deprecated("use StateFunc instead")]] = DelegateHelper<StateFunc>;
     typedef Listener<const StateFunc, const State&> StateListener;
     typedef StateListener::ListenerConstSharedPtr StateListenerConstSharedPtr;
 
@@ -127,6 +130,8 @@ typedef StateInterface::StateListenerConstSharedPtr StateListenerConstSharedPtr;
 
 class CommInterface{
 public:
+    using FrameFunc = std::function<void(const Frame&)>;
+    using FrameDelegate [[deprecated("use FrameFunc instead")]] = DelegateHelper<FrameFunc>;
     typedef Listener<const FrameFunc, const Frame&> FrameListener;
     typedef FrameListener::ListenerConstSharedPtr FrameListenerConstSharedPtr;
 

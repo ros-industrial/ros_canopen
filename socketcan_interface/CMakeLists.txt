@@ -101,6 +101,14 @@ if(CATKIN_ENABLE_TESTING)
     ${catkin_LIBRARIES}
   )
 
+  catkin_add_gtest(${PROJECT_NAME}-test_delegates
+    test/test_delegates.cpp
+  )
+  target_link_libraries(${PROJECT_NAME}-test_delegates
+    ${PROJECT_NAME}_string
+    ${catkin_LIBRARIES}
+  )
+
   catkin_add_gtest(${PROJECT_NAME}-test_string
     test/test_string.cpp
   )
