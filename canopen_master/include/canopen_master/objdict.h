@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <socketcan_interface/delegates.h>
+
 #include <boost/thread/mutex.hpp>
 #include <functional>
 #include <typeinfo>
@@ -276,7 +278,10 @@ public:
 class ObjectStorage{
 public:
     using ReadFunc = std::function<void(const ObjectDict::Entry&, String &)>;
+    using ReadDelegate [[deprecated("use ReadFunc instead")]] = can::DelegateHelper<ReadFunc>;
+
     using WriteFunc = std::function<void(const ObjectDict::Entry&, const String &)>;
+    using WriteDelegate  [[deprecated("use WriteFunc instead")]] = can::DelegateHelper<WriteFunc>;
 
     typedef std::shared_ptr<ObjectStorage> ObjectStorageSharedPtr;
 
