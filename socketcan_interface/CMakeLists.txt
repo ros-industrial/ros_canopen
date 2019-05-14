@@ -132,4 +132,5 @@ if(CATKIN_ENABLE_TESTING)
     ${PROJECT_NAME}_string
     ${catkin_LIBRARIES}
   )
+  target_compile_options(${PROJECT_NAME}-test_dispatcher PRIVATE -Wno-deprecated-declarations)
 endif()
