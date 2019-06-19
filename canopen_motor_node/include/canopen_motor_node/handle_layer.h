@@ -23,7 +23,7 @@ class LimitsHandleBase {
 public:
     virtual void enforce(const ros::Duration &period) = 0;
     virtual void reset() = 0;
-    virtual ~LimitsHandleBase();
+    virtual ~LimitsHandleBase() = default;
 };
 typedef std::shared_ptr<LimitsHandleBase> LimitsHandleBaseSharedPtr;
 
