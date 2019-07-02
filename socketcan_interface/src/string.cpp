@@ -166,12 +166,12 @@ FrameFilterSharedPtr tofilter(const char* s){
 		return tofilter<std::string>(s);
 }
 
-}
-
-std::ostream& operator <<(std::ostream& stream, const can::Header& h) {
+std::ostream& operator <<(std::ostream& stream, const Header& h) {
 	return stream << can::tostring(h, true);
 }
 
-std::ostream& operator <<(std::ostream& stream, const can::Frame& f) {
+std::ostream& operator <<(std::ostream& stream, const Frame& f) {
 	return stream << can::tostring(f, true);
+}
+
 }
