@@ -40,9 +40,8 @@ template <typename T> FilteredFrameListener::FilterVector tofilters(const T& v) 
     return filters;
 }
 
+std::ostream& operator <<(std::ostream& stream, const Header& h);
+std::ostream& operator <<(std::ostream& stream, const Frame& f);
+
 }
-
-std::ostream& operator <<(std::ostream& stream, const can::Header& h);
-std::ostream& operator <<(std::ostream& stream, const can::Frame& f);
-
 #endif
