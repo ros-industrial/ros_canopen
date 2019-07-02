@@ -125,7 +125,6 @@ bool Command402::setTransition(uint16_t &cw, const State402::InternalState &from
         return true;
     }
     catch(...){
-        LOG("illegal tranistion " << from << " -> " << to);
     }
     return false;
 }
@@ -357,11 +356,17 @@ bool Motor402::switchState(LayerStatus &status, const State402::InternalState &t
     while(state != target_state_){
         boost::mutex::scoped_lock lock(cw_mutex_);
         State402::InternalState hop = target_state_;
-        if(target_state_ == State402::Operation_Enable || target_state_ == no_mode_state_)
-            hop = nextStateForEnabling(state);
         if(!Command402::setTransition(control_word_ ,state, hop)){
-            status.error("Could not set transition");
-            return false;
+            if(target_state_ != State402::Operation_Enable && target_state_ != no_mode_state_){
+                LOG("illegal transition " << state << " -> " << hop);
+                status.error("Could not set transition");
+                return false;
+            }
+            hop = nextStateForEnabling(state);
+            if(!Command402::setTransition(control_word_ ,state, hop)){
+                status.error("Could not set transition");
+                return false;
+            }
         }
         lock.unlock();
         if(state != hop && !state_handler_.waitForNewState(abstime, state)){
