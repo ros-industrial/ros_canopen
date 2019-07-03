@@ -22,7 +22,8 @@ public:
   : mask_(mask), masked_id_(can_id & mask), invert_(invert)
   {}
   virtual bool pass(const can::Frame &frame) const{
-    return ((mask_ & frame) == masked_id_) != invert_;
+    const uint32_t k = frame.key();
+    return ((mask_ & k) == masked_id_) != invert_;
   }
 private:
   const uint32_t mask_;
@@ -36,7 +37,8 @@ public:
   : min_id_(min_id), max_id_(max_id), invert_(invert)
   {}
   virtual bool pass(const can::Frame &frame) const{
-    return (min_id_ <= frame && frame <= max_id_) != invert_;
+    const uint32_t k = frame.key();
+    return (min_id_ <= k && k <= max_id_) != invert_;
   }
 private:
   const uint32_t min_id_;

@@ -43,11 +43,11 @@ public:
         return add(k, toframe(v), multi);
     }
     virtual bool send(const Frame & msg){
-        if(loopback_) frame_dispatcher_.dispatch(msg);
+        if(loopback_) frame_dispatcher_.dispatch(msg.key(), msg);
         try{
             std::pair <Map::iterator, Map::iterator> r = map_.equal_range(tostring(msg, true));
             for (Map::iterator it=r.first; it!=r.second; ++it){
-                frame_dispatcher_.dispatch(it->second);
+                frame_dispatcher_.dispatch(it->second.key(), it->second);
             }
         }
         catch(const std::out_of_range &e){
@@ -59,7 +59,7 @@ public:
         return frame_dispatcher_.createListener(delegate);
     }
     virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&h , const FrameFunc &delegate){
-        return frame_dispatcher_.createListener(h, delegate);
+        return frame_dispatcher_.createListener(h.key(), delegate);
     }
 
     // methods from StateInterface

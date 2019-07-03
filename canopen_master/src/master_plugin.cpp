@@ -14,7 +14,7 @@ protected:
     std::set<void *> nodes_;
     boost::mutex nodes_mutex_;
     std::atomic<size_t> nodes_size_;
-    
+
     virtual void handleShutdown(LayerStatus &status) {
     }
 
@@ -40,7 +40,7 @@ public:
     }
 };
 
-    
+
 class SimpleSyncLayer: public ManagingSyncLayer {
     time_point read_time_, write_time_;
 protected:
@@ -85,7 +85,7 @@ protected:
         // nothing to do here
     }
     virtual void handleInit(LayerStatus &status){
-        reader_.listen(interface_, can::MsgHeader(properties.header_));
+        reader_.listen(interface_, properties.header_);
     }
 public:
     ExternalSyncLayer(const SyncProperties &p, can::CommInterfaceSharedPtr interface)
@@ -114,4 +114,3 @@ typedef WrapMaster<ExternalSyncLayer> ExternalMaster;
 }
 CLASS_LOADER_REGISTER_CLASS(canopen::SimpleMaster::Allocator, canopen::Master::Allocator);
 CLASS_LOADER_REGISTER_CLASS(canopen::ExternalMaster::Allocator, canopen::Master::Allocator);
-

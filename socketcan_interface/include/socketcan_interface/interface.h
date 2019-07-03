@@ -26,13 +26,14 @@ struct Header{
     bool isValid() const{
         return id < (is_extended?(1<<29):(1<<11));
     }
+    unsigned int key() const { return is_error ? (ERROR_MASK) : *(unsigned int*) this; }
+    [[deprecated("use key() instead")]] explicit operator unsigned int() const { return key(); }
+
     /** constructor with default parameters
         * @param[in] i: CAN id, defaults to 0
         * @param[in] extended: uses 29 bit identifier, defaults to false
         * @param[in] rtr: is rtr frame, defaults to false
         */
-
-    operator const unsigned int() const { return is_error ? (ERROR_MASK) : *(unsigned int*) this; }
 
     Header()
     : id(0),is_error(0),is_rtr(0), is_extended(0) {}
