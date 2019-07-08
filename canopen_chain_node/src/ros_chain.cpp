@@ -107,6 +107,7 @@ bool RosChain::handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::
         if(!status.bounded<LayerStatus::Warn>()){
             diag(status);
             res.message = status.reason();
+            ROS_WARN_STREAM(status.reason());
         }else{
             heartbeat_timer_.restart();
             return true;
@@ -144,6 +145,7 @@ bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigge
             }
             res.success = status.bounded<LayerStatus::Warn>();
             res.message = status.reason();
+            ROS_WARN_STREAM(status.reason());
         }
         catch( const std::exception &e){
             std::string info = boost::diagnostic_information(e);
