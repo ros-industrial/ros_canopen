@@ -75,7 +75,7 @@ public:
 
     virtual void log(diagnostic_updater::DiagnosticStatusWrapper &stat){
         if(node_->getState() == canopen::Node::Unknown){
-            stat.summary(stat.WARN,"Not initailized");
+            stat.summary(stat.WARN,"Not initialized");
         }else{
             LayerReport r;
             diag(r);
