@@ -536,7 +536,7 @@ void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &s
     boost::mutex::scoped_lock lock(diag_mutex_);
     LayerReport r;
     if(getLayerState() == Off){
-        stat.summary(stat.WARN,"Not initailized");
+        stat.summary(stat.WARN,"Not initialized");
     }else if(!running_){
         stat.summary(stat.ERROR,"Thread is not running");
     }else{
