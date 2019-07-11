@@ -26,7 +26,7 @@ struct Header{
     bool isValid() const{
         return id < (is_extended?(1<<29):(1<<11));
     }
-    unsigned int fullid() const { return id | (is_error?ERROR_MASK:0) | (is_rtr?RTR_MASK:0); }
+    unsigned int fullid() const { return id | (is_error?ERROR_MASK:0) | (is_rtr?RTR_MASK:0) | (is_extended?EXTENDED_MASK:0); }
     unsigned int key() const { return is_error ? (ERROR_MASK) : fullid(); }
     [[deprecated("use key() instead")]] explicit operator unsigned int() const { return key(); }
 
