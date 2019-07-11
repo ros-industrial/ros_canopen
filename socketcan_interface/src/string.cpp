@@ -1,4 +1,5 @@
 #include <socketcan_interface/string.h>
+#include <iomanip>
 
 namespace can {
 
@@ -84,7 +85,10 @@ std::string tostring(const Header& h, bool lc) {
 	else
 		buf << std::uppercase;
 
-	buf << h.fullid();
+	if (h.is_extended)
+		buf << std::setfill('0') << std::setw(8);
+
+	buf << (h.fullid() & ~Header::EXTENDED_MASK);
 	return buf.str();
 }
 
@@ -98,7 +102,8 @@ uint32_t tohex(const std::string& s) {
 
 Header toheader(const std::string& s) {
 	unsigned int h = tohex(s);
-	return Header(h & Header::ID_MASK, h & Header::EXTENDED_MASK,
+	unsigned int id = h & Header::ID_MASK;
+	return Header(id, h & Header::EXTENDED_MASK || (s.size() == 8 && id >= (1<<11)),
 			h & Header::RTR_MASK, h & Header::ERROR_MASK);
 }
 
