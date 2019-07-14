@@ -58,7 +58,12 @@ public:
     void init();
 
     SDOClient(const can::CommInterfaceSharedPtr interface, const ObjectDictSharedPtr dict, uint8_t node_id)
-    : interface_(interface), storage_(std::make_shared<ObjectStorage>(dict, node_id, ObjectStorage::ReadDelegate(this, &SDOClient::read), ObjectStorage::WriteDelegate(this, &SDOClient::write))), reader_(false, 1)
+    : interface_(interface),
+      storage_(std::make_shared<ObjectStorage>(dict, node_id,
+                                               std::bind(&SDOClient::read, this, std::placeholders::_1, std::placeholders::_2),
+                                               std::bind(&SDOClient::write, this, std::placeholders::_1, std::placeholders::_2))
+              ),
+      reader_(false, 1)
     {
     }
 };
@@ -200,11 +205,13 @@ public:
     bool reset_com();
     bool prepare();
 
-    typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
-    typedef can::Listener<const StateDelegate, const State&> StateListener;
+    using StateFunc = std::function<void(const State&)>;
+    using StateDelegate [[deprecated("use StateFunc instead")]] = can::DelegateHelper<StateFunc>;
+
+    typedef can::Listener<const StateFunc, const State&> StateListener;
     typedef StateListener::ListenerConstSharedPtr StateListenerConstSharedPtr;
 
-    StateListenerConstSharedPtr addStateListener(const StateDelegate & s){
+    StateListenerConstSharedPtr addStateListener(const StateFunc & s){
         return state_dispatcher_.createListener(s);
     }
 

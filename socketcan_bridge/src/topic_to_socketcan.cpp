@@ -34,7 +34,7 @@ namespace socketcan_bridge
   TopicToSocketCAN::TopicToSocketCAN(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
       can::DriverInterfaceSharedPtr driver)
     {
-      can_topic_ = nh->subscribe<can_msgs::Frame>("sent_messages", 10,
+      can_topic_ = nh->subscribe<can_msgs::Frame>("sent_messages", nh_param->param("sent_messages_queue_size", 10),
                     std::bind(&TopicToSocketCAN::msgCallback, this, std::placeholders::_1));
       driver_ = driver;
     };
@@ -42,7 +42,7 @@ namespace socketcan_bridge
   void TopicToSocketCAN::setup()
     {
       state_listener_ = driver_->createStateListener(
-              can::StateInterface::StateDelegate(this, &TopicToSocketCAN::stateCallback));
+              std::bind(&TopicToSocketCAN::stateCallback, this, std::placeholders::_1));
     };
 
   void TopicToSocketCAN::msgCallback(const can_msgs::Frame::ConstPtr& msg)

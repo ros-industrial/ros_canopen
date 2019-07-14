@@ -3,10 +3,11 @@
 
 #include <array>
 #include <memory>
+#include <functional>
 
 #include <boost/system/error_code.hpp>
 
-#include "FastDelegate.h"
+#include "socketcan_interface/delegates.h"
 
 namespace can{
 
@@ -55,7 +56,7 @@ struct ErrorHeader : public Header{
 
 /** representation of a CAN frame */
 struct Frame: public Header{
-    typedef unsigned char value_type;
+    using value_type = unsigned char;
     std::array<value_type, 8> data; ///< array for 8 data bytes with bounds checking
     unsigned char dlc; ///< len of data
 
@@ -95,9 +96,9 @@ public:
 template <typename T,typename U> class Listener{
     const T callable_;
 public:
-    typedef U Type;
-    typedef T Callable;
-    typedef std::shared_ptr<const Listener> ListenerConstSharedPtr;
+    using Type = U;
+    using Callable = T;
+    using ListenerConstSharedPtr = std::shared_ptr<const Listener>;
 
     Listener(const T &callable):callable_(callable){ }
     void operator()(const U & u) const { if(callable_) callable_(u); }
@@ -106,9 +107,10 @@ public:
 
 class StateInterface{
 public:
-    typedef fastdelegate::FastDelegate1<const State&> StateDelegate;
-    typedef Listener<const StateDelegate, const State&> StateListener;
-    typedef StateListener::ListenerConstSharedPtr StateListenerConstSharedPtr;
+    using StateFunc = std::function<void(const State&)>;
+    using StateDelegate [[deprecated("use StateFunc instead")]] = DelegateHelper<StateFunc>;
+    using StateListener = Listener<const StateFunc, const State&>;
+    using StateListenerConstSharedPtr = StateListener::ListenerConstSharedPtr;
 
     /**
      * acquire a listener for the specified delegate, that will get called for all state changes
@@ -116,18 +118,22 @@ public:
      * @param[in] delegate: delegate to be bound by the listener
      * @return managed pointer to listener
      */
-    virtual StateListenerConstSharedPtr createStateListener(const StateDelegate &delegate) = 0;
+    virtual StateListenerConstSharedPtr createStateListener(const StateFunc &delegate) = 0;
+    template <typename Instance, typename Callable> inline StateListenerConstSharedPtr createStateListenerM(Instance inst, Callable callable) {
+        return this->createStateListener(std::bind(callable, inst, std::placeholders::_1));
+    }
 
     virtual ~StateInterface() {}
 };
-typedef std::shared_ptr<StateInterface> StateInterfaceSharedPtr;
-typedef StateInterface::StateListenerConstSharedPtr StateListenerConstSharedPtr;
+using StateInterfaceSharedPtr = std::shared_ptr<StateInterface>;
+using StateListenerConstSharedPtr = StateInterface::StateListenerConstSharedPtr;
 
 class CommInterface{
 public:
-    typedef fastdelegate::FastDelegate1<const Frame&> FrameDelegate;
-    typedef Listener<const FrameDelegate, const Frame&> FrameListener;
-    typedef FrameListener::ListenerConstSharedPtr FrameListenerConstSharedPtr;
+    using FrameFunc = std::function<void(const Frame&)>;
+    using FrameDelegate [[deprecated("use FrameFunc instead")]] = DelegateHelper<FrameFunc>;
+    using FrameListener = Listener<const FrameFunc, const Frame&>;
+    using FrameListenerConstSharedPtr = FrameListener::ListenerConstSharedPtr;
 
     /**
      * enqueue frame for sending
@@ -143,7 +149,10 @@ public:
      * @param[in] delegate: delegate to be bound by the listener
      * @return managed pointer to listener
      */
-    virtual FrameListenerConstSharedPtr createMsgListener(const FrameDelegate &delegate) = 0;
+    virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc &delegate) = 0;
+    template <typename Instance, typename Callable> inline FrameListenerConstSharedPtr createMsgListenerM(Instance inst, Callable callable) {
+        return this->createMsgListener(std::bind(callable, inst, std::placeholders::_1));
+    }
 
     /**
      * acquire a listener for the specified delegate, that will get called for messages with demanded ID
@@ -152,12 +161,15 @@ public:
      * @param[in] delegate: delegate to be bound listener
      * @return managed pointer to listener
      */
-    virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&, const FrameDelegate &delegate) = 0;
+    virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&, const FrameFunc &delegate) = 0;
+    template <typename Instance, typename Callable> inline FrameListenerConstSharedPtr createMsgListenerM(const Frame::Header& header, Instance inst, Callable callable) {
+        return this->createMsgListener(header, std::bind(callable, inst, std::placeholders::_1));
+    }
 
     virtual ~CommInterface() {}
 };
-typedef std::shared_ptr<CommInterface> CommInterfaceSharedPtr;
-typedef CommInterface::FrameListenerConstSharedPtr FrameListenerConstSharedPtr;
+using CommInterfaceSharedPtr = std::shared_ptr<CommInterface>;
+using FrameListenerConstSharedPtr = CommInterface::FrameListenerConstSharedPtr;
 
 
 class DriverInterface : public CommInterface, public StateInterface {
@@ -198,7 +210,7 @@ public:
 
     virtual ~DriverInterface() {}
 };
-typedef std::shared_ptr<DriverInterface> DriverInterfaceSharedPtr;
+using DriverInterfaceSharedPtr = std::shared_ptr<DriverInterface>;
 
 
 } // namespace can

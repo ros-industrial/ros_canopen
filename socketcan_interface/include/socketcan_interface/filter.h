@@ -12,7 +12,7 @@ public:
   virtual bool pass(const can::Frame &frame) const = 0;
   virtual ~FrameFilter() {}
 };
-typedef std::shared_ptr<FrameFilter> FrameFilterSharedPtr;
+using FrameFilterSharedPtr = std::shared_ptr<FrameFilter>;
 
 class FrameMaskFilter : public FrameFilter {
 public:
@@ -46,21 +46,19 @@ private:
 
 class FilteredFrameListener : public CommInterface::FrameListener {
 public:
-  typedef std::vector<FrameFilterSharedPtr> FilterVector;
+  using FilterVector = std::vector<FrameFilterSharedPtr>;
   FilteredFrameListener(CommInterfaceSharedPtr comm, const Callable &callable, const FilterVector &filters)
   : CommInterface::FrameListener(callable),
     filters_(filters),
-    listener_(comm->createMsgListener(Callable(this, &FilteredFrameListener::filter)))
+    listener_(comm->createMsgListener([this](const Frame &frame) {
+        for(FilterVector::const_iterator it=this->filters_.begin(); it != this->filters_.end(); ++it) {
+          if((*it)->pass(frame)){
+            (*this)(frame);
+            break;
+          }
+        }
+    }))
   {}
-private:
-  void filter(const Frame &frame) {
-    for(FilterVector::const_iterator it=filters_.begin(); it != filters_.end(); ++it) {
-      if((*it)->pass(frame)){
-        (*this)(frame);
-        break;
-      }
-    }
-  }
   const std::vector<FrameFilterSharedPtr> filters_;
   CommInterface::FrameListenerConstSharedPtr listener_;
 };

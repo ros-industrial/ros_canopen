@@ -56,7 +56,9 @@ EMCYHandler::EMCYHandler(const can::CommInterfaceSharedPtr interface, const Obje
     }
     try{
         EMCYid emcy_id(storage_->entry<uint32_t>(0x1014).get_cached());
-        emcy_listener_ = interface->createMsgListener( emcy_id.header(), can::CommInterface::FrameDelegate(this, &EMCYHandler::handleEMCY));
+        emcy_listener_ = interface->createMsgListenerM(emcy_id.header(), this, &EMCYHandler::handleEMCY);
+
+
     }
     catch(...){
        // pass, EMCY is optional

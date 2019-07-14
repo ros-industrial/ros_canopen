@@ -260,7 +260,7 @@ bool RosChain::setup_bus(){
         return false;
     }
 
-    state_listener_ = interface_->createStateListener(can::StateInterface::StateDelegate(this, &RosChain::logState));
+    state_listener_ = interface_->createStateListenerM(this, &RosChain::logState);
 
     if(bus_nh.getParam("master_type",master_alloc)){
         ROS_ERROR("please migrate to master allocators");
@@ -361,7 +361,7 @@ bool RosChain::setup_heartbeat(){
 
         hb_sender_.interface = interface_;
 
-        heartbeat_timer_.start(Timer::TimerDelegate(&hb_sender_, &HeartbeatSender::send) , boost::chrono::duration<double>(1.0/rate), false);
+        heartbeat_timer_.start(std::bind(&HeartbeatSender::send, &hb_sender_), boost::chrono::duration<double>(1.0/rate), false);
 
         return true;
 
@@ -536,7 +536,7 @@ void RosChain::report_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &s
     boost::mutex::scoped_lock lock(diag_mutex_);
     LayerReport r;
     if(getLayerState() == Off){
-        stat.summary(stat.WARN,"Not initailized");
+        stat.summary(stat.WARN,"Not initialized");
     }else if(!running_){
         stat.summary(stat.ERROR,"Thread is not running");
     }else{

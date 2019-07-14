@@ -5,12 +5,12 @@
 using namespace canopen;
 
 
-template<typename T > class LimitsHandle {
+template<typename T > class LimitsHandle : public LimitsHandleBase {
     T limits_handle_;
 public:
     LimitsHandle(const T &handle) : limits_handle_(handle) {}
-    virtual void enforce(const ros::Duration &period) { limits_handle_.enforceLimits(period); }
-    virtual void reset() {}
+    virtual void enforce(const ros::Duration &period) override { limits_handle_.enforceLimits(period); }
+    virtual void reset() override {}
 };
 
 template<> void LimitsHandle<joint_limits_interface::PositionJointSaturationHandle>::reset() { limits_handle_.reset(); }
@@ -92,7 +92,8 @@ bool HandleLayer::forwardForMode(const MotorBase::OperationMode &m){
 
 
 template<typename T> void addLimitsHandle(std::vector<LimitsHandleBaseSharedPtr> &limits, const T &t) {
-    limits.push_back(LimitsHandleBaseSharedPtr( (LimitsHandleBase *) new LimitsHandle<T> (t) ));
+    LimitsHandleBaseSharedPtr p = std::make_shared<LimitsHandle<T>>(t);
+    limits.push_back(p);
 }
 
 hardware_interface::JointHandle* HandleLayer::registerHandle(hardware_interface::PositionJointInterface &iface,

@@ -125,12 +125,18 @@ void PDOMapper::PDO::parse_and_set_mapping(const ObjectStorageSharedPtr &storage
             if(param.index < 0x1000){
                 // TODO: check DummyUsage
             }else{
-                ObjectStorage::ReadDelegate rd;
-                ObjectStorage::WriteDelegate wd;
-                if(read) rd = ObjectStorage::ReadDelegate(b.get(), &Buffer::read);
-                if(read || write) wd = ObjectStorage::WriteDelegate(b.get(), &Buffer::write); // set writer for buffer setup or as write delegate
-                size_t l = storage->map(param.index, param.sub_index, rd, wd);
-                assert(l  == param.length/8);
+                ObjectStorage::ReadFunc rd;
+                ObjectStorage::WriteFunc wd;
+
+                if(read){
+                  rd = std::bind<void(Buffer::*)(const canopen::ObjectDict::Entry&, String&)>(&Buffer::read, b.get(), std::placeholders::_1, std::placeholders::_2);
+                }
+                if(read || write)
+                {
+                    wd = std::bind<void(Buffer::*)(const canopen::ObjectDict::Entry&, const String&)>(&Buffer::write, b.get(), std::placeholders::_1, std::placeholders::_2);
+                    size_t l = storage->map(param.index, param.sub_index, rd, wd);
+                    assert(l  == param.length/8);
+                }
             }
 
             frame.dlc += b->size;
@@ -219,7 +225,7 @@ bool PDOMapper::RPDO::init(const ObjectStorageSharedPtr &storage, const uint16_t
 
     transmission_type = dict(com_index, SUB_COM_TRANSMISSION_TYPE).value().get<uint8_t>();
 
-    listener_ = interface_->createMsgListener(pdoid.header() ,can::CommInterface::FrameDelegate(this, &RPDO::handleFrame));
+    listener_ = interface_->createMsgListenerM(pdoid.header(), this, &RPDO::handleFrame);
 
     return true;
 }

@@ -20,7 +20,7 @@ class StateWaiter{
 public:
     template<typename InterfaceType> StateWaiter(InterfaceType *interface){
         state_ = interface->getState();
-        state_listener_ = interface->createStateListener(can::StateInterface::StateDelegate(this, &StateWaiter::updateState));
+        state_listener_ = interface->createStateListener(std::bind(&StateWaiter::updateState, this, std::placeholders::_1));
     }
     template<typename DurationType> bool wait(const can::State::DriverState &s, const DurationType &duration){
         boost::mutex::scoped_lock cond_lock(mutex_);

@@ -9,7 +9,7 @@ class DummyInterfaceTest : public ::testing::Test{
 public:
     std::list<std::string> responses;
     can::DummyInterface dummy;
-    DummyInterfaceTest() : dummy(true), listener(dummy.createMsgListener(can::CommInterface::FrameDelegate(this, &DummyInterfaceTest::handle ))) { }
+    DummyInterfaceTest() : dummy(true), listener(dummy.createMsgListenerM(this, &DummyInterfaceTest::handle)) { }
 
    void handle(const can::Frame &f){
         responses.push_back(can::tostring(f, true));
