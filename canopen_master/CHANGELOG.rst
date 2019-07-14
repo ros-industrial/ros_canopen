@@ -2,8 +2,8 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.1 (2019-07-14)
+------------------
 * Set C++ standard to c++14
 * added Delegate helpers for backwards compatibility
 * implemented create\*ListenerM helpers

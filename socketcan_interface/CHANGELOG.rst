@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.1 (2019-07-14)
+------------------
 * Set C++ standard to c++14
 * implemented test for dispatcher
 * Replacing typedefs in socketcan_interface with using aliases.

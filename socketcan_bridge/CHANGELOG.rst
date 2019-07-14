@@ -2,8 +2,8 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.1 (2019-07-14)
+------------------
 * Added configurable queue sizes
 * Set C++ standard to c++14
 * implemented create\*ListenerM helpers
