@@ -78,7 +78,6 @@ class Command402 {
         }
     };
     static const TransitionTable transitions_;
-    static State402::InternalState nextStateForEnabling(State402::InternalState state);
     Command402();
 public:
     enum ControlWord
@@ -100,7 +99,7 @@ public:
         CW_Manufacturer_specific3=14,
         CW_Manufacturer_specific4=15,
     };
-    static bool setTransition(uint16_t &cw, const State402::InternalState &from, const State402::InternalState &to, State402::InternalState *next);
+    static bool setTransition(uint16_t &cw, const State402::InternalState &from, const State402::InternalState &to);
 };
 
 template<uint16_t MASK> class WordAccessor{
@@ -295,6 +294,7 @@ public:
     Motor402(const std::string &name, ObjectStorageSharedPtr storage, const canopen::Settings &settings)
     : MotorBase(name), status_word_(0),control_word_(0),
       switching_state_(State402::InternalState(settings.get_optional<unsigned int>("switching_state", static_cast<unsigned int>(State402::Operation_Enable)))),
+      no_mode_state_(State402::InternalState(settings.get_optional<unsigned int>("no_mode_state", static_cast<unsigned int>(State402::Operation_Enable)))),
       monitor_mode_(settings.get_optional<bool>("monitor_mode", true)),
       state_switch_timeout_(settings.get_optional<unsigned int>("state_switch_timeout", 5))
     {
@@ -355,6 +355,7 @@ private:
     bool readState(LayerStatus &status, const LayerState &current_state);
     bool switchMode(LayerStatus &status, uint16_t mode);
     bool switchState(LayerStatus &status, const State402::InternalState &target);
+    static State402::InternalState nextStateForEnabling(State402::InternalState state);
 
     std::atomic<uint16_t> status_word_;
     uint16_t control_word_;
@@ -375,6 +376,7 @@ private:
     boost::condition_variable mode_cond_;
     boost::mutex mode_mutex_;
     const State402::InternalState switching_state_;
+    const State402::InternalState no_mode_state_;
     const bool monitor_mode_;
     const boost::chrono::seconds state_switch_timeout_;
 
