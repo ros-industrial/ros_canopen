@@ -2,6 +2,11 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Set C++ standard to c++14
+* Contributors: Harsh Deshpande
+
 0.8.0 (2018-07-11)
 ------------------
 * handle invalid supported drive modes object

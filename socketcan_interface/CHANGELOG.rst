@@ -2,6 +2,16 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Set C++ standard to c++14
+* implemented test for dispatcher
+* Replacing typedefs in socketcan_interface with using aliases.
+* added Delegate helpers for backwards compatibility
+* implemented create\*ListenerM helpers
+* Replacing FastDelegate with std::function and std::bind.
+* Contributors: Harsh Deshpande, Joshua Whitley, Mathias Lüdtke, pzzlr
+
 0.8.0 (2018-07-11)
 ------------------
 * migrated to std::function and std::bind

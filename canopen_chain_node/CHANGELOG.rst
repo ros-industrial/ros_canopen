@@ -2,6 +2,13 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Set C++ standard to c++14
+* implemented create\*ListenerM helpers
+* Replacing FastDelegate with std::function and std::bind.
+* Contributors: Alexander Gutenkunst, Harsh Deshpande, Joshua Whitley, Mathias Lüdtke
+
 0.8.0 (2018-07-11)
 ------------------
 * migrated to std::function and std::bind
