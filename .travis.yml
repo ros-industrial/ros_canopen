@@ -1,6 +1,6 @@
 language: generic
 services:
-  - docker 
+  - docker
 
 cache:
   directories:
@@ -20,6 +20,6 @@ matrix:
     - env: ROS_DISTRO="melodic" ABICHECK_URL='github:ros-industrial/ros_canopen#melodic'
 
 install:
-  - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config
-script: 
-  - .ci_config/travis.sh
+  - git clone --quiet --depth=1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci -b master
+script:
+  - .industrial_ci/travis.sh
