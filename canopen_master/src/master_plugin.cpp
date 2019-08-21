@@ -82,7 +82,7 @@ protected:
     }
 public:
     SimpleSyncLayer(const SyncProperties &p, can::CommInterfaceSharedPtr interface)
-    : ManagingSyncLayer(p, interface), frame_(), overflow_(p.overflow_) {
+    : ManagingSyncLayer(p, interface), frame_(p.header_, 0), overflow_(p.overflow_) {
         if(overflow_ == 1 || overflow_ > 240){
             BOOST_THROW_EXCEPTION(Exception("SYNC counter overflow is invalid"));
         }else if(overflow_ > 1){
