@@ -27,8 +27,6 @@
 #include <string>
 #include <vector>
 
-using namespace std::literals::chrono_literals;
-
 class SyncNode : public rclcpp::Node, public canopen::LayerStack
 {
 public:

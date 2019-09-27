@@ -34,6 +34,7 @@
 #include <utility>
 
 // using namespace can;
+using namespace std::literals::chrono_literals;  // NOLINT
 
 namespace canopen
 {

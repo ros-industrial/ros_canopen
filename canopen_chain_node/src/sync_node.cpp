@@ -20,6 +20,8 @@
 #include <vector>
 #include <memory>
 
+using namespace std::literals::chrono_literals;  // NOLINT
+
 void SyncNode::report_diagnostics(
   diagnostic_updater::DiagnosticStatusWrapper & stat)
 {

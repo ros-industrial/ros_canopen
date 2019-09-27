@@ -35,9 +35,6 @@
 #include <utility>
 #include <map>
 
-
-using namespace std::literals::chrono_literals;
-
 namespace canopen
 {
 
