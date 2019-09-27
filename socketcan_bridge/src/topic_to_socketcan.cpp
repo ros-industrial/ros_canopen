@@ -19,76 +19,74 @@
 
 namespace socketcan_bridge
 {
-  TopicToSocketCAN::TopicToSocketCAN(rclcpp::Node::SharedPtr node_ptr,
-    can::DriverInterfaceSharedPtr driver) :
-    node_ptr_(node_ptr),
-    driver_(driver)
-  {
-    node_ptr_->declare_parameter("sent_messages_queue_size", 10);
-    auto queue_size_ = node_ptr_->get_parameter("sent_messages_queue_size").get_value<uint16_t>();
+TopicToSocketCAN::TopicToSocketCAN(
+  rclcpp::Node::SharedPtr node_ptr,
+  can::DriverInterfaceSharedPtr driver)
+: node_ptr_(node_ptr),
+  driver_(driver)
+{
+  node_ptr_->declare_parameter("sent_messages_queue_size", 10);
+  auto queue_size_ = node_ptr_->get_parameter("sent_messages_queue_size").get_value<uint16_t>();
 
-    can_topic_ = node_ptr_->create_subscription<can_msgs::msg::Frame>(
-      "sent_messages", queue_size_, std::bind(&TopicToSocketCAN::msgCallback, this, std::placeholders::_1));
+  can_topic_ =
+    node_ptr_->create_subscription<can_msgs::msg::Frame>("sent_messages", queue_size_,
+      std::bind(&TopicToSocketCAN::msgCallback, this, std::placeholders::_1));
+}
+
+void TopicToSocketCAN::setup()
+{
+  state_listener_ = driver_->createStateListener(
+    std::bind(&TopicToSocketCAN::stateCallback, this, std::placeholders::_1));
+}
+
+void TopicToSocketCAN::msgCallback(const can_msgs::msg::Frame::SharedPtr msg)
+{
+  // ROS_DEBUG("Message came from sent_messages topic");
+
+  // translate it to the socketcan frame type.
+
+  can::Frame f;  // socketcan type
+
+  // converts the can_msgs::msg::Frame (ROS msg) to can::Frame (socketcan.h)
+  convertMessageToSocketCAN(msg, f);
+
+  // check if the id and flags are appropriate.
+  if (!f.isValid()) {
+    // ROS_WARN("Refusing to send invalid frame: %s.", can::tostring(f, true).c_str());
+    // can::tostring cannot be used for dlc > 8 frames. It causes an crash
+    // due to usage of boost::array for the data array. The should always work.
+    RCLCPP_ERROR(
+      node_ptr_->get_logger(),
+      "Invalid frame from topic: id: %#04x, length: %d, is_extended: %d",
+      msg->id, msg->dlc, msg->is_extended);
+    return;
   }
 
-  void TopicToSocketCAN::setup()
-  {
-    state_listener_ = driver_->createStateListener(
-      std::bind(&TopicToSocketCAN::stateCallback, this, std::placeholders::_1));
-  };
-
-  void TopicToSocketCAN::msgCallback(const can_msgs::msg::Frame::SharedPtr msg)
-  {
-    // ROS_DEBUG("Message came from sent_messages topic");
-
-    // translate it to the socketcan frame type.
-
-    can::Frame f;  // socketcan type
-
-    // converts the can_msgs::msg::Frame (ROS msg) to can::Frame (socketcan.h)
-    convertMessageToSocketCAN(msg, f);
-
-    if (!f.isValid())  // check if the id and flags are appropriate.
-    {
-      // ROS_WARN("Refusing to send invalid frame: %s.", can::tostring(f, true).c_str());
-      // can::tostring cannot be used for dlc > 8 frames. It causes an crash
-      // due to usage of boost::array for the data array. The should always work.
-      RCLCPP_ERROR(
-        node_ptr_->get_logger(),
-        "Invalid frame from topic: id: %#04x, length: %d, is_extended: %d",
-        msg->id, msg->dlc, msg->is_extended);
-      return;
-    }
-
-    bool res = driver_->send(f);
-    if (!res)
-    {
-      RCLCPP_ERROR(
-        node_ptr_->get_logger(),
-        "Failed to send message: %s.",
-        can::tostring(f, true).c_str());
-    }
+  bool res = driver_->send(f);
+  if (!res) {
+    RCLCPP_ERROR(
+      node_ptr_->get_logger(),
+      "Failed to send message: %s.",
+      can::tostring(f, true).c_str());
   }
+}
 
-  void TopicToSocketCAN::stateCallback(const can::State & s)
-  {
-    std::string err;
-    driver_->translateError(s.internal_error, err);
-    if (!s.internal_error)
-    {
-      RCLCPP_INFO(
-        node_ptr_->get_logger(),
-        "State: %s, asio: %s",
-        err.c_str(),
-        s.error_code.message().c_str());
-    }
-    else
-    {
-      RCLCPP_ERROR(
-        node_ptr_->get_logger(),
-        "Error: %s, asio: %s",
-        err.c_str(),
-        s.error_code.message().c_str());
-    }
+void TopicToSocketCAN::stateCallback(const can::State & s)
+{
+  std::string err;
+  driver_->translateError(s.internal_error, err);
+  if (!s.internal_error) {
+    RCLCPP_INFO(
+      node_ptr_->get_logger(),
+      "State: %s, asio: %s",
+      err.c_str(),
+      s.error_code.message().c_str());
+  } else {
+    RCLCPP_ERROR(
+      node_ptr_->get_logger(),
+      "Error: %s, asio: %s",
+      err.c_str(),
+      s.error_code.message().c_str());
   }
-};  // namespace socketcan_bridge
+}
+}  // namespace socketcan_bridge

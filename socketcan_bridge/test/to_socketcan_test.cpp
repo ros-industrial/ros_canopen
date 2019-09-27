@@ -13,28 +13,30 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <gtest/gtest.h>
+
 #include <socketcan_bridge/topic_to_socketcan.hpp>
 #include <socketcan_bridge/socketcan_to_topic.hpp>
-
-#include <can_msgs/msg/frame.hpp>
 #include <socketcan_interface/socketcan.hpp>
 #include <socketcan_interface/dummy.hpp>
 
-#include <gtest/gtest.h>
 #include <rclcpp/rclcpp.hpp>
+#include <can_msgs/msg/frame.hpp>
+
 #include <list>
+#include <memory>
 
 class frameCollector
 {
-  public:
-    std::list<can::Frame> frames;
+public:
+  std::list<can::Frame> frames;
 
-    frameCollector() {}
+  frameCollector() {}
 
-    void frameCallback(const can::Frame& f)
-    {
-      frames.push_back(f);
-    }
+  void frameCallback(const can::Frame & f)
+  {
+    frames.push_back(f);
+  }
 };
 
 TEST(TopicToSocketCANTest, checkCorrectData)
@@ -68,8 +70,8 @@ TEST(TopicToSocketCANTest, checkCorrectData)
   msg.is_error = false;
   msg.id = 0x1337;
   msg.dlc = 8;
-  for (uint8_t i=0; i < msg.dlc; i++)
-  {
+
+  for (uint8_t i = 0; i < msg.dlc; i++) {
     msg.data[i] = i;
   }
 
@@ -125,7 +127,7 @@ TEST(TopicToSocketCANTest, checkInvalidFrameHandling)
   // create a message
   can_msgs::msg::Frame msg;
   msg.is_extended = false;
-  msg.id = (1<<11)+1;  // this is an illegal CAN packet... should not be sent.
+  msg.id = (1 << 11) + 1;  // this is an illegal CAN packet... should not be sent.
   msg.header.frame_id = "0";  // "0" for no frame.
   msg.header.stamp = ros::Time::now();
 
@@ -138,7 +140,7 @@ TEST(TopicToSocketCANTest, checkInvalidFrameHandling)
   EXPECT_EQ(frame_collector_.frames.size(), 0);
 
   msg.is_extended = true;
-  msg.id = (1<<11)+1;  // now it should be alright.
+  msg.id = (1 << 11) + 1;  // now it should be alright.
   // send the can_frame::Frame message to the sent_messages topic.
   publisher_.publish(msg);
   ros::WallDuration(1.0).sleep();
@@ -148,7 +150,6 @@ TEST(TopicToSocketCANTest, checkInvalidFrameHandling)
   // wipe the frame queue.
   frame_collector_.frames.clear();
 
-
   // finally, check if frames with a dlc > 8 are discarded.
   msg.dlc = 10;
   publisher_.publish(msg);
@@ -157,7 +158,7 @@ TEST(TopicToSocketCANTest, checkInvalidFrameHandling)
   EXPECT_EQ(frame_collector_.frames.size(), 0);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   ros::init(argc, argv, "test_to_topic");
   ros::NodeHandle nh;
