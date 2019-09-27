@@ -22,10 +22,14 @@ namespace socketcan_bridge
   TopicToSocketCAN::TopicToSocketCAN(rclcpp::Node::SharedPtr node_ptr,
     can::DriverInterfaceSharedPtr driver) :
     node_ptr_(node_ptr),
-    can_topic_(node_ptr_->create_subscription<can_msgs::msg::Frame>(
-      "sent_messages", std::bind(&TopicToSocketCAN::msgCallback, this, std::placeholders::_1))),
     driver_(driver)
-    {}
+  {
+    node_ptr_->declare_parameter("sent_messages_queue_size", 10);
+    auto queue_size_ = node_ptr_->get_parameter("sent_messages_queue_size").get_value<uint16_t>();
+
+    can_topic_ = node_ptr_->create_subscription<can_msgs::msg::Frame>(
+      "sent_messages", queue_size_, std::bind(&TopicToSocketCAN::msgCallback, this, std::placeholders::_1));
+  }
 
   void TopicToSocketCAN::setup()
   {

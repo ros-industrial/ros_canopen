@@ -98,7 +98,7 @@ namespace socketcan_bridge
     msg->header.frame_id = "";  // empty frame is the de-facto standard for no frame.
     msg->header.stamp = node_ptr_->now();
 
-    can_topic_->publish(msg);
+    can_topic_->publish(*msg);
   };
 
   void SocketCANToTopic::stateCallback(const can::State & s)
