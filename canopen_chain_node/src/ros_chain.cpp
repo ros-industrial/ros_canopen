@@ -754,9 +754,8 @@ bool RosChain::setup()
 bool RosChain::setup_chain()
 {
   std::string hardware_id;
-  get_parameter_or_set("hardware_id", hardware_id, std::string("none"));
-  get_parameter_or_set("reset_errors_before_recover",
-    reset_errors_before_recover_, false);
+  hardware_id = this->declare_parameter("hardware_id", "none");
+  reset_errors_before_recover_ = this->declare_parameter("reset_errors_before_recover", false);
 
     diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),std::bind(&diagnostic_updater::Updater::update, &diag_updater_));
 

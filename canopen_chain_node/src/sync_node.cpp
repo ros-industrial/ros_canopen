@@ -79,22 +79,8 @@ void SyncNode::get_parameters()
       "CAN device not specified, using can0");
   }
 
-  // TODO(sam): figure out how to read int vectors
-  std::vector<std::string> monitored_nodes_str;
-  get_parameter_or_set("monitored_nodes", monitored_nodes_str, {});
-  monitored_nodes_ = {};
-  for (auto & monitored_node_str : monitored_nodes_str) {
-    monitored_node_str = monitored_node_str.substr(monitored_node_str.find(':') + 1);
-    monitored_nodes_.push_back(std::stoi(monitored_node_str));
-  }
-
-  std::vector<std::string> ignored_nodes_str;
-  get_parameter_or_set("ignored_nodes", ignored_nodes_str, {});
-  ignored_nodes_ = {};
-  for (auto & ignored_node_str : ignored_nodes_str) {
-    ignored_node_str = ignored_node_str.substr(ignored_node_str.find(':') + 1);
-    ignored_nodes_.push_back(std::stoi(ignored_node_str));
-  }
+  monitored_nodes_ = this->declare_parameter("monitored_nodes", std::vector<int64_t>({}));
+  ignored_nodes_ = this->declare_parameter("ignored_nodes", std::vector<int64_t>({}));
 
   if (!get_parameter_or("sync_id", sync_id_, 0x080)) {
     RCLCPP_WARN(this->get_logger(),
@@ -114,7 +100,7 @@ void SyncNode::get_parameters()
     throw std::runtime_error("sync interval " + std::to_string(sync_ms_) + " is invalid");
   }
 
-  get_parameter_or_set("hardware_id", hardware_id_, std::string("none"));
+  hardware_id_ = this->declare_parameter("hardware_id", "none");
 }
 
 void SyncNode::init_sync_layer()
