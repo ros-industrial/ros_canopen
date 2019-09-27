@@ -49,7 +49,9 @@ void SyncNode::report_diagnostics(
 }
 
 SyncNode::SyncNode(const std::string & node_name)
-: canopen::LayerStack("SyncNodeLayer"), Node(node_name)
+: diag_updater_(this),
+  canopen::LayerStack("SyncNodeLayer"),
+  Node(node_name)
 {
   get_parameters();
   init_sync_layer();
@@ -140,10 +142,7 @@ void SyncNode::init_sync_layer()
 void SyncNode::init_diagnostics()
 {
   diag_updater_.setHardwareID(hardware_id_);
-
   diag_updater_.add("sync", this, &SyncNode::report_diagnostics);
-  diag_timer_ =
-    this->create_wall_timer(1s, std::bind(&diagnostic_updater::Updater::update, &diag_updater_));
 }
 
 

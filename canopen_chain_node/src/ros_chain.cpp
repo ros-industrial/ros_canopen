@@ -738,7 +738,8 @@ RosChain::RosChain(std::string node_name)
   nh_(nh), nh_priv_(nh_priv),
   diag_updater_(nh_,nh_priv_),
   running_(false),
-  reset_errors_before_recover_(false)
+  reset_errors_before_recover_(false),
+  diag_updater_(this)
 {
 }
 
@@ -759,7 +760,8 @@ bool RosChain::setup_chain()
 
     diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),std::bind(&diagnostic_updater::Updater::update, &diag_updater_));
 
-    ros::NodeHandle nh_driver(nh_, "driver");
+  diag_updater_.setHardwareID(hardware_id);
+  diag_updater_.add("chain", this, &RosChain::report_diagnostics);
 
   srv_init_ = create_service<std_srvs::srv::Trigger>(
     "init", std::bind(
