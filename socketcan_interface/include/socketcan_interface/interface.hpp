@@ -19,7 +19,7 @@
 #include <boost/system/error_code.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include <socketcan_interface/helpers.hpp>
+#include <socketcan_interface/delegates.hpp>
 
 #include <iostream>
 #include <string>

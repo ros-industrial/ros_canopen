@@ -5,16 +5,14 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
-
-#include <socketcan_interface/delegates.h>
-
-#include <boost/thread/mutex.hpp>
 #include <functional>
 #include <typeinfo>
 #include <vector>
-#include "exceptions.hpp"
 
-#include <socketcan_interface/helpers.hpp>
+#include <socketcan_interface/delegates.hpp>
+
+#include <boost/thread/mutex.hpp>
+#include "exceptions.hpp"
 
 namespace canopen{
 
