@@ -420,6 +420,12 @@ bool RosChain::setup_sync()
       RCLCPP_WARN(this->get_logger(),
         "sync overflow was not specified, so overflow is disabled per default");
     }
+    RCLCPP_INFO(this->get_logger(), "overflow: %d", sync_overflow);
+    if (sync_overflow == 1 || sync_overflow > 240) {
+      RCLCPP_ERROR(this->get_logger(),
+        "sync overflow " + std::to_string(sync_overflow) + " is invalid");
+      return false;
+    }
     thread_.reset(new boost::thread(&RosChain::run, this));
     LayerReport status;
     try{
@@ -735,8 +741,6 @@ RosChain::RosChain(std::string node_name)
   LayerStack("ROS stack"),
   driver_loader_("socketcan_interface", "can::DriverInterface"),
   master_allocator_("canopen_master", "canopen::Master::Allocator"),
-  nh_(nh), nh_priv_(nh_priv),
-  diag_updater_(nh_,nh_priv_),
   running_(false),
   reset_errors_before_recover_(false),
   diag_updater_(this)
@@ -757,7 +761,8 @@ bool RosChain::setup_chain()
   hardware_id = this->declare_parameter("hardware_id", "none");
   reset_errors_before_recover_ = this->declare_parameter("reset_errors_before_recover", false);
 
-    diag_timer_ = nh_.createTimer(ros::Duration(diag_updater_.getPeriod()/2.0),std::bind(&diagnostic_updater::Updater::update, &diag_updater_));
+  RCLCPP_INFO(this->get_logger(), "hardware_id: %s", hardware_id.c_str());
+  RCLCPP_INFO(this->get_logger(), "reset_errors_before_recover: %d", reset_errors_before_recover_);
 
   diag_updater_.setHardwareID(hardware_id);
   diag_updater_.add("chain", this, &RosChain::report_diagnostics);
@@ -795,12 +800,15 @@ bool RosChain::setup_chain()
   return setup_bus() && setup_sync() && setup_heartbeat() && setup_nodes();
 }
 
-RosChain::~RosChain(){
-    try{
-        LayerStatus s;
-        halt(s);
-        shutdown(s);
-    }catch(...){ ROS_ERROR("CATCH"); }
+RosChain::~RosChain()
+{
+  try {
+    LayerStatus s;
+    halt(s);
+    shutdown(s);
+  } catch (...) {
+    ROSCANOPEN_ERROR("canopen_chain_node", "CATCH");
+  }
 }
 
 }  // namespace canopen
