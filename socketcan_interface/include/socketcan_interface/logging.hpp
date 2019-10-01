@@ -1,5 +1,5 @@
-#ifndef SOCKETCAN_INTERFACE_LOGGING_H
-#define SOCKETCAN_INTERFACE_LOGGING_H
+#ifndef SOCKETCAN_INTERFACE__LOGGING_HPP_
+#define SOCKETCAN_INTERFACE__LOGGING_HPP_
 
 #include <console_bridge/console.h>
 #include <sstream>
@@ -14,4 +14,4 @@
 // extra function to mark it as deprecated
 inline __attribute__ ((deprecated("please use ROSCANOPEN_* macros"))) void roscanopen_log_deprecated(const std::string s, const char* f, int l) { console_bridge::getOutputHandler()->log(s, console_bridge::CONSOLE_BRIDGE_LOG_ERROR, f, l); }
 #define LOG(args) { std::stringstream sstr; sstr << "LOG: " << args; roscanopen_log_deprecated(sstr.str(), __FILE__, __LINE__); }
-#endif
+#endif  // SOCKETCAN_INTERFACE__LOGGING_HPP_

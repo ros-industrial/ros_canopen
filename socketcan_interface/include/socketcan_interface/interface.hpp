@@ -19,8 +19,8 @@
 #include <boost/system/error_code.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include "socketcan_interface/delegates.h"
-#include "socketcan_interface/logging.h"
+#include "socketcan_interface/delegates.hpp"
+#include "socketcan_interface/logging.hpp"
 
 #include <iostream>
 #include <string>

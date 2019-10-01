@@ -1,6 +1,6 @@
 // Bring in my package's API, which is what I'm testing
-#include <socketcan_interface/delegates.h>
-#include <socketcan_interface/dummy.h>
+#include <socketcan_interface/delegates.hpp>
+#include <socketcan_interface/dummy.hpp>
 #include <boost/bind.hpp>
 
 // Bring in gtest
