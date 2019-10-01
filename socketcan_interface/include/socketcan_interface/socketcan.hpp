@@ -238,7 +238,7 @@ protected:
       ec);
 
     if (ec) {
-      LOG("FAILED " << ec);
+      ROSCANOPEN_ERROR("socketcan_interface", "FAILED " << ec);
       setErrorCode(ec);
       setNotReady();
       return false;
@@ -260,7 +260,7 @@ protected:
         input_.id = frame_.can_id & CAN_EFF_MASK;
         input_.is_error = 1;
 
-        LOG("error: " << input_.id);
+        ROSCANOPEN_ERROR("socketcan_interface", "error: " << input_.id);
         setInternalError(input_.id);
         setNotReady();
       } else {

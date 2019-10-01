@@ -20,6 +20,7 @@
 #include <boost/thread/mutex.hpp>
 
 #include <socketcan_interface/delegates.hpp>
+#include <socketcan_interface/logging.hpp>
 
 #include <iostream>
 #include <string>
@@ -48,16 +49,25 @@ struct Header
   {
     return id < (is_extended ? (1 << 29) : (1 << 11));
   }
+  unsigned int fullid() const
+  {
+    return id | (is_error ? ERROR_MASK : 0) | (is_rtr ? RTR_MASK : 0) | (is_extended ? EXTENDED_MASK : 0);
+  }
+  unsigned int key() const
+  {
+    return is_error ? (ERROR_MASK) : fullid();
+  }
+  [[deprecated("use key() instead")]]
+  explicit operator const unsigned int() const
+  {
+    return key();
+  }
+
   /** constructor with default parameters
       * @param[in] i: CAN id, defaults to 0
       * @param[in] extended: uses 29 bit identifier, defaults to false
       * @param[in] rtr: is rtr frame, defaults to false
       */
-
-  operator const unsigned int() const
-  {
-    return is_error ? (ERROR_MASK) : *reinterpret_cast<const unsigned int *>(this);
-  }
 
   Header()
   : id(0), is_error(0), is_rtr(0), is_extended(0) {}
@@ -296,11 +306,5 @@ struct _cout_wrapper
     return mutex;
   }
 };
-
-#define LOG(log) { \
-    boost::mutex::scoped_lock _cout_lock( \
-      _cout_wrapper::get_cout_mutex()); \
-    std::cout << log << std::endl; \
-}
 
 #endif  // SOCKETCAN_INTERFACE__INTERFACE_HPP_

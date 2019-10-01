@@ -40,7 +40,7 @@ class BufferedReader
   {
     if (max_len_ > 0) {
       while (buffer_.size() > max_len_) {
-        LOG("buffer overflow, discarded oldest message ");  // enable message printing
+        ROSCANOPEN_WARN("socketcan_interface", "buffer overflow, discarded oldest message ");  // enable message printing
         buffer_.pop_front();
       }
     }
@@ -54,7 +54,7 @@ class BufferedReader
       trim();
       cond_.notify_one();
     } else {
-      LOG("discarded message ");  // enable message printing
+      ROSCANOPEN_WARN("socketcan_interface", "discarded message ");  // enable message printing
     }
   }
 

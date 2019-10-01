@@ -16,7 +16,7 @@ class CANLayer: public Layer{
     void handleFrame(const can::Frame & msg){
         boost::mutex::scoped_lock lock(mutex_);
         last_error_ = msg;
-        ROSCANOPEN_ERROR("canopen_master", "Received error frame: " << msg);
+        ROSCANOPEN_ERROR("canopen_master", "Received error frame: " << msg.key());
     }
     std::shared_ptr<boost::thread> thread_;
 

@@ -52,7 +52,7 @@ PublishFuncType RosChain::createPublisher(
     return 0;
   }
 
-  auto pub = this->create_publisher<Tpub>(name);
+  auto pub = this->create_publisher<Tpub>(name, 10);
 
   typedef const data_type (entry_type::* getter_type)(void);
   const getter_type getter =
@@ -426,20 +426,6 @@ bool RosChain::setup_sync()
         "sync overflow " + std::to_string(sync_overflow) + " is invalid");
       return false;
     }
-    thread_.reset(new boost::thread(&RosChain::run, this));
-    LayerReport status;
-    try{
-        init(status);
-        res.success = status.bounded<LayerStatus::Ok>();
-        res.message = status.reason();
-        if(!status.bounded<LayerStatus::Warn>()){
-            diag(status);
-            res.message = status.reason();
-        }else{
-            heartbeat_timer_.restart();
-            return true;
-        }
-    }
 
     // TODO(sam): parse header
     sync_ = master_->getSync(SyncProperties(can::MsgHeader(0x80), sync_ms, sync_overflow));
@@ -491,7 +477,6 @@ bool RosChain::setup_heartbeat()
   hb_sender_.frame = can::toframe(msg);
 
   if (!hb_sender_.frame.isValid()) {
-    // ROS_ERROR_STREAM("Message '"<< msg << "' is invalid");
     RCLCPP_ERROR(this->get_logger(),
       "heartbeat_msg " + msg + " is invalid");
     return false;
@@ -499,10 +484,10 @@ bool RosChain::setup_heartbeat()
 
   hb_sender_.interface = interface_;
 
-    res.success = false;
-    shutdown(status);
+  heartbeat_timer_.start(std::bind(&HeartbeatSender::send, &hb_sender_),
+    boost::chrono::duration<double>(1.0 / rate), false);
 
-    return true;
+  return true;
 }
 
 // std::pair<std::string, bool> parseObjectName(std::string obj_name){
@@ -807,7 +792,7 @@ RosChain::~RosChain()
     halt(s);
     shutdown(s);
   } catch (...) {
-    ROSCANOPEN_ERROR("canopen_chain_node", "CATCH");
+    ROSCANOPEN_ERROR("ros_chain", "CATCH");
   }
 }
 
