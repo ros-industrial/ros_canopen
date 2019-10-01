@@ -20,6 +20,6 @@ matrix:
     - env: ROS_DISTRO="dashing" ABICHECK_URL='github:ros-industrial/ros_canopen#dashing'
 
 install:
-  - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config
+  - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config -b master
 script: 
   - .ci_config/travis.sh
