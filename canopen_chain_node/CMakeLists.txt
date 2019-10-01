@@ -38,13 +38,6 @@ include_directories(
 add_library(canopen_ros_chain SHARED
   src/ros_chain.cpp
 )
-# target_compile_definitions(canopen_ros_chain
-#   PRIVATE "COMPOSITION_BUILDING_DLL")
-
-target_link_libraries(canopen_ros_chain
-  ${Boost_LIBRARIES}
-)
-
 ament_target_dependencies(canopen_ros_chain
   "class_loader"
   "canopen_master"
@@ -54,6 +47,11 @@ ament_target_dependencies(canopen_ros_chain
   "diagnostic_updater"
   "socketcan_interface"
 )
+target_link_libraries(canopen_ros_chain
+  canopen_master::canopen_master
+  ${Boost_LIBRARIES}
+)
+
 # rclcpp_register_node_plugins(canopen_ros_chain "composition::RosChain")
 # set(node_plugins "${node_plugins}composition::RosChain;$<TARGET_FILE:canopen_ros_chain>\n")
 

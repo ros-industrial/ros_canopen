@@ -24,16 +24,10 @@ find_package(Boost REQUIRED
 )
 
 include_directories(include
-  ${socketcan_interface_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-  ${can_msgs_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
 
 link_directories(
-  ${socketcan_interface_LIBRARY_DIRS}
-  ${rclcpp_LIBRARY_DIRS}
-  ${can_msgs_LIBRARY_DIRS}
   ${Boost_LIBRARY_DIRS}
 )
 
@@ -41,26 +35,37 @@ link_directories(
 add_library(socketcan_to_topic SHARED
   src/socketcan_to_topic.cpp
 )
+ament_target_dependencies(socketcan_to_topic
+  "can_msgs"
+  "socketcan_interface"
+)
 target_link_libraries(socketcan_to_topic
-  ${socketcan_interface_LIBRARIES}
-  ${can_msgs_LIBRARIES}
+  socketcan_interface::socketcan_interface_plugin
+  socketcan_interface::socketcan_interface_string
 )
 
 # topic_to_socketcan
 add_library(topic_to_socketcan SHARED
   src/topic_to_socketcan.cpp
 )
+ament_target_dependencies(topic_to_socketcan
+  "can_msgs"
+  "socketcan_interface"
+)
 target_link_libraries(topic_to_socketcan
-  ${socketcan_interface_LIBRARIES}
+  socketcan_interface::socketcan_interface_plugin
+  socketcan_interface::socketcan_interface_string
 )
 
 # socketcan_to_topic_node
 add_executable(socketcan_to_topic_node
   src/socketcan_to_topic_node.cpp
 )
+ament_target_dependencies(socketcan_to_topic_node
+  "rclcpp"
+)
 target_link_libraries(socketcan_to_topic_node
   socketcan_to_topic
-  ${rclcpp_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 
@@ -68,10 +73,12 @@ target_link_libraries(socketcan_to_topic_node
 add_executable(topic_to_socketcan_node
   src/topic_to_socketcan_node.cpp
 )
+ament_target_dependencies(topic_to_socketcan_node
+  "can_msgs"
+  "rclcpp"
+)
 target_link_libraries(topic_to_socketcan_node
   topic_to_socketcan
-  ${rclcpp_LIBRARIES}
-  ${can_msgs_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 
@@ -86,17 +93,17 @@ target_link_libraries(${PROJECT_NAME}_node
   ${Boost_LIBRARIES}
 )
 ament_target_dependencies(${PROJECT_NAME}_node
-  socketcan_interface
-  rclcpp
-  can_msgs
+  "can_msgs"
+  "rclcpp"
 )
+
+ament_export_interfaces(export_socketcan_to_topic HAS_LIBRARY_TARGET)
+ament_export_interfaces(export_topic_to_socketcan HAS_LIBRARY_TARGET)
 
 install(
   TARGETS
     ${PROJECT_NAME}_node
-    socketcan_to_topic
     socketcan_to_topic_node
-    topic_to_socketcan
     topic_to_socketcan_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -104,8 +111,25 @@ install(
 )
 
 install(
-  DIRECTORY
-    include/
+  TARGETS socketcan_to_topic
+  EXPORT export_socketcan_to_topic
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+install(
+  TARGETS topic_to_socketcan
+  EXPORT export_topic_to_socketcan
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+install(
+  DIRECTORY include/
   DESTINATION include
 )
 

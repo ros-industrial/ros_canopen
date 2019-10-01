@@ -60,15 +60,31 @@ ament_export_dependencies(
 )
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME}_string)
-ament_export_libraries(${PROJECT_NAME}_plugin)
+ament_export_interfaces(export_${PROJECT_NAME}_plugin HAS_LIBRARY_TARGET)
+ament_export_interfaces(export_${PROJECT_NAME}_string HAS_LIBRARY_TARGET)
 
 install(
   TARGETS
     socketcan_bcm
     socketcan_dump
-    ${PROJECT_NAME}_string
-  EXPORT ${PROJECT_NAME}_plugin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+install(
+  TARGETS ${PROJECT_NAME}_plugin
+  EXPORT export_${PROJECT_NAME}_plugin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+install(
+  TARGETS ${PROJECT_NAME}_string
+  EXPORT export_${PROJECT_NAME}_string
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
