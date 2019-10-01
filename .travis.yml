@@ -1,12 +1,12 @@
 language: generic
 services:
-  - docker 
+  - docker
 
 env:
   matrix:
     - ROS_DISTRO="melodic"   PRERELEASE=true
     - ROS_DISTRO="melodic"   PRERELEASE=true OS_NAME=debian OS_CODE_NAME=stretch
 install:
-  - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config  
-script: 
-  - .ci_config/travis.sh
+  - git clone --quiet --depth=1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci -b master
+script:
+  - .industrial_ci/travis.sh
