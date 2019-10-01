@@ -2,6 +2,14 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.1 (2019-07-14)
+------------------
+* Added configurable queue sizes
+* Set C++ standard to c++14
+* implemented create\*ListenerM helpers
+* Replacing FastDelegate with std::function and std::bind.
+* Contributors: Harsh Deshpande, JeremyZoss, Joshua Whitley, Mathias Lüdtke, rchristopher
+
 0.8.0 (2018-07-11)
 ------------------
 * keep NodeHandle alive in socketcan_bridge tests

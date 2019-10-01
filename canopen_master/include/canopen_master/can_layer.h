@@ -3,6 +3,7 @@
 
 #include <socketcan_interface/threading.h>
 #include "layer.h"
+#include <socketcan_interface/string.h>
 
 namespace canopen{
 
@@ -16,7 +17,7 @@ class CANLayer: public Layer{
     void handleFrame(const can::Frame & msg){
         boost::mutex::scoped_lock lock(mutex_);
         last_error_ = msg;
-        LOG("ID: " << msg.id);
+        ROSCANOPEN_ERROR("canopen_master", "Received error frame: " << msg);
     }
     std::shared_ptr<boost::thread> thread_;
 

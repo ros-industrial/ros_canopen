@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>canopen_chain_node</name>
-  <version>0.8.0</version>
+  <version>0.8.1</version>
   <description>Base implementation for CANopen chains node with support for management services and diagnostics</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
@@ -22,8 +22,9 @@
   <depend>canopen_master</depend>
   <depend>diagnostic_updater</depend>
   <depend>pluginlib</depend>
-  <depend>roslib</depend>
+  <depend>rosconsole_bridge</depend>
   <depend>roscpp</depend>
+  <depend>roslib</depend>
   <depend>socketcan_interface</depend> <!-- direct dependency needed for pluginlib look-up -->
   <depend>std_srvs</depend>
 

@@ -90,8 +90,48 @@ void RosChain::run(){
     }
 }
 
+template <typename T> class ResponseLogger {
+protected:
+    bool logged;
+    const T& res;
+    const std::string command;
+public:
+    ResponseLogger(const T& res, const std::string &command) : logged(false), res(res), command(command){}
+    ~ResponseLogger() {
+        if(!logged && !res.success){
+            if (res.message.empty()){
+                ROS_ERROR_STREAM(command << " failed");
+            }else{
+                ROS_ERROR_STREAM(command << " failed: " << res.message);
+            }
+            logged = true;
+        }
+    }
+};
+
+class TriggerResponseLogger: public ResponseLogger<std_srvs::Trigger::Response> {
+public:
+    TriggerResponseLogger(const std_srvs::Trigger::Response& res, const std::string &command) : ResponseLogger(res, command){
+        ROS_INFO_STREAM(command << "...");
+    }
+    void logWarn() {
+        ROS_WARN_STREAM(command << " successful with warning(s): " << res.message);
+        logged = true;
+    }
+    ~TriggerResponseLogger() {
+        if(!logged && res.success){
+            if (res.message.empty()){
+                ROS_INFO_STREAM(command << " successful");
+            }else{
+                ROS_INFO_STREAM(command << " successful: " << res.message);
+            }
+            logged = true;
+        }
+    }
+};
+
 bool RosChain::handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
-    ROS_INFO("Initializing XXX");
+    TriggerResponseLogger rl(res, "Initializing");
     boost::mutex::scoped_lock lock(mutex_);
     if(getLayerState() > Off){
         res.success = true;
@@ -125,11 +165,10 @@ bool RosChain::handle_init(std_srvs::Trigger::Request  &req, std_srvs::Trigger::
 
     res.success = false;
     shutdown(status);
-
     return true;
 }
 bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
-    ROS_INFO("Recovering XXX");
+    TriggerResponseLogger rl(res, "Recovering");
     boost::mutex::scoped_lock lock(mutex_);
     res.success = false;
 
@@ -144,6 +183,7 @@ bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigge
             }
             res.success = status.bounded<LayerStatus::Warn>();
             res.message = status.reason();
+            if(status.equals<LayerStatus::Warn>()) rl.logWarn();
         }
         catch( const std::exception &e){
             std::string info = boost::diagnostic_information(e);
@@ -179,7 +219,7 @@ void RosChain::handleShutdown(LayerStatus &status){
 }
 
 bool RosChain::handle_shutdown(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
-    ROS_INFO("Shuting down XXX");
+    TriggerResponseLogger rl(res, "Shutting down");
     boost::mutex::scoped_lock lock(mutex_);
     res.success = true;
     if(getLayerState() > Init){
@@ -193,7 +233,7 @@ bool RosChain::handle_shutdown(std_srvs::Trigger::Request  &req, std_srvs::Trigg
 }
 
 bool RosChain::handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::Response &res){
-    ROS_INFO("Halting down XXX");
+    TriggerResponseLogger rl(res, "Halting down");
     boost::mutex::scoped_lock lock(mutex_);
      res.success = true;
      if(getLayerState() > Init){
@@ -206,6 +246,7 @@ bool RosChain::handle_halt(std_srvs::Trigger::Request  &req, std_srvs::Trigger::
 }
 
 bool RosChain::handle_get_object(canopen_chain_node::GetObject::Request  &req, canopen_chain_node::GetObject::Response &res){
+    ResponseLogger<canopen_chain_node::GetObject::Response> rl(res, "Getting object " + req.node);
     std::map<std::string, canopen::NodeSharedPtr >::iterator it = nodes_lookup_.find(req.node);
     if(it == nodes_lookup_.end()){
         res.message = "node not found";
@@ -221,6 +262,7 @@ bool RosChain::handle_get_object(canopen_chain_node::GetObject::Request  &req, c
 }
 
 bool RosChain::handle_set_object(canopen_chain_node::SetObject::Request  &req, canopen_chain_node::SetObject::Response &res){
+    ResponseLogger<canopen_chain_node::SetObject::Response> rl(res, "Setting object " + req.node);
     std::map<std::string, canopen::NodeSharedPtr >::iterator it = nodes_lookup_.find(req.node);
     if(it == nodes_lookup_.end()){
         res.message = "node not found";
@@ -593,7 +635,7 @@ RosChain::~RosChain(){
         LayerStatus s;
         halt(s);
         shutdown(s);
-    }catch(...){ LOG("CATCH"); }
+    }catch(...){ ROS_ERROR("CATCH"); }
 }
 
 }

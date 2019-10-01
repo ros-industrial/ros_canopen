@@ -1,4 +1,5 @@
 #include <socketcan_interface/string.h>
+#include <iomanip>
 
 namespace can {
 
@@ -84,7 +85,10 @@ std::string tostring(const Header& h, bool lc) {
 	else
 		buf << std::uppercase;
 
-	buf << (int) (h);
+	if (h.is_extended)
+		buf << std::setfill('0') << std::setw(8);
+
+	buf << (h.fullid() & ~Header::EXTENDED_MASK);
 	return buf.str();
 }
 
@@ -98,7 +102,8 @@ uint32_t tohex(const std::string& s) {
 
 Header toheader(const std::string& s) {
 	unsigned int h = tohex(s);
-	return Header(h & Header::ID_MASK, h & Header::EXTENDED_MASK,
+	unsigned int id = h & Header::ID_MASK;
+	return Header(id, h & Header::EXTENDED_MASK || (s.size() == 8 && id >= (1<<11)),
 			h & Header::RTR_MASK, h & Header::ERROR_MASK);
 }
 
@@ -143,7 +148,7 @@ template<> FrameFilterSharedPtr tofilter(const std::string  &s){
 			type = s.at(delim);
 			second = tohex(s.substr(delim +1));
 		}
-		uint32_t first = toheader(s.substr(0, delim));
+		uint32_t first = toheader(s.substr(0, delim)).fullid();
 		switch (type) {
 			case '~':
 				invert = true;
@@ -166,12 +171,12 @@ FrameFilterSharedPtr tofilter(const char* s){
 		return tofilter<std::string>(s);
 }
 
-}
-
-std::ostream& operator <<(std::ostream& stream, const can::Header& h) {
+std::ostream& operator <<(std::ostream& stream, const Header& h) {
 	return stream << can::tostring(h, true);
 }
 
-std::ostream& operator <<(std::ostream& stream, const can::Frame& f) {
+std::ostream& operator <<(std::ostream& stream, const Frame& f) {
 	return stream << can::tostring(f, true);
+}
+
 }

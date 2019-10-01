@@ -2,6 +2,11 @@
 Changelog for package can_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.1 (2019-07-14)
+------------------
+* Set C++ standard to c++14
+* Contributors: Harsh Deshpande
+
 0.8.0 (2018-07-11)
 ------------------
 

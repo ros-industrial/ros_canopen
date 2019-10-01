@@ -35,7 +35,7 @@ protected:
     virtual bool enqueue(const Frame & msg) = 0;
 
     void dispatchFrame(const Frame &msg){
-        strand_.post(boost::bind(&FrameDispatcher::dispatch, &frame_dispatcher_, msg)); // copies msg
+        strand_.post([this, msg]{ frame_dispatcher_.dispatch(msg.key(), msg);} ); // copies msg
     }
     void setErrorCode(const boost::system::error_code& error){
         boost::mutex::scoped_lock lock(state_mutex_);
@@ -120,7 +120,7 @@ public:
         return frame_dispatcher_.createListener(delegate);
     }
     virtual FrameListenerConstSharedPtr createMsgListener(const Frame::Header&h , const FrameFunc &delegate){
-        return frame_dispatcher_.createListener(h, delegate);
+        return frame_dispatcher_.createListener(h.key(), delegate);
     }
     virtual StateListenerConstSharedPtr createStateListener(const StateFunc &delegate){
         return state_dispatcher_.createListener(delegate);

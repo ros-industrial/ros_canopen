@@ -2,6 +2,12 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.1 (2019-07-14)
+------------------
+* Set C++ standard to c++14
+* inherit LimitsHandle from LimitsHandleBase
+* Contributors: Harsh Deshpande, Mathias Lüdtke
+
 0.8.0 (2018-07-11)
 ------------------
 * migrated to std::function and std::bind

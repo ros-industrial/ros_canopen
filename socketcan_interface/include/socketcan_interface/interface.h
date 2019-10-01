@@ -26,13 +26,15 @@ struct Header{
     bool isValid() const{
         return id < (is_extended?(1<<29):(1<<11));
     }
+    unsigned int fullid() const { return id | (is_error?ERROR_MASK:0) | (is_rtr?RTR_MASK:0) | (is_extended?EXTENDED_MASK:0); }
+    unsigned int key() const { return is_error ? (ERROR_MASK) : fullid(); }
+    [[deprecated("use key() instead")]] explicit operator unsigned int() const { return key(); }
+
     /** constructor with default parameters
         * @param[in] i: CAN id, defaults to 0
         * @param[in] extended: uses 29 bit identifier, defaults to false
         * @param[in] rtr: is rtr frame, defaults to false
         */
-
-    operator const unsigned int() const { return is_error ? (ERROR_MASK) : *(unsigned int*) this; }
 
     Header()
     : id(0),is_error(0),is_rtr(0), is_extended(0) {}
@@ -215,17 +217,6 @@ using DriverInterfaceSharedPtr = std::shared_ptr<DriverInterface>;
 
 } // namespace can
 
-#include <iostream>
-#include <boost/thread/mutex.hpp>
-
-struct _cout_wrapper{
-    static boost::mutex& get_cout_mutex(){
-        static boost::mutex mutex;
-        return mutex;
-    }
-};
-
-#define LOG(log) { boost::mutex::scoped_lock _cout_lock(_cout_wrapper::get_cout_mutex()); std::cout << log << std::endl; }
-
+#include "logging.h"
 
 #endif

@@ -33,6 +33,7 @@ public:
     struct Unbounded { static const State state = UNBOUNDED; private: Unbounded(); };
 
     template<typename T> bool bounded() const{ return state <= T::state; }
+    template<typename T> bool equals() const{ return state == T::state; }
 
     LayerStatus() : state(OK) {}
 

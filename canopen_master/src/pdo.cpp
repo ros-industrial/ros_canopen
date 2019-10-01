@@ -187,7 +187,7 @@ bool PDOMapper::init(const ObjectStorageSharedPtr storage, LayerStatus &status){
                 rpdos_.insert(rpdo);
             }
         }
-        // LOG("RPDOs: " << rpdos_.size());
+        // ROSCANOPEN_DEBUG("canopen_master", "RPDOs: " << rpdos_.size());
 
         tpdos_.clear();
         for(uint16_t i=0; i < 512 && tpdos_.size() <  dict.device_info.nr_of_rx_pdo;++i){ // RPDOs of device
@@ -198,7 +198,7 @@ bool PDOMapper::init(const ObjectStorageSharedPtr storage, LayerStatus &status){
                 tpdos_.insert(tpdo);
             }
         }
-        // LOG("TPDOs: " << tpdos_.size());
+        // ROSCANOPEN_DEBUG("canopen_master", "TPDOs: " << tpdos_.size());
 
         return true;
     }

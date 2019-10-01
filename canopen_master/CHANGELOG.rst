@@ -2,6 +2,14 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.1 (2019-07-14)
+------------------
+* Set C++ standard to c++14
+* added Delegate helpers for backwards compatibility
+* implemented create\*ListenerM helpers
+* Replacing FastDelegate with std::function and std::bind.
+* Contributors: Harsh Deshpande, Joshua Whitley, Mathias Lüdtke
+
 0.8.0 (2018-07-11)
 ------------------
 * migrated to std::function and std::bind

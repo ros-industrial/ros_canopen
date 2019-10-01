@@ -88,12 +88,25 @@ public:
         if(!ptr) ptr.reset(new typename BaseClass::DispatcherBase(BaseClass::mutex_));
         return BaseClass::DispatcherBase::createListener(ptr, callable);
     }
-    void dispatch(const typename BaseClass::Type &obj){
+
+    template <typename T>
+    [[deprecated("provide key explicitly")]]
+    typename BaseClass::ListenerConstSharedPtr createListener(const T &key, const typename BaseClass::Callable &callable){
+        return createListener(static_cast<K>(key), callable);
+    }
+
+    void dispatch(const K &key, const typename BaseClass::Type &obj){
         boost::mutex::scoped_lock lock(BaseClass::mutex_);
-        typename BaseClass::DispatcherBaseSharedPtr &ptr = filtered_[obj];
+        typename BaseClass::DispatcherBaseSharedPtr &ptr = filtered_[key];
         if(ptr) ptr->dispatch_nolock(obj);
         BaseClass::dispatcher_->dispatch_nolock(obj);
     }
+
+    [[deprecated("provide key explicitly")]]
+    void dispatch(const typename BaseClass::Type &obj){
+        return dispatch(static_cast<K>(obj), obj);
+    }
+
     operator typename BaseClass::Callable() { return typename BaseClass::Callable(this,&FilteredDispatcher::dispatch); }
 };
 

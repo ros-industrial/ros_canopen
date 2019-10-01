@@ -14,7 +14,7 @@ protected:
     std::set<void *> nodes_;
     boost::mutex nodes_mutex_;
     std::atomic<size_t> nodes_size_;
-    
+
     virtual void handleShutdown(LayerStatus &status) {
     }
 
@@ -40,9 +40,24 @@ public:
     }
 };
 
-    
+
 class SimpleSyncLayer: public ManagingSyncLayer {
     time_point read_time_, write_time_;
+    can::Frame frame_;
+    uint8_t overflow_;
+
+    void resetCounter(){
+        frame_.data[0] = 1; // SYNC counter starts at 1
+    }
+    void tryUpdateCounter(){
+        if (frame_.dlc > 0) { // sync counter is used
+            if (frame_.data[0] >= overflow_) {
+                resetCounter();
+            }else{
+                ++frame_.data[0];
+            }
+        }
+    }
 protected:
     virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
         if(current_state > Init){
@@ -52,10 +67,10 @@ protected:
     }
     virtual void handleWrite(LayerStatus &status, const LayerState &current_state) {
         if(current_state > Init){
-            can::Frame frame(properties.header_, 0);
             boost::this_thread::sleep_until(write_time_);
+            tryUpdateCounter();
             if(nodes_size_){ //)
-                interface_->send(frame);
+                interface_->send(frame_);
             }
             read_time_ = get_abs_time(half_step_);
         }
@@ -67,7 +82,14 @@ protected:
     }
 public:
     SimpleSyncLayer(const SyncProperties &p, can::CommInterfaceSharedPtr interface)
-    : ManagingSyncLayer(p, interface) {}
+    : ManagingSyncLayer(p, interface), frame_(p.header_, 0), overflow_(p.overflow_) {
+        if(overflow_ == 1 || overflow_ > 240){
+            BOOST_THROW_EXCEPTION(Exception("SYNC counter overflow is invalid"));
+        }else if(overflow_ > 1){
+            frame_.dlc = 1;
+            resetCounter();
+        }
+    }
 };
 
 class ExternalSyncLayer: public ManagingSyncLayer {
@@ -85,7 +107,7 @@ protected:
         // nothing to do here
     }
     virtual void handleInit(LayerStatus &status){
-        reader_.listen(interface_, can::MsgHeader(properties.header_));
+        reader_.listen(interface_, properties.header_);
     }
 public:
     ExternalSyncLayer(const SyncProperties &p, can::CommInterfaceSharedPtr interface)
@@ -114,4 +136,3 @@ typedef WrapMaster<ExternalSyncLayer> ExternalMaster;
 }
 CLASS_LOADER_REGISTER_CLASS(canopen::SimpleMaster::Allocator, canopen::Master::Allocator);
 CLASS_LOADER_REGISTER_CLASS(canopen::ExternalMaster::Allocator, canopen::Master::Allocator);
-

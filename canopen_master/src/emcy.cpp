@@ -42,7 +42,7 @@ struct EMCYmsg{
 
 void EMCYHandler::handleEMCY(const can::Frame & msg){
     EMCYmsg::Frame em(msg);
-    LOG("EMCY: " << can::tostring(msg, false));
+    ROSCANOPEN_ERROR("canopen_master", "EMCY received: " << msg);
     has_error_ = (em.data.error_register & ~32) != 0;
 }
 
@@ -122,7 +122,7 @@ void EMCYHandler::handleInit(LayerStatus &status){
         status.error("Could not read error error_register");
         return;
     }else if(error_register & 1){
-        LOG("ER: " << int(error_register));
+        ROSCANOPEN_ERROR("canopen_master", "error register: " << int(error_register));
         status.error("Node has emergency error");
         return;
     }
