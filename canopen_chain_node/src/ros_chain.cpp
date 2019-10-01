@@ -114,7 +114,7 @@ public:
     TriggerResponseLogger(const std_srvs::Trigger::Response& res, const std::string &command) : ResponseLogger(res, command){
         ROS_INFO_STREAM(command << "...");
     }
-    void logWarn() {
+    void logWarning() {
         ROS_WARN_STREAM(command << " successful with warning(s): " << res.message);
         logged = true;
     }
@@ -183,7 +183,7 @@ bool RosChain::handle_recover(std_srvs::Trigger::Request  &req, std_srvs::Trigge
             }
             res.success = status.bounded<LayerStatus::Warn>();
             res.message = status.reason();
-            if(status.equals<LayerStatus::Warn>()) rl.logWarn();
+            if(status.equals<LayerStatus::Warn>()) rl.logWarning();
         }
         catch( const std::exception &e){
             std::string info = boost::diagnostic_information(e);
