@@ -42,7 +42,7 @@ struct EMCYmsg{
 
 void EMCYHandler::handleEMCY(const can::Frame & msg){
     EMCYmsg::Frame em(msg);
-    ROSCANOPEN_ERROR("canopen_master", "EMCY received: " << msg);
+    ROSCANOPEN_ERROR("canopen_master", "EMCY received: " << msg.key());
     has_error_ = (em.data.error_register & ~32) != 0;
 }
 

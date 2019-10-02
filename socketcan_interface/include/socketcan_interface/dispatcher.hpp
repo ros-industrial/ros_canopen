@@ -23,7 +23,7 @@
 #include <list>
 #include <unordered_map>
 
-#include "interface.hpp"
+#include "socketcan_interface/interface.hpp"
 
 namespace can
 {

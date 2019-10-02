@@ -100,6 +100,7 @@ if(BUILD_TESTING)
   )
   target_link_libraries(${PROJECT_NAME}-test_delegates
     ${PROJECT_NAME}_string
+    ${Boost_LIBRARIES}
   )
 
   ament_add_gtest(${PROJECT_NAME}-test_string
@@ -123,6 +124,7 @@ if(BUILD_TESTING)
   )
   target_link_libraries(${PROJECT_NAME}-test_dispatcher
     ${PROJECT_NAME}_string
+    ${Boost_LIBRARIES}
   )
   target_compile_options(${PROJECT_NAME}-test_dispatcher PRIVATE -Wno-deprecated-declarations)
 endif()

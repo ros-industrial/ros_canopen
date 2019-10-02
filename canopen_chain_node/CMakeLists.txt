@@ -37,7 +37,6 @@ include_directories(
 # canopen_ros_chain
 add_library(canopen_ros_chain SHARED
   src/ros_chain.cpp
-  src/rosconsole_bridge.cpp
 )
 # target_compile_definitions(canopen_ros_chain
 #   PRIVATE "COMPOSITION_BUILDING_DLL")
@@ -86,7 +85,6 @@ endif()
 
 # canopen_sync_node
 add_executable(canopen_sync_node
-  src/rosconsole_bridge.cpp
   src/sync_node.cpp
 )
 target_link_libraries(canopen_sync_node

@@ -23,9 +23,9 @@
 #include <utility>
 #include <memory>
 
-#include "interface.hpp"
-#include "dispatcher.hpp"
-#include "string.hpp"
+#include "socketcan_interface/interface.hpp"
+#include "socketcan_interface/dispatcher.hpp"
+#include "socketcan_interface/string.hpp"
 
 namespace can
 {

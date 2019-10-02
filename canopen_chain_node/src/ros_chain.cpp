@@ -51,7 +51,7 @@ PublishFuncType RosChain::createPublisher(
     return 0;
   }
 
-  auto pub = this->create_publisher<Tpub>(name);
+  auto pub = this->create_publisher<Tpub>(name, 10);
 
   typedef const data_type (entry_type::* getter_type)(void);
   const getter_type getter =
@@ -727,7 +727,8 @@ RosChain::RosChain(std::string node_name)
   driver_loader_("socketcan_interface", "can::DriverInterface"),
   master_allocator_("canopen_master", "canopen::Master::Allocator"),
   running_(false),
-  reset_errors_before_recover_(false)
+  reset_errors_before_recover_(false),
+  diag_updater_(this)
 {
 }
 
@@ -742,17 +743,14 @@ bool RosChain::setup()
 bool RosChain::setup_chain()
 {
   std::string hardware_id;
-  get_parameter_or_set("hardware_id", hardware_id, std::string("none"));
-  get_parameter_or_set("reset_errors_before_recover",
-    reset_errors_before_recover_, false);
+  hardware_id = this->declare_parameter("hardware_id", "");
+  reset_errors_before_recover_ = this->declare_parameter("reset_errors_before_recover", false);
 
   RCLCPP_INFO(this->get_logger(), "hardware_id: %s", hardware_id.c_str());
   RCLCPP_INFO(this->get_logger(), "reset_errors_before_recover: %d", reset_errors_before_recover_);
 
   diag_updater_.setHardwareID(hardware_id);
   diag_updater_.add("chain", this, &RosChain::report_diagnostics);
-  diag_timer_ =
-    this->create_wall_timer(1s, std::bind(&diagnostic_updater::Updater::update, &diag_updater_));
 
   srv_init_ = create_service<std_srvs::srv::Trigger>(
     "init", std::bind(
@@ -794,7 +792,7 @@ RosChain::~RosChain()
     halt(s);
     shutdown(s);
   } catch (...) {
-    LOG("CATCH");
+    ROSCANOPEN_ERROR("ros_chain", "CATCH");
   }
 }
 

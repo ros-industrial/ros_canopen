@@ -1,7 +1,7 @@
 #ifndef H_CAN_LAYER
 #define H_CAN_LAYER
 
-#include <socketcan_interface/string.h>
+#include <socketcan_interface/string.hpp>
 #include <socketcan_interface/threading.hpp>
 #include "canopen_master/layer.hpp"
 
@@ -17,7 +17,7 @@ class CANLayer: public Layer{
     void handleFrame(const can::Frame & msg){
         boost::mutex::scoped_lock lock(mutex_);
         last_error_ = msg;
-        ROSCANOPEN_ERROR("canopen_master", "Received error frame: " << msg);
+        ROSCANOPEN_ERROR("canopen_master", "Received error frame: " << msg.key());
     }
     std::shared_ptr<boost::thread> thread_;
 

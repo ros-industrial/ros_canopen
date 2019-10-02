@@ -125,7 +125,7 @@ std::string tostring(const Header & h, bool lc)
     buf << std::uppercase;
   }
 
-  buf << static_cast<int>(h);
+  buf << static_cast<int>(h.key());
   return buf.str();
 }
 
@@ -200,7 +200,7 @@ FrameFilterSharedPtr tofilter(const std::string & s)
     second = tohex(s.substr(delim + 1));
   }
 
-  uint32_t first = toheader(s.substr(0, delim));
+  uint32_t first = toheader(s.substr(0, delim)).key();
   switch (type) {
     case '~':
       invert = true;
@@ -237,6 +237,4 @@ std::ostream & operator<<(std::ostream & stream, const can::Header & h)
 std::ostream & operator<<(std::ostream & stream, const can::Frame & f)
 {
   return stream << can::tostring(f, true);
-}
-
 }
