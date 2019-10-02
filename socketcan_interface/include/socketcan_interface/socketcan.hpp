@@ -36,7 +36,8 @@
 namespace can
 {
 
-class SocketCANInterface : public AsioDriver<boost::asio::posix::stream_descriptor>
+class SocketCANInterface
+  : public AsioDriver<boost::asio::posix::stream_descriptor>
 {
   bool loopback_;
   int sc_;
@@ -282,7 +283,8 @@ using SocketCANDriver = SocketCANInterface;
 using SocketCANDriverSharedPtr = std::shared_ptr<SocketCANDriver>;
 using SocketCANInterfaceSharedPtr = std::shared_ptr<SocketCANInterface>;
 
-template <typename T> class ThreadedInterface;
+template<typename T>
+class ThreadedInterface;
 using ThreadedSocketCANInterface = ThreadedInterface<SocketCANInterface>;
 using ThreadedSocketCANInterfaceSharedPtr = std::shared_ptr<ThreadedSocketCANInterface>;
 

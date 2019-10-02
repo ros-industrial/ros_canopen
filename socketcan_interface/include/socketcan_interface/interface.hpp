@@ -19,14 +19,14 @@
 #include <boost/system/error_code.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include "socketcan_interface/delegates.hpp"
-#include "socketcan_interface/logging.hpp"
-
 #include <iostream>
 #include <string>
 #include <array>
 #include <memory>
 #include <functional>
+
+#include "socketcan_interface/delegates.hpp"
+#include "socketcan_interface/logging.hpp"
 
 namespace can
 {
@@ -52,12 +52,18 @@ struct Header
 
   unsigned int fullid() const
   {
-    return id | (is_error ? ERROR_MASK : 0) | (is_rtr ? RTR_MASK : 0) | (is_extended ? EXTENDED_MASK : 0);
+    return
+      id |
+      (is_error ? ERROR_MASK : 0) |
+      (is_rtr ? RTR_MASK : 0) |
+      (is_extended ? EXTENDED_MASK : 0);
   }
+
   unsigned int key() const
   {
     return is_error ? (ERROR_MASK) : fullid();
   }
+
   [[deprecated("use key() instead")]]
   explicit operator unsigned int() const
   {
@@ -65,10 +71,10 @@ struct Header
   }
 
   /** constructor with default parameters
-      * @param[in] i: CAN id, defaults to 0
-      * @param[in] extended: uses 29 bit identifier, defaults to false
-      * @param[in] rtr: is rtr frame, defaults to false
-      */
+    * @param[in] i: CAN id, defaults to 0
+    * @param[in] extended: uses 29 bit identifier, defaults to false
+    * @param[in] rtr: is rtr frame, defaults to false
+    */
 
   Header()
   : id(0), is_error(0), is_rtr(0), is_extended(0) {}
@@ -176,9 +182,9 @@ public:
 class StateInterface
 {
 public:
-  using StateFunc = std::function<void(const State&)>;
+  using StateFunc = std::function<void (const State &)>;
   using StateDelegate [[deprecated("use StateFunc instead")]] = DelegateHelper<StateFunc>;
-  using StateListener = Listener<const StateFunc, const State&>;
+  using StateListener = Listener<const StateFunc, const State &>;
   using StateListenerConstSharedPtr = StateListener::ListenerConstSharedPtr;
 
   /**
@@ -203,9 +209,9 @@ using StateListenerConstSharedPtr = StateInterface::StateListenerConstSharedPtr;
 class CommInterface
 {
 public:
-  using FrameFunc = std::function<void(const Frame&)>;
+  using FrameFunc = std::function<void (const Frame &)>;
   using FrameDelegate [[deprecated("use FrameFunc instead")]] = DelegateHelper<FrameFunc>;
-  using FrameListener = Listener<const FrameFunc, const Frame&>;
+  using FrameListener = Listener<const FrameFunc, const Frame &>;
   using FrameListenerConstSharedPtr = FrameListener::ListenerConstSharedPtr;
 
   /**

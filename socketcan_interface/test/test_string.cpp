@@ -36,7 +36,7 @@ TEST(StringTest, stringconversion)
   EXPECT_EQ(f3.fullid(), 0x80001337);
   EXPECT_TRUE(f3.isValid());
   EXPECT_TRUE(f3.is_extended);
-  EXPECT_EQ(s4, can::tostring(f3, true)); // 8000 is converted to 0000
+  EXPECT_EQ(s4, can::tostring(f3, true));  // 8000 is converted to 0000
 
   can::Frame f4 = can::toframe(s4);
   EXPECT_EQ(f4.fullid(), 0x80001337);
@@ -57,7 +57,6 @@ TEST(StringTest, stringconversion)
   EXPECT_TRUE(f6.isValid());
   EXPECT_TRUE(f6.is_rtr);
   EXPECT_EQ(s6, can::tostring(f6, true));
-
 }
 
 // Run all the tests that were declared with TEST()

@@ -54,7 +54,7 @@ protected:
 
   void dispatchFrame(const Frame & msg)
   {
-    strand_.post([this, msg]{ frame_dispatcher_.dispatch(msg.key(), msg);} ); // copies msg
+    strand_.post([this, msg] {frame_dispatcher_.dispatch(msg.key(), msg);});  // copies msg
   }
   void setErrorCode(const boost::system::error_code & error)
   {
