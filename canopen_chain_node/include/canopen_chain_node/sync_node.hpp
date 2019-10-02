@@ -29,7 +29,9 @@
 
 using namespace std::literals::chrono_literals;
 
-class SyncNode : public rclcpp::Node, public canopen::LayerStack
+class SyncNode
+: public rclcpp::Node,
+  public canopen::LayerStack
 {
 public:
   explicit SyncNode(const std::string & node_name);

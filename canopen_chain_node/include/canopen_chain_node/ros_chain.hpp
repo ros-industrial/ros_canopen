@@ -35,15 +35,15 @@
 #include <utility>
 #include <map>
 
-
 using namespace std::literals::chrono_literals;
 
 namespace canopen
 {
 
-typedef std::function<void ()> PublishFuncType;
+using PublishFuncType = std::function<void ()>;
 
-class Logger : public DiagGroup<canopen::Layer>
+class Logger
+: public DiagGroup<canopen::Layer>
 {
   const canopen::NodeSharedPtr node_;
 
@@ -110,12 +110,13 @@ public:
 
   virtual ~Logger() {}
 };
-typedef std::shared_ptr<Logger> LoggerSharedPtr;
+
+using LoggerSharedPtr = std::shared_ptr<Logger>;
 
 class GuardedClassLoaderList
 {
 public:
-  typedef std::shared_ptr<pluginlib::ClassLoaderBase> ClassLoaderBaseSharedPtr;
+  using ClassLoaderBaseSharedPtr = std::shared_ptr<pluginlib::ClassLoaderBase>;
   static void addLoader(ClassLoaderBaseSharedPtr b)
   {
     guarded_loaders().push_back(b);
@@ -136,16 +137,17 @@ private:
 template<typename T>
 class GuardedClassLoader
 {
-  typedef pluginlib::ClassLoader<T> Loader;
+  using Loader = pluginlib::ClassLoader<T>;
   std::shared_ptr<Loader> loader_;
 
 public:
-  typedef std::shared_ptr<T> ClassSharedPtr;
+  using ClassSharedPtr = std::shared_ptr<T>;
   GuardedClassLoader(const std::string & package, const std::string & allocator_base_class)
   : loader_(new Loader(package, allocator_base_class))
   {
     GuardedClassLoaderList::addLoader(loader_);
   }
+
   ClassSharedPtr createInstance(const std::string & lookup_name)
   {
     return loader_->createUniqueInstance(lookup_name);
@@ -156,19 +158,24 @@ template<typename T>
 class ClassAllocator : public GuardedClassLoader<typename T::Allocator>
 {
 public:
-  typedef std::shared_ptr<T> ClassSharedPtr;
+  using ClassSharedPtr = std::shared_ptr<T>;
+
   ClassAllocator(const std::string & package, const std::string & allocator_base_class)
-  : GuardedClassLoader<typename T::Allocator>(package, allocator_base_class) {}
+  : GuardedClassLoader<typename T::Allocator>(package, allocator_base_class)
+  {}
+
   template<typename T1>
   ClassSharedPtr allocateInstance(const std::string & lookup_name, const T1 & t1)
   {
     return this->createInstance(lookup_name)->allocate(t1);
   }
+
   template<typename T1, typename T2>
   ClassSharedPtr allocateInstance(const std::string & lookup_name, const T1 & t1, const T2 & t2)
   {
     return this->createInstance(lookup_name)->allocate(t1, t2);
   }
+
   template<typename T1, typename T2, typename T3>
   ClassSharedPtr allocateInstance(
     const std::string & lookup_name, const T1 & t1, const T2 & t2,
@@ -178,7 +185,10 @@ public:
   }
 };
 
-class RosChain : GuardedClassLoaderList, public canopen::LayerStack, public rclcpp::Node
+class RosChain
+: GuardedClassLoaderList,
+  public canopen::LayerStack,
+  public rclcpp::Node
 {
   GuardedClassLoader<can::DriverInterface> driver_loader_;
   ClassAllocator<canopen::Master> master_allocator_;
@@ -220,6 +230,7 @@ protected:
       return interface && interface->send(frame);
     }
   } hb_sender_;
+
   Timer heartbeat_timer_;
 
   std::atomic<bool> running_;

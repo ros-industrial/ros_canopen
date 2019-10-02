@@ -30,11 +30,10 @@ void SyncNode::report_diagnostics(
     r.bounded<canopen::LayerStatus::Unbounded>())
   {  // valid
     stat.summary(r.get(), r.reason());
-    for (std::vector<std::pair<std::string, std::string>>::const_iterator it = r.values().begin();
-      it != r.values().end(); ++it)
-    {
+    for (auto it = r.values().begin(); it != r.values().end(); ++it) {
       stat.add(it->first, it->second);
     }
+
     if (!r.bounded<canopen::LayerStatus::Warn>()) {
       canopen::LayerStatus s;
       recover(s);
