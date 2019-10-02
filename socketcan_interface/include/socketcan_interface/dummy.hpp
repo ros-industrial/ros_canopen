@@ -78,7 +78,7 @@ public:
   virtual bool send(const Frame & msg)
   {
     if (loopback_) {
-      frame_dispatcher_.dispatch(msg);
+      frame_dispatcher_.dispatch(msg.key(), msg);
     }
 
     try {
@@ -136,6 +136,7 @@ public:
 
   bool init(const std::string & device, bool loopback)
   {
+    (void)device;
     loopback_ = loopback;
     state_.driver_state = State::ready;
     state_.internal_error = 0;

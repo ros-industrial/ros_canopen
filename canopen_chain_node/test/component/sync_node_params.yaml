@@ -2,8 +2,8 @@ canopen_sync_node:
   ros__parameters:
     overflow: 100 # overflow sync counter at value or do not set it (0, default)
     device: 'can1' # socketcan network
-    monitored_nodes: ['id:4', 'id:5'] # TODO(sam): figure out how to read int vectors
-    ignored_nodes: ['id:6', 'id:7']
+    monitored_nodes: [4, 5]
+    ignored_nodes: [6, 7]
     sync_id: 0x080
     interval_ms: 10
     heartbeat_msg: "704#05" # message to send, cansend format: heartbeat of node 704 with status 5=Started

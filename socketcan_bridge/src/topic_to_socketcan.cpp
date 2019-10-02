@@ -23,7 +23,7 @@ namespace socketcan_bridge
     can::DriverInterfaceSharedPtr driver) :
     node_ptr_(node_ptr),
     can_topic_(node_ptr_->create_subscription<can_msgs::msg::Frame>(
-      "sent_messages", std::bind(&TopicToSocketCAN::msgCallback, this, std::placeholders::_1))),
+      "sent_messages", 10, std::bind(&TopicToSocketCAN::msgCallback, this, std::placeholders::_1))),
     driver_(driver)
     {}
 

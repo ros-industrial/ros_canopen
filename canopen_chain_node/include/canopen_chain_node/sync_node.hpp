@@ -43,8 +43,8 @@ private:
 
   int sync_overflow_;
   std::string can_device_;
-  std::vector<int> monitored_nodes_;
-  std::vector<int> ignored_nodes_;
+  std::vector<int64_t> monitored_nodes_;
+  std::vector<int64_t> ignored_nodes_;
   int sync_id_;
   std::string heartbeat_msg_;
   int sync_ms_;
