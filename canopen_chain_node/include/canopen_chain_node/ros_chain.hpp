@@ -35,7 +35,7 @@
 #include <utility>
 #include <map>
 
-using namespace std::literals::chrono_literals;
+using namespace std::literals::chrono_literals;  // NOLINT
 
 namespace canopen
 {
@@ -43,7 +43,7 @@ namespace canopen
 using PublishFuncType = std::function<void ()>;
 
 class Logger
-: public DiagGroup<canopen::Layer>
+  : public DiagGroup<canopen::Layer>
 {
   const canopen::NodeSharedPtr node_;
 
@@ -186,7 +186,7 @@ public:
 };
 
 class RosChain
-: GuardedClassLoaderList,
+  : GuardedClassLoaderList,
   public canopen::LayerStack,
   public rclcpp::Node
 {

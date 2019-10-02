@@ -63,16 +63,18 @@ SyncNode::SyncNode()
 void SyncNode::get_parameters()
 {
   if (!get_parameter_or("overflow", sync_overflow_, 0)) {
-    RCLCPP_WARN(this->get_logger(),
+    RCLCPP_WARN(
+      this->get_logger(),
       "sync overflow was not specified, so overflow is disabled per default");
   }
   if (sync_overflow_ == 1 || sync_overflow_ > 240) {
-    throw std::runtime_error("Sync overflow " + std::to_string(sync_overflow_) +
-            "is invalid");
+    throw std::runtime_error(
+            "Sync overflow " + std::to_string(sync_overflow_) + "is invalid");
   }
 
   if (!get_parameter_or("device", can_device_, std::string("can0"))) {
-    RCLCPP_WARN(this->get_logger(),
+    RCLCPP_WARN(
+      this->get_logger(),
       "CAN device not specified, using can0");
   }
 
@@ -80,17 +82,20 @@ void SyncNode::get_parameters()
   ignored_nodes_ = this->declare_parameter("ignored_nodes", std::vector<int64_t>({}));
 
   if (!get_parameter_or("sync_id", sync_id_, 0x080)) {
-    RCLCPP_WARN(this->get_logger(),
+    RCLCPP_WARN(
+      this->get_logger(),
       "sync_id not specified, using 0x080");
   }
 
   if (!get_parameter_or("heartbeat_msg", heartbeat_msg_, std::string("77f#05"))) {
-    RCLCPP_WARN(this->get_logger(),
+    RCLCPP_WARN(
+      this->get_logger(),
       "heartbeat_msg not specified, using 77f#05");
   }
 
   if (!get_parameter_or("interval_ms", sync_ms_, 10)) {
-    RCLCPP_WARN(this->get_logger(),
+    RCLCPP_WARN(
+      this->get_logger(),
       "interval_ms not specified, using 10");
   }
   if (sync_ms_ <= 0) {
@@ -127,7 +132,6 @@ void SyncNode::init_diagnostics()
   diag_updater_.setHardwareID(hardware_id_);
   diag_updater_.add("sync", this, &SyncNode::report_diagnostics);
 }
-
 
 int main(int argc, char ** argv)
 {
