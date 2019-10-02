@@ -52,6 +52,6 @@ void convertMessageToSocketCAN(
     f.data[i] = m->data[i];
   }
 }
-};  // namespace socketcan_bridge
+}  // namespace socketcan_bridge
 
 #endif  // SOCKETCAN_BRIDGE__TOPIC_TO_SOCKETCAN_HPP_

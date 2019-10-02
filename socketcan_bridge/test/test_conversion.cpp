@@ -34,10 +34,11 @@ TEST(ConversionTest, socketCANToTopicStandard)
   f.is_error = false;
   f.is_rtr = false;
   f.is_extended = false;
-  for (uint8_t i = 0; i < f.dlc; ++i)
-  {
+
+  for (uint8_t i = 0; i < f.dlc; ++i) {
     f.data[i] = i;
   }
+
   socketcan_bridge::convertSocketCANToMessage(f, m);
   EXPECT_EQ(127, m.id);
   EXPECT_EQ(8, m.dlc);
@@ -45,8 +46,7 @@ TEST(ConversionTest, socketCANToTopicStandard)
   EXPECT_EQ(false, m.is_rtr);
   EXPECT_EQ(false, m.is_extended);
 
-  for (uint8_t i=0; i < 8; i++)
-  {
+  for (uint8_t i = 0; i < 8; i++) {
     EXPECT_EQ(i, m.data[i]);
   }
 }
@@ -83,10 +83,10 @@ TEST(ConversionTest, topicToSocketCANStandard)
   m.is_error = false;
   m.is_rtr = false;
   m.is_extended = false;
-  for (uint8_t i = 0; i < m.dlc; ++i)
-  {
+  for (uint8_t i = 0; i < m.dlc; ++i) {
     m.data[i] = i;
   }
+
   socketcan_bridge::convertMessageToSocketCAN(std::make_shared<can_msgs::msg::Frame>(m), f);
   EXPECT_EQ(127, f.id);
   EXPECT_EQ(8, f.dlc);
@@ -94,9 +94,7 @@ TEST(ConversionTest, topicToSocketCANStandard)
   EXPECT_EQ(false, f.is_rtr);
   EXPECT_EQ(false, f.is_extended);
 
-
-  for (uint8_t i=0; i < 8; i++)
-  {
+  for (uint8_t i = 0; i < 8; i++) {
     EXPECT_EQ(i, f.data[i]);
   }
 }
@@ -108,25 +106,25 @@ TEST(ConversionTest, topicToSocketCANFlags)
 
   m.is_error = true;
   socketcan_bridge::convertMessageToSocketCAN(
-      std::make_shared<can_msgs::msg::Frame>(m), f);
+    std::make_shared<can_msgs::msg::Frame>(m), f);
   EXPECT_EQ(true, f.is_error);
   m.is_error = false;
 
   m.is_rtr = true;
   socketcan_bridge::convertMessageToSocketCAN(
-      std::make_shared<can_msgs::msg::Frame>(m), f);
+    std::make_shared<can_msgs::msg::Frame>(m), f);
   EXPECT_EQ(true, f.is_rtr);
   m.is_rtr = false;
 
   m.is_extended = true;
   socketcan_bridge::convertMessageToSocketCAN(
-      std::make_shared<can_msgs::msg::Frame>(m), f);
+    std::make_shared<can_msgs::msg::Frame>(m), f);
   EXPECT_EQ(true, f.is_extended);
   m.is_extended = false;
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

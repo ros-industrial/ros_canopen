@@ -21,7 +21,7 @@
 #include <memory>
 #include <string>
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("topic_to_socketcan_node");
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
   node->get_parameter_or<std::string>("can_device", can_device, "can0");
 
   can::ThreadedSocketCANInterfaceSharedPtr driver =
-    std::make_shared<can::ThreadedSocketCANInterface> ();
+    std::make_shared<can::ThreadedSocketCANInterface>();
 
   if (!driver->init(can_device, 0)) {  // initialize device at can_device, 0 for no loopback.
     RCLCPP_FATAL(
