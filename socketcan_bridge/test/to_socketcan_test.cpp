@@ -22,6 +22,8 @@
 
 #include <gtest/gtest.h>
 #include <rclcpp/rclcpp.hpp>
+
+#include <memory>
 #include <list>
 
 class frameCollector

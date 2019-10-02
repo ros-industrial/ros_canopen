@@ -19,8 +19,9 @@
 #include <can_msgs/msg/frame.hpp>
 #include <socketcan_interface/socketcan.hpp>
 
-// Bring in gtest
 #include <gtest/gtest.h>
+
+#include <memory>
 
 // test whether the content of a conversion from a SocketCAN frame
 // to a ROS message correctly maintains the data.

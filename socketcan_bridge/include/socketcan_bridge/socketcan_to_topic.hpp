@@ -21,30 +21,32 @@
 #include <can_msgs/msg/frame.hpp>
 #include <rclcpp/rclcpp.hpp>
 
+#include <memory>
+
 namespace socketcan_bridge
 {
 class SocketCANToTopic
 {
-  public:
-    SocketCANToTopic(rclcpp::Node::SharedPtr node_ptr, can::DriverInterfaceSharedPtr driver);
-    void setup();
-    void setup(const can::FilteredFrameListener::FilterVector &filters);
-    // void setup(XmlRpc::XmlRpcValue filters);  // TODO: Find replacement for XmlRpc filters.
-    void setup(rclcpp::Node::SharedPtr node_ptr);
+public:
+  SocketCANToTopic(rclcpp::Node::SharedPtr node_ptr, can::DriverInterfaceSharedPtr driver);
+  void setup();
+  void setup(const can::FilteredFrameListener::FilterVector & filters);
+  // void setup(XmlRpc::XmlRpcValue filters);  // TODO: Find replacement for XmlRpc filters.
+  void setup(rclcpp::Node::SharedPtr node_ptr);
 
-  private:
-    rclcpp::Node::SharedPtr node_ptr_;
-    std::shared_ptr<rclcpp::Publisher<can_msgs::msg::Frame>> can_topic_;
-    can::DriverInterfaceSharedPtr driver_;
+private:
+  rclcpp::Node::SharedPtr node_ptr_;
+  std::shared_ptr<rclcpp::Publisher<can_msgs::msg::Frame>> can_topic_;
+  can::DriverInterfaceSharedPtr driver_;
 
-    can::FrameListenerConstSharedPtr frame_listener_;
-    can::StateListenerConstSharedPtr state_listener_;
+  can::FrameListenerConstSharedPtr frame_listener_;
+  can::StateListenerConstSharedPtr state_listener_;
 
-    void frameCallback(const can::Frame& f);
-    void stateCallback(const can::State & s);
+  void frameCallback(const can::Frame & f);
+  void stateCallback(const can::State & s);
 };
 
-void convertSocketCANToMessage(const can::Frame& f, can_msgs::msg::Frame& m)
+void convertSocketCANToMessage(const can::Frame & f, can_msgs::msg::Frame & m)
 {
   m.id = f.id;
   m.dlc = f.dlc;
@@ -52,11 +54,10 @@ void convertSocketCANToMessage(const can::Frame& f, can_msgs::msg::Frame& m)
   m.is_rtr = f.is_rtr;
   m.is_extended = f.is_extended;
 
-  for (int i = 0; i < 8; i++)  // always copy all data, regardless of dlc.
-  {
+  for (int i = 0; i < 8; i++) {  // always copy all data, regardless of dlc.
     m.data[i] = f.data[i];
   }
-};
+}
 }  // namespace socketcan_bridge
 
 #endif  // SOCKETCAN_BRIDGE__SOCKETCAN_TO_TOPIC_HPP_

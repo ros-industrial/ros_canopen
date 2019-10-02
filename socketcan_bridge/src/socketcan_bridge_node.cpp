@@ -17,6 +17,8 @@
 #include <socketcan_bridge/topic_to_socketcan.hpp>
 #include <socketcan_bridge/socketcan_to_topic.hpp>
 #include <socketcan_interface/threading.hpp>
+
+#include <memory>
 #include <string>
 
 int main(int argc, char *argv[])
@@ -27,15 +29,14 @@ int main(int argc, char *argv[])
   std::string can_device;
   node->get_parameter_or<std::string>("can_device", can_device, "can0");
 
-  can::ThreadedSocketCANInterfaceSharedPtr driver = std::make_shared<can::ThreadedSocketCANInterface> ();
+  can::ThreadedSocketCANInterfaceSharedPtr driver =
+    std::make_shared<can::ThreadedSocketCANInterface>();
 
   if (!driver->init(can_device, 0))  // initialize device at can_device, 0 for no loopback.
   {
     RCLCPP_FATAL(node->get_logger(), "Failed to initialize can_device at %s", can_device.c_str());
     return 1;
-  }
-    else
-  {
+  } else {
     RCLCPP_INFO(node->get_logger(), "Successfully connected to %s.", can_device.c_str());
   }
 

@@ -16,6 +16,8 @@
 #include <socketcan_bridge/socketcan_to_topic.hpp>
 #include <socketcan_interface/string.hpp>
 #include <can_msgs/msg/frame.hpp>
+
+#include <memory>
 #include <string>
 
 /*
@@ -52,9 +54,11 @@ namespace socketcan_bridge
 
   void SocketCANToTopic::setup(const can::FilteredFrameListener::FilterVector &filters)
   {
-    frame_listener_.reset(new can::FilteredFrameListener(driver_,
-                                                         std::bind(&SocketCANToTopic::frameCallback, this, std::placeholders::_1),
-                                                         filters));
+    frame_listener_.reset(
+      new can::FilteredFrameListener(
+        driver_, std::bind(
+          &SocketCANToTopic::frameCallback, this, std::placeholders::_1),
+        filters));
 
     state_listener_ = driver_->createStateListenerM(this, &SocketCANToTopic::stateCallback);
   }
@@ -66,8 +70,8 @@ namespace socketcan_bridge
   */
   void SocketCANToTopic::setup(rclcpp::Node::SharedPtr node_ptr)
   {
-    //XmlRpc::XmlRpcValue filters;
-    //if(node_ptr->get_parameter("can_ids", filters)) return setup(filters);
+    // XmlRpc::XmlRpcValue filters;
+    // if(node_ptr->get_parameter("can_ids", filters)) return setup(filters);
     setup();
   }
 
@@ -75,19 +79,22 @@ namespace socketcan_bridge
   void SocketCANToTopic::frameCallback(const can::Frame& f)
   {
     // ROS_DEBUG("Message came in: %s", can::tostring(f, true).c_str());
-    if (!f.isValid())
-    {
-      RCLCPP_ERROR(node_ptr_->get_logger(), "Invalid frame from SocketCAN: id: %#04x, length: %d, is_extended: %d, is_error: %d, is_rtr: %d",
-                f.id, f.dlc, f.is_extended, f.is_error, f.is_rtr);
+    if (!f.isValid()) {
+      RCLCPP_ERROR(
+        node_ptr_->get_logger(),
+        "Invalid frame from SocketCAN: id: %#04x, length: %d, is_extended: %d,"
+        "is_error: %d, is_rtr: %d",
+        f.id, f.dlc, f.is_extended, f.is_error, f.is_rtr);
       return;
-    }
-    else
-    {
+    } else {
       if (f.is_error)
       {
         // can::tostring cannot be used for dlc > 8 frames. It causes an crash
         // due to usage of boost::array for the data array. The should always work.
-        RCLCPP_WARN(node_ptr_->get_logger(), "Received frame is error: %s", can::tostring(f, true).c_str());
+        RCLCPP_WARN(
+          node_ptr_->get_logger(),
+          "Received frame is error: %s",
+          can::tostring(f, true).c_str());
       }
     }
 
@@ -105,13 +112,18 @@ namespace socketcan_bridge
   {
     std::string err;
     driver_->translateError(s.internal_error, err);
-    if (!s.internal_error)
-    {
-      RCLCPP_INFO(node_ptr_->get_logger(), "State: %s, asio: %s", err.c_str(), s.error_code.message().c_str());
-    }
-    else
-    {
-      RCLCPP_ERROR(node_ptr_->get_logger(), "Error: %s, asio: %s", err.c_str(), s.error_code.message().c_str());
+    if (!s.internal_error) {
+      RCLCPP_INFO(
+        node_ptr_->get_logger(),
+        "State: %s, asio: %s",
+        err.c_str(),
+        s.error_code.message().c_str());
+    } else {
+      RCLCPP_ERROR(
+        node_ptr_->get_logger(),
+        "Error: %s, asio: %s",
+        err.c_str(),
+        s.error_code.message().c_str());
     }
   };
 };  // namespace socketcan_bridge

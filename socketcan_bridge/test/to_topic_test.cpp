@@ -22,7 +22,11 @@
 
 #include <gtest/gtest.h>
 #include <rclcpp/rclcpp.hpp>
+
+#include <memory>
 #include <list>
+#include <string>
+#include <vector>
 
 class msgCollector
 {
@@ -37,7 +41,9 @@ class msgCollector
     }
 };
 
-std::string convertMessageToString(const can_msgs::msg::Frame &msg, bool lc=true) {
+std::string convertMessageToString(
+  const can_msgs::msg::Frame &msg, bool lc = true)
+{
   can::Frame f;
   socketcan_bridge::convertMessageToSocketCAN(msg, f);
   return can::tostring(f, lc);
@@ -61,7 +67,8 @@ TEST(SocketCANToTopicTest, checkCorrectData)
   msgCollector message_collector_;
 
   // register for messages on received_messages.
-  ros::Subscriber subscriber_ = nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
+  ros::Subscriber subscriber_ =
+    nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
 
   // create a can frame
   can::Frame f;
@@ -119,7 +126,8 @@ TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
   msgCollector message_collector_;
 
   // register for messages on received_messages.
-  ros::Subscriber subscriber_ = nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
+  ros::Subscriber subscriber_ =
+    nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
 
   // create a message
   can::Frame f;
@@ -150,7 +158,7 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   // create the dummy interface
   can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
 
-  //create can_id vector with id that should be passed and published to ros
+  // create can_id vector with id that should be passed and published to ros
   std::vector<unsigned int> pass_can_ids;
   pass_can_ids.push_back(0x1337);
 
@@ -165,7 +173,8 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   msgCollector message_collector_;
 
   // register for messages on received_messages.
-  ros::Subscriber subscriber_ = nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
+  ros::Subscriber subscriber_ =
+    nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
 
   // create a can frame
   can::Frame f;
@@ -208,7 +217,7 @@ TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
   // create the dummy interface
   can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
 
-  //create can_id vector with id that should not be received on can bus
+  // create can_id vector with id that should not be received on can bus
   std::vector<unsigned int> pass_can_ids;
   pass_can_ids.push_back(0x300);
 
@@ -223,7 +232,8 @@ TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
   msgCollector message_collector_;
 
   // register for messages on received_messages.
-  ros::Subscriber subscriber_ = nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
+  ros::Subscriber subscriber_ =
+    nh.subscribe("received_messages", 1, &msgCollector::msgCallback, &message_collector_);
 
   // create a can frame
   can::Frame f;
@@ -269,7 +279,8 @@ TEST(SocketCANToTopicTest, checkMaskFilter)
   msgCollector message_collector_;
 
   // register for messages on received_messages.
-  ros::Subscriber subscriber_ = nh.subscribe("received_messages", 10, &msgCollector::msgCallback, &message_collector_);
+  ros::Subscriber subscriber_ =
+    nh.subscribe("received_messages", 10, &msgCollector::msgCallback, &message_collector_);
 
   const std::string pass1("300#1234"), nopass1("302#9999"), pass2("301#5678");
 
