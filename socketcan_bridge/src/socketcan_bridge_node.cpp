@@ -26,6 +26,8 @@ int main(int argc, char * argv[])
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("socketcan_bridge_node");
 
+  node->declare_parameter("can_device");
+
   std::string can_device;
   node->get_parameter_or<std::string>("can_device", can_device, "can0");
 
