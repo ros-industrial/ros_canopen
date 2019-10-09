@@ -92,9 +92,7 @@ install(
     socketcan_to_topic_node
     topic_to_socketcan
     topic_to_socketcan_node
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+    DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
