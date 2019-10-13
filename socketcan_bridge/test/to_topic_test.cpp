@@ -34,6 +34,8 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
 #include <list>
+#include <string>
+#include <vector>
 
 class msgCollector
 {
@@ -48,7 +50,8 @@ class msgCollector
     }
 };
 
-std::string convertMessageToString(const can_msgs::Frame &msg, bool lc=true) {
+std::string convertMessageToString(const can_msgs::Frame &msg, bool lc = true)
+{
   can::Frame f;
   socketcan_bridge::convertMessageToSocketCAN(msg, f);
   return can::tostring(f, lc);
@@ -161,7 +164,7 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   // create the dummy interface
   can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
 
-  //create can_id vector with id that should be passed and published to ros
+  // create can_id vector with id that should be passed and published to ros
   std::vector<unsigned int> pass_can_ids;
   pass_can_ids.push_back(0x1337);
 
@@ -219,7 +222,7 @@ TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
   // create the dummy interface
   can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
 
-  //create can_id vector with id that should not be received on can bus
+  // create can_id vector with id that should not be received on can bus
   std::vector<unsigned int> pass_can_ids;
   pass_can_ids.push_back(0x300);
 
