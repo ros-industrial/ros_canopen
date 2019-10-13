@@ -109,7 +109,7 @@ if(CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
 
   roslint_cpp()
-  #for use with catkin_make roslint_socketcan_bridge
+  roslint_add_test()
 
   # unit test for the can_msgs::Frame and can::Frame types.
   catkin_add_gtest(test_conversion
