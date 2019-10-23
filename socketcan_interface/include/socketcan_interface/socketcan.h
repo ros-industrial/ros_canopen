@@ -37,8 +37,20 @@ public:
         return init(device, loopback, NoSettings());
     }
     virtual bool init(const std::string &device, bool loopback, const Settings &settings) override {
+        const can_err_mask_t all_errors = ( CAN_ERR_TX_TIMEOUT   /* TX timeout (by netdevice driver) */
+                                          | CAN_ERR_LOSTARB      /* lost arbitration    / data[0]    */
+                                          | CAN_ERR_CRTL         /* controller problems / data[1]    */
+                                          | CAN_ERR_PROT         /* protocol violations / data[2..3] */
+                                          | CAN_ERR_TRX          /* transceiver status  / data[4]    */
+                                          | CAN_ERR_ACK          /* received no ACK on transmission */
+                                          | CAN_ERR_BUSOFF       /* bus off */
+                                          | CAN_ERR_BUSERROR     /* bus error (may flood!) */
+                                          | CAN_ERR_RESTARTED    /* controller restarted */
+                                          );
+
         State s = getState();
         if(s.driver_state == State::closed){
+            can_err_mask_t ignored_errors = settings.get_optional("ignored_errors", 0);
             sc_ = 0;
             device_ = device;
             loopback_ = loopback;
@@ -58,17 +70,7 @@ public:
                 close(sc);
                 return false;
             }
-            can_err_mask_t err_mask =
-                ( CAN_ERR_TX_TIMEOUT   /* TX timeout (by netdevice driver) */
-                | CAN_ERR_LOSTARB      /* lost arbitration    / data[0]    */
-                | CAN_ERR_CRTL         /* controller problems / data[1]    */
-                | CAN_ERR_PROT         /* protocol violations / data[2..3] */
-                | CAN_ERR_TRX          /* transceiver status  / data[4]    */
-                | CAN_ERR_ACK           /* received no ACK on transmission */
-                | CAN_ERR_BUSOFF        /* bus off */
-                //CAN_ERR_BUSERROR      /* bus error (may flood!) */
-                | CAN_ERR_RESTARTED     /* controller restarted */
-            );
+            can_err_mask_t err_mask = (all_errors & ~ignored_errors) | CAN_ERR_BUSOFF;
 
             ret = setsockopt(sc, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
                &err_mask, sizeof(err_mask));
@@ -112,6 +114,7 @@ public:
             }
             setInternalError(0);
             setDriverState(State::open);
+            settings_.set("ignored_errors", ignored_errors);
             sc_ = sc;
             return true;
         }
