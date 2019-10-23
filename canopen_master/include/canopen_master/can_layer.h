@@ -66,7 +66,7 @@ public:
     virtual void handleInit(LayerStatus &status){
 	if(thread_){
             status.warn("CAN thread already running");
-        } else if(!driver_->init(device_, loopback_)) {
+        } else if(!driver_->init(device_, loopback_, can::NoSettings())) {
             status.error("CAN init failed");
         } else {
             can::StateWaiter waiter(driver_.get());

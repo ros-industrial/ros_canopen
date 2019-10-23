@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
   can::ThreadedSocketCANInterfaceSharedPtr driver = std::make_shared<can::ThreadedSocketCANInterface> ();
 
-  if (!driver->init(can_device, 0))  // initialize device at can_device, 0 for no loopback.
+  if (!driver->init(can_device, 0, can::NoSettings()))  // initialize device at can_device, 0 for no loopback.
   {
     ROS_FATAL("Failed to initialize can_device at %s", can_device.c_str());
     return 1;

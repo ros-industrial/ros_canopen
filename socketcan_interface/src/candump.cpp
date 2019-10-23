@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
     FrameListenerConstSharedPtr frame_printer = g_driver->createMsgListener(print_frame);
     StateListenerConstSharedPtr error_printer = g_driver->createStateListener(print_error);
 
-    if(!g_driver->init(argv[1], false)){
+    if(!g_driver->init(argv[1], false, can::NoSettings())){
         print_error(g_driver->getState());
         return 1;
     }

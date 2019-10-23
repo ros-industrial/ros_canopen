@@ -8,6 +8,7 @@
 #include <boost/system/error_code.hpp>
 
 #include "socketcan_interface/delegates.h"
+#include "socketcan_interface/logging.h"
 #include "socketcan_interface/settings.h"
 
 namespace can{
@@ -174,17 +175,25 @@ public:
 using CommInterfaceSharedPtr = std::shared_ptr<CommInterface>;
 using FrameListenerConstSharedPtr = CommInterface::FrameListenerConstSharedPtr;
 
-
 class DriverInterface : public CommInterface, public StateInterface {
 public:
+    [[deprecated("provide settings explicitly")]]  virtual bool init(const std::string &device, bool loopback) = 0;
+
     /**
      * initialize interface
      *
      * @param[in] device: driver-specific device name/path
      * @param[in] loopback: loop-back own messages
+     * @param[in] settings: driver-specific settings
      * @return true if device was initialized succesfully, false otherwise
      */
-    virtual bool init(const std::string &device, bool loopback) = 0;
+    virtual bool init(const std::string &device, bool loopback, const Settings &settings) {
+        ROSCANOPEN_ERROR("socketcan_interface", "Driver does not support custom settings");
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        return init(device, loopback);
+        #pragma GCC diagnostic pop
+    }
 
     /**
      * Recover interface after errors and emergency stops
@@ -217,7 +226,5 @@ using DriverInterfaceSharedPtr = std::shared_ptr<DriverInterface>;
 
 
 } // namespace can
-
-#include "logging.h"
 
 #endif

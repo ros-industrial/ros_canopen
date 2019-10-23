@@ -42,8 +42,11 @@ template<typename WrappedInterface> class ThreadedInterface : public WrappedInte
         WrappedInterface::run();
     }
 public:
-    virtual bool init(const std::string &device, bool loopback) {
-        if(!thread_ && WrappedInterface::init(device, loopback)){
+    [[deprecated("provide settings explicitly")]] virtual bool init(const std::string &device, bool loopback) override {
+        return init(device, loopback, NoSettings());
+    }
+    virtual bool init(const std::string &device, bool loopback, const Settings &settings) override {
+        if(!thread_ && WrappedInterface::init(device, loopback, settings)){
             StateWaiter waiter(this);
             thread_.reset(new boost::thread(&ThreadedInterface::run_thread, this));
             return waiter.wait(can::State::ready, boost::posix_time::seconds(1));
