@@ -8,6 +8,7 @@
 #include <boost/system/error_code.hpp>
 
 #include "socketcan_interface/delegates.h"
+#include "socketcan_interface/settings.h"
 
 namespace can{
 
