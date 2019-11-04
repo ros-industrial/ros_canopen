@@ -121,7 +121,7 @@ struct Frame : public Header
   Frame()
   : Header(), dlc(0) {}
 
-  Frame(const Header & h, unsigned char l = 0)  // NOLINT
+  explicit Frame(const Header & h, unsigned char l = 0)
   : Header(h), dlc(l) {}
 
   value_type * c_array()
