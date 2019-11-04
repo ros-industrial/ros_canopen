@@ -1,9 +1,23 @@
-// Bring in my package's API, which is what I'm testing
-#include <socketcan_interface/string.h>
+// Copyright (c) 2016-2019, Mathias Lüdtke, AutonomouStuff
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// Bring in gtest
 #include <gtest/gtest.h>
 
+#include <string>
+
+#include "socketcan_interface/string.hpp"
 
 TEST(StringTest, stringconversion)
 {
@@ -22,7 +36,7 @@ TEST(StringTest, stringconversion)
   EXPECT_EQ(f3.fullid(), 0x80001337);
   EXPECT_TRUE(f3.isValid());
   EXPECT_TRUE(f3.is_extended);
-  EXPECT_EQ(s4, can::tostring(f3, true)); // 8000 is converted to 0000
+  EXPECT_EQ(s4, can::tostring(f3, true));  // 8000 is converted to 0000
 
   can::Frame f4 = can::toframe(s4);
   EXPECT_EQ(f4.fullid(), 0x80001337);
@@ -43,11 +57,11 @@ TEST(StringTest, stringconversion)
   EXPECT_TRUE(f6.isValid());
   EXPECT_TRUE(f6.is_rtr);
   EXPECT_EQ(s6, can::tostring(f6, true));
-
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv){
-testing::InitGoogleTest(&argc, argv);
-return RUN_ALL_TESTS();
+int main(int argc, char ** argv)
+{
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

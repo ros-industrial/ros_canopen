@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019, Mathias Lüdtke, AutonomouStuff
+// Copyright (c) 2019 Mathias Lüdtke
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -13,7 +13,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <class_loader/register_macro.hpp>
-#include "socketcan_interface/socketcan.hpp"
+#ifndef SOCKETCAN_INTERFACE__MAKE_SHARED_HPP_
+#define SOCKETCAN_INTERFACE__MAKE_SHARED_HPP_
 
-CLASS_LOADER_REGISTER_CLASS(can::SocketCANInterface, can::DriverInterface)
+#include <memory>
+#define ROSCANOPEN_MAKE_SHARED std::make_shared
+
+#endif  // SOCKETCAN_INTERFACE__MAKE_SHARED_HPP_
