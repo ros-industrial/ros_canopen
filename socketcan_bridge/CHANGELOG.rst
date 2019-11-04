@@ -2,8 +2,8 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.2 (2019-11-04)
+------------------
 * fix roslint errors in socketcan_bridge
 * run roslint as part of run_tests
 * enable rosconsole_bridge bindings

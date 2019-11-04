@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.2 (2019-11-04)
+------------------
 * enable rosconsole_bridge bindings
 * switch to new logging macros
 * add logging based on console_bridge

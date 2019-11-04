@@ -2,8 +2,8 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.2 (2019-11-04)
+------------------
 * implemented LayerStatus::equals<>()
 * added support for SYNC counter in SimpleSyncLayer (`#349 <https://github.com/ipa-mdl/ros_canopen/issues/349>`_)
 * enable rosconsole_bridge bindings

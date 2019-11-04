@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>socketcan_interface</name>
-  <version>0.8.1</version>
+  <version>0.8.2</version>
   <description>Generic CAN interface description with helpers for filtering and driver implementation. Further a socketcan implementation based on boost::asio is included.</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
