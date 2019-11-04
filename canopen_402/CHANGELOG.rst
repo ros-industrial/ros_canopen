@@ -2,6 +2,12 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* enable rosconsole_bridge bindings
+* switch to new logging macros
+* Contributors: Mathias Lüdtke
+
 0.8.1 (2019-07-14)
 ------------------
 * Set C++ standard to c++14
