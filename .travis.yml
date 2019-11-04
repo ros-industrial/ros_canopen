@@ -10,8 +10,8 @@ env:
   global:
     - CCACHE_DIR=$HOME/.ccache
   matrix:
-    - ROS_DISTRO="crystal" ROS_REPO=testing
-    - ROS_DISTRO="crystal" ROS_REPO=main
+    - ROS_DISTRO="crystal" ROS_REPO=testing UPSTREAM_WORKSPACE="github:ament/ament_lint#dashing"
+    - ROS_DISTRO="crystal" ROS_REPO=main  UPSTREAM_WORKSPACE="github:ament/ament_lint#dashing"
     - ROS_DISTRO="dashing" ROS_REPO=testing
     - ROS_DISTRO="dashing" ROS_REPO=main
     - ROS_DISTRO="eloquent" ROS_REPO=testing
