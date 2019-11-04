@@ -2,6 +2,9 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.7.11 (2019-07-14)
 -------------------
 

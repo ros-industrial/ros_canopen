@@ -2,6 +2,11 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* added support for SYNC counter in SimpleSyncLayer (`#349 <https://github.com/ipa-mdl/ros_canopen/issues/349>`_)
+* Contributors: Mathias Lüdtke
+
 0.7.11 (2019-07-14)
 -------------------
 

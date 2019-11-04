@@ -2,6 +2,9 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.7.11 (2019-07-14)
 -------------------
 
