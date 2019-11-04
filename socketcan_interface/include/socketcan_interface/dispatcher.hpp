@@ -151,14 +151,6 @@ public:
     return BaseClass::DispatcherBase::createListener(ptr, callable);
   }
 
-  template<typename T>
-  [[deprecated("provide key explicitly")]]
-  typename BaseClass::ListenerConstSharedPtr createListener(
-    const T & key, const typename BaseClass::Callable & callable)
-  {
-    return createListener(static_cast<K>(key), callable);
-  }
-
   void dispatch(const K & key, const typename BaseClass::Type & obj)
   {
     boost::mutex::scoped_lock lock(BaseClass::mutex_);
@@ -170,12 +162,7 @@ public:
 
     BaseClass::dispatcher_->dispatch_nolock(obj);
   }
-
-  [[deprecated("provide key explicitly")]]
-  void dispatch(const typename BaseClass::Type & obj)
-  {
-    return dispatch(static_cast<K>(obj), obj);
-  }
+  void dispatch(const typename BaseClass::Type & obj) = delete;
 
   operator typename BaseClass::Callable()
   {

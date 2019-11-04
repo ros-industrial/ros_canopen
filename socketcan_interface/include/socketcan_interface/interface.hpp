@@ -25,7 +25,6 @@
 #include <memory>
 #include <functional>
 
-#include "socketcan_interface/delegates.hpp"
 #include "socketcan_interface/logging.hpp"
 
 namespace can
@@ -62,12 +61,6 @@ struct Header
   unsigned int key() const
   {
     return is_error ? (ERROR_MASK) : fullid();
-  }
-
-  [[deprecated("use key() instead")]]
-  explicit operator unsigned int() const
-  {
-    return key();
   }
 
   /** constructor with default parameters
@@ -183,7 +176,6 @@ class StateInterface
 {
 public:
   using StateFunc = std::function<void (const State &)>;
-  using StateDelegate [[deprecated("use StateFunc instead")]] = DelegateHelper<StateFunc>;
   using StateListener = Listener<const StateFunc, const State &>;
   using StateListenerConstSharedPtr = StateListener::ListenerConstSharedPtr;
 
@@ -210,7 +202,6 @@ class CommInterface
 {
 public:
   using FrameFunc = std::function<void (const Frame &)>;
-  using FrameDelegate [[deprecated("use FrameFunc instead")]] = DelegateHelper<FrameFunc>;
   using FrameListener = Listener<const FrameFunc, const Frame &>;
   using FrameListenerConstSharedPtr = FrameListener::ListenerConstSharedPtr;
 

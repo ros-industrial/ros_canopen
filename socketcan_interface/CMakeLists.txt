@@ -95,14 +95,6 @@ if(BUILD_TESTING)
     ${Boost_LIBRARIES}
   )
 
-  ament_add_gtest(${PROJECT_NAME}-test_delegates
-    test/test_delegates.cpp
-  )
-  target_link_libraries(${PROJECT_NAME}-test_delegates
-    ${PROJECT_NAME}_string
-    ${Boost_LIBRARIES}
-  )
-
   ament_add_gtest(${PROJECT_NAME}-test_string
     test/test_string.cpp
   )

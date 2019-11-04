@@ -45,19 +45,19 @@ TEST(DispatcherTest, testFilteredDispatcher)
   for (size_t i = 0; i < max_id; i += 2) {
     listeners.push_back(
       dispatcher.createListener(
-        can::MsgHeader(i),
-        can::CommInterface::FrameDelegate(&counter1, &Counter::count)));
+        i,
+        std::bind(&Counter::count, &counter1, std::placeholders::_1)));
     listeners.push_back(
       dispatcher.createListener(
-        can::MsgHeader(i + 1),
-        can::CommInterface::FrameDelegate(&counter2, &Counter::count)));
+        i + 1,
+        std::bind(&Counter::count, &counter2, std::placeholders::_1)));
   }
 
   boost::chrono::steady_clock::time_point start = boost::chrono::steady_clock::now();
   const size_t num = 1000 * max_id;
 
   for (size_t i = 0; i < num; ++i) {
-    dispatcher.dispatch(can::Frame(can::MsgHeader(i % max_id)));
+    dispatcher.dispatch(i % max_id, can::Frame(can::MsgHeader(i % max_id)));
   }
   boost::chrono::steady_clock::time_point now = boost::chrono::steady_clock::now();
   double diff = boost::chrono::duration_cast<boost::chrono::duration<double>>(now - start).count();
@@ -73,7 +73,7 @@ TEST(DispatcherTest, testSimpleDispatcher)
   Counter counter;
 
   can::CommInterface::FrameListenerConstSharedPtr listener =
-    dispatcher.createListener(can::CommInterface::FrameDelegate(&counter, &Counter::count));
+    dispatcher.createListener(std::bind(&Counter::count, &counter, std::placeholders::_1));
 
   boost::chrono::steady_clock::time_point start = boost::chrono::steady_clock::now();
   const size_t max_id = (1 << 11);
@@ -83,25 +83,6 @@ TEST(DispatcherTest, testSimpleDispatcher)
     dispatcher.dispatch(can::Frame(can::MsgHeader(i % max_id)));
   }
 
-  boost::chrono::steady_clock::time_point now = boost::chrono::steady_clock::now();
-  double diff = boost::chrono::duration_cast<boost::chrono::duration<double>>(now - start).count();
-
-  EXPECT_EQ(num, counter.counter_);
-  std::cout << std::fixed << diff << "\t" << num << "\t" << num / diff << std::endl;
-}
-
-TEST(DispatcherTest, testDelegateOnly)
-{
-  Counter counter;
-  can::CommInterface::FrameDelegate delegate(&counter, &Counter::count);
-
-  boost::chrono::steady_clock::time_point start = boost::chrono::steady_clock::now();
-  const size_t max_id = (1 << 11);
-  const size_t num = 10000 * max_id;
-
-  for (size_t i = 0; i < num; ++i) {
-    delegate(can::Frame(can::MsgHeader(i % max_id)));
-  }
   boost::chrono::steady_clock::time_point now = boost::chrono::steady_clock::now();
   double diff = boost::chrono::duration_cast<boost::chrono::duration<double>>(now - start).count();
 
