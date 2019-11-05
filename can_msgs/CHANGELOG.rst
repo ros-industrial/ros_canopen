@@ -2,6 +2,11 @@
 Changelog for package can_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* port can_msgs to ROS2
+* Contributors: Joshua Whitley, Mathias Lüdtke
+
 0.8.2 (2019-11-04)
 ------------------
 
