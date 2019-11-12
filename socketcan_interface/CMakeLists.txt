@@ -54,7 +54,6 @@ target_link_libraries(${PROJECT_NAME}_plugin
 pluginlib_export_plugin_description_file(${PROJECT_NAME} socketcan_interface_plugin.xml)
 
 ament_export_dependencies(
-  ament_cmake
   pluginlib
   Boost
 )
