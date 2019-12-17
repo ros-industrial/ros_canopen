@@ -12,5 +12,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: 'ipa-mdl/industrial_ci@github-action'
+      - uses: 'ros-industrial/industrial_ci@master'
         env: ${{matrix.env}}
