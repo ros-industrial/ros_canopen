@@ -19,7 +19,7 @@ namespace can {
       template <typename T> bool get(const std::string &n, T& val) const {
           std::string repr;
           if(!getRepr(n, repr)) return false;
-          val =  boost::lexical_cast<T>(repr);
+          val = boost::lexical_cast<T>(repr);
           return true;
       }
       virtual ~Settings() {}
@@ -29,7 +29,7 @@ namespace can {
 
   class NoSettings : public Settings {
   private:
-      virtual bool getRepr(const std::string &n, std::string & repr) const { return true; }
+      virtual bool getRepr(const std::string &n, std::string & repr) const { return false; }
   };
 
   class SettingsMap : public Settings {
@@ -41,7 +41,7 @@ namespace can {
       return true;
     }
   public:
-    template <typename T> void set(const std::string &n, T& val) {
+    template <typename T> void set(const std::string &n, const T& val) {
         settings_[n] = boost::lexical_cast<std::string>(val);
     }
   };

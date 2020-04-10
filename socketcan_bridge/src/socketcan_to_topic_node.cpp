@@ -32,7 +32,6 @@
 #include <string>
 
 
-
 int main(int argc, char *argv[])
 {
   ros::init(argc, argv, "socketcan_to_topic_node");
@@ -42,9 +41,26 @@ int main(int argc, char *argv[])
   std::string can_device;
   nh_param.param<std::string>("can_device", can_device, "can0");
 
+  // get ignored errors from ros parameters
+  can::ignored_errors_t ignored_errors;
+  nh_param.param<int>("ignore_errors/can_err_tx_timeout", ignored_errors["can_err_tx_timeout"], -1);
+  nh_param.param<int>("ignore_errors/can_err_lostarb",    ignored_errors["can_err_lostarb"],    -1);
+  nh_param.param<int>("ignore_errors/can_err_ctrl",       ignored_errors["can_err_ctrl"],       -1);
+  nh_param.param<int>("ignore_errors/can_err_prot",       ignored_errors["can_err_prot"],       -1);
+  nh_param.param<int>("ignore_errors/can_err_trx",        ignored_errors["can_err_trx"],        -1);
+  nh_param.param<int>("ignore_errors/can_err_ack",        ignored_errors["can_err_ack"],        -1);
+  nh_param.param<int>("ignore_errors/can_err_busoff",     ignored_errors["can_err_busoff"],     -1);
+  nh_param.param<int>("ignore_errors/can_err_buserror",   ignored_errors["can_err_buserror"],   -1);
+  nh_param.param<int>("ignore_errors/can_err_restarted",  ignored_errors["can_err_restarted"],  -1);
+
+  auto settings = can::SettingsMap();
+
+  settings.set("ignored_errors", ignored_errors);
+
+
   can::ThreadedSocketCANInterfaceSharedPtr driver = std::make_shared<can::ThreadedSocketCANInterface> ();
 
-  if (!driver->init(can_device, 0, can::NoSettings()))  // initialize device at can_device, 0 for no loopback.
+  if (!driver->init(can_device, 0, settings))  // initialize device at can_device, 0 for no loopback.
   {
     ROS_FATAL("Failed to initialize can_device at %s", can_device.c_str());
     return 1;

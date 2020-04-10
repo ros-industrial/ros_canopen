@@ -14,9 +14,48 @@
 #include <linux/can/error.h>
 
 #include <cstring>
+#include <iostream>
 
 #include <socketcan_interface/dispatcher.h>
 #include <socketcan_interface/string.h>
+
+#include "socketcan_interface/settings.h"
+#include "socketcan_interface/serializable_map.h"
+
+namespace can {
+
+typedef serializable_map<std::string, int> ignored_errors_t;
+typedef std::map<std::string, std::pair<can_err_mask_t, bool>> ignored_errors_defaults_t;
+
+// default error settings
+ignored_errors_defaults_t ignore_error_defaults {
+  {"can_err_tx_timeout", {CAN_ERR_TX_TIMEOUT, false}}, /* TX timeout (by netdevice driver) */
+  {"can_err_lostarb",    {CAN_ERR_LOSTARB,    true }}, /* lost arbitration    / data[0]    */
+  {"can_err_crtl",       {CAN_ERR_CRTL,       false}}, /* controller problems / data[1]    */
+  {"can_err_prot",       {CAN_ERR_PROT,       false}}, /* protocol violations / data[2..3] */
+  {"can_err_trx",        {CAN_ERR_TRX,        false}}, /* transceiver status  / data[4]    */
+  {"can_err_ack",        {CAN_ERR_ACK,        false}}, /* received no ACK on transmission */
+  {"can_err_busoff",     {CAN_ERR_BUSOFF,     false}}, /* bus off */
+  {"can_err_buserror",   {CAN_ERR_BUSERROR,   false}}, /* bus error (may flood!) */
+  {"can_err_restarted",  {CAN_ERR_RESTARTED,  false}}  /* controller restarted */
+};
+
+} // namespace can
+
+
+namespace boost {
+    template<>
+    can::ignored_errors_t lexical_cast(const std::string & s) {
+        can::ignored_errors_t res;
+        res.deserialize(s);
+        return res;
+    }
+    template<>
+    std::string lexical_cast(const can::ignored_errors_t & i) {
+        return i.serialize();
+    }
+} // namespace boost
+
 
 namespace can {
 
@@ -37,20 +76,10 @@ public:
         return init(device, loopback, NoSettings());
     }
     virtual bool init(const std::string &device, bool loopback, const Settings &settings) override {
-        const can_err_mask_t all_errors = ( CAN_ERR_TX_TIMEOUT   /* TX timeout (by netdevice driver) */
-                                          | CAN_ERR_LOSTARB      /* lost arbitration    / data[0]    */
-                                          | CAN_ERR_CRTL         /* controller problems / data[1]    */
-                                          | CAN_ERR_PROT         /* protocol violations / data[2..3] */
-                                          | CAN_ERR_TRX          /* transceiver status  / data[4]    */
-                                          | CAN_ERR_ACK          /* received no ACK on transmission */
-                                          | CAN_ERR_BUSOFF       /* bus off */
-                                          | CAN_ERR_BUSERROR     /* bus error (may flood!) */
-                                          | CAN_ERR_RESTARTED    /* controller restarted */
-                                          );
-
         State s = getState();
         if(s.driver_state == State::closed){
-            can_err_mask_t ignored_errors = settings.get_optional("ignored_errors", 0);
+            ignored_errors_t ignored_errors;
+            settings.get("ignored_errors", ignored_errors);
             sc_ = 0;
             device_ = device;
             loopback_ = loopback;
@@ -70,7 +99,20 @@ public:
                 close(sc);
                 return false;
             }
-            can_err_mask_t err_mask = (all_errors & ~ignored_errors) | CAN_ERR_BUSOFF;
+
+            can_err_mask_t err_mask = 0;
+            ignored_errors_t::iterator ie_it;
+            for (ignored_errors_defaults_t::iterator it = ignore_error_defaults.begin(); it != ignore_error_defaults.end(); ++it) {
+                if ((ie_it = ignored_errors.find(it->first)) == ignored_errors.end() || ie_it->second == -1) {
+                    // no user setting found, or user setting equals -1: use default
+                    // std::cout << it->first << " -> default (" << it->second.first * !it->second.second << ")" << std::endl;
+                    err_mask |= it->second.first * !it->second.second;
+                } else {
+                    // use user setting
+                    // std::cout << it->first << " -> user (" << it->second.first * !ie_it->second << ")" << std::endl;
+                    err_mask |= it->second.first * !ie_it->second;
+                }
+            }
 
             ret = setsockopt(sc, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
                &err_mask, sizeof(err_mask));
