@@ -105,11 +105,9 @@ public:
             for (ignored_errors_defaults_t::iterator it = ignore_error_defaults.begin(); it != ignore_error_defaults.end(); ++it) {
                 if ((ie_it = ignored_errors.find(it->first)) == ignored_errors.end() || ie_it->second == -1) {
                     // no user setting found, or user setting equals -1: use default
-                    // std::cout << it->first << " -> default (" << it->second.first * !it->second.second << ")" << std::endl;
                     err_mask |= it->second.first * !it->second.second;
                 } else {
                     // use user setting
-                    // std::cout << it->first << " -> user (" << it->second.first * !ie_it->second << ")" << std::endl;
                     err_mask |= it->second.first * !ie_it->second;
                 }
             }
