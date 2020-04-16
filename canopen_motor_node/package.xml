@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>canopen_motor_node</name>
-  <version>0.8.1</version>
+  <version>0.8.2</version>
   <description>canopen_chain_node specialization for handling of canopen_402 motor devices. It facilitates interface abstraction with ros_control.</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>

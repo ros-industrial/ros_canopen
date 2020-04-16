@@ -2,6 +2,14 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.2 (2019-11-04)
+------------------
+* rename to logWarning to fix build on Debian stretch
+* log the result of all services in RosChain
+* enable rosconsole_bridge bindings
+* switch to new logging macros
+* Contributors: Mathias Lüdtke
+
 0.8.1 (2019-07-14)
 ------------------
 * Set C++ standard to c++14

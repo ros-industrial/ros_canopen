@@ -2,6 +2,16 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.2 (2019-11-04)
+------------------
+* implemented LayerStatus::equals<>()
+* added support for SYNC counter in SimpleSyncLayer (`#349 <https://github.com/ipa-mdl/ros_canopen/issues/349>`_)
+* enable rosconsole_bridge bindings
+* switch to new logging macros
+* add logging based on console_bridge
+* removed implicit Header operator
+* Contributors: Mathias Lüdtke
+
 0.8.1 (2019-07-14)
 ------------------
 * Set C++ standard to c++14
