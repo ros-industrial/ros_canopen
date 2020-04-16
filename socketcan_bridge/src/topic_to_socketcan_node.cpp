@@ -32,15 +32,19 @@
 #include <string>
 
 
-#define GET_IGNORE_ERROR_ROS_PARAM(NAME) \
-  bool NAME ## _param;\
-  if (nh_param.getParam("ignore_errors/"#NAME, NAME ## _param)) {\
-    ROS_INFO("Ignoring %s", #NAME); \
-    ignored_errors[#NAME] = static_cast<int>(NAME ## _param);\
-  } else {\
-    ignored_errors[#NAME] = -1;\
-  }\
-
+int get_ignore_error_param(ros::NodeHandle nh, std::string param_name)
+{
+  bool param;
+  if (nh.getParam("ignore_errors/"+param_name, param))
+  {
+    ROS_INFO("Ignoring %s", param_name.c_str());
+    return static_cast<int>(param);
+  }
+  else
+  {
+    return -1;
+  }
+}
 
 int main(int argc, char *argv[])
 {
@@ -53,15 +57,15 @@ int main(int argc, char *argv[])
 
   // get ignored errors from ros parameters
   can::ignored_errors_t ignored_errors;
-  GET_IGNORE_ERROR_ROS_PARAM(can_err_tx_timeout);
-  GET_IGNORE_ERROR_ROS_PARAM(can_err_lostarb);
-  GET_IGNORE_ERROR_ROS_PARAM(can_err_crtl);
-  GET_IGNORE_ERROR_ROS_PARAM(can_err_prot);
-  GET_IGNORE_ERROR_ROS_PARAM(can_err_trx);
-  GET_IGNORE_ERROR_ROS_PARAM(can_err_ack);
-  GET_IGNORE_ERROR_ROS_PARAM(can_err_busoff);
-  GET_IGNORE_ERROR_ROS_PARAM(can_err_buserror);
-  GET_IGNORE_ERROR_ROS_PARAM(can_err_restarted);
+  ignored_errors["can_err_tx_timeout"] = get_ignore_error_param(nh, "can_err_tx_timeout");
+  ignored_errors["can_err_lostarb"] = get_ignore_error_param(nh, "can_err_lostarb");
+  ignored_errors["can_err_crtl"] = get_ignore_error_param(nh, "can_err_crtl");
+  ignored_errors["can_err_prot"] = get_ignore_error_param(nh, "can_err_prot");
+  ignored_errors["can_err_trx"] = get_ignore_error_param(nh, "can_err_trx");
+  ignored_errors["can_err_ack"] = get_ignore_error_param(nh, "can_err_ack");
+  ignored_errors["can_err_busoff"] = get_ignore_error_param(nh, "can_err_busoff");
+  ignored_errors["can_err_buserror"] = get_ignore_error_param(nh, "can_err_buserror");
+  ignored_errors["can_err_restarted"] = get_ignore_error_param(nh, "can_err_restarted");
 
   auto settings = can::SettingsMap();
 
