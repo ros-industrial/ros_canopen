@@ -35,6 +35,7 @@
 #define GET_IGNORE_ERROR_ROS_PARAM(NAME) \
   bool NAME ## _param;\
   if (nh_param.getParam("ignore_errors/"#NAME, NAME ## _param)) {\
+    ROS_INFO("Ignoring %s", #NAME); \
     ignored_errors[#NAME] = static_cast<int>(NAME ## _param);\
   } else {\
     ignored_errors[#NAME] = -1;\
