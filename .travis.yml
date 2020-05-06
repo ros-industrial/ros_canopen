@@ -15,6 +15,7 @@ env:
     - ROS_DISTRO="melodic" ROS_REPO=ros OS_NAME=debian OS_CODE_NAME=stretch
     - ROS_DISTRO="melodic" ROSDEP_SKIP_KEYS=muparser EXPECT_EXIT_CODE=1
     - ROS_DISTRO="melodic" ABICHECK_URL='github:ros-industrial/ros_canopen#melodic'
+    - ROS_DISTRO="noetic"
 
 matrix:
   allow_failures:
