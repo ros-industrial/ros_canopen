@@ -2,6 +2,13 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add includes to <memory>
+* Bump CMake version to avoid CMP0048 warning
+  Signed-off-by: ahcorde <ahcorde@gmail.com>
+* Contributors: Mathias Lüdtke, ahcorde
+
 0.8.2 (2019-11-04)
 ------------------
 * fix roslint errors in socketcan_bridge

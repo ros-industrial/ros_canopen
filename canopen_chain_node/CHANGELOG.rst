@@ -2,6 +2,12 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Bump CMake version to avoid CMP0048 warning
+  Signed-off-by: ahcorde <ahcorde@gmail.com>
+* Contributors: ahcorde
+
 0.8.2 (2019-11-04)
 ------------------
 * rename to logWarning to fix build on Debian stretch

@@ -2,6 +2,15 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixed Boost link in test-dispacher
+  Signed-off-by: ahcorde <ahcorde@gmail.com>
+* Bump CMake version to avoid CMP0048 warning
+  Signed-off-by: ahcorde <ahcorde@gmail.com>
+* do not print ERROR in candump
+* Contributors: Mathias Lüdtke, ahcorde
+
 0.8.2 (2019-11-04)
 ------------------
 * enable rosconsole_bridge bindings
