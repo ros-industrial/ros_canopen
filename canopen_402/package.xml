@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>canopen_402</name>
-  <version>0.8.2</version>
+  <version>0.8.3</version>
   <description>This implements the CANopen device profile for drives and motion control. CiA(r) 402</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>

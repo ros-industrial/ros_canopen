@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>ros_canopen</name>
-  <version>0.8.2</version>
+  <version>0.8.3</version>
   <description>A generic canopen implementation for ROS</description>
 
   <license>LGPL</license>

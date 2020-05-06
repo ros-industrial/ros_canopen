@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.3 (2020-05-07)
+------------------
 * Fixed Boost link in test-dispacher
   Signed-off-by: ahcorde <ahcorde@gmail.com>
 * Bump CMake version to avoid CMP0048 warning

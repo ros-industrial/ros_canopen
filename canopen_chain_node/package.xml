@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>canopen_chain_node</name>
-  <version>0.8.2</version>
+  <version>0.8.3</version>
   <description>Base implementation for CANopen chains node with support for management services and diagnostics</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
