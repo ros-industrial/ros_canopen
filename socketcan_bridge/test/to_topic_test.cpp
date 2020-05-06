@@ -34,6 +34,7 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
 #include <list>
+#include <memory>
 #include <string>
 #include <vector>
 

@@ -29,6 +29,7 @@
 #include <socketcan_bridge/socketcan_to_topic.h>
 #include <socketcan_interface/threading.h>
 #include <socketcan_interface/string.h>
+#include <memory>
 #include <string>
 
 
