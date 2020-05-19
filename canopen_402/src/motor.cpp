@@ -154,7 +154,7 @@ bool Command402::setTransition(uint16_t &cw, const State402::InternalState &from
         return true;
     }
     catch(...){
-        ROSCANOPEN_WARN("canopen_402", "illegal tranistion " << from << " -> " << to);
+        ROSCANOPEN_WARN("canopen_402", "illegal transition " << from << " -> " << to);
     }
     return false;
 }
