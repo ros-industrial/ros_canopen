@@ -12,6 +12,7 @@ class CANLayer: public Layer{
     can::DriverInterfaceSharedPtr driver_;
     const std::string device_;
     const bool loopback_;
+    can::SettingsConstSharedPtr settings_;
     can::Frame last_error_;
     can::FrameListenerConstSharedPtr error_listener_;
     void handleFrame(const can::Frame & msg){
@@ -22,8 +23,11 @@ class CANLayer: public Layer{
     std::shared_ptr<boost::thread> thread_;
 
 public:
-    CANLayer(const can::DriverInterfaceSharedPtr &driver, const std::string &device, bool loopback)
-    : Layer(device + " Layer"), driver_(driver), device_(device), loopback_(loopback) { assert(driver_); }
+    CANLayer(const can::DriverInterfaceSharedPtr &driver, const std::string &device, bool loopback, can::SettingsConstSharedPtr settings)
+    : Layer(device + " Layer"), driver_(driver), device_(device), loopback_(loopback), settings_(settings) { assert(driver_); }
+
+    [[deprecated("provide settings explicitly")]]  CANLayer(const can::DriverInterfaceSharedPtr &driver, const std::string &device, bool loopback)
+    : Layer(device + " Layer"), driver_(driver), device_(device), loopback_(loopback), settings_(can::NoSettings::create()) { assert(driver_); }
 
     virtual void handleRead(LayerStatus &status, const LayerState &current_state) {
         if(current_state > Init){
@@ -66,7 +70,7 @@ public:
     virtual void handleInit(LayerStatus &status){
 	if(thread_){
             status.warn("CAN thread already running");
-        } else if(!driver_->init(device_, loopback_)) {
+        } else if(!driver_->init(device_, loopback_, settings_)) {
             status.error("CAN init failed");
         } else {
             can::StateWaiter waiter(driver_.get());

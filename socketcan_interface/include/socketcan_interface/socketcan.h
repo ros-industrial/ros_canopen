@@ -31,8 +31,7 @@ public:
     virtual bool doesLoopBack() const{
         return loopback_;
     }
-
-    virtual bool init(const std::string &device, bool loopback){
+    virtual bool init(const std::string &device, bool loopback) override {
         State s = getState();
         if(s.driver_state == State::closed){
             sc_ = 0;
@@ -112,6 +111,9 @@ public:
             return true;
         }
         return getState().isReady();
+    }
+    virtual bool init(const std::string &device, bool loopback, can::SettingsConstSharedPtr){
+      return init(device, loopback);
     }
     virtual bool recover(){
         if(!getState().isReady()){
