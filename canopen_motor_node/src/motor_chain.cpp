@@ -1,29 +1,8 @@
 
 #include <canopen_motor_node/motor_chain.h>
 #include <canopen_motor_node/handle_layer.h>
-
+#include <socketcan_interface/xmlrpc_settings.h>
 using namespace canopen;
-
-
-class XmlRpcSettings : public Settings{
-public:
-    XmlRpcSettings() {}
-    XmlRpcSettings(const XmlRpc::XmlRpcValue &v) : value_(v) {}
-    XmlRpcSettings& operator=(const XmlRpc::XmlRpcValue &v) { value_ = v; return *this; }
-private:
-    virtual bool getRepr(const std::string &n, std::string & repr) const {
-        if(value_.hasMember(n)){
-            std::stringstream sstr;
-            sstr << const_cast< XmlRpc::XmlRpcValue &>(value_)[n]; // does not write since already existing
-            repr = sstr.str();
-            return true;
-        }
-        return false;
-    }
-    XmlRpc::XmlRpcValue value_;
-
-};
-
 
 MotorChain::MotorChain(const ros::NodeHandle &nh, const ros::NodeHandle &nh_priv) :
         RosChain(nh, nh_priv), motor_allocator_("canopen_402", "canopen::MotorBase::Allocator") {}
