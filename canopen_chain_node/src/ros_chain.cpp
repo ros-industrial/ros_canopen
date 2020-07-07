@@ -1,5 +1,6 @@
 #include <ros/package.h>
 
+#include <socketcan_interface/xmlrpc_settings.h>
 #include <canopen_chain_node/ros_chain.h>
 
 #include <std_msgs/Int8.h>
@@ -325,7 +326,7 @@ bool RosChain::setup_bus(){
         return false;
     }
 
-    add(std::make_shared<CANLayer>(interface_, can_device, loopback));
+    add(std::make_shared<CANLayer>(interface_, can_device, loopback, XmlRpcSettings::create(bus_nh)));
 
     return true;
 }
