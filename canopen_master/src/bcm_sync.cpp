@@ -44,7 +44,7 @@ int main(int argc, char** argv){
     }
 
     can::SocketCANDriverSharedPtr driver = std::make_shared<can::SocketCANDriver>();
-    if(!driver->init(can_device, false)){
+    if(!driver->init(can_device, false, can::NoSettings::create())){
         std::cout << "Could not initialize CAN" << std::endl;
         return 1;
     }
