@@ -12,6 +12,11 @@ public:
     XmlRpcSettings() {}
     XmlRpcSettings(const XmlRpc::XmlRpcValue &v) : value_(v) {}
     XmlRpcSettings& operator=(const XmlRpc::XmlRpcValue &v) { value_ = v; return *this; }
+    template<typename T> static can::SettingsConstSharedPtr create(T nh, const std::string &ns="/") {
+        std::shared_ptr<XmlRpcSettings> settings(new XmlRpcSettings);
+        nh.getParam(ns, settings->value_);
+        return settings;
+    }
 private:
     virtual bool getRepr(const std::string &name, std::string & repr) const {
         const XmlRpc::XmlRpcValue *value = &value_;

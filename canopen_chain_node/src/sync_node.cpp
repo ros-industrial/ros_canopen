@@ -1,5 +1,6 @@
 #include <canopen_master/bcm_sync.h>
 #include <socketcan_interface/string.h>
+#include <socketcan_interface/xmlrpc_settings.h>
 #include <canopen_master/can_layer.h>
 #include <ros/ros.h>
 #include <diagnostic_updater/diagnostic_updater.h>
@@ -86,7 +87,7 @@ int main(int argc, char** argv){
 
     canopen::LayerStack stack("SyncNodeLayer");
 
-    stack.add(std::make_shared<canopen::CANLayer>(driver, can_device, false));
+    stack.add(std::make_shared<canopen::CANLayer>(driver, can_device, false, XmlRpcSettings::create(nh_priv, "bus")));
     stack.add(sync);
 
     diagnostic_updater::Updater diag_updater(nh, nh_priv);
