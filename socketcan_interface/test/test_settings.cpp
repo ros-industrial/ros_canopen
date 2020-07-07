@@ -1,5 +1,6 @@
 // Bring in my package's API, which is what I'm testing
 #include <socketcan_interface/settings.h>
+#include <socketcan_interface/xmlrpc_settings.h>
 #include <socketcan_interface/socketcan.h>
 
 // Bring in gtest
@@ -53,6 +54,34 @@ TEST(SettingTest, socketcan_masks)
   sci.init("None", false, m4);
   EXPECT_EQ(sci.getErrorMask(), (fatal_errors | report_errors) & ~(CAN_ERR_TX_TIMEOUT|CAN_ERR_LOSTARB));
   EXPECT_EQ(sci.getFatalErrorMask(), fatal_errors & (~CAN_ERR_TX_TIMEOUT));
+}
+
+TEST(SettingTest, xmlrpc)
+{
+  XmlRpc::XmlRpcValue value;
+  value["param"] = 1;
+  XmlRpc::XmlRpcValue segment;
+  segment["param"] = 2;
+  value["segment"] = segment;
+  XmlRpcSettings settings(value);
+
+  ASSERT_TRUE(value["segment"].hasMember(std::string("param")));
+
+  int res;
+  EXPECT_TRUE(settings.get<int>("param", res));
+  EXPECT_EQ(res, 1);
+  EXPECT_EQ(settings.get_optional("param", 0), 1);
+  EXPECT_FALSE(settings.get<int>("param2", res));
+  EXPECT_EQ(settings.get_optional("param2", 0), 0);
+
+  EXPECT_TRUE(settings.get<int>("segment/param", res));
+  EXPECT_EQ(res, 2);
+  EXPECT_EQ(settings.get_optional("segment/param", 0), 2);
+
+  EXPECT_FALSE(settings.get<int>("segment/param2", res));
+  EXPECT_EQ(settings.get_optional("segment/param2", 0), 0);
+  EXPECT_FALSE(settings.get<int>("segment2/param", res));
+  EXPECT_EQ(settings.get_optional("segment2/param", 0), 0);
 }
 
 // Run all the tests that were declared with TEST()

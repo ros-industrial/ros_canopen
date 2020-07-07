@@ -21,6 +21,7 @@
   <depend>linux-kernel-headers</depend>
 
   <test_depend>rosunit</test_depend>
+  <test_depend>xmlrpcpp</test_depend>
 
   <export>
     <socketcan_interface plugin="${prefix}/socketcan_interface_plugin.xml" />
