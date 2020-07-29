@@ -139,6 +139,7 @@ State402::InternalState Command402::nextStateForEnabling(State402::InternalState
     case State402::Fault_Reaction_Active:
         return State402::Fault;
     }
+    throw std::out_of_range ("state value is illegal");
 }
 
 bool Command402::setTransition(uint16_t &cw, const State402::InternalState &from, const State402::InternalState &to, State402::InternalState *next){
