@@ -20,29 +20,28 @@
 
 namespace can {
 
-
-can_err_mask_t parse_error_mask(SettingsConstSharedPtr settings, const std::string &entry, can_err_mask_t defaults) {
-    can_err_mask_t mask = 0;
-
-    #define add_bit(e) mask |= (settings->get_optional(entry + "/" + #e, (defaults & e) != 0) ? e : 0)
-    add_bit(CAN_ERR_LOSTARB);
-    add_bit(CAN_ERR_CRTL);
-    add_bit(CAN_ERR_PROT);
-    add_bit(CAN_ERR_TRX);
-    add_bit(CAN_ERR_ACK);
-    add_bit(CAN_ERR_TX_TIMEOUT);
-    add_bit(CAN_ERR_BUSOFF);
-    add_bit(CAN_ERR_BUSERROR);
-    add_bit(CAN_ERR_RESTARTED);
-    #undef add_bit
-
-    return mask;
-}
-
 class SocketCANInterface : public AsioDriver<boost::asio::posix::stream_descriptor> {
     bool loopback_;
     int sc_;
     can_err_mask_t error_mask_, fatal_error_mask_;
+
+    static can_err_mask_t parse_error_mask(SettingsConstSharedPtr settings, const std::string &entry, can_err_mask_t defaults) {
+        can_err_mask_t mask = 0;
+
+        #define add_bit(e) mask |= (settings->get_optional(entry + "/" + #e, (defaults & e) != 0) ? e : 0)
+        add_bit(CAN_ERR_LOSTARB);
+        add_bit(CAN_ERR_CRTL);
+        add_bit(CAN_ERR_PROT);
+        add_bit(CAN_ERR_TRX);
+        add_bit(CAN_ERR_ACK);
+        add_bit(CAN_ERR_TX_TIMEOUT);
+        add_bit(CAN_ERR_BUSOFF);
+        add_bit(CAN_ERR_BUSERROR);
+        add_bit(CAN_ERR_RESTARTED);
+        #undef add_bit
+
+        return mask;
+    }
 public:
     SocketCANInterface()
     : loopback_(false), sc_(-1), error_mask_(0), fatal_error_mask_(0)
