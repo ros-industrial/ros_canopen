@@ -2,8 +2,8 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.4 (2020-08-22)
+------------------
 * moved XmlRpcSettings to socketcan_interface
 * Contributors: Mathias Lüdtke
 

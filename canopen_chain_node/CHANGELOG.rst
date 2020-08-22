@@ -2,8 +2,8 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.4 (2020-08-22)
+------------------
 * pass settings from ROS node to SocketCANInterface
 * Contributors: Mathias Lüdtke
 

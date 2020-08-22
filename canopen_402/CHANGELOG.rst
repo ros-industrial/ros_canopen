@@ -2,8 +2,8 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.4 (2020-08-22)
+------------------
 * handle illegal states in nextStateForEnabling
 * tranistion -> transition
 * Contributors: Mathias Lüdtke, Mikael Arguedas

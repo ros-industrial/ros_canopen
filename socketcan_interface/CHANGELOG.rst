@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.4 (2020-08-22)
+------------------
 * make parse_error_mask a static member function
 * pass settings from ROS node to SocketCANInterface
 * add support for recursive XmlRpcSettings lookups
