@@ -2,6 +2,12 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* added settings parameter to DriverInterface::init
+* moved canopen::Settings into can namespace
+* Contributors: Mathias Lüdtke
+
 0.8.3 (2020-05-07)
 ------------------
 * Bump CMake version to avoid CMP0048 warning

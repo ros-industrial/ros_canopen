@@ -2,6 +2,11 @@
 Changelog for package socketcan_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* pass settings from ROS node to SocketCANInterface
+* Contributors: Mathias Lüdtke
+
 0.8.3 (2020-05-07)
 ------------------
 * add includes to <memory>

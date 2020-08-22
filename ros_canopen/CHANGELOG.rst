@@ -2,6 +2,9 @@
 Changelog for package ros_canopen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.8.3 (2020-05-07)
 ------------------
 * Bump CMake version to avoid CMP0048 warning

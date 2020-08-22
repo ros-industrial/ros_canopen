@@ -2,6 +2,12 @@
 Changelog for package canopen_402
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* handle illegal states in nextStateForEnabling
+* tranistion -> transition
+* Contributors: Mathias Lüdtke, Mikael Arguedas
+
 0.8.3 (2020-05-07)
 ------------------
 * Bump CMake version to avoid CMP0048 warning

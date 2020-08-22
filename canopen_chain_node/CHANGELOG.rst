@@ -2,6 +2,11 @@
 Changelog for package canopen_chain_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* pass settings from ROS node to SocketCANInterface
+* Contributors: Mathias Lüdtke
+
 0.8.3 (2020-05-07)
 ------------------
 * Bump CMake version to avoid CMP0048 warning

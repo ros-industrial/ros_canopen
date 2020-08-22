@@ -2,6 +2,11 @@
 Changelog for package canopen_motor_node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* moved XmlRpcSettings to socketcan_interface
+* Contributors: Mathias Lüdtke
+
 0.8.3 (2020-05-07)
 ------------------
 * Bump CMake version to avoid CMP0048 warning
