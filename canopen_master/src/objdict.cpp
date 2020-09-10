@@ -331,7 +331,7 @@ ObjectDictSharedPtr ObjectDict::fromFile(const std::string &path, const ObjectDi
     return dict;
 }
 
-size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
+std::pair<ObjectDict::Key, size_t> ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const ObjectDict::Key &key, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
     boost::unordered_map<ObjectDict::Key, DataSharedPtr >::iterator it = storage_.find(key);
 
     if(it == storage_.end()){
@@ -352,19 +352,28 @@ size_t ObjectStorage::map(const ObjectDict::EntryConstSharedPtr &e, const Object
     }
 
     if(read_delegate && write_delegate){
+        if(!it->second->test_delegates(read_delegate_, write_delegate_)){
+            THROW_WITH_KEY(std::logic_error("PDO was mapped twice, this is not yet supported (#183)") , key);
+        }
         it->second->set_delegates(read_delegate_, write_delegate);
         it->second->force_write(); // update buffer
         it->second->set_delegates(read_delegate, write_delegate_);
     }else if(write_delegate) {
+        if(!it->second->test_delegates(0, write_delegate_)){
+            THROW_WITH_KEY(std::logic_error("PDO was mapped twice, this is not yet supported (#183)") , key);
+        }
         it->second->set_delegates(read_delegate_, write_delegate);
         it->second->force_write(); // update buffer
     }else if(read_delegate){
+        if(!it->second->test_delegates(read_delegate_, 0)){
+            THROW_WITH_KEY(std::logic_error("PDO was mapped twice, this is not yet supported (#183)") , key);
+        }
         it->second->set_delegates(read_delegate, write_delegate_);
     }
-    return it->second->size();
+    return std::make_pair(key, it->second->size());
 }
 
-size_t ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
+std::pair<ObjectDict::Key, size_t> ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadDelegate & read_delegate, const WriteDelegate & write_delegate){
     boost::mutex::scoped_lock lock(mutex_);
 
     try{
@@ -380,6 +389,16 @@ size_t ObjectStorage::map(uint16_t index, uint8_t sub_index, const ReadDelegate 
         return map(e, key, read_delegate, write_delegate);
     }
 }
+
+void ObjectStorage::unmap(const ObjectDict::Key &key){
+    boost::mutex::scoped_lock lock(mutex_);
+    boost::unordered_map<ObjectDict::Key, boost::shared_ptr<Data> >::iterator it = storage_.find(key);
+
+    if(it != storage_.end()){
+        it->second->set_delegates(read_delegate_, write_delegate_);
+    }
+}
+
 
 ObjectStorage::ObjectStorage(ObjectDictConstSharedPtr dict, uint8_t node_id, ReadDelegate read_delegate, WriteDelegate write_delegate)
 :read_delegate_(read_delegate), write_delegate_(write_delegate), dict_(dict), node_id_(node_id){
