@@ -2,8 +2,8 @@
 Changelog for package socketcan_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.5 (2020-09-22)
+------------------
 * check settings pointer and print error if null
 * initalize settings properly in deprecated SocketCANInterface::init
 * Contributors: Mathias Lüdtke
