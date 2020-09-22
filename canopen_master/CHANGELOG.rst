@@ -2,6 +2,9 @@
 Changelog for package canopen_master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.8.4 (2020-08-22)
 ------------------
 * added settings parameter to DriverInterface::init
