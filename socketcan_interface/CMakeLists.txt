@@ -120,4 +120,6 @@ if(BUILD_TESTING)
   )
 endif()
 
-ament_package()
+ament_package(
+  CONFIG_EXTRAS socketcan_interface-extras.cmake
+)
