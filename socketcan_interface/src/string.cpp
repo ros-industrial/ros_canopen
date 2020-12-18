@@ -146,8 +146,9 @@ Header toheader(const std::string & s)
 {
   unsigned int h = tohex(s);
   unsigned int id = h & Header::ID_MASK;
-  return Header(id, h & Header::EXTENDED_MASK || (s.size() == 8 && id >= (1 << 11)),
-           h & Header::RTR_MASK, h & Header::ERROR_MASK);
+  return Header(
+    id, h & Header::EXTENDED_MASK || (s.size() == 8 && id >= (1 << 11)),
+    h & Header::RTR_MASK, h & Header::ERROR_MASK);
 }
 
 std::string tostring(const Frame & f, bool lc)

@@ -28,13 +28,17 @@
     console_bridge::getOutputHandler()->log(sstr.str(), level, file, line); \
   }
 
-#define ROSCANOPEN_ERROR(name, args) ROSCANOPEN_LOG(name, __FILE__, __LINE__, \
+#define ROSCANOPEN_ERROR(name, args) ROSCANOPEN_LOG( \
+    name, __FILE__, __LINE__, \
     console_bridge::CONSOLE_BRIDGE_LOG_ERROR, args)
-#define ROSCANOPEN_INFO(name, args) ROSCANOPEN_LOG(name, __FILE__, __LINE__, \
+#define ROSCANOPEN_INFO(name, args) ROSCANOPEN_LOG( \
+    name, __FILE__, __LINE__, \
     console_bridge::CONSOLE_BRIDGE_LOG_INFO, args)
-#define ROSCANOPEN_WARN(name, args) ROSCANOPEN_LOG(name, __FILE__, __LINE__, \
+#define ROSCANOPEN_WARN(name, args) ROSCANOPEN_LOG( \
+    name, __FILE__, __LINE__, \
     console_bridge::CONSOLE_BRIDGE_LOG_WARN, args)
-#define ROSCANOPEN_DEBUG(name, args) ROSCANOPEN_LOG(name, __FILE__, __LINE__, \
+#define ROSCANOPEN_DEBUG(name, args) ROSCANOPEN_LOG( \
+    name, __FILE__, __LINE__, \
     console_bridge::CONSOLE_BRIDGE_LOG_DEBUG, args)
 
 // extra function to mark it as deprecated
