@@ -1,0 +1,25 @@
+
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  industrial_ci:
+    strategy:
+      matrix:
+        env:
+          - {ROS_DISTRO: crystal}
+          - {ROS_DISTRO: crystal, ROS_REPO: main}
+          - {ROS_DISTRO: dashing}
+          - {ROS_DISTRO: dashing, ROS_REPO: main}
+          - {ROS_DISTRO: eloquent}
+          - {ROS_DISTRO: eloquent, ROS_REPO: main}
+          - {ROS_DISTRO: foxy}
+          - {ROS_DISTRO: foxy, ROS_REPO: main}
+          - {ROS_DISTRO: rolling}
+          - {ROS_DISTRO: rolling, ROS_REPO: main}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: 'ros-industrial/industrial_ci@master'
+        env: ${{matrix.env}}
