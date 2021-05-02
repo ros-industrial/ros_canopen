@@ -74,7 +74,11 @@ public:
             thread_->join();
         }
     }
-    virtual ~ThreadedInterface() {}
+    virtual ~ThreadedInterface() {
+        if(thread_){
+            shutdown();
+        }
+    }
     ThreadedInterface(): WrappedInterface() {}
     template<typename T1> ThreadedInterface(const T1 &t1): WrappedInterface(t1) {}
     template<typename T1, typename T2> ThreadedInterface(const T1 &t1, const T2 &t2): WrappedInterface(t1, t2) {}

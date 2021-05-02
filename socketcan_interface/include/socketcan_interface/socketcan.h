@@ -59,7 +59,7 @@ public:
         return fatal_error_mask_;
     }
     [[deprecated("provide settings explicitly")]] virtual bool init(const std::string &device, bool loopback) override {
-        return init(device, loopback, NoSettings::create());
+        return SocketCANInterface::init(device, loopback, NoSettings::create());
     }
     virtual bool init(const std::string &device, bool loopback, SettingsConstSharedPtr settings) override {
       if (!settings) {
