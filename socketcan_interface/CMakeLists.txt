@@ -113,6 +113,7 @@ if(CATKIN_ENABLE_TESTING)
     ${PROJECT_NAME}_string
     ${console_bridge_LIBRARIES}
     ${catkin_LIBRARIES}
+    ${Boost_LIBRARIES}
   )
 
   catkin_add_gtest(${PROJECT_NAME}-test_delegates
@@ -121,6 +122,7 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(${PROJECT_NAME}-test_delegates
     ${PROJECT_NAME}_string
     ${catkin_LIBRARIES}
+    ${Boost_LIBRARIES}
   )
 
   catkin_add_gtest(${PROJECT_NAME}-test_settings
@@ -151,6 +153,7 @@ if(CATKIN_ENABLE_TESTING)
     ${PROJECT_NAME}_string
     ${console_bridge_LIBRARIES}
     ${catkin_LIBRARIES}
+    ${Boost_LIBRARIES}
   )
 
   catkin_add_gtest(${PROJECT_NAME}-test_dispatcher

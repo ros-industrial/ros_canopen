@@ -39,9 +39,11 @@ protected:
         std::list<const Listener* > listeners_;
     public:
         DispatcherBase(boost::mutex &mutex) : mutex_(mutex) {}
-        void dispatch_nolock(const Type &obj) const{
-           for(typename std::list<const Listener* >::const_iterator it=listeners_.begin(); it != listeners_.end(); ++it){
-               (**it)(obj);
+        void dispatch_nolock(const Type &obj, const Listener* loopback=nullptr) const{
+            for(typename std::list<const Listener* >::const_iterator it=listeners_.begin(); it != listeners_.end(); ++it){
+                if (loopback != *it) {
+                    (**it)(obj);
+                }
             }
         }
         void remove(Listener *d){
@@ -70,6 +72,10 @@ public:
     void dispatch(const Type &obj){
         boost::mutex::scoped_lock lock(mutex_);
         dispatcher_->dispatch_nolock(obj);
+    }
+    void dispatch_filtered(const Type &obj, ListenerConstSharedPtr without){
+        boost::mutex::scoped_lock lock(mutex_);
+        dispatcher_->dispatch_nolock(obj, without.get());
     }
     size_t numListeners(){
         return dispatcher_->numListeners();

@@ -82,7 +82,10 @@ TEST(FilterTest, listenerTest)
 {
 
   Counter counter;
-  can::CommInterfaceSharedPtr dummy(new can::DummyInterface(true));
+  can::DummyBus bus("listenerTest");
+  can::ThreadedDummyInterfaceSharedPtr dummy = std::make_shared<can::ThreadedDummyInterface>();
+  dummy->init(bus.name, true, can::NoSettings::create());
+
 
   can::FilteredFrameListener::FilterVector filters;
   filters.push_back(can::tofilter("123:FFE"));
@@ -94,10 +97,13 @@ TEST(FilterTest, listenerTest)
   can::Frame f3 = can::toframe("122#");
 
   dummy->send(f1);
+  dummy->flush();
   EXPECT_EQ(1, counter.count_);
   dummy->send(f2);
+  dummy->flush();
   EXPECT_EQ(1, counter.count_);
   dummy->send(f3);
+  dummy->flush();
   EXPECT_EQ(2, counter.count_);
 
 }

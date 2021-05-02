@@ -62,15 +62,17 @@ TEST(SocketCANToTopicTest, checkCorrectData)
 {
   ros::NodeHandle nh(""), nh_param("~");
 
+  can::DummyBus bus("checkCorrectData");
+
   // create the dummy interface
-  can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
+  can::ThreadedDummyInterfaceSharedPtr dummy = std::make_shared<can::ThreadedDummyInterface>();
 
   // start the to topic bridge.
-  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_);
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, dummy);
   to_topic_bridge.setup();  // initiate the message callbacks
 
   // init the driver to test stateListener (not checked automatically).
-  driver_->init("string_not_used", true);
+  dummy->init(bus.name, true, can::NoSettings::create());
 
   // create a frame collector.
   msgCollector message_collector_;
@@ -91,7 +93,7 @@ TEST(SocketCANToTopicTest, checkCorrectData)
   }
 
   // send the can frame to the driver
-  driver_->send(f);
+  dummy->send(f);
 
   // give some time for the interface some time to process the message
   ros::WallDuration(1.0).sleep();
@@ -110,6 +112,8 @@ TEST(SocketCANToTopicTest, checkCorrectData)
   EXPECT_EQ(received.is_rtr, f.is_rtr);
   EXPECT_EQ(received.is_error, f.is_error);
   EXPECT_EQ(received.data, f.data);
+
+  dummy->shutdown();
 }
 
 TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
@@ -123,12 +127,16 @@ TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
 
   ros::NodeHandle nh(""), nh_param("~");
 
+  can::DummyBus bus("checkInvalidFrameHandling");
+
   // create the dummy interface
-  can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
+  can::ThreadedDummyInterfaceSharedPtr dummy = std::make_shared<can::ThreadedDummyInterface>();
 
   // start the to topic bridge.
-  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_);
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, dummy);
   to_topic_bridge.setup();  // initiate the message callbacks
+
+  dummy->init(bus.name, true, can::NoSettings::create());
 
   // create a frame collector.
   msgCollector message_collector_;
@@ -142,7 +150,7 @@ TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
   f.id = (1<<11)+1;  // this is an illegal CAN packet... should not be sent.
 
   // send the can::Frame over the driver.
-  // driver_->send(f);
+  // dummy->send(f);
 
   // give some time for the interface some time to process the message
   ros::WallDuration(1.0).sleep();
@@ -152,29 +160,33 @@ TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
   f.is_extended = true;
   f.id = (1<<11)+1;  // now it should be alright.
 
-  driver_->send(f);
+  dummy->send(f);
   ros::WallDuration(1.0).sleep();
   ros::spinOnce();
   EXPECT_EQ(message_collector_.messages.size(), 1);
+
+  dummy->shutdown();
 }
 
 TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
 {
   ros::NodeHandle nh(""), nh_param("~");
 
+  can::DummyBus bus("checkCorrectCanIdFilter");
+
   // create the dummy interface
-  can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
+  can::ThreadedDummyInterfaceSharedPtr dummy = std::make_shared<can::ThreadedDummyInterface>();
 
   // create can_id vector with id that should be passed and published to ros
   std::vector<unsigned int> pass_can_ids;
   pass_can_ids.push_back(0x1337);
 
   // start the to topic bridge.
-  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_);
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, dummy);
   to_topic_bridge.setup(can::tofilters(pass_can_ids));  // initiate the message callbacks
 
   // init the driver to test stateListener (not checked automatically).
-  driver_->init("string_not_used", true);
+  dummy->init(bus.name, true, can::NoSettings::create());
 
   // create a frame collector.
   msgCollector message_collector_;
@@ -195,7 +207,7 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   }
 
   // send the can frame to the driver
-  driver_->send(f);
+  dummy->send(f);
 
   // give some time for the interface some time to process the message
   ros::WallDuration(1.0).sleep();
@@ -214,25 +226,29 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   EXPECT_EQ(received.is_rtr, f.is_rtr);
   EXPECT_EQ(received.is_error, f.is_error);
   EXPECT_EQ(received.data, f.data);
+
+  dummy->shutdown();
 }
 
 TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
 {
   ros::NodeHandle nh(""), nh_param("~");
 
+  can::DummyBus bus("checkInvalidCanIdFilter");
+
   // create the dummy interface
-  can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
+  can::ThreadedDummyInterfaceSharedPtr dummy = std::make_shared<can::ThreadedDummyInterface>();
 
   // create can_id vector with id that should not be received on can bus
   std::vector<unsigned int> pass_can_ids;
   pass_can_ids.push_back(0x300);
 
   // start the to topic bridge.
-  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_);
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, dummy);
   to_topic_bridge.setup(can::tofilters(pass_can_ids));  // initiate the message callbacks
 
   // init the driver to test stateListener (not checked automatically).
-  driver_->init("string_not_used", true);
+  dummy->init(bus.name, true, can::NoSettings::create());
 
   // create a frame collector.
   msgCollector message_collector_;
@@ -253,7 +269,7 @@ TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)
   }
 
   // send the can frame to the driver
-  driver_->send(f);
+  dummy->send(f);
 
   // give some time for the interface some time to process the message
   ros::WallDuration(1.0).sleep();
@@ -266,19 +282,21 @@ TEST(SocketCANToTopicTest, checkMaskFilter)
 {
   ros::NodeHandle nh(""), nh_param("~");
 
+  can::DummyBus bus("checkMaskFilter");
+
   // create the dummy interface
-  can::DummyInterfaceSharedPtr driver_ = std::make_shared<can::DummyInterface>(true);
+  can::ThreadedDummyInterfaceSharedPtr dummy = std::make_shared<can::ThreadedDummyInterface>();
 
   // setup filter
   can::FilteredFrameListener::FilterVector filters;
   filters.push_back(can::tofilter("300:ffe"));
 
   // start the to topic bridge.
-  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, driver_);
+  socketcan_bridge::SocketCANToTopic to_topic_bridge(&nh, &nh_param, dummy);
   to_topic_bridge.setup(filters);  // initiate the message callbacks
 
   // init the driver to test stateListener (not checked automatically).
-  driver_->init("string_not_used", true);
+  dummy->init(bus.name, true, can::NoSettings::create());
 
   // create a frame collector.
   msgCollector message_collector_;
@@ -289,9 +307,9 @@ TEST(SocketCANToTopicTest, checkMaskFilter)
   const std::string pass1("300#1234"), nopass1("302#9999"), pass2("301#5678");
 
   // send the can framew to the driver
-  driver_->send(can::toframe(pass1));
-  driver_->send(can::toframe(nopass1));
-  driver_->send(can::toframe(pass2));
+  dummy->send(can::toframe(pass1));
+  dummy->send(can::toframe(nopass1));
+  dummy->send(can::toframe(pass2));
 
   // give some time for the interface some time to process the message
   ros::WallDuration(1.0).sleep();
