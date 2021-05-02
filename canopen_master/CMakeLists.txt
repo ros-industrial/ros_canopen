@@ -92,4 +92,11 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(${PROJECT_NAME}-test_parser
     ${PROJECT_NAME}
   )
+
+  catkin_add_gtest(${PROJECT_NAME}-test_node
+    test/test_node.cpp
+  )
+  target_link_libraries(${PROJECT_NAME}-test_node
+    ${PROJECT_NAME}
+  )
 endif()
