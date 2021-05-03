@@ -54,26 +54,16 @@ public:
 class DummyInterface : public DriverInterface{
     using FrameDispatcher = FilteredDispatcher<unsigned int, CommInterface::FrameListener>;
     using StateDispatcher = SimpleDispatcher<StateInterface::StateListener>;
-    using Map = std::unordered_map<std::string, Frame>;
     FrameDispatcher frame_dispatcher_;
     StateDispatcher state_dispatcher_;
     DummyBus::ConnectionSharedPtr bus_;
     State state_;
-    Map map_;
     std::deque<can::Frame> in_;
     bool loopback_;
     bool trace_;
     boost::mutex mutex_;
     boost::condition_variable cond_;
 
-    bool add_noconv(const std::string &k, const Frame &v, bool multi){
-        boost::mutex::scoped_lock cond_lock(mutex_);
-        if(multi || map_.find(k) == map_.end()){
-              map_.insert( std::make_pair(boost::to_lower_copy(k), v));
-              return true;
-        }
-        return false;
-    }
     void setDriverState(State::DriverState state){
         boost::mutex::scoped_lock lock(mutex_);
         if(state_.driver_state != state){
@@ -94,32 +84,12 @@ public:
     virtual ~DummyInterface() { shutdown(); }
 
 
-    bool add(const std::string &k, const Frame &v, bool multi){
-        return add_noconv(boost::to_lower_copy(k), v, multi);
-    }
-    bool add(const Frame &k, const Frame &v, bool multi){
-        return add_noconv(tostring(k,true), v, multi);
-    }
-    bool add(const std::string &k, const std::string &v, bool multi){
-        return add(k, toframe(v), multi);
-    }
-    bool add(const Frame &k, const std::string &v, bool multi){
-        return add(k, toframe(v), multi);
-    }
     virtual bool send(const Frame & msg){
         if (trace_) {
             ROSCANOPEN_DEBUG("socketcan_interface", "send: " << msg);
         }
         if (loopback_) {
             enqueue(msg);
-        }
-        try{
-            std::pair <Map::iterator, Map::iterator> r = map_.equal_range(tostring(msg, true));
-            for (Map::iterator it=r.first; it!=r.second; ++it){
-                enqueue(it->second);
-            }
-        }
-        catch(const std::out_of_range &e){
         }
         bus_->dispatch(msg);
         return true;
@@ -216,6 +186,55 @@ public:
 using DummyInterfaceSharedPtr = std::shared_ptr<DummyInterface>;
 using ThreadedDummyInterface = ThreadedInterface<DummyInterface>;
 using ThreadedDummyInterfaceSharedPtr = std::shared_ptr<ThreadedDummyInterface>;
+
+class DummyResponder {
+public:
+    DummyResponder() : dummy_(), listener_(dummy_.createMsgListenerM(this, &DummyResponder::respond)) {
+    }
+    bool init(const DummyBus &bus) {
+        return dummy_.init(bus.name, false, NoSettings::create());
+    }
+    void flush() {
+        dummy_.flush();
+    }
+    virtual ~DummyResponder() {}
+protected:
+    void send(const Frame & msg) {
+        dummy_.send(msg);
+    }
+private:
+    ThreadedDummyInterface dummy_;
+    FrameListenerConstSharedPtr listener_;
+    virtual void respond(const Frame & msg) = 0;
+};
+
+class DummyReplay : public DummyResponder {
+private:
+    virtual void respond(const Frame & msg) {
+        const auto &front = replay_.front();
+        if (tostring(msg, true) == front.first) {
+            for(auto &f: front.second) {
+                send(f);
+            }
+            replay_.pop_front();
+        }
+    }
+    std::list<std::pair<std::string, std::vector<Frame> > > replay_;
+    bool error_;
+public:
+    void add(const std::string &read, const std::initializer_list<std::string> &write){
+        std::vector<Frame> frames;
+        frames.reserve(write.size());
+        for(auto &w : write) {
+            frames.push_back(toframe(w));
+        }
+        replay_.push_back(std::make_pair(boost::to_lower_copy(read), frames));
+    }
+    void add(const std::string &read, const std::string &write){
+        add(read, {write});
+    }
+    bool done() { return replay_.empty(); }
+};
 
 }
 
