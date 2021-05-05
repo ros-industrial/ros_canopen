@@ -15,7 +15,10 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>boost</depend>
+  <depend>libboost-dev</depend>
+  <depend>libboost-atomic-dev</depend>
+  <depend>libboost-chrono-dev</depend>
+  <depend>libboost-thread-dev</depend>
   <depend>class_loader</depend>
   <depend>socketcan_interface</depend>
 
