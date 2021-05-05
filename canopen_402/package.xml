@@ -16,6 +16,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>libboost-dev</depend>
   <depend>canopen_master</depend>
   <depend>class_loader</depend>
 

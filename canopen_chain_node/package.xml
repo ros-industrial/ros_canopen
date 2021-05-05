@@ -19,6 +19,8 @@
   <build_export_depend>message_runtime</build_export_depend>
   <exec_depend>message_runtime</exec_depend>
 
+  <depend>libboost-dev</depend>
+  <depend>libboost-filesystem-dev</depend>
   <depend>canopen_master</depend>
   <depend>diagnostic_updater</depend>
   <depend>pluginlib</depend>

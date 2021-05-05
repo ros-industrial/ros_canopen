@@ -15,6 +15,8 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>libboost-dev</depend>
+  <depend>libboost-thread-dev</depend>
   <depend>canopen_402</depend>
   <depend>canopen_chain_node</depend>
   <depend>canopen_master</depend>
