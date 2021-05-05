@@ -41,6 +41,13 @@ template<typename WrappedInterface> class ThreadedInterface : public WrappedInte
     void run_thread(){
         WrappedInterface::run();
     }
+    void shutdown_internal(){
+        if(thread_){
+            thread_->interrupt();
+            thread_->join();
+            thread_.reset();
+        }
+    }
 public:
     [[deprecated("provide settings explicitly")]] virtual bool init(const std::string &device, bool loopback) override {
         #pragma GCC diagnostic push
@@ -61,13 +68,10 @@ public:
         }
         return WrappedInterface::getState().isReady();
     }
+
     virtual void shutdown(){
         WrappedInterface::shutdown();
-        if(thread_){
-            thread_->interrupt();
-            thread_->join();
-            thread_.reset();
-        }
+        shutdown_internal();
     }
     void join(){
         if(thread_){
@@ -75,9 +79,7 @@ public:
         }
     }
     virtual ~ThreadedInterface() {
-        if(thread_){
-            shutdown();
-        }
+        shutdown_internal();
     }
     ThreadedInterface(): WrappedInterface() {}
     template<typename T1> ThreadedInterface(const T1 &t1): WrappedInterface(t1) {}

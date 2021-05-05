@@ -56,7 +56,6 @@ TEST(TestNode, testInitandShutdown){
         ASSERT_TRUE(status.bounded<canopen::LayerStatus::Ok>());
     }
     EXPECT_TRUE(replay.done());
-    driver->shutdown();
 }
 
 // Run all the tests that were declared with TEST()

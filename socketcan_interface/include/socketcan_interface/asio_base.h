@@ -21,6 +21,14 @@ template<typename Socket> class AsioDriver : public DriverInterface{
     boost::mutex state_mutex_;
     boost::mutex socket_mutex_;
 
+    void shutdown_internal(){
+        if(socket_.is_open()){
+            socket_.cancel();
+            socket_.close();
+        }
+        io_service_.stop();
+    }
+
 protected:
     boost::asio::io_service io_service_;
 #if BOOST_ASIO_VERSION >= 101200 // Boost 1.66+
@@ -78,7 +86,7 @@ protected:
     {}
 
 public:
-    virtual ~AsioDriver() { shutdown(); }
+    virtual ~AsioDriver() { shutdown_internal(); }
 
     State getState(){
         boost::mutex::scoped_lock lock(state_mutex_);
@@ -109,11 +117,7 @@ public:
     }
 
     virtual void shutdown(){
-        if(socket_.is_open()){
-            socket_.cancel();
-            socket_.close();
-        }
-        io_service_.stop();
+        shutdown_internal();
     }
 
     virtual FrameListenerConstSharedPtr createMsgListener(const FrameFunc &delegate){
