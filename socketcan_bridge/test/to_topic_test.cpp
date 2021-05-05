@@ -112,8 +112,6 @@ TEST(SocketCANToTopicTest, checkCorrectData)
   EXPECT_EQ(received.is_rtr, f.is_rtr);
   EXPECT_EQ(received.is_error, f.is_error);
   EXPECT_EQ(received.data, f.data);
-
-  dummy->shutdown();
 }
 
 TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
@@ -164,8 +162,6 @@ TEST(SocketCANToTopicTest, checkInvalidFrameHandling)
   ros::WallDuration(1.0).sleep();
   ros::spinOnce();
   EXPECT_EQ(message_collector_.messages.size(), 1);
-
-  dummy->shutdown();
 }
 
 TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
@@ -226,8 +222,6 @@ TEST(SocketCANToTopicTest, checkCorrectCanIdFilter)
   EXPECT_EQ(received.is_rtr, f.is_rtr);
   EXPECT_EQ(received.is_error, f.is_error);
   EXPECT_EQ(received.data, f.data);
-
-  dummy->shutdown();
 }
 
 TEST(SocketCANToTopicTest, checkInvalidCanIdFilter)

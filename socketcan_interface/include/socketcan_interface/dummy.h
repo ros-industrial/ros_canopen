@@ -78,10 +78,15 @@ class DummyInterface : public DriverInterface{
         cond_lock.unlock();
         cond_.notify_all();
     }    
+
+    void shutdown_internal(){
+        setDriverState(State::closed);
+        bus_.reset();
+    };
 public:
     DummyInterface() : loopback_(false), trace_(false) {}
     DummyInterface(bool loopback) : loopback_(loopback), trace_(false) {}
-    virtual ~DummyInterface() { shutdown(); }
+    virtual ~DummyInterface() { shutdown_internal(); }
 
 
     virtual bool send(const Frame & msg){
@@ -112,8 +117,7 @@ public:
 
     virtual void shutdown(){
         flush();
-        setDriverState(State::closed);
-        bus_.reset();
+        shutdown_internal();
     };
 
     virtual bool translateError(unsigned int internal_error, std::string & str){
@@ -132,7 +136,7 @@ public:
         while (true) {
             {
                 boost::mutex::scoped_lock cond_lock(mutex_);
-                if (in_.empty()) {
+                if (in_.empty() || state_.driver_state == State::closed) {
                     return;
                 }            
             }
@@ -147,7 +151,7 @@ public:
             state_.driver_state = State::ready;
             state_dispatcher_.dispatch(state_);
 
-            cond_.wait(cond_lock);
+            cond_.wait_for(cond_lock, boost::chrono::seconds(1));
             while(!in_.empty()){
                 const can::Frame msg = in_.front();
                 in_.pop_front();
