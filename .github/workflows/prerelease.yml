@@ -1,0 +1,20 @@
+name: Pre-release
+
+on: [workflow_dispatch]
+
+jobs:
+  default:
+    strategy:
+      matrix:
+        distro: [melodic, noetic]
+
+    env:
+      BUILDER: catkin_make_isolated
+      ROS_DISTRO: ${{ matrix.distro }}
+      PRERELEASE: true
+
+    name: "${{ matrix.distro }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ros-industrial/industrial_ci@master
