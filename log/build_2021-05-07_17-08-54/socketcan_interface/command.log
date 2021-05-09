@@ -1,0 +1,3 @@
+Invoking command in '/root/ros_canopen/build/socketcan_interface': CMAKE_PREFIX_PATH=/opt/ros/foxy /usr/bin/cmake /root/ros_canopen/socketcan_interface -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+Invoked command in '/root/ros_canopen/build/socketcan_interface' returned '0': CMAKE_PREFIX_PATH=/opt/ros/foxy /usr/bin/cmake /root/ros_canopen/socketcan_interface -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+Invoking command in '/root/ros_canopen/build/socketcan_interface': CMAKE_PREFIX_PATH=/opt/ros/foxy /usr/bin/cmake --build /root/ros_canopen/build/socketcan_interface -- -j4 -l4

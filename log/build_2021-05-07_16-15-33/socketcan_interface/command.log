@@ -1,0 +1,2 @@
+Invoking command in '/root/ros_canopen/build/socketcan_interface': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+Invoked command in '/root/ros_canopen/build/socketcan_interface' returned '1': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface

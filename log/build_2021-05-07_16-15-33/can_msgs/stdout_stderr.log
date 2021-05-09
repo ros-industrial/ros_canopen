@@ -1,0 +1,39 @@
+-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found version "3.8.5") 
+Error parsing '/root/ros_canopen/can_msgs/package.xml':
+Traceback (most recent call last):
+  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 143, in <module>
+    main()
+  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 52, in main
+    raise e
+  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 48, in main
+    package = parse_package_string(
+  File "/usr/lib/python3/dist-packages/catkin_pkg/package.py", line 771, in parse_package_string
+    raise InvalidPackage('Error(s):%s' % (''.join(['\n- %s' % e for e in errors])), filename)
+catkin_pkg.package.InvalidPackage: Error(s) in package '/root/ros_canopen/can_msgs/package.xml':
+Error(s):
+- The manifest of package "can_msgs" (with format version 2) must not contain the following tags: member_of_group
+CMake Error at /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:94 (message):
+  execute_process(/usr/bin/python3
+  /opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py
+  /root/ros_canopen/can_msgs/package.xml
+  /root/ros_canopen/build/can_msgs/ament_cmake_core/package.cmake) returned
+  error code 1
+Call Stack (most recent call first):
+  /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)
+  /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:226 (ament_package_xml)
+  CMakeLists.txt:33 (rosidl_generate_interfaces)
+
+
+-- Configuring incomplete, errors occurred!
+See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".
+See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeError.log".

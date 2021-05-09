@@ -1,0 +1,23 @@
+-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE  
+CMake Error at /usr/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake:146 (message):
+  Could NOT find Boost (missing: Boost_INCLUDE_DIR chrono system thread)
+Call Stack (most recent call first):
+  /usr/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake:393 (_FPHSA_FAILURE_MESSAGE)
+  /usr/share/cmake-3.16/Modules/FindBoost.cmake:2179 (find_package_handle_standard_args)
+  CMakeLists.txt:25 (find_package)
+
+
+-- Configuring incomplete, errors occurred!
+See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".
+See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeError.log".

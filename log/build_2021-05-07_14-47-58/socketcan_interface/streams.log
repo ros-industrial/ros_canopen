@@ -1,0 +1,15 @@
+[0.027s] Invoking command in '/root/ros_canopen/build/socketcan_interface': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+[0.055s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.081s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.432s] CMake Error at /usr/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake:146 (message):
+[0.433s]   Could NOT find Boost (missing: Boost_INCLUDE_DIR chrono system thread)
+[0.433s] Call Stack (most recent call first):
+[0.433s]   /usr/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake:393 (_FPHSA_FAILURE_MESSAGE)
+[0.433s]   /usr/share/cmake-3.16/Modules/FindBoost.cmake:2179 (find_package_handle_standard_args)
+[0.433s]   CMakeLists.txt:25 (find_package)
+[0.434s] 
+[0.434s] 
+[0.434s] -- Configuring incomplete, errors occurred!
+[0.434s] See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".
+[0.434s] See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeError.log".
+[0.437s] Invoked command in '/root/ros_canopen/build/socketcan_interface' returned '1': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface

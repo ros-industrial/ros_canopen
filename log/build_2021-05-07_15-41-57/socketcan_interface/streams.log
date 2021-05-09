@@ -1,0 +1,18 @@
+[0.032s] Invoking command in '/root/ros_canopen/build/socketcan_interface': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+[0.060s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.092s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.320s] -- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+[0.326s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.331s] -- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.511s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.682s] CMake Error at CMakeLists.txt:113 (install):
+[0.682s]   install DIRECTORY given no DESTINATION!
+[0.682s] 
+[0.682s] 
+[0.683s] CMake Error at CMakeLists.txt:120 (install):
+[0.683s]   install FILES given no DESTINATION!
+[0.683s] 
+[0.683s] 
+[0.683s] -- Configuring incomplete, errors occurred!
+[0.683s] See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".
+[0.684s] See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeError.log".

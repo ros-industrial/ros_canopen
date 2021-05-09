@@ -1,0 +1,2 @@
+Invoking command in '/root/ros_canopen/build/can_msgs': CMAKE_PREFIX_PATH=/opt/ros/foxy /usr/bin/cmake /root/ros_canopen/can_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs
+Invoked command in '/root/ros_canopen/build/can_msgs' returned '1': CMAKE_PREFIX_PATH=/opt/ros/foxy /usr/bin/cmake /root/ros_canopen/can_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs

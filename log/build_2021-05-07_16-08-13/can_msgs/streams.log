@@ -1,0 +1,24 @@
+[0.031s] Invoking command in '/root/ros_canopen/build/can_msgs': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs
+[0.051s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.075s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+[0.075s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.285s] -- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)
+[0.335s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.340s] -- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.484s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.599s] -- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[0.602s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.945s] -- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+[0.987s] -- Found PythonInterp: /usr/bin/python3 (found version "3.8.5") 
+[1.188s] CMake Error at /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:229 (message):
+[1.189s]   Packages installing interfaces must include
+[1.189s]   '<member_of_group>rosidl_interface_packages</member_of_group>' in their
+[1.189s]   package.xml
+[1.189s] Call Stack (most recent call first):
+[1.189s]   CMakeLists.txt:33 (rosidl_generate_interfaces)
+[1.189s] 
+[1.189s] 
+[1.192s] -- Configuring incomplete, errors occurred!
+[1.193s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".
+[1.194s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeError.log".
+[1.201s] Invoked command in '/root/ros_canopen/build/can_msgs' returned '1': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs

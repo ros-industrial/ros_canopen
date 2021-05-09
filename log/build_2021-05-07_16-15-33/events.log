@@ -1,0 +1,111 @@
+[0.000000] (-) TimerEvent: {}
+[0.000196] (can_msgs) JobQueued: {'identifier': 'can_msgs', 'dependencies': OrderedDict()}
+[0.001090] (socketcan_interface) JobQueued: {'identifier': 'socketcan_interface', 'dependencies': OrderedDict()}
+[0.001422] (canopen_master) JobQueued: {'identifier': 'canopen_master', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface')])}
+[0.001506] (socketcan_bridge) JobQueued: {'identifier': 'socketcan_bridge', 'dependencies': OrderedDict([('can_msgs', '/root/ros_canopen/install/can_msgs'), ('socketcan_interface', '/root/ros_canopen/install/socketcan_interface')])}
+[0.001575] (canopen_402) JobQueued: {'identifier': 'canopen_402', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master')])}
+[0.001642] (canopen_chain_node) JobQueued: {'identifier': 'canopen_chain_node', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master')])}
+[0.001706] (canopen_motor_node) JobQueued: {'identifier': 'canopen_motor_node', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master'), ('canopen_402', '/root/ros_canopen/install/canopen_402'), ('canopen_chain_node', '/root/ros_canopen/install/canopen_chain_node')])}
+[0.001769] (ros_canopen) JobQueued: {'identifier': 'ros_canopen', 'dependencies': OrderedDict([('can_msgs', '/root/ros_canopen/install/can_msgs'), ('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master'), ('socketcan_bridge', '/root/ros_canopen/install/socketcan_bridge'), ('canopen_402', '/root/ros_canopen/install/canopen_402'), ('canopen_chain_node', '/root/ros_canopen/install/canopen_chain_node'), ('canopen_motor_node', '/root/ros_canopen/install/canopen_motor_node')])}
+[0.001829] (socketcan_interface) JobStarted: {'identifier': 'socketcan_interface'}
+[0.014897] (can_msgs) JobStarted: {'identifier': 'can_msgs'}
+[0.027278] (socketcan_interface) JobProgress: {'identifier': 'socketcan_interface', 'progress': 'cmake'}
+[0.028486] (socketcan_interface) Command: {'cmd': ['/usr/bin/cmake', '/root/ros_canopen/socketcan_interface', '-DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface'], 'cwd': '/root/ros_canopen/build/socketcan_interface', 'env': OrderedDict([('HOSTNAME', 'bb6b91015a3a'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/root'), ('OLDPWD', '/'), ('ROS_PYTHON_VERSION', '3'), ('_colcon_cd_root', '/root/ros2_install'), ('ROS_DISTRO', 'foxy'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/foxy'), ('PWD', '/root/ros_canopen/build/socketcan_interface'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1')]), 'shell': False}
+[0.033800] (can_msgs) JobProgress: {'identifier': 'can_msgs', 'progress': 'cmake'}
+[0.035153] (can_msgs) Command: {'cmd': ['/usr/bin/cmake', '/root/ros_canopen/can_msgs', '-DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs'], 'cwd': '/root/ros_canopen/build/can_msgs', 'env': OrderedDict([('HOSTNAME', 'bb6b91015a3a'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/root'), ('OLDPWD', '/'), ('ROS_PYTHON_VERSION', '3'), ('_colcon_cd_root', '/root/ros2_install'), ('ROS_DISTRO', 'foxy'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/foxy'), ('PWD', '/root/ros_canopen/build/can_msgs'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1')]), 'shell': False}
+[0.054925] (socketcan_interface) StdoutLine: {'line': b'-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)\n'}
+[0.061963] (can_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)\n'}
+[0.078067] (socketcan_interface) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[0.084992] (can_msgs) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") \n'}
+[0.085320] (can_msgs) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[0.098867] (-) TimerEvent: {}
+[0.199246] (-) TimerEvent: {}
+[0.294199] (socketcan_interface) StdoutLine: {'line': b'-- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)\n'}
+[0.299347] (-) TimerEvent: {}
+[0.300370] (can_msgs) StdoutLine: {'line': b'-- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)\n'}
+[0.354633] (socketcan_interface) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.360011] (can_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.362263] (socketcan_interface) StdoutLine: {'line': b'-- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)\n'}
+[0.367720] (can_msgs) StdoutLine: {'line': b'-- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)\n'}
+[0.399503] (-) TimerEvent: {}
+[0.499054] (socketcan_interface) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.499581] (-) TimerEvent: {}
+[0.506940] (can_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.584174] (socketcan_interface) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)\n'}
+[0.586313] (socketcan_interface) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.591582] (can_msgs) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)\n'}
+[0.593588] (can_msgs) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.599695] (-) TimerEvent: {}
+[0.700181] (-) TimerEvent: {}
+[0.800543] (-) TimerEvent: {}
+[0.835898] (socketcan_interface) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)\n'}
+[0.843653] (can_msgs) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)\n'}
+[0.877597] (can_msgs) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found version "3.8.5") \n'}
+[0.900656] (-) TimerEvent: {}
+[0.944051] (socketcan_interface) StderrLine: {'line': b"Error parsing '/root/ros_canopen/socketcan_interface/package.xml':\n"}
+[0.944631] (socketcan_interface) StderrLine: {'line': b'Traceback (most recent call last):\n'}
+[0.944840] (socketcan_interface) StderrLine: {'line': b'  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 143, in <module>\n'}
+[0.945005] (socketcan_interface) StderrLine: {'line': b'    main()\n'}
+[0.945155] (socketcan_interface) StderrLine: {'line': b'  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 52, in main\n'}
+[0.945305] (socketcan_interface) StderrLine: {'line': b'    raise e\n'}
+[0.945474] (socketcan_interface) StderrLine: {'line': b'  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 48, in main\n'}
+[0.945626] (socketcan_interface) StderrLine: {'line': b'    package = parse_package_string(\n'}
+[0.945771] (socketcan_interface) StderrLine: {'line': b'  File "/usr/lib/python3/dist-packages/catkin_pkg/package.py", line 771, in parse_package_string\n'}
+[0.945918] (socketcan_interface) StderrLine: {'line': b"    raise InvalidPackage('Error(s):%s' % (''.join(['\\n- %s' % e for e in errors])), filename)\n"}
+[0.946065] (socketcan_interface) StderrLine: {'line': b"catkin_pkg.package.InvalidPackage: Error(s) in package '/root/ros_canopen/socketcan_interface/package.xml':\n"}
+[0.946212] (socketcan_interface) StderrLine: {'line': b'Error(s):\n'}
+[0.946366] (socketcan_interface) StderrLine: {'line': b'- The manifest of package "socketcan_interface" (with format version 2) must not contain the following tags: member_of_group\n'}
+[0.955032] (socketcan_interface) StderrLine: {'line': b'CMake Error at /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:94 (message):\n'}
+[0.955289] (socketcan_interface) StderrLine: {'line': b'  execute_process(/usr/bin/python3\n'}
+[0.955450] (socketcan_interface) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py\n'}
+[0.955613] (socketcan_interface) StderrLine: {'line': b'  /root/ros_canopen/socketcan_interface/package.xml\n'}
+[0.955761] (socketcan_interface) StderrLine: {'line': b'  /root/ros_canopen/build/socketcan_interface/ament_cmake_core/package.cmake)\n'}
+[0.955914] (socketcan_interface) StderrLine: {'line': b'  returned error code 1\n'}
+[0.956063] (socketcan_interface) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.956214] (socketcan_interface) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)\n'}
+[0.956362] (socketcan_interface) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package.cmake:63 (ament_package_xml)\n'}
+[0.956510] (socketcan_interface) StderrLine: {'line': b'  CMakeLists.txt:52 (ament_package)\n'}
+[0.956655] (socketcan_interface) StderrLine: {'line': b'\n'}
+[0.956801] (socketcan_interface) StderrLine: {'line': b'\n'}
+[0.958075] (socketcan_interface) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.958252] (socketcan_interface) StdoutLine: {'line': b'See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".\n'}
+[0.958402] (socketcan_interface) StdoutLine: {'line': b'See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeError.log".\n'}
+[0.964551] (socketcan_interface) CommandEnded: {'returncode': 1}
+[0.965792] (socketcan_interface) JobEnded: {'identifier': 'socketcan_interface', 'rc': 1}
+[1.000754] (-) TimerEvent: {}
+[1.055653] (can_msgs) StderrLine: {'line': b"Error parsing '/root/ros_canopen/can_msgs/package.xml':\n"}
+[1.056107] (can_msgs) StderrLine: {'line': b'Traceback (most recent call last):\n'}
+[1.056268] (can_msgs) StderrLine: {'line': b'  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 143, in <module>\n'}
+[1.056385] (can_msgs) StderrLine: {'line': b'    main()\n'}
+[1.056494] (can_msgs) StderrLine: {'line': b'  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 52, in main\n'}
+[1.056601] (can_msgs) StderrLine: {'line': b'    raise e\n'}
+[1.056707] (can_msgs) StderrLine: {'line': b'  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 48, in main\n'}
+[1.056820] (can_msgs) StderrLine: {'line': b'    package = parse_package_string(\n'}
+[1.056924] (can_msgs) StderrLine: {'line': b'  File "/usr/lib/python3/dist-packages/catkin_pkg/package.py", line 771, in parse_package_string\n'}
+[1.057030] (can_msgs) StderrLine: {'line': b"    raise InvalidPackage('Error(s):%s' % (''.join(['\\n- %s' % e for e in errors])), filename)\n"}
+[1.057135] (can_msgs) StderrLine: {'line': b"catkin_pkg.package.InvalidPackage: Error(s) in package '/root/ros_canopen/can_msgs/package.xml':\n"}
+[1.057240] (can_msgs) StderrLine: {'line': b'Error(s):\n'}
+[1.057367] (can_msgs) StderrLine: {'line': b'- The manifest of package "can_msgs" (with format version 2) must not contain the following tags: member_of_group\n'}
+[1.063850] (can_msgs) StderrLine: {'line': b'CMake Error at /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:94 (message):\n'}
+[1.064051] (can_msgs) StderrLine: {'line': b'  execute_process(/usr/bin/python3\n'}
+[1.064164] (can_msgs) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py\n'}
+[1.064272] (can_msgs) StderrLine: {'line': b'  /root/ros_canopen/can_msgs/package.xml\n'}
+[1.064379] (can_msgs) StderrLine: {'line': b'  /root/ros_canopen/build/can_msgs/ament_cmake_core/package.cmake) returned\n'}
+[1.064485] (can_msgs) StderrLine: {'line': b'  error code 1\n'}
+[1.064589] (can_msgs) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[1.064693] (can_msgs) StderrLine: {'line': b'  /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)\n'}
+[1.064797] (can_msgs) StderrLine: {'line': b'  /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:226 (ament_package_xml)\n'}
+[1.064901] (can_msgs) StderrLine: {'line': b'  CMakeLists.txt:33 (rosidl_generate_interfaces)\n'}
+[1.065028] (can_msgs) StderrLine: {'line': b'\n'}
+[1.065131] (can_msgs) StderrLine: {'line': b'\n'}
+[1.066092] (can_msgs) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[1.066242] (can_msgs) StdoutLine: {'line': b'See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".\n'}
+[1.066354] (can_msgs) StdoutLine: {'line': b'See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeError.log".\n'}
+[1.071067] (can_msgs) JobEnded: {'identifier': 'can_msgs', 'rc': 'SIGINT'}
+[1.081919] (canopen_master) JobSkipped: {'identifier': 'canopen_master'}
+[1.082131] (socketcan_bridge) JobSkipped: {'identifier': 'socketcan_bridge'}
+[1.082175] (canopen_402) JobSkipped: {'identifier': 'canopen_402'}
+[1.082208] (canopen_chain_node) JobSkipped: {'identifier': 'canopen_chain_node'}
+[1.082240] (canopen_motor_node) JobSkipped: {'identifier': 'canopen_motor_node'}
+[1.082271] (ros_canopen) JobSkipped: {'identifier': 'ros_canopen'}
+[1.082304] (-) EventReactorShutdown: {}

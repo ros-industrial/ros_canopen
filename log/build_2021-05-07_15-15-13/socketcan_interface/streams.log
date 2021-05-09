@@ -1,0 +1,14 @@
+[0.027s] Invoking command in '/root/ros_canopen/build/socketcan_interface': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+[0.053s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.078s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.292s] -- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+[0.295s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.301s] -- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.461s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.538s] CMake Error at CMakeLists.txt:36 (catkin_package):
+[0.538s]   Unknown CMake command "catkin_package".
+[0.538s] 
+[0.538s] 
+[0.539s] -- Configuring incomplete, errors occurred!
+[0.539s] See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".
+[0.539s] See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeError.log".

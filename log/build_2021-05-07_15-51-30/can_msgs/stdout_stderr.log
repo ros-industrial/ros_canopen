@@ -1,0 +1,19 @@
+-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Found std_msgs: 2.0.4 (/opt/ros/foxy/share/std_msgs/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found version "3.8.5") 
+CMake Error at /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:229 (message):
+  Packages installing interfaces must include
+  '<member_of_group>rosidl_interface_packages</member_of_group>' in their
+  package.xml
+Call Stack (most recent call first):
+  CMakeLists.txt:32 (rosidl_generate_interfaces)
+
+
+-- Configuring incomplete, errors occurred!
+See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".

@@ -1,0 +1,1 @@
+Invoking command in '/root/ros_canopen/build/can_msgs': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs

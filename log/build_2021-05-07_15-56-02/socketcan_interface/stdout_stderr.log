@@ -1,0 +1,172 @@
+-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /root/ros_canopen/build/socketcan_interface
+[35m[1mScanning dependencies of target socketcan_interface_string[0m
+[35m[1mScanning dependencies of target socketcan_interface_plugin[0m
+[ 12%] [32mBuilding CXX object CMakeFiles/socketcan_interface_string.dir/src/string.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/socketcan_interface_plugin.dir/src/socketcan_interface_plugin.cpp.o[0m
+In file included from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:12[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/string.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/src/string.cpp:1[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:[m[K In member function ‘[01m[Kvirtual bool can::NoSettings::getRepr(const string&, std::string&) const[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:38:47:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kn[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+   38 |       virtual bool getRepr([01;35m[Kconst std::string &n[m[K, std::string & repr) const { return false; }
+      |                            [01;35m[K~~~~~~~~~~~~~~~~~~~^[m[K
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:38:64:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Krepr[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+   38 |       virtual bool getRepr(const std::string &n, [01;35m[Kstd::string & repr[m[K) const { return false; }
+      |                                                  [01;35m[K~~~~~~~~~~~~~~^~~~[m[K
+In file included from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/string.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/src/string.cpp:1[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:[m[K In member function ‘[01m[Kvirtual bool can::DriverInterface::init(const string&, bool, can::SettingsConstSharedPtr)[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:190:88:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ksettings[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+  190 | bool init(const std::string &device, bool loopback, [01;35m[KSettingsConstSharedPtr settings[m[K) {
+      |                                                     [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~[m[K
+
+[01m[K/root/ros_canopen/socketcan_interface/src/string.cpp:[m[K In function ‘[01m[Kcan::FrameFilterSharedPtr can::tofilter(const T&) [with T = std::__cxx11::basic_string<char>][m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/src/string.cpp:154:12:[m[K [01;35m[Kwarning: [m[Kthis statement may fall through [[01;35m[K-Wimplicit-fallthrough=[m[K]
+  154 |     [01;35m[Kinvert = true[m[K;
+      |     [01;35m[K~~~~~~~^~~~~~[m[K
+[01m[K/root/ros_canopen/socketcan_interface/src/string.cpp:155:4:[m[K [01;36m[Knote: [m[Khere
+  155 |    [01;36m[Kcase[m[K ':':
+      |    [01;36m[K^~~~[m[K
+[01m[K/root/ros_canopen/socketcan_interface/src/string.cpp:159:12:[m[K [01;35m[Kwarning: [m[Kthis statement may fall through [[01;35m[K-Wimplicit-fallthrough=[m[K]
+  159 |     [01;35m[Kinvert = true[m[K;
+      |     [01;35m[K~~~~~~~^~~~~~[m[K
+[01m[K/root/ros_canopen/socketcan_interface/src/string.cpp:160:4:[m[K [01;36m[Knote: [m[Khere
+  160 |    [01;36m[Kcase[m[K '-':
+      |    [01;36m[K^~~~[m[K
+[ 37%] [32m[1mLinking CXX static library libsocketcan_interface_string.a[0m
+[ 37%] Built target socketcan_interface_string
+[35m[1mScanning dependencies of target socketcan_dump[0m
+[35m[1mScanning dependencies of target socketcan_bcm[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/socketcan_dump.dir/src/candump.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/socketcan_bcm.dir/src/canbcm.cpp.o[0m
+In file included from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:12[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/asio_base.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/src/socketcan_interface_plugin.cpp:2[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:[m[K In member function ‘[01m[Kvirtual bool can::NoSettings::getRepr(const string&, std::string&) const[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:38:47:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kn[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+   38 |       virtual bool getRepr([01;35m[Kconst std::string &n[m[K, std::string & repr) const { return false; }
+      |                            [01;35m[K~~~~~~~~~~~~~~~~~~~^[m[K
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:38:64:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Krepr[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+   38 |       virtual bool getRepr(const std::string &n, [01;35m[Kstd::string & repr[m[K) const { return false; }
+      |                                                  [01;35m[K~~~~~~~~~~~~~~^~~~[m[K
+In file included from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/asio_base.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/src/socketcan_interface_plugin.cpp:2[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:[m[K In member function ‘[01m[Kvirtual bool can::DriverInterface::init(const string&, bool, can::SettingsConstSharedPtr)[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:190:88:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ksettings[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+  190 |     virtual bool init(const std::string &device, bool loopback, [01;35m[KSettingsConstSharedPtr settings[m[K) {
+      |                                                                 [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~[m[K
+In file included from [01m[K/root/ros_canopen/socketcan_interface/src/socketcan_interface_plugin.cpp:2[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:[m[K In member function ‘[01m[Kbool can::SocketCANInterface::init(const string&, bool, can_err_mask_t, can_err_mask_t)[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:180:42:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Ksockaddr_can::can_ifindex[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+  180 |             struct sockaddr_can addr = {0[01;35m[K}[m[K;
+      |                                          [01;35m[K^[m[K
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:180:42:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Ksockaddr_can::can_addr[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:[m[K In member function ‘[01m[Kvirtual bool can::SocketCANInterface::enqueue(const can::Frame&)[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::can_dlc[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+  216 |         can_frame frame = {0[01;35m[K}[m[K;
+      |                             [01;35m[K^[m[K
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::__pad[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::__res0[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::__res1[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::data[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[01m[K/root/ros_canopen/socketcan_interface/src/socketcan_interface_plugin.cpp:[m[K At global scope:
+[01m[K/root/ros_canopen/socketcan_interface/src/socketcan_interface_plugin.cpp:4:75:[m[K [01;35m[Kwarning: [m[Kextra ‘[01m[K;[m[K’ [[01;35m[K-Wpedantic[m[K]
+    4 | CLASS_LOADER_REGISTER_CLASS(can::SocketCANInterface, can::DriverInterface)[01;35m[K;[m[K
+      |                                                                           [01;35m[K^[m[K
+In file included from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:12[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/bcm.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/src/canbcm.cpp:1[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:[m[K In member function ‘[01m[Kvirtual bool can::NoSettings::getRepr(const string&, std::string&) const[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:38:47:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kn[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+   38 |       virtual bool getRepr([01;35m[Kconst std::string &n[m[K, std::string & repr) const { return false; }
+      |                            [01;35m[K~~~~~~~~~~~~~~~~~~~^[m[K
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:38:64:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Krepr[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+   38 |       virtual bool getRepr(const std::string &n, [01;35m[Kstd::string & repr[m[K) const { return false; }
+      |                                                  [01;35m[K~~~~~~~~~~~~~~^~~~[m[K
+In file included from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/bcm.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/src/canbcm.cpp:1[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:[m[K In member function ‘[01m[Kvirtual bool can::DriverInterface::init(const string&, bool, can::SettingsConstSharedPtr)[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:190:88:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ksettings[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+  190 | bool init(const std::string &device, bool loopback, [01;35m[KSettingsConstSharedPtr settings[m[K) {
+      |                                                     [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~[m[K
+
+In file included from [01m[K/root/ros_canopen/socketcan_interface/src/canbcm.cpp:1[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/bcm.h:[m[K In member function ‘[01m[Kbool can::BCMsocket::init(const string&)[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/bcm.h:69:38:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Ksockaddr_can::can_ifindex[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+   69 |         struct sockaddr_can addr = {0[01;35m[K}[m[K;
+      |                                      [01;35m[K^[m[K
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/bcm.h:69:38:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Ksockaddr_can::can_addr[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[ 75%] [32m[1mLinking CXX executable socketcan_bcm[0m
+[ 75%] Built target socketcan_bcm
+In file included from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:12[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/asio_base.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/src/candump.cpp:7[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:[m[K In member function ‘[01m[Kvirtual bool can::NoSettings::getRepr(const string&, std::string&) const[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:38:47:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kn[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+   38 |       virtual bool getRepr([01;35m[Kconst std::string &n[m[K, std::string & repr) const { return false; }
+      |                            [01;35m[K~~~~~~~~~~~~~~~~~~~^[m[K
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/settings.h:38:64:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Krepr[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+   38 |       virtual bool getRepr(const std::string &n, [01;35m[Kstd::string & repr[m[K) const { return false; }
+      |                                                  [01;35m[K~~~~~~~~~~~~~~^~~~[m[K
+In file included from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/asio_base.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:4[m[K,
+                 from [01m[K/root/ros_canopen/socketcan_interface/src/candump.cpp:7[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:[m[K In member function ‘[01m[Kvirtual bool can::DriverInterface::init(const string&, bool, can::SettingsConstSharedPtr)[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/interface.h:190:88:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ksettings[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+  190 |     virtual bool init(const std::string &device, bool loopback, [01;35m[KSettingsConstSharedPtr settings[m[K) {
+      |                                                                 [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~[m[K
+In file included from [01m[K/root/ros_canopen/socketcan_interface/src/candump.cpp:7[m[K:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:[m[K In member function ‘[01m[Kbool can::SocketCANInterface::init(const string&, bool, can_err_mask_t, can_err_mask_t)[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:180:42:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Ksockaddr_can::can_ifindex[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+  180 |             struct sockaddr_can addr = {0[01;35m[K}[m[K;
+      |                                          [01;35m[K^[m[K
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:180:42:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Ksockaddr_can::can_addr[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:[m[K In member function ‘[01m[Kvirtual bool can::SocketCANInterface::enqueue(const can::Frame&)[m[K’:
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::can_dlc[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+  216 |         can_frame frame = {0[01;35m[K}[m[K;
+      |                             [01;35m[K^[m[K
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::__pad[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::__res0[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::__res1[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[01m[K/root/ros_canopen/socketcan_interface/include/socketcan_interface/socketcan.h:216:29:[m[K [01;35m[Kwarning: [m[Kmissing initializer for member ‘[01m[Kcan_frame::data[m[K’ [[01;35m[K-Wmissing-field-initializers[m[K]
+[ 87%] [32m[1mLinking CXX static library libsocketcan_interface_plugin.a[0m
+[ 87%] Built target socketcan_interface_plugin
+[100%] [32m[1mLinking CXX executable socketcan_dump[0m
+/usr/bin/ld: CMakeFiles/socketcan_dump.dir/src/candump.cpp.o: in function `can::DriverInterface* class_loader::ClassLoader::createRawInstance<can::DriverInterface>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool)':
+candump.cpp:(.text._ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb[_ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb]+0x39): undefined reference to `class_loader::ClassLoader::setUnmanagedInstanceBeenCreated(bool)'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb[_ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb]+0x44): undefined reference to `class_loader::ClassLoader::hasUnmanagedInstanceBeenCreated()'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb[_ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb]+0x54): undefined reference to `class_loader::ClassLoader::isOnDemandLoadUnloadEnabled() const'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb[_ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb]+0x9d): undefined reference to `class_loader::ClassLoader::isLibraryLoaded() const'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb[_ZN12class_loader11ClassLoader17createRawInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEb]+0xb0): undefined reference to `class_loader::ClassLoader::loadLibrary()'
+/usr/bin/ld: CMakeFiles/socketcan_dump.dir/src/candump.cpp.o: in function `void class_loader::ClassLoader::onPluginDeletion<can::DriverInterface>(can::DriverInterface*)':
+candump.cpp:(.text._ZN12class_loader11ClassLoader16onPluginDeletionIN3can15DriverInterfaceEEEvPT_[_ZN12class_loader11ClassLoader16onPluginDeletionIN3can15DriverInterfaceEEEvPT_]+0xd5): undefined reference to `class_loader::ClassLoader::isOnDemandLoadUnloadEnabled() const'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader11ClassLoader16onPluginDeletionIN3can15DriverInterfaceEEEvPT_[_ZN12class_loader11ClassLoader16onPluginDeletionIN3can15DriverInterfaceEEEvPT_]+0xee): undefined reference to `class_loader::ClassLoader::hasUnmanagedInstanceBeenCreated()'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader11ClassLoader16onPluginDeletionIN3can15DriverInterfaceEEEvPT_[_ZN12class_loader11ClassLoader16onPluginDeletionIN3can15DriverInterfaceEEEvPT_]+0x106): undefined reference to `class_loader::ClassLoader::unloadLibraryInternal(bool)'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader11ClassLoader16onPluginDeletionIN3can15DriverInterfaceEEEvPT_[_ZN12class_loader11ClassLoader16onPluginDeletionIN3can15DriverInterfaceEEEvPT_]+0x114): undefined reference to `class_loader::ClassLoader::getLibraryPath[abi:cxx11]() const'
+/usr/bin/ld: CMakeFiles/socketcan_dump.dir/src/candump.cpp.o: in function `can::DriverInterface* class_loader::impl::createInstance<can::DriverInterface>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, class_loader::ClassLoader*)':
+candump.cpp:(.text._ZN12class_loader4impl14createInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS_11ClassLoaderE[_ZN12class_loader4impl14createInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS_11ClassLoaderE]+0x2f): undefined reference to `class_loader::impl::getPluginBaseToFactoryMapMapMutex()'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader4impl14createInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS_11ClassLoaderE[_ZN12class_loader4impl14createInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS_11ClassLoaderE]+0xf7): undefined reference to `class_loader::impl::getPluginBaseToFactoryMapMapMutex()'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader4impl14createInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS_11ClassLoaderE[_ZN12class_loader4impl14createInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS_11ClassLoaderE]+0x121): undefined reference to `class_loader::impl::AbstractMetaObjectBase::isOwnedBy(class_loader::ClassLoader const*) const'
+/usr/bin/ld: candump.cpp:(.text._ZN12class_loader4impl14createInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS_11ClassLoaderE[_ZN12class_loader4impl14createInstanceIN3can15DriverInterfaceEEEPT_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS_11ClassLoaderE]+0x173): undefined reference to `class_loader::impl::AbstractMetaObjectBase::isOwnedBy(class_loader::ClassLoader const*) const'
+/usr/bin/ld: CMakeFiles/socketcan_dump.dir/src/candump.cpp.o: in function `std::map<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, class_loader::impl::AbstractMetaObjectBase*, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, class_loader::impl::AbstractMetaObjectBase*> > >& class_loader::impl::getFactoryMapForBaseClass<can::DriverInterface>()':
+candump.cpp:(.text._ZN12class_loader4impl25getFactoryMapForBaseClassIN3can15DriverInterfaceEEERSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS0_22AbstractMetaObjectBaseESt4lessISA_ESaISt4pairIKSA_SC_EEEv[_ZN12class_loader4impl25getFactoryMapForBaseClassIN3can15DriverInterfaceEEERSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPNS0_22AbstractMetaObjectBaseESt4lessISA_ESaISt4pairIKSA_SC_EEEv]+0x52): undefined reference to `class_loader::impl::getFactoryMapForBaseClass(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)'
+/usr/bin/ld: CMakeFiles/socketcan_dump.dir/src/candump.cpp.o: in function `void __gnu_cxx::new_allocator<class_loader::ClassLoader>::construct<class_loader::ClassLoader, char*&>(class_loader::ClassLoader*, char*&)':
+candump.cpp:(.text._ZN9__gnu_cxx13new_allocatorIN12class_loader11ClassLoaderEE9constructIS2_JRPcEEEvPT_DpOT0_[_ZN9__gnu_cxx13new_allocatorIN12class_loader11ClassLoaderEE9constructIS2_JRPcEEEvPT_DpOT0_]+0x7e): undefined reference to `class_loader::ClassLoader::ClassLoader(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool)'
+collect2: error: ld returned 1 exit status
+make[2]: *** [CMakeFiles/socketcan_dump.dir/build.make:90: socketcan_dump] Error 1
+make[1]: *** [CMakeFiles/Makefile2:111: CMakeFiles/socketcan_dump.dir/all] Error 2
+make: *** [Makefile:141: all] Error 2

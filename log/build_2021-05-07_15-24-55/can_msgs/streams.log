@@ -1,0 +1,16 @@
+[0.026s] Invoking command in '/root/ros_canopen/build/can_msgs': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs
+[0.053s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.079s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.344s] -- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+[0.347s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.352s] -- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.503s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.546s] CMake Error at /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:59 (message):
+[0.547s]   rosidl_generate_interfaces() called without any interface files
+[0.547s] Call Stack (most recent call first):
+[0.547s]   CMakeLists.txt:31 (rosidl_generate_interfaces)
+[0.547s] 
+[0.547s] 
+[0.548s] -- Configuring incomplete, errors occurred!
+[0.548s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".
+[0.553s] Invoked command in '/root/ros_canopen/build/can_msgs' returned '1': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<package format="2">.
+<package format="3">.
   <name>can_msgs</name>
-  <version>0.8.5</version>
+  <version>0.0.0</version>
   <description>CAN related message types.</description>
 
   <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
@@ -13,12 +13,20 @@
   <url type="repository">https://github.com/ros-industrial/ros_canopen</url>
   <url type="bugtracker">https://github.com/ros-industrial/ros_canopen/issues</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+  <exec_depend>builtin_interfaces</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
 
-  <depend>std_msgs</depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
 
   <build_depend>message_generation</build_depend>
   <build_export_depend>message_runtime</build_export_depend>
   <exec_depend>message_runtime</exec_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <exec_depend>rcutils</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 
 </package>

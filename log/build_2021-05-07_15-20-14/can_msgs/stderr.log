@@ -1,0 +1,7 @@
+CMake Error at /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:93 (message):
+  rosidl_generate_interfaces() the passed file 'Frame.msg' doesn't exist
+  relative to the CMAKE_CURRENT_SOURCE_DIR '/root/ros_canopen/can_msgs'
+Call Stack (most recent call first):
+  CMakeLists.txt:27 (rosidl_generate_interfaces)
+
+

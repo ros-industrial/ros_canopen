@@ -1,0 +1,40 @@
+[0.021s] Invoking command in '/root/ros_canopen/build/can_msgs': /usr/bin/cmake /root/ros_canopen/can_msgs -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs
+[0.049s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.076s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+[0.077s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.324s] -- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)
+[0.387s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.397s] -- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.535s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.622s] -- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[0.625s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.865s] -- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+[0.902s] -- Found PythonInterp: /usr/bin/python3 (found version "3.8.5") 
+[1.061s] Error parsing '/root/ros_canopen/can_msgs/package.xml':
+[1.063s] Traceback (most recent call last):
+[1.063s]   File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 143, in <module>
+[1.063s]     main()
+[1.063s]   File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 52, in main
+[1.063s]     raise e
+[1.064s]   File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 48, in main
+[1.064s]     package = parse_package_string(
+[1.064s]   File "/usr/lib/python3/dist-packages/catkin_pkg/package.py", line 771, in parse_package_string
+[1.064s]     raise InvalidPackage('Error(s):%s' % (''.join(['\n- %s' % e for e in errors])), filename)
+[1.064s] catkin_pkg.package.InvalidPackage: Error(s) in package '/root/ros_canopen/can_msgs/package.xml':
+[1.064s] Error(s):
+[1.064s] - The manifest of package "can_msgs" (with format version 2) must not contain the following tags: member_of_group
+[1.071s] CMake Error at /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:94 (message):
+[1.071s]   execute_process(/usr/bin/python3
+[1.071s]   /opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py
+[1.071s]   /root/ros_canopen/can_msgs/package.xml
+[1.071s]   /root/ros_canopen/build/can_msgs/ament_cmake_core/package.cmake) returned
+[1.071s]   error code 1
+[1.071s] Call Stack (most recent call first):
+[1.072s]   /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)
+[1.072s]   /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:226 (ament_package_xml)
+[1.072s]   CMakeLists.txt:33 (rosidl_generate_interfaces)
+[1.072s] 
+[1.072s] 
+[1.073s] -- Configuring incomplete, errors occurred!
+[1.073s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".
+[1.073s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeError.log".

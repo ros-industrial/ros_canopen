@@ -1,0 +1,1 @@
+Invoking command in '/root/ros_canopen/build/can_msgs': CMAKE_PREFIX_PATH=/opt/ros/foxy /usr/bin/cmake --build /root/ros_canopen/build/can_msgs -- -j4 -l4

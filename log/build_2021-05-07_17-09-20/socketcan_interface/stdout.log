@@ -1,0 +1,4 @@
+[ 25%] Built target socketcan_interface_string
+[ 50%] Built target socketcan_interface_plugin
+[ 62%] [32m[1mLinking CXX executable socketcan_dump[0m
+[ 87%] Built target socketcan_bcm

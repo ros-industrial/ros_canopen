@@ -1,0 +1,17 @@
+-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /root/ros_canopen/build/socketcan_interface
+[ 25%] Built target socketcan_interface_string
+[ 50%] Built target socketcan_interface_plugin
+[ 75%] Built target socketcan_bcm
+[ 87%] [32m[1mLinking CXX executable socketcan_dump[0m

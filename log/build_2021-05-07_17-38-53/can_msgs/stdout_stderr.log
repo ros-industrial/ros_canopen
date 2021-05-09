@@ -1,0 +1,60 @@
+-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found version "3.8.5") 
+-- Found ament_cmake_ros: 0.9.1 (/opt/ros/foxy/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3.5") 
+-- Found python_cmake_module: 0.8.1 (/opt/ros/foxy/share/python_cmake_module/cmake)
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.8
+-- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.8.so
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /root/ros_canopen/build/can_msgs
+[  6%] Built target can_msgs__cpp
+[  6%] [32mBuilding C object CMakeFiles/can_msgs__rosidl_generator_c.dir/rosidl_generator_c/can_msgs/msg/detail/frame__functions.c.o[0m
+[  9%] [32mBuilding CXX object CMakeFiles/can_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/can_msgs/msg/detail/frame__type_support.cpp.o[0m
+In file included from [01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_c/can_msgs/msg/detail/frame__functions.h:19[m[K,
+                 from [01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_c/can_msgs/msg/detail/frame__functions.c:4[m[K:
+[01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_c/can_msgs/msg/detail/frame__struct.h:22:10:[m[K [01;31m[Kfatal error: [m[Kcan_msgs/msg/detail/header__struct.h: No such file or directory
+   22 | #include [01;31m[K"can_msgs/msg/detail/header__struct.h"[m[K
+      |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+make[2]: *** [CMakeFiles/can_msgs__rosidl_generator_c.dir/build.make:124: CMakeFiles/can_msgs__rosidl_generator_c.dir/rosidl_generator_c/can_msgs/msg/detail/frame__functions.c.o] Error 1
+[ 12%] [32mBuilding CXX object CMakeFiles/can_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/can_msgs/msg/frame__type_support.cpp.o[0m
+make[1]: *** [CMakeFiles/Makefile2:269: CMakeFiles/can_msgs__rosidl_generator_c.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[ 16%] [32mBuilding CXX object CMakeFiles/can_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/can_msgs/msg/detail/dds_fastrtps/frame__type_support.cpp.o[0m
+In file included from [01m[K/root/ros_canopen/build/can_msgs/rosidl_typesupport_introspection_cpp/can_msgs/msg/detail/frame__type_support.cpp:12[m[K:
+[01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_cpp/can_msgs/msg/detail/frame__struct.hpp:19:10:[m[K [01;31m[Kfatal error: [m[Kcan_msgs/msg/detail/header__struct.hpp: No such file or directory
+   19 | #include [01;31m[K"can_msgs/msg/detail/header__struct.hpp"[m[K
+      |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+make[2]: *** [CMakeFiles/can_msgs__rosidl_typesupport_introspection_cpp.dir/build.make:110: CMakeFiles/can_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/can_msgs/msg/detail/frame__type_support.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:242: CMakeFiles/can_msgs__rosidl_typesupport_introspection_cpp.dir/all] Error 2
+In file included from [01m[K/root/ros_canopen/build/can_msgs/rosidl_typesupport_cpp/can_msgs/msg/frame__type_support.cpp:7[m[K:
+[01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_cpp/can_msgs/msg/detail/frame__struct.hpp:19:10:[m[K [01;31m[Kfatal error: [m[Kcan_msgs/msg/detail/header__struct.hpp: No such file or directory
+   19 | #include [01;31m[K"can_msgs/msg/detail/header__struct.hpp"[m[K
+      |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+make[2]: *** [CMakeFiles/can_msgs__rosidl_typesupport_cpp.dir/build.make:105: CMakeFiles/can_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/can_msgs/msg/frame__type_support.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:181: CMakeFiles/can_msgs__rosidl_typesupport_cpp.dir/all] Error 2
+In file included from [01m[K/root/ros_canopen/build/can_msgs/rosidl_typesupport_fastrtps_cpp/can_msgs/msg/detail/frame__rosidl_typesupport_fastrtps_cpp.hpp:11[m[K,
+                 from [01m[K/root/ros_canopen/build/can_msgs/rosidl_typesupport_fastrtps_cpp/can_msgs/msg/detail/dds_fastrtps/frame__type_support.cpp:4[m[K:
+[01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_cpp/can_msgs/msg/detail/frame__struct.hpp:19:10:[m[K [01;31m[Kfatal error: [m[Kcan_msgs/msg/detail/header__struct.hpp: No such file or directory
+   19 | #include [01;31m[K"can_msgs/msg/detail/header__struct.hpp"[m[K
+      |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+make[2]: *** [CMakeFiles/can_msgs__rosidl_typesupport_fastrtps_cpp.dir/build.make:110: CMakeFiles/can_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/can_msgs/msg/detail/dds_fastrtps/frame__type_support.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:442: CMakeFiles/can_msgs__rosidl_typesupport_fastrtps_cpp.dir/all] Error 2
+make: *** [Makefile:141: all] Error 2

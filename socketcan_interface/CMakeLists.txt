@@ -1,16 +1,26 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 project(socketcan_interface)
 
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif()
+
+# Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-find_package(catkin REQUIRED
-  COMPONENTS
-    class_loader
-)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
+
+find_package(ament_cmake REQUIRED)
+#find_package(class_loader REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(rosidl_typesupport_c REQUIRED)
 find_package(console_bridge REQUIRED)
 
 find_package(Boost REQUIRED
@@ -22,15 +32,23 @@ find_package(Boost REQUIRED
 
 find_package(Threads REQUIRED)
 
-catkin_package(
-  INCLUDE_DIRS
-    include
-  LIBRARIES
-    ${PROJECT_NAME}_string
-  CATKIN_DEPENDS
+
+ament_export_include_directories(
+  include
+)
+
+ament_export_libraries(
+  ${PROJECT_NAME}_string
+)
+
+ament_export_dependencies(
   DEPENDS
     Boost
     console_bridge
+)
+
+ament_package(
+  CONFIG_EXTRAS
 )
 
 include_directories(
@@ -92,16 +110,13 @@ install(
 )
 
 install(
-  DIRECTORY
-    include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
+  DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME}
 )
 
 install(
-  FILES
-    ${PROJECT_NAME}_plugin.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  FILES ${PROJECT_NAME}_plugin.xml
+  DESTINATION include ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 if(CATKIN_ENABLE_TESTING)
   find_package(xmlrpcpp REQUIRED)

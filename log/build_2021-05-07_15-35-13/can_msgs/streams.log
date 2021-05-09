@@ -1,0 +1,24 @@
+[0.024s] Invoking command in '/root/ros_canopen/build/can_msgs': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs
+[0.047s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.069s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+[0.069s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.282s] CMake Error at CMakeLists.txt:19 (find_package):
+[0.283s]   By not providing "Findmessage_generation.cmake" in CMAKE_MODULE_PATH this
+[0.283s]   project has asked CMake to find a package configuration file provided by
+[0.283s]   "message_generation", but CMake did not find one.
+[0.283s] 
+[0.284s]   Could not find a package configuration file provided by
+[0.284s]   "message_generation" with any of the following names:
+[0.284s] 
+[0.284s]     message_generationConfig.cmake
+[0.284s]     message_generation-config.cmake
+[0.284s] 
+[0.285s]   Add the installation prefix of "message_generation" to CMAKE_PREFIX_PATH or
+[0.285s]   set "message_generation_DIR" to a directory containing one of the above
+[0.285s]   files.  If "message_generation" provides a separate development package or
+[0.285s]   SDK, be sure it has been installed.
+[0.286s] 
+[0.286s] -- Configuring incomplete, errors occurred!
+[0.286s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".
+[0.286s] 
+[0.291s] Invoked command in '/root/ros_canopen/build/can_msgs' returned '1': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs

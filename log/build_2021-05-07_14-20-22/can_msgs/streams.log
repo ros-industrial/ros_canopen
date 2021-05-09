@@ -1,0 +1,21 @@
+[0.023s] Invoking command in '/root/ros_canopen/build/can_msgs': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs
+[0.052s] CMake Error at CMakeLists.txt:9 (find_package):
+[0.052s]   By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has
+[0.053s]   asked CMake to find a package configuration file provided by "catkin", but
+[0.053s]   CMake did not find one.
+[0.053s] 
+[0.053s]   Could not find a package configuration file provided by "catkin" with any
+[0.053s]   of the following names:
+[0.053s] 
+[0.053s]     catkinConfig.cmake
+[0.054s]     catkin-config.cmake
+[0.054s] 
+[0.054s]   Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set
+[0.054s]   "catkin_DIR" to a directory containing one of the above files.  If "catkin"
+[0.055s]   provides a separate development package or SDK, be sure it has been
+[0.056s]   installed.
+[0.056s] 
+[0.057s] 
+[0.066s] -- Configuring incomplete, errors occurred!
+[0.066s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".
+[0.067s] Invoked command in '/root/ros_canopen/build/can_msgs' returned '1': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs

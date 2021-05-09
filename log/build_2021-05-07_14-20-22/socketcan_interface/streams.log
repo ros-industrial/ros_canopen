@@ -1,0 +1,21 @@
+[0.027s] Invoking command in '/root/ros_canopen/build/socketcan_interface': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+[0.071s] CMake Error at CMakeLists.txt:9 (find_package):
+[0.073s]   By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has
+[0.073s]   asked CMake to find a package configuration file provided by "catkin", but
+[0.074s]   CMake did not find one.
+[0.075s] 
+[0.075s]   Could not find a package configuration file provided by "catkin" with any
+[0.075s]   of the following names:
+[0.076s] 
+[0.077s]     catkinConfig.cmake
+[0.078s]     catkin-config.cmake
+[0.078s] 
+[0.078s]   Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set
+[0.079s]   "catkin_DIR" to a directory containing one of the above files.  If "catkin"
+[0.079s]   provides a separate development package or SDK, be sure it has been
+[0.079s]   installed.
+[0.079s] 
+[0.079s] 
+[0.079s] -- Configuring incomplete, errors occurred!
+[0.080s] See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".
+[0.080s] Invoked command in '/root/ros_canopen/build/socketcan_interface' returned '1': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface

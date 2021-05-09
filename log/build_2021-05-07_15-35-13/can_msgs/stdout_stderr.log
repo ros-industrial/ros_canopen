@@ -1,0 +1,22 @@
+-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+CMake Error at CMakeLists.txt:19 (find_package):
+  By not providing "Findmessage_generation.cmake" in CMAKE_MODULE_PATH this
+  project has asked CMake to find a package configuration file provided by
+  "message_generation", but CMake did not find one.
+
+  Could not find a package configuration file provided by
+  "message_generation" with any of the following names:
+
+    message_generationConfig.cmake
+    message_generation-config.cmake
+
+  Add the installation prefix of "message_generation" to CMAKE_PREFIX_PATH or
+  set "message_generation_DIR" to a directory containing one of the above
+  files.  If "message_generation" provides a separate development package or
+  SDK, be sure it has been installed.
+
+-- Configuring incomplete, errors occurred!
+See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".
+

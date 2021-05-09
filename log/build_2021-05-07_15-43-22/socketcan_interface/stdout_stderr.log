@@ -1,0 +1,17 @@
+-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+CMake Error at CMakeLists.txt:113 (install):
+  install DIRECTORY given no DESTINATION!
+
+
+CMake Error at CMakeLists.txt:120 (install):
+  install FILES given no DESTINATION!
+
+
+-- Configuring incomplete, errors occurred!
+See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".
+See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeError.log".

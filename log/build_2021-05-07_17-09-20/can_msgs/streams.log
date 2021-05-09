@@ -1,0 +1,24 @@
+[0.031s] Invoking command in '/root/ros_canopen/build/can_msgs': CMAKE_PREFIX_PATH=/opt/ros/foxy /usr/bin/cmake /root/ros_canopen/can_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs
+[0.053s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.081s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+[0.081s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.312s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.324s] -- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)
+[0.371s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.377s] -- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.533s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.617s] -- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[0.619s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.865s] -- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+[0.902s] -- Found PythonInterp: /usr/bin/python3 (found version "3.8.5") 
+[1.072s] CMake Error at /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:229 (message):
+[1.072s]   Packages installing interfaces must include
+[1.072s]   '<member_of_group>rosidl_interface_packages</member_of_group>' in their
+[1.072s]   package.xml
+[1.072s] Call Stack (most recent call first):
+[1.072s]   CMakeLists.txt:33 (rosidl_generate_interfaces)
+[1.072s] 
+[1.073s] 
+[1.074s] -- Configuring incomplete, errors occurred!
+[1.074s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".
+[1.074s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeError.log".

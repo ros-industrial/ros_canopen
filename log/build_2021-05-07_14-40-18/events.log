@@ -1,0 +1,64 @@
+[0.000000] (-) TimerEvent: {}
+[0.000148] (can_msgs) JobQueued: {'identifier': 'can_msgs', 'dependencies': OrderedDict()}
+[0.000287] (socketcan_interface) JobQueued: {'identifier': 'socketcan_interface', 'dependencies': OrderedDict()}
+[0.000568] (canopen_master) JobQueued: {'identifier': 'canopen_master', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface')])}
+[0.001083] (socketcan_bridge) JobQueued: {'identifier': 'socketcan_bridge', 'dependencies': OrderedDict([('can_msgs', '/root/ros_canopen/install/can_msgs'), ('socketcan_interface', '/root/ros_canopen/install/socketcan_interface')])}
+[0.001314] (canopen_402) JobQueued: {'identifier': 'canopen_402', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master')])}
+[0.001586] (canopen_chain_node) JobQueued: {'identifier': 'canopen_chain_node', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master')])}
+[0.001661] (canopen_motor_node) JobQueued: {'identifier': 'canopen_motor_node', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master'), ('canopen_402', '/root/ros_canopen/install/canopen_402'), ('canopen_chain_node', '/root/ros_canopen/install/canopen_chain_node')])}
+[0.001703] (ros_canopen) JobQueued: {'identifier': 'ros_canopen', 'dependencies': OrderedDict([('can_msgs', '/root/ros_canopen/install/can_msgs'), ('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master'), ('socketcan_bridge', '/root/ros_canopen/install/socketcan_bridge'), ('canopen_402', '/root/ros_canopen/install/canopen_402'), ('canopen_chain_node', '/root/ros_canopen/install/canopen_chain_node'), ('canopen_motor_node', '/root/ros_canopen/install/canopen_motor_node')])}
+[0.001773] (socketcan_interface) JobStarted: {'identifier': 'socketcan_interface'}
+[0.016461] (can_msgs) JobStarted: {'identifier': 'can_msgs'}
+[0.027743] (socketcan_interface) JobProgress: {'identifier': 'socketcan_interface', 'progress': 'cmake'}
+[0.028821] (socketcan_interface) Command: {'cmd': ['/usr/bin/cmake', '/root/ros_canopen/socketcan_interface', '-DCATKIN_INSTALL_INTO_PREFIX_ROOT=0', '-DCATKIN_SYMLINK_INSTALL=ON', '-DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface'], 'cwd': '/root/ros_canopen/build/socketcan_interface', 'env': OrderedDict([('HOSTNAME', 'bb6b91015a3a'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/root'), ('OLDPWD', '/'), ('ROS_PYTHON_VERSION', '3'), ('_colcon_cd_root', '/root/ros2_install'), ('ROS_DISTRO', 'foxy'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/foxy'), ('PWD', '/root/ros_canopen/build/socketcan_interface'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1')]), 'shell': False}
+[0.035612] (can_msgs) JobProgress: {'identifier': 'can_msgs', 'progress': 'cmake'}
+[0.036712] (can_msgs) Command: {'cmd': ['/usr/bin/cmake', '/root/ros_canopen/can_msgs', '-DCATKIN_INSTALL_INTO_PREFIX_ROOT=0', '-DCATKIN_SYMLINK_INSTALL=ON', '-DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs'], 'cwd': '/root/ros_canopen/build/can_msgs', 'env': OrderedDict([('HOSTNAME', 'bb6b91015a3a'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/root'), ('OLDPWD', '/'), ('ROS_PYTHON_VERSION', '3'), ('_colcon_cd_root', '/root/ros2_install'), ('ROS_DISTRO', 'foxy'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/foxy'), ('PWD', '/root/ros_canopen/build/can_msgs'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1')]), 'shell': False}
+[0.060071] (socketcan_interface) StdoutLine: {'line': b'-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)\n'}
+[0.065584] (can_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)\n'}
+[0.089879] (socketcan_interface) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") \n'}
+[0.090146] (socketcan_interface) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[0.091863] (can_msgs) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[0.099553] (-) TimerEvent: {}
+[0.200501] (-) TimerEvent: {}
+[0.300835] (-) TimerEvent: {}
+[0.358969] (can_msgs) StderrLine: {'line': b'CMake Error at CMakeLists.txt:24 (add_message_files):\n'}
+[0.359208] (can_msgs) StderrLine: {'line': b'  Unknown CMake command "add_message_files".\n'}
+[0.359330] (can_msgs) StderrLine: {'line': b'\n'}
+[0.359442] (can_msgs) StderrLine: {'line': b'\n'}
+[0.359645] (can_msgs) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.359768] (can_msgs) StdoutLine: {'line': b'See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".\n'}
+[0.363173] (can_msgs) CommandEnded: {'returncode': 1}
+[0.395671] (can_msgs) JobEnded: {'identifier': 'can_msgs', 'rc': 1}
+[0.400958] (-) TimerEvent: {}
+[0.444791] (socketcan_interface) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[0.501060] (-) TimerEvent: {}
+[0.538451] (socketcan_interface) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[0.539419] (socketcan_interface) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n'}
+[0.601230] (-) TimerEvent: {}
+[0.648197] (socketcan_interface) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed\n'}
+[0.648539] (socketcan_interface) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads\n'}
+[0.701356] (-) TimerEvent: {}
+[0.716491] (socketcan_interface) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads - not found\n'}
+[0.716719] (socketcan_interface) StdoutLine: {'line': b'-- Looking for pthread_create in pthread\n'}
+[0.794098] (socketcan_interface) StdoutLine: {'line': b'-- Looking for pthread_create in pthread - found\n'}
+[0.795473] (socketcan_interface) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[0.801444] (-) TimerEvent: {}
+[0.823354] (socketcan_interface) StderrLine: {'line': b'CMake Error at /usr/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake:146 (message):\n'}
+[0.823637] (socketcan_interface) StderrLine: {'line': b'  Could NOT find Boost (missing: Boost_INCLUDE_DIR chrono system thread)\n'}
+[0.823791] (socketcan_interface) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.823928] (socketcan_interface) StderrLine: {'line': b'  /usr/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake:393 (_FPHSA_FAILURE_MESSAGE)\n'}
+[0.824082] (socketcan_interface) StderrLine: {'line': b'  /usr/share/cmake-3.16/Modules/FindBoost.cmake:2179 (find_package_handle_standard_args)\n'}
+[0.824296] (socketcan_interface) StderrLine: {'line': b'  CMakeLists.txt:25 (find_package)\n'}
+[0.824450] (socketcan_interface) StderrLine: {'line': b'\n'}
+[0.824589] (socketcan_interface) StderrLine: {'line': b'\n'}
+[0.824728] (socketcan_interface) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.824980] (socketcan_interface) StdoutLine: {'line': b'See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".\n'}
+[0.825200] (socketcan_interface) StdoutLine: {'line': b'See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeError.log".\n'}
+[0.828711] (socketcan_interface) JobEnded: {'identifier': 'socketcan_interface', 'rc': 'SIGINT'}
+[0.839538] (canopen_master) JobSkipped: {'identifier': 'canopen_master'}
+[0.839612] (socketcan_bridge) JobSkipped: {'identifier': 'socketcan_bridge'}
+[0.839661] (canopen_402) JobSkipped: {'identifier': 'canopen_402'}
+[0.839704] (canopen_chain_node) JobSkipped: {'identifier': 'canopen_chain_node'}
+[0.839746] (canopen_motor_node) JobSkipped: {'identifier': 'canopen_motor_node'}
+[0.839787] (ros_canopen) JobSkipped: {'identifier': 'ros_canopen'}
+[0.839830] (-) EventReactorShutdown: {}

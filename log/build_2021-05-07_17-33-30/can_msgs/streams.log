@@ -1,0 +1,61 @@
+[0.030s] Invoking command in '/root/ros_canopen/build/can_msgs': CMAKE_PREFIX_PATH=/opt/ros/foxy /usr/bin/cmake --build /root/ros_canopen/build/can_msgs -- -j4 -l4
+[0.076s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.108s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+[0.108s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.360s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.375s] -- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)
+[0.440s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.448s] -- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.598s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.686s] -- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[0.688s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.951s] -- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+[0.987s] -- Found PythonInterp: /usr/bin/python3 (found version "3.8.5") 
+[1.256s] -- Found ament_cmake_ros: 0.9.1 (/opt/ros/foxy/share/ament_cmake_ros/cmake)
+[1.537s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.648s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.674s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3.5") 
+[1.674s] -- Found python_cmake_module: 0.8.1 (/opt/ros/foxy/share/python_cmake_module/cmake)
+[1.697s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[1.697s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.8
+[1.697s] -- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.8.so
+[1.782s] -- Configuring done
+[1.855s] -- Generating done
+[1.860s] -- Build files have been written to: /root/ros_canopen/build/can_msgs
+[1.902s] [  3%] [32mBuilding C object CMakeFiles/can_msgs__rosidl_generator_c.dir/rosidl_generator_c/can_msgs/msg/detail/frame__functions.c.o[0m
+[1.903s] [  6%] Built target can_msgs__cpp
+[1.947s] In file included from [01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_c/can_msgs/msg/detail/frame__functions.h:19[m[K,
+[1.948s]                  from [01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_c/can_msgs/msg/detail/frame__functions.c:4[m[K:
+[1.948s] [01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_c/can_msgs/msg/detail/frame__struct.h:22:10:[m[K [01;31m[Kfatal error: [m[Kcan_msgs/msg/detail/header__struct.h: No such file or directory
+[1.948s]    22 | #include [01;31m[K"can_msgs/msg/detail/header__struct.h"[m[K
+[1.949s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[1.949s] compilation terminated.
+[1.949s] [  9%] [32mBuilding CXX object CMakeFiles/can_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/can_msgs/msg/frame__type_support.cpp.o[0m
+[1.949s] make[2]: *** [CMakeFiles/can_msgs__rosidl_generator_c.dir/build.make:124: CMakeFiles/can_msgs__rosidl_generator_c.dir/rosidl_generator_c/can_msgs/msg/detail/frame__functions.c.o] Error 1
+[1.949s] make[1]: *** [CMakeFiles/Makefile2:269: CMakeFiles/can_msgs__rosidl_generator_c.dir/all] Error 2
+[1.949s] make[1]: *** Waiting for unfinished jobs....
+[1.954s] [ 12%] [32mBuilding CXX object CMakeFiles/can_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/can_msgs/msg/detail/dds_fastrtps/frame__type_support.cpp.o[0m
+[1.959s] [ 16%] [32mBuilding CXX object CMakeFiles/can_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/can_msgs/msg/detail/frame__type_support.cpp.o[0m
+[2.037s] In file included from [01m[K/root/ros_canopen/build/can_msgs/rosidl_typesupport_fastrtps_cpp/can_msgs/msg/detail/frame__rosidl_typesupport_fastrtps_cpp.hpp:11[m[K,
+[2.037s]                  from [01m[K/root/ros_canopen/build/can_msgs/rosidl_typesupport_fastrtps_cpp/can_msgs/msg/detail/dds_fastrtps/frame__type_support.cpp:4[m[K:
+[2.037s] [01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_cpp/can_msgs/msg/detail/frame__struct.hpp:19:10:[m[K [01;31m[Kfatal error: [m[Kcan_msgs/msg/detail/header__struct.hpp: No such file or directory
+[2.037s]    19 | #include [01;31m[K"can_msgs/msg/detail/header__struct.hpp"[m[K
+[2.038s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[2.038s] In file included from [01m[K/root/ros_canopen/build/can_msgs/rosidl_typesupport_cpp/can_msgs/msg/frame__type_support.cpp:7[m[K:
+[2.038s] [01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_cpp/can_msgs/msg/detail/frame__struct.hpp:19:10:[m[K [01;31m[Kfatal error: [m[Kcan_msgs/msg/detail/header__struct.hpp: No such file or directory
+[2.038s]    19 | #include [01;31m[K"can_msgs/msg/detail/header__struct.hpp"[m[K
+[2.038s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[2.038s] compilation terminated.
+[2.039s] compilation terminated.
+[2.040s] make[2]: *** [CMakeFiles/can_msgs__rosidl_typesupport_cpp.dir/build.make:105: CMakeFiles/can_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/can_msgs/msg/frame__type_support.cpp.o] Error 1
+[2.041s] make[1]: *** [CMakeFiles/Makefile2:181: CMakeFiles/can_msgs__rosidl_typesupport_cpp.dir/all] Error 2
+[2.041s] make[2]: *** [CMakeFiles/can_msgs__rosidl_typesupport_fastrtps_cpp.dir/build.make:110: CMakeFiles/can_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/can_msgs/msg/detail/dds_fastrtps/frame__type_support.cpp.o] Error 1
+[2.041s] make[1]: *** [CMakeFiles/Makefile2:442: CMakeFiles/can_msgs__rosidl_typesupport_fastrtps_cpp.dir/all] Error 2
+[2.057s] In file included from [01m[K/root/ros_canopen/build/can_msgs/rosidl_typesupport_introspection_cpp/can_msgs/msg/detail/frame__type_support.cpp:12[m[K:
+[2.057s] [01m[K/root/ros_canopen/build/can_msgs/rosidl_generator_cpp/can_msgs/msg/detail/frame__struct.hpp:19:10:[m[K [01;31m[Kfatal error: [m[Kcan_msgs/msg/detail/header__struct.hpp: No such file or directory
+[2.057s]    19 | #include [01;31m[K"can_msgs/msg/detail/header__struct.hpp"[m[K
+[2.057s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[2.057s] compilation terminated.
+[2.058s] make[2]: *** [CMakeFiles/can_msgs__rosidl_typesupport_introspection_cpp.dir/build.make:110: CMakeFiles/can_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/can_msgs/msg/detail/frame__type_support.cpp.o] Error 1
+[2.058s] make[1]: *** [CMakeFiles/Makefile2:242: CMakeFiles/can_msgs__rosidl_typesupport_introspection_cpp.dir/all] Error 2
+[2.058s] make: *** [Makefile:141: all] Error 2

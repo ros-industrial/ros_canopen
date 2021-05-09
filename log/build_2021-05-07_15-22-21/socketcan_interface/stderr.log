@@ -1,0 +1,4 @@
+CMake Error at CMakeLists.txt:36 (catkin_package):
+  Unknown CMake command "catkin_package".
+
+

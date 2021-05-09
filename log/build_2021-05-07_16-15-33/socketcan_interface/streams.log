@@ -1,0 +1,39 @@
+[0.028s] Invoking command in '/root/ros_canopen/build/socketcan_interface': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+[0.053s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.076s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.292s] -- Found rclcpp: 2.3.1 (/opt/ros/foxy/share/rclcpp/cmake)
+[0.353s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.361s] -- Found rosidl_adapter: 1.2.1 (/opt/ros/foxy/share/rosidl_adapter/cmake)
+[0.497s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.583s] -- Found rmw_implementation_cmake: 1.0.3 (/opt/ros/foxy/share/rmw_implementation_cmake/cmake)
+[0.585s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.834s] -- Found rosidl_default_generators: 1.0.1 (/opt/ros/foxy/share/rosidl_default_generators/cmake)
+[0.942s] Error parsing '/root/ros_canopen/socketcan_interface/package.xml':
+[0.943s] Traceback (most recent call last):
+[0.943s]   File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 143, in <module>
+[0.943s]     main()
+[0.943s]   File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 52, in main
+[0.944s]     raise e
+[0.944s]   File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 48, in main
+[0.944s]     package = parse_package_string(
+[0.944s]   File "/usr/lib/python3/dist-packages/catkin_pkg/package.py", line 771, in parse_package_string
+[0.944s]     raise InvalidPackage('Error(s):%s' % (''.join(['\n- %s' % e for e in errors])), filename)
+[0.944s] catkin_pkg.package.InvalidPackage: Error(s) in package '/root/ros_canopen/socketcan_interface/package.xml':
+[0.944s] Error(s):
+[0.945s] - The manifest of package "socketcan_interface" (with format version 2) must not contain the following tags: member_of_group
+[0.953s] CMake Error at /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:94 (message):
+[0.954s]   execute_process(/usr/bin/python3
+[0.954s]   /opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py
+[0.954s]   /root/ros_canopen/socketcan_interface/package.xml
+[0.954s]   /root/ros_canopen/build/socketcan_interface/ament_cmake_core/package.cmake)
+[0.954s]   returned error code 1
+[0.954s] Call Stack (most recent call first):
+[0.954s]   /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)
+[0.955s]   /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package.cmake:63 (ament_package_xml)
+[0.955s]   CMakeLists.txt:52 (ament_package)
+[0.955s] 
+[0.955s] 
+[0.956s] -- Configuring incomplete, errors occurred!
+[0.957s] See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".
+[0.957s] See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeError.log".
+[0.963s] Invoked command in '/root/ros_canopen/build/socketcan_interface' returned '1': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface

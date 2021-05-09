@@ -1,0 +1,65 @@
+[0.000000] (-) TimerEvent: {}
+[0.000793] (can_msgs) JobQueued: {'identifier': 'can_msgs', 'dependencies': OrderedDict()}
+[0.000854] (socketcan_interface) JobQueued: {'identifier': 'socketcan_interface', 'dependencies': OrderedDict()}
+[0.000975] (canopen_master) JobQueued: {'identifier': 'canopen_master', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface')])}
+[0.001032] (socketcan_bridge) JobQueued: {'identifier': 'socketcan_bridge', 'dependencies': OrderedDict([('can_msgs', '/root/ros_canopen/install/can_msgs'), ('socketcan_interface', '/root/ros_canopen/install/socketcan_interface')])}
+[0.001121] (canopen_402) JobQueued: {'identifier': 'canopen_402', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master')])}
+[0.001176] (canopen_chain_node) JobQueued: {'identifier': 'canopen_chain_node', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master')])}
+[0.001221] (canopen_motor_node) JobQueued: {'identifier': 'canopen_motor_node', 'dependencies': OrderedDict([('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master'), ('canopen_402', '/root/ros_canopen/install/canopen_402'), ('canopen_chain_node', '/root/ros_canopen/install/canopen_chain_node')])}
+[0.001284] (ros_canopen) JobQueued: {'identifier': 'ros_canopen', 'dependencies': OrderedDict([('can_msgs', '/root/ros_canopen/install/can_msgs'), ('socketcan_interface', '/root/ros_canopen/install/socketcan_interface'), ('canopen_master', '/root/ros_canopen/install/canopen_master'), ('socketcan_bridge', '/root/ros_canopen/install/socketcan_bridge'), ('canopen_402', '/root/ros_canopen/install/canopen_402'), ('canopen_chain_node', '/root/ros_canopen/install/canopen_chain_node'), ('canopen_motor_node', '/root/ros_canopen/install/canopen_motor_node')])}
+[0.002035] (socketcan_interface) JobStarted: {'identifier': 'socketcan_interface'}
+[0.015515] (can_msgs) JobStarted: {'identifier': 'can_msgs'}
+[0.027013] (socketcan_interface) JobProgress: {'identifier': 'socketcan_interface', 'progress': 'cmake'}
+[0.028011] (socketcan_interface) Command: {'cmd': ['/usr/bin/cmake', '/root/ros_canopen/socketcan_interface', '-DCATKIN_INSTALL_INTO_PREFIX_ROOT=0', '-DCATKIN_SYMLINK_INSTALL=ON', '-DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface'], 'cwd': '/root/ros_canopen/build/socketcan_interface', 'env': OrderedDict([('HOSTNAME', 'bb6b91015a3a'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/root'), ('OLDPWD', '/'), ('ROS_PYTHON_VERSION', '3'), ('_colcon_cd_root', '/root/ros2_install'), ('ROS_DISTRO', 'foxy'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/foxy'), ('PWD', '/root/ros_canopen/build/socketcan_interface'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1')]), 'shell': False}
+[0.035433] (can_msgs) JobProgress: {'identifier': 'can_msgs', 'progress': 'cmake'}
+[0.036659] (can_msgs) Command: {'cmd': ['/usr/bin/cmake', '/root/ros_canopen/can_msgs', '-DCATKIN_INSTALL_INTO_PREFIX_ROOT=0', '-DCATKIN_SYMLINK_INSTALL=ON', '-DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs'], 'cwd': '/root/ros_canopen/build/can_msgs', 'env': OrderedDict([('HOSTNAME', 'bb6b91015a3a'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/foxy/opt/yaml_cpp_vendor/lib:/opt/ros/foxy/lib/x86_64-linux-gnu:/opt/ros/foxy/lib'), ('HOME', '/root'), ('OLDPWD', '/'), ('ROS_PYTHON_VERSION', '3'), ('_colcon_cd_root', '/root/ros2_install'), ('ROS_DISTRO', 'foxy'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/foxy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/foxy'), ('PWD', '/root/ros_canopen/build/can_msgs'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/foxy/lib/python3.8/site-packages'), ('COLCON', '1')]), 'shell': False}
+[0.067197] (can_msgs) StderrLine: {'line': b'CMake Error at CMakeLists.txt:9 (find_package):\n'}
+[0.068045] (can_msgs) StderrLine: {'line': b'  By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has\n'}
+[0.068256] (can_msgs) StderrLine: {'line': b'  asked CMake to find a package configuration file provided by "catkin", but\n'}
+[0.068420] (can_msgs) StderrLine: {'line': b'  CMake did not find one.\n'}
+[0.068575] (can_msgs) StderrLine: {'line': b'\n'}
+[0.068730] (can_msgs) StderrLine: {'line': b'  Could not find a package configuration file provided by "catkin" with any\n'}
+[0.068877] (can_msgs) StderrLine: {'line': b'  of the following names:\n'}
+[0.069017] (can_msgs) StderrLine: {'line': b'\n'}
+[0.069168] (can_msgs) StderrLine: {'line': b'    catkinConfig.cmake\n'}
+[0.069320] (can_msgs) StderrLine: {'line': b'    catkin-config.cmake\n'}
+[0.069468] (can_msgs) StderrLine: {'line': b'\n'}
+[0.069605] (can_msgs) StderrLine: {'line': b'  Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set\n'}
+[0.069996] (can_msgs) StderrLine: {'line': b'  "catkin_DIR" to a directory containing one of the above files.  If "catkin"\n'}
+[0.070296] (can_msgs) StderrLine: {'line': b'  provides a separate development package or SDK, be sure it has been\n'}
+[0.070739] (can_msgs) StderrLine: {'line': b'  installed.\n'}
+[0.071889] (can_msgs) StderrLine: {'line': b'\n'}
+[0.072249] (can_msgs) StderrLine: {'line': b'\n'}
+[0.072674] (socketcan_interface) StderrLine: {'line': b'CMake Error at CMakeLists.txt:9 (find_package):\n'}
+[0.074690] (socketcan_interface) StderrLine: {'line': b'  By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has\n'}
+[0.075083] (socketcan_interface) StderrLine: {'line': b'  asked CMake to find a package configuration file provided by "catkin", but\n'}
+[0.075591] (socketcan_interface) StderrLine: {'line': b'  CMake did not find one.\n'}
+[0.076302] (socketcan_interface) StderrLine: {'line': b'\n'}
+[0.076912] (socketcan_interface) StderrLine: {'line': b'  Could not find a package configuration file provided by "catkin" with any\n'}
+[0.077376] (socketcan_interface) StderrLine: {'line': b'  of the following names:\n'}
+[0.077584] (socketcan_interface) StderrLine: {'line': b'\n'}
+[0.078089] (socketcan_interface) StderrLine: {'line': b'    catkinConfig.cmake\n'}
+[0.079961] (socketcan_interface) StderrLine: {'line': b'    catkin-config.cmake\n'}
+[0.080158] (socketcan_interface) StderrLine: {'line': b'\n'}
+[0.080355] (socketcan_interface) StderrLine: {'line': b'  Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set\n'}
+[0.080522] (socketcan_interface) StderrLine: {'line': b'  "catkin_DIR" to a directory containing one of the above files.  If "catkin"\n'}
+[0.081018] (socketcan_interface) StderrLine: {'line': b'  provides a separate development package or SDK, be sure it has been\n'}
+[0.081189] (socketcan_interface) StderrLine: {'line': b'  installed.\n'}
+[0.081340] (socketcan_interface) StderrLine: {'line': b'\n'}
+[0.081492] (socketcan_interface) StderrLine: {'line': b'\n'}
+[0.081645] (socketcan_interface) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.081842] (socketcan_interface) StdoutLine: {'line': b'See also "/root/ros_canopen/build/socketcan_interface/CMakeFiles/CMakeOutput.log".\n'}
+[0.081997] (can_msgs) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.082166] (can_msgs) StdoutLine: {'line': b'See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".\n'}
+[0.082322] (socketcan_interface) CommandEnded: {'returncode': 1}
+[0.083007] (can_msgs) CommandEnded: {'returncode': 1}
+[0.099408] (-) TimerEvent: {}
+[0.108231] (socketcan_interface) JobEnded: {'identifier': 'socketcan_interface', 'rc': 1}
+[0.109837] (can_msgs) JobEnded: {'identifier': 'can_msgs', 'rc': 'SIGINT'}
+[0.120828] (canopen_master) JobSkipped: {'identifier': 'canopen_master'}
+[0.120905] (socketcan_bridge) JobSkipped: {'identifier': 'socketcan_bridge'}
+[0.120955] (canopen_402) JobSkipped: {'identifier': 'canopen_402'}
+[0.120998] (canopen_chain_node) JobSkipped: {'identifier': 'canopen_chain_node'}
+[0.121043] (canopen_motor_node) JobSkipped: {'identifier': 'canopen_motor_node'}
+[0.121085] (ros_canopen) JobSkipped: {'identifier': 'ros_canopen'}
+[0.121128] (-) EventReactorShutdown: {}

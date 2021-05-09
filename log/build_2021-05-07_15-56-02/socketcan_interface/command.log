@@ -1,0 +1,3 @@
+Invoking command in '/root/ros_canopen/build/socketcan_interface': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+Invoked command in '/root/ros_canopen/build/socketcan_interface' returned '0': /usr/bin/cmake /root/ros_canopen/socketcan_interface -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/socketcan_interface
+Invoking command in '/root/ros_canopen/build/socketcan_interface': /usr/bin/cmake --build /root/ros_canopen/build/socketcan_interface -- -j4 -l4

@@ -1,0 +1,4 @@
+CMake Error at CMakeLists.txt:24 (add_message_files):
+  Unknown CMake command "add_message_files".
+
+

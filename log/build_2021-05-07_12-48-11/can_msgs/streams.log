@@ -1,0 +1,35 @@
+[0.019s] Invoking command in '/root/ros_canopen/build/can_msgs': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs
+[0.132s] -- The C compiler identification is GNU 9.3.0
+[0.241s] -- The CXX compiler identification is GNU 9.3.0
+[0.251s] -- Check for working C compiler: /usr/bin/cc
+[0.341s] -- Check for working C compiler: /usr/bin/cc -- works
+[0.343s] -- Detecting C compiler ABI info
+[0.441s] -- Detecting C compiler ABI info - done
+[0.476s] -- Detecting C compile features
+[0.477s] -- Detecting C compile features - done
+[0.487s] -- Check for working CXX compiler: /usr/bin/c++
+[0.594s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[0.596s] -- Detecting CXX compiler ABI info
+[0.702s] -- Detecting CXX compiler ABI info - done
+[0.738s] -- Detecting CXX compile features
+[0.740s] -- Detecting CXX compile features - done
+[0.747s] CMake Error at CMakeLists.txt:9 (find_package):
+[0.748s]   By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has
+[0.748s]   asked CMake to find a package configuration file provided by "catkin", but
+[0.748s]   CMake did not find one.
+[0.748s] 
+[0.748s]   Could not find a package configuration file provided by "catkin" with any
+[0.748s]   of the following names:
+[0.748s] 
+[0.748s]     catkinConfig.cmake
+[0.748s]     catkin-config.cmake
+[0.749s] 
+[0.749s]   Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set
+[0.749s]   "catkin_DIR" to a directory containing one of the above files.  If "catkin"
+[0.749s]   provides a separate development package or SDK, be sure it has been
+[0.749s]   installed.
+[0.749s] 
+[0.749s] 
+[0.749s] -- Configuring incomplete, errors occurred!
+[0.749s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".
+[0.754s] Invoked command in '/root/ros_canopen/build/can_msgs' returned '1': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs

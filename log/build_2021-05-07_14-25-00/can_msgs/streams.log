@@ -1,0 +1,10 @@
+[0.030s] Invoking command in '/root/ros_canopen/build/can_msgs': /usr/bin/cmake /root/ros_canopen/can_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/root/ros_canopen/install/can_msgs
+[0.054s] -- Found ament_cmake: 0.9.8 (/opt/ros/foxy/share/ament_cmake/cmake)
+[0.092s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.5", minimum required is "3") 
+[0.092s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.342s] CMake Error at CMakeLists.txt:24 (add_message_files):
+[0.342s]   Unknown CMake command "add_message_files".
+[0.342s] 
+[0.342s] 
+[0.342s] -- Configuring incomplete, errors occurred!
+[0.342s] See also "/root/ros_canopen/build/can_msgs/CMakeFiles/CMakeOutput.log".

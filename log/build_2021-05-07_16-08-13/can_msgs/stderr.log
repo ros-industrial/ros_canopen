@@ -1,0 +1,8 @@
+CMake Error at /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:229 (message):
+  Packages installing interfaces must include
+  '<member_of_group>rosidl_interface_packages</member_of_group>' in their
+  package.xml
+Call Stack (most recent call first):
+  CMakeLists.txt:33 (rosidl_generate_interfaces)
+
+

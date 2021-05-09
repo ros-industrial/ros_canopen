@@ -1,0 +1,25 @@
+Error parsing '/root/ros_canopen/can_msgs/package.xml':
+Traceback (most recent call last):
+  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 143, in <module>
+    main()
+  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 52, in main
+    raise e
+  File "/opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 48, in main
+    package = parse_package_string(
+  File "/usr/lib/python3/dist-packages/catkin_pkg/package.py", line 771, in parse_package_string
+    raise InvalidPackage('Error(s):%s' % (''.join(['\n- %s' % e for e in errors])), filename)
+catkin_pkg.package.InvalidPackage: Error(s) in package '/root/ros_canopen/can_msgs/package.xml':
+Error(s):
+- The manifest of package "can_msgs" (with format version 2) must not contain the following tags: member_of_group
+CMake Error at /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:94 (message):
+  execute_process(/usr/bin/python3
+  /opt/ros/foxy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py
+  /root/ros_canopen/can_msgs/package.xml
+  /root/ros_canopen/build/can_msgs/ament_cmake_core/package.cmake) returned
+  error code 1
+Call Stack (most recent call first):
+  /opt/ros/foxy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)
+  /opt/ros/foxy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:226 (ament_package_xml)
+  CMakeLists.txt:33 (rosidl_generate_interfaces)
+
+

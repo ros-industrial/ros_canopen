@@ -1,0 +1,8 @@
+CMake Error at CMakeLists.txt:113 (install):
+  install DIRECTORY given no DESTINATION!
+
+
+CMake Error at CMakeLists.txt:120 (install):
+  install FILES given no DESTINATION!
+
+
