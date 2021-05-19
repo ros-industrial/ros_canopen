@@ -1,13 +1,25 @@
-// Bring in my package's API, which is what I'm testing
-#include <socketcan_interface/filter.h>
+// Copyright (c) 2016-2019, Mathias Lüdtke, AutonomouStuff
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
-#include <socketcan_interface/string.h>
-#include <socketcan_interface/dummy.h>
-
-// Bring in gtest
 #include <gtest/gtest.h>
 
+#include <string>
+
+#include "socketcan_interface/filter.hpp"
+#include "socketcan_interface/string.hpp"
+#include "socketcan_interface/dummy.hpp"
 
 TEST(FilterTest, simpleMask)
 {
@@ -42,7 +54,6 @@ TEST(FilterTest, maskTests)
   EXPECT_FALSE(f3->pass(can::toframe(msg1)));
   EXPECT_TRUE(f3->pass(can::toframe(msg2)));
   EXPECT_TRUE(f3->pass(can::toframe(msg3)));
-
 }
 
 TEST(FilterTest, rangeTest)
@@ -66,28 +77,32 @@ TEST(FilterTest, rangeTest)
   EXPECT_TRUE(f3->pass(can::toframe(msg1)));
   EXPECT_TRUE(f3->pass(can::toframe(msg2)));
   EXPECT_FALSE(f3->pass(can::toframe(msg3)));
-
 }
 
-class Counter {
+class Counter
+{
 public:
-    size_t count_;
-    Counter(): count_(0) {}
-    void count(const can::Frame &frame) {
-      ++count_;
-    }
+  size_t count_;
+  Counter()
+  : count_(0) {}
+
+  void count(const can::Frame & frame)
+  {
+    ++count_;
+  }
 };
 
 TEST(FilterTest, listenerTest)
 {
-
   Counter counter;
   can::CommInterfaceSharedPtr dummy(new can::DummyInterface(true));
 
   can::FilteredFrameListener::FilterVector filters;
   filters.push_back(can::tofilter("123:FFE"));
 
-  can::FrameListenerConstSharedPtr  listener(new can::FilteredFrameListener(dummy,std::bind(&Counter::count, std::ref(counter), std::placeholders::_1), filters));
+  can::FrameListenerConstSharedPtr listener(
+    new can::FilteredFrameListener(
+      dummy, std::bind(&Counter::count, std::ref(counter), std::placeholders::_1), filters));
 
   can::Frame f1 = can::toframe("123#");
   can::Frame f2 = can::toframe("124#");
@@ -99,11 +114,11 @@ TEST(FilterTest, listenerTest)
   EXPECT_EQ(1, counter.count_);
   dummy->send(f3);
   EXPECT_EQ(2, counter.count_);
-
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv){
-testing::InitGoogleTest(&argc, argv);
-return RUN_ALL_TESTS();
+int main(int argc, char ** argv)
+{
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
