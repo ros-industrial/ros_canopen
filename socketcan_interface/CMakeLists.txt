@@ -52,7 +52,7 @@ target_link_libraries(${PROJECT_NAME}_plugin
 )
 
 class_loader_hide_library_symbols(${PROJECT_NAME}_plugin)
-install(FILES socketcan_interface_plugin.xml DESTINATION share/${PROJECT_NAME}/socketcan_interface_plugin.xml)
+install(FILES socketcan_interface_plugin.xml DESTINATION share/${PROJECT_NAME}/)
 ament_index_register_resource(socketcan_interface__pluginlib__plugin CONTENT "share/${PROJECT_NAME}/socketcan_interface_plugin.xml\n")
 
 ament_export_dependencies(
