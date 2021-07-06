@@ -453,124 +453,126 @@ bool RosChain::setup_nodes(){
     nh_priv_.getParam("defaults", defaults);
 
     if(nodes.getType() ==  XmlRpc::XmlRpcValue::TypeArray){
-        XmlRpc::XmlRpcValue new_stuct;
         for(size_t i = 0; i < nodes.size(); ++i){
             if(nodes[i].hasMember("name")){
-                std::string &name = nodes[i]["name"];
-                new_stuct[name] = nodes[i];
+                if(!setup_node(nodes[i], nodes[i]["name"], defaults)) return false;
             }else{
                 ROS_ERROR_STREAM("Node at list index " << i << " has no name");
                 return false;
             }
         }
-        nodes = new_stuct;
-    }
-
-    for(XmlRpc::XmlRpcValue::iterator it = nodes.begin(); it != nodes.end(); ++it){
-        int node_id;
-        try{
-            node_id = it->second["id"];
+    }else{
+        for(XmlRpc::XmlRpcValue::iterator it = nodes.begin(); it != nodes.end(); ++it){
+            if(!setup_node(it->second, it->first, defaults)) return false;
         }
-        catch(...){
-            ROS_ERROR_STREAM("Node '" << it->first  << "' has no id");
-            return false;
-        }
-        MergedXmlRpcStruct merged(it->second, defaults);
-
-        if(!it->second.hasMember("name")){
-            merged["name"]=it->first;
-        }
-
-        ObjectDict::Overlay overlay;
-        if(merged.hasMember("dcf_overlay")){
-            XmlRpc::XmlRpcValue dcf_overlay = merged["dcf_overlay"];
-            if(dcf_overlay.getType() != XmlRpc::XmlRpcValue::TypeStruct){
-                ROS_ERROR_STREAM("dcf_overlay is no struct");
-                return false;
-            }
-            for(XmlRpc::XmlRpcValue::iterator ito = dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
-                if(ito->second.getType() != XmlRpc::XmlRpcValue::TypeString){
-                    ROS_ERROR_STREAM("dcf_overlay '" << ito->first << "' must be string");
-                    return false;
-                }
-                overlay.push_back(ObjectDict::Overlay::value_type(ito->first, ito->second));
-            }
-
-        }
-
-        std::string eds;
-
-        try{
-            eds = (std::string) merged["eds_file"];
-        }
-        catch(...){
-            ROS_ERROR_STREAM("EDS path '" << eds << "' invalid");
-            return false;
-        }
-
-        try{
-            if(merged.hasMember("eds_pkg")){
-                std::string pkg = merged["eds_pkg"];
-                std::string p = ros::package::getPath(pkg);
-                if(p.empty()){
-                        ROS_WARN_STREAM("Package '" << pkg << "' was not found");
-                }else{
-                    eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
-                }
-            }
-        }
-        catch(...){
-        }
-
-        ObjectDictSharedPtr  dict = ObjectDict::fromFile(eds, overlay);
-        if(!dict){
-            ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
-            return false;
-        }
-        canopen::NodeSharedPtr node = std::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
-
-        LoggerSharedPtr logger = std::make_shared<Logger>(node);
-
-        if(!nodeAdded(merged, node, logger)) return false;
-
-        if(!addLoggerEntries(merged, "log", diagnostic_updater::DiagnosticStatusWrapper::OK, *logger)) return false;
-        if(!addLoggerEntries(merged, "log_warn", diagnostic_updater::DiagnosticStatusWrapper::WARN, *logger)) return false;
-        if(!addLoggerEntries(merged, "log_error", diagnostic_updater::DiagnosticStatusWrapper::ERROR, *logger)) return false;
-
-        loggers_.push_back(logger);
-        diag_updater_.add(it->first, std::bind(&Logger::log, logger, std::placeholders::_1));
-
-        std::string node_name = std::string(merged["name"]);
-
-        if(merged.hasMember("publish")){
-            try{
-                XmlRpc::XmlRpcValue objs = merged["publish"];
-                for(int i = 0; i < objs.size(); ++i){
-                    std::pair<std::string, bool> obj_name = parseObjectName(objs[i]);
-
-                    PublishFuncType pub = createPublishFunc(nh_, node_name +"_"+obj_name.first, node, obj_name.first, obj_name.second);
-                    if(!pub){
-                        ROS_ERROR_STREAM("Could not create publisher for '" << obj_name.first << "'");
-                        return false;
-                    }
-                    publishers_.push_back(pub);
-                }
-            }
-            catch(...){
-                ROS_ERROR("Could not parse publish parameter");
-                return false;
-            }
-        }
-        nodes_->add(node);
-        nodes_lookup_.insert(std::make_pair(node_name, node));
-
-        std::shared_ptr<canopen::EMCYHandler> emcy = std::make_shared<canopen::EMCYHandler>(interface_, node->getStorage());
-        emcy_handlers_->add(emcy);
-        logger->add(emcy);
-
     }
     return true;
 }
+
+bool RosChain::setup_node(const XmlRpc::XmlRpcValue& params, const std::string &name, const MergedXmlRpcStruct &defaults){
+    int node_id;
+    try{
+        node_id = params["id"];
+    }
+    catch(...){
+        ROS_ERROR_STREAM("Node '" << name  << "' has no id");
+        return false;
+    }
+    MergedXmlRpcStruct merged(params, defaults);
+
+    if(!merged.hasMember("name")){
+        merged["name"]=name;
+    }
+
+    ObjectDict::Overlay overlay;
+    if(merged.hasMember("dcf_overlay")){
+        XmlRpc::XmlRpcValue dcf_overlay = merged["dcf_overlay"];
+        if(dcf_overlay.getType() != XmlRpc::XmlRpcValue::TypeStruct){
+            ROS_ERROR_STREAM("dcf_overlay is no struct");
+            return false;
+        }
+        for(XmlRpc::XmlRpcValue::iterator ito = dcf_overlay.begin(); ito!= dcf_overlay.end(); ++ito){
+            if(ito->second.getType() != XmlRpc::XmlRpcValue::TypeString){
+                ROS_ERROR_STREAM("dcf_overlay '" << ito->first << "' must be string");
+                return false;
+            }
+            overlay.push_back(ObjectDict::Overlay::value_type(ito->first, ito->second));
+        }
+    }
+
+    std::string eds;
+
+    try{
+        eds = (std::string) merged["eds_file"];
+    }
+    catch(...){
+        ROS_ERROR_STREAM("EDS path '" << eds << "' invalid");
+        return false;
+    }
+
+    try{
+        if(merged.hasMember("eds_pkg")){
+            std::string pkg = merged["eds_pkg"];
+            std::string p = ros::package::getPath(pkg);
+            if(p.empty()){
+                    ROS_WARN_STREAM("Package '" << pkg << "' was not found");
+            }else{
+                eds = (boost::filesystem::path(p)/eds).make_preferred().native();;
+            }
+        }
+    }
+    catch(...){
+    }
+
+    ObjectDictSharedPtr  dict = ObjectDict::fromFile(eds, overlay);
+    if(!dict){
+        ROS_ERROR_STREAM("EDS '" << eds << "' could not be parsed");
+        return false;
+    }
+    canopen::NodeSharedPtr node = std::make_shared<canopen::Node>(interface_, dict, node_id, sync_);
+
+    LoggerSharedPtr logger = std::make_shared<Logger>(node);
+
+    if(!nodeAdded(merged, node, logger)) return false;
+
+    if(!addLoggerEntries(merged, "log", diagnostic_updater::DiagnosticStatusWrapper::OK, *logger)) return false;
+    if(!addLoggerEntries(merged, "log_warn", diagnostic_updater::DiagnosticStatusWrapper::WARN, *logger)) return false;
+    if(!addLoggerEntries(merged, "log_error", diagnostic_updater::DiagnosticStatusWrapper::ERROR, *logger)) return false;
+
+    loggers_.push_back(logger);
+    diag_updater_.add(name, std::bind(&Logger::log, logger, std::placeholders::_1));
+
+    std::string node_name = std::string(merged["name"]);
+
+    if(merged.hasMember("publish")){
+        try{
+            XmlRpc::XmlRpcValue objs = merged["publish"];
+            for(int i = 0; i < objs.size(); ++i){
+                std::pair<std::string, bool> obj_name = parseObjectName(objs[i]);
+
+                PublishFuncType pub = createPublishFunc(nh_, node_name +"_"+obj_name.first, node, obj_name.first, obj_name.second);
+                if(!pub){
+                    ROS_ERROR_STREAM("Could not create publisher for '" << obj_name.first << "'");
+                    return false;
+                }
+                publishers_.push_back(pub);
+            }
+        }
+        catch(...){
+            ROS_ERROR("Could not parse publish parameter");
+            return false;
+        }
+    }
+    nodes_->add(node);
+    nodes_lookup_.insert(std::make_pair(node_name, node));
+
+    std::shared_ptr<canopen::EMCYHandler> emcy = std::make_shared<canopen::EMCYHandler>(interface_, node->getStorage());
+    emcy_handlers_->add(emcy);
+    logger->add(emcy);
+
+    return true;
+}
+
 bool RosChain::nodeAdded(XmlRpc::XmlRpcValue &params, const canopen::NodeSharedPtr &node, const LoggerSharedPtr &logger){
     return true;
 }
