@@ -137,8 +137,10 @@ public:
     }
 };
 class RosChain : GuardedClassLoaderList, public canopen::LayerStack {
+private:
     GuardedClassLoader<can::DriverInterface> driver_loader_;
     ClassAllocator<canopen::Master> master_allocator_;
+    bool setup_node(const XmlRpc::XmlRpcValue &params, const std::string& name, const MergedXmlRpcStruct &defaults);
 protected:
     can::DriverInterfaceSharedPtr interface_;
     MasterSharedPtr master_;
