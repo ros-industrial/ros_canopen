@@ -261,6 +261,7 @@ protected:
 public:
     HomingMode() : Mode(MotorBase::Homing) {}
     virtual bool executeHoming(canopen::LayerStatus &status) = 0;
+    virtual bool executeHoming(canopen::LayerStatus &status, const boost::chrono::seconds &homing_timeout) = 0;
 };
 
 class DefaultHomingMode: public HomingMode{
@@ -286,6 +287,7 @@ public:
     virtual bool write(OpModeAccesser& cw);
 
     virtual bool executeHoming(canopen::LayerStatus &status);
+    virtual bool executeHoming(canopen::LayerStatus &status, const boost::chrono::seconds &homing_timeout);
 };
 
 class Motor402 : public MotorBase
@@ -296,7 +298,8 @@ public:
     : MotorBase(name), status_word_(0),control_word_(0),
       switching_state_(State402::InternalState(settings.get_optional<unsigned int>("switching_state", static_cast<unsigned int>(State402::Operation_Enable)))),
       monitor_mode_(settings.get_optional<bool>("monitor_mode", true)),
-      state_switch_timeout_(settings.get_optional<unsigned int>("state_switch_timeout", 5))
+      state_switch_timeout_(settings.get_optional<unsigned int>("state_switch_timeout", 5)),
+      homing_timeout_(settings.get_optional<unsigned int>("homing_timeout", 10))
     {
         storage->entry(status_word_entry_, 0x6041);
         storage->entry(control_word_entry_, 0x6040);
@@ -377,6 +380,7 @@ private:
     const State402::InternalState switching_state_;
     const bool monitor_mode_;
     const boost::chrono::seconds state_switch_timeout_;
+    const boost::chrono::seconds homing_timeout_;
 
     canopen::ObjectStorage::Entry<uint16_t>  status_word_entry_;
     canopen::ObjectStorage::Entry<uint16_t >  control_word_entry_;
