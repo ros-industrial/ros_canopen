@@ -1,18 +1,34 @@
+# This config uses industrial_ci (https://github.com/ros-industrial/industrial_ci.git).
+# For troubleshooting, see readme (https://github.com/ros-industrial/industrial_ci/blob/master/README.rst)
+
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+   - cron: '0 4 * * *' # every day at 4 AM (UTC)
+  workflow_dispatch: # allow manually starting this workflow
 
 jobs:
   industrial_ci:
-    strategy:
-      matrix:
-        env:
-          - {ROS_DISTRO: melodic}
-          - {ROS_DISTRO: melodic, ROS_REPO: main}
-          - {ROS_DISTRO: noetic}
-          - {ROS_DISTRO: noetic, ROS_REPO: main}
+    name: ROS ${{ matrix.ROS_DISTRO }} (${{ matrix.ROS_REPO }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix: # matrix is the product of entries
+        ROS_DISTRO: [melodic, noetic]
+        ROS_REPO: [testing, main]
+    env:
+      CCACHE_DIR: "${{ github.workspace }}/.ccache" # directory for ccache (and how we enable ccache in industrial_ci)
     steps:
-      - uses: actions/checkout@v1
-      - uses: 'ros-industrial/industrial_ci@master'
-        env: ${{matrix.env}}
+      - uses: actions/checkout@v2 # clone target repository
+      - uses: actions/cache@v2 # fetch/store the directory used by ccache before/after the ci run
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-${{ matrix.ROS_DISTRO }}-${{ matrix.ROS_REPO }}-${{github.run_id}}
+          restore-keys: |
+            ccache-${{ matrix.ROS_DISTRO }}-${{ matrix.ROS_REPO }}-
+      - uses: 'ros-industrial/industrial_ci@master' # run industrial_ci
+        env:
+          ROS_DISTRO: ${{ matrix.ROS_DISTRO }}
+          ROS_REPO: ${{ matrix.ROS_REPO }}
