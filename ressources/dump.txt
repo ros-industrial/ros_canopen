@@ -1,0 +1,107 @@
+// class CIA402ActuatorHardware : public hardware_interface::ActuatorInterface
+// {
+//   public:
+//   RCLCPP_SHARED_PTR_DEFINITIONS(CIA402ActuatorHardware);
+
+//   CallbackReturn on_init(const hardware_interface::HardwareInfo &info) override
+//   {
+//     if (hardware_interface::ActuatorInterface::on_init(info) != CallbackReturn::SUCCESS)
+//     {
+//       return CallbackReturn::ERROR;
+//     }
+
+//     hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+//     hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+
+//     //Check that actuator has only one joint
+//     if(info_.joints.size() != 1)
+//     {
+//       RCLCPP_FATAL(
+//         rclcpp::get_logger("CIA402ActuatorHardware"),
+//         "Actuator '%s' has found %zu joints for the actuator. 1 expected.", info_.name,
+//         info_.joints.size());
+//       return CallbackReturn::ERROR;
+//     }
+//     else 
+//     {
+//       const hardware_interface::ComponentInfo &actuator = info_.joints[0];
+//       //Check number of command interfaces
+//       if (actuator.command_interfaces.size() != 1)
+//       {
+//         RCLCPP_FATAL(
+//             rclcpp::get_logger("CIA402ActuatorHardware"),
+//             "Actuator '%s' has %zu command interfaces found. 1 expected.", actuator.name.c_str(),
+//             actuator.command_interfaces.size());
+//         return CallbackReturn::ERROR;
+//       }
+//       //Check type of command interfaces
+//       if (actuator.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+//       {
+//         RCLCPP_FATAL(
+//             rclcpp::get_logger("CIA402ActuatorHardware"),
+//             "Actuator '%s' have %s command interfaces found. '%s' expected.", actuator.name.c_str(),
+//             actuator.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
+//         return CallbackReturn::ERROR;
+//       }
+//       //Check number of state interfaces
+//       if (actuator.state_interfaces.size() != 1)
+//       {
+//         RCLCPP_FATAL(
+//             rclcpp::get_logger("CIA402ActuatorHardware"),
+//             "Actuator '%s' has %zu state interfaces found. 1 expected.", actuator.name.c_str(),
+//             actuator.state_interfaces.size());
+//         return CallbackReturn::ERROR;
+//       }
+//       //Check type of command interfaces
+//       if (actuator.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+//       {
+//         RCLCPP_FATAL(
+//             rclcpp::get_logger("CIA402ActuatorHardware"),
+//             "Actuator '%s' have %s state interfaces found. '%s' expected.", actuator.name.c_str(),
+//             actuator.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
+//         return CallbackReturn::ERROR;
+//       }
+//     }
+//     return CallbackReturn::SUCCESS;
+//   }
+//   /**
+//    * @brief Configure CANopen node - needs to be in NMT Preoperational?
+//    * 
+//    * @param previous_state 
+//    * @return CallbackReturn 
+//    */
+//   CallbackReturn on_configure(const rclcpp_lifecycle::State & previous_state) override{
+//     RCLCPP_INFO(
+//     rclcpp::get_logger("CIA402ActuatorHardware"), "Configuring ...please wait...");
+
+//   }
+//   /**
+//    * @brief Activate Device
+//    * 
+//    * @param previous_state 
+//    * @return CallbackReturn 
+//    */
+//   CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
+
+//   CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
+
+//   std::vector<hardware_interface::StateInterface> export_state_interfaces() override{
+//     std::vector<hardware_interface::StateInterface> state_interfaces;
+//     state_interfaces.emplace_back(
+//       hardware_interface::StateInterface(
+//         info_.joints[0].name, 
+//         hardware_interface::HW_IF_POSITION, 
+//         &hw_states_[0]
+//         )
+//       );
+//     return state_interfaces;
+//   }
+
+//   hardware_interface::return_type write() override;
+
+//   hardware_interface::return_type read() override;
+
+//   private:
+//   std::vector<double> hw_commands_;
+//   std::vector<double> hw_states_;
+// };
