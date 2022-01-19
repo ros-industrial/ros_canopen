@@ -60,13 +60,21 @@ class ROSCANopen_Node : public rclcpp_lifecycle::LifecycleNode {
   //std::shared_ptr<CIA402_Driver> cia402_driver;
   std::shared_ptr<std::string> nmt_status;
 
+  std::string can_interface_name;
+  std::string dcf_path;
+
   public:
   explicit  ROSCANopen_Node(const std::string & node_name, bool intra_process_comms = false)
   : rclcpp_lifecycle::LifecycleNode(
     node_name, 
     rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms)
     )
-  { }
+  { 
+    this->declare_parameter<std::string>("can_interface_name", "vcan0");
+    this->declare_parameter<std::string>("dcf_path", "");
+    can_interface_name = std::string("");
+    dcf_path = std::string("");
+  }
 
   void run_one(){
     loop->run_one();
@@ -74,6 +82,9 @@ class ROSCANopen_Node : public rclcpp_lifecycle::LifecycleNode {
 
   CallbackReturn
   on_configure(const rclcpp_lifecycle::State & state) {
+    this->get_parameter("can_interface_name", can_interface_name);
+    this->get_parameter("dcf_path", dcf_path);
+
     io_guard = std::make_shared<io::IoGuard>();
     ctx = std::make_shared<io::Context>();
     poll = std::make_shared<io::Poll>(*ctx);
@@ -82,7 +93,7 @@ class ROSCANopen_Node : public rclcpp_lifecycle::LifecycleNode {
     can_timer = std::make_shared<io::Timer>(*poll, *exec, CLOCK_MONOTONIC);
 
     //@Todo: Probably read from parameter server
-    ctrl = std::make_shared<io::CanController>("vcan0");
+    ctrl = std::make_shared<io::CanController>(can_interface_name.c_str());
     chan = std::make_shared<io::CanChannel>(*poll, *exec);
 
     //Open CAN channel
@@ -90,7 +101,7 @@ class ROSCANopen_Node : public rclcpp_lifecycle::LifecycleNode {
 
     //Create Master from DCF
     //@Todo: Probably read from parameter server
-    can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, "/home/christoph/master.dcf", "", 1);
+    can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, dcf_path.c_str(), "", 1);
 
     /// @Todo: Add Devices via Pluginlib?
     // For now simply add a driver
@@ -119,6 +130,7 @@ class ROSCANopen_Node : public rclcpp_lifecycle::LifecycleNode {
 
   CallbackReturn
   on_cleanup(const rclcpp_lifecycle::State & state) {
+    timer_.reset();
     ctx->shutdown();
     return CallbackReturn::SUCCESS;
   }
