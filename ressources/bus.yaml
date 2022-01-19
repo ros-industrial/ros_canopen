@@ -1,0 +1,7 @@
+master:
+  node_id: 1
+
+motioncontroller_1:
+  node_id: 2
+  dcf: "technosoft.eds"
+  driver: "CIA402Driver"

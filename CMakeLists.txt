@@ -22,6 +22,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
+find_package(yaml_cpp_vendor REQUIRED)
 
 # Liblely is automake project, needs to be imported using pkg_check
 pkg_check_modules(LIBLELY-IO2 REQUIRED liblely-io2)
@@ -32,7 +33,9 @@ add_executable(test_node
   )
 target_include_directories(test_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include>
+  ${yaml_cpp_vendor_INCLUDE_DIR}
+  )
 
 
 target_link_libraries(test_node PRIVATE
@@ -41,6 +44,7 @@ target_link_libraries(test_node PRIVATE
   ${rclcpp_LIBRARIES}
   ${rclcpp_lifecycle_LIBRARIES}
   ${lifecycle_msgs_LIBRARIES}
+  ${yaml_cpp_vendor_LIBRARIES}
   )
 
 install(TARGETS test_node
