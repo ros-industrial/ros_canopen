@@ -3,5 +3,5 @@ master:
 
 motioncontroller_1:
   node_id: 2
-  dcf: "technosoft.eds"
+  dcf: "simple.eds"
   driver: "CIA402Driver"

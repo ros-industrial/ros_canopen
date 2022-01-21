@@ -6,13 +6,13 @@
 using namespace lely;
 namespace ros2_canopen
 {
-    class CANopenDeviceDriver
+    class CANopenDevice
     {
         public:
         virtual void registerDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id) = 0;
 
         protected:
-        RegularPolygon(){}
-    }
+        CANopenDevice(){}
+    };
 }
 #endif

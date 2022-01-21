@@ -23,31 +23,38 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
+find_package(ros2_canopen_interfaces REQUIRED)
 
 # Liblely is automake project, needs to be imported using pkg_check
 pkg_check_modules(LIBLELY-IO2 REQUIRED liblely-io2)
 pkg_check_modules(LIBLELY-COAPP REQUIRED liblely-coapp)
 
-add_executable(test_node 
-  src/test_node.cpp
+add_executable(ros2_canopen_node 
+  src/ros2_canopen_node.cpp
   )
-target_include_directories(test_node PUBLIC
+
+ament_target_dependencies(ros2_canopen_node
+  LIBLELY-IO2 LIBLELY-COAPP rclcpp rclcpp_lifecycle lifecycle_msgs yaml_cpp_vendor ros2_canopen_interfaces
+)
+target_include_directories(ros2_canopen_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
-  ${yaml_cpp_vendor_INCLUDE_DIR}
   )
 
 
-target_link_libraries(test_node PRIVATE
-  ${LIBLELY-IO2_LIBRARIES}
+add_executable(test_slave
+  src/test_slave.cpp
+)
+
+target_link_libraries(test_slave PUBLIC
   ${LIBLELY-COAPP_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${rclcpp_lifecycle_LIBRARIES}
-  ${lifecycle_msgs_LIBRARIES}
-  ${yaml_cpp_vendor_LIBRARIES}
-  )
+  ${LIBLELY-IO2_LIBRARIES}
+)
 
-install(TARGETS test_node
+install(TARGETS ros2_canopen_node
+  DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS test_slave
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
