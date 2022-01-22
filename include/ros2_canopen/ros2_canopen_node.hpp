@@ -36,6 +36,7 @@
 #include "ros2_canopen_interfaces/srv/master_read_sdo8.hpp"
 #include "ros2_canopen_interfaces/srv/master_read_sdo16.hpp"
 #include "ros2_canopen_interfaces/srv/master_read_sdo32.hpp"
+#include "ros2_canopen_interfaces/srv/master_set_heartbeat.hpp"
 #include "ros2_canopen_interfaces/srv/master_write_sdo8.hpp"
 #include "ros2_canopen_interfaces/srv/master_write_sdo16.hpp"
 #include "ros2_canopen_interfaces/srv/master_write_sdo32.hpp"
@@ -75,11 +76,13 @@ namespace ros2_canopen
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterReadSdo8>> master_read_sdo8_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterReadSdo16>> master_read_sdo16_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterReadSdo32>> master_read_sdo32_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterSetHeartbeat>> master_set_hearbeat_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo8>> master_write_sdo8_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo16>> master_write_sdo16_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo32>> master_write_sdo32_service;
         
         std::atomic<bool> active;
+        std::atomic<bool> configured;
         std::mutex master_mutex;
 
         //Service Callback Declarations
@@ -98,6 +101,10 @@ namespace ros2_canopen
         void master_read_sdo32(
             const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Response> response);
+        
+        void master_set_heartbeat(
+            const std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Response> response);
 
         void master_write_sdo8(
             const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo8::Request> request,
@@ -114,6 +121,7 @@ namespace ros2_canopen
         //helper functions
         void run();
         void read_yaml();
+        void register_services();
 
         template <typename T>
         bool write_sdo(uint8_t nodeid, uint16_t index, uint8_t subindex, T data)
@@ -198,6 +206,7 @@ namespace ros2_canopen
             can_interface_name = "";
             dcf_path = "";
             yaml_path = "";
+            this->register_services();
         }
     };
 }

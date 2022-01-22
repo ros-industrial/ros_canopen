@@ -48,7 +48,6 @@ void ROSCANopen_Node::master_read_sdo16(
   response->data = *data;
 }
 
-
 void ROSCANopen_Node::master_read_sdo32(
     const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Response> response)
@@ -80,6 +79,15 @@ void ROSCANopen_Node::master_write_sdo32(
   response->success = write_sdo<uint32_t>(request->nodeid, request->index, request->subindex, request->data);
 }
 
+void ROSCANopen_Node::master_set_heartbeat(
+    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Response> response)
+{
+  uint16_t index = 0x1017;
+  uint8_t subindex = 0x0;
+  response->success = write_sdo<uint16_t>(request->nodeid, index, subindex, request->heartbeat);
+}
+
 void ROSCANopen_Node::run()
 {
   io_guard = std::make_shared<io::IoGuard>();
@@ -103,11 +111,14 @@ void ROSCANopen_Node::run()
   //@Todo: register drivers!
 
   can_master->Reset();
-  while (active.load())
+  while (configured.load())
   {
-    std::lock_guard<std::mutex> guard(master_mutex);
-    //@Todo make configurable via parameter
-    loop->run_for(20ms);
+    if (active.load())
+    {
+      std::lock_guard<std::mutex> guard(master_mutex);
+      loop->run_for(20ms);
+    }
+    std::this_thread::sleep_for(20ms);
   }
 }
 
@@ -134,14 +145,8 @@ void ROSCANopen_Node::read_yaml()
   }
 }
 
-CallbackReturn
-ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
+void ROSCANopen_Node::register_services()
 {
-  this->active.store(false);
-  this->get_parameter("can_interface_name", can_interface_name);
-  this->get_parameter("dcf_path", dcf_path);
-  this->get_parameter("yaml_path", yaml_path);
-
   //Create service for master_nmt
   this->master_nmt_service = this->create_service<ros2_canopen_interfaces::srv::MasterNmt>(
       "master_nmt",
@@ -189,13 +194,26 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
+  this->master_set_hearbeat_service = this->create_service<ros2_canopen_interfaces::srv::MasterSetHeartbeat>(
+      "master_set_heartbeat",
+      std::bind(&ROSCANopen_Node::master_set_heartbeat,
+                this,
+                std::placeholders::_1,
+                std::placeholders::_2));
+}
+
+CallbackReturn
+ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
+{
+  this->active.store(false);
+  this->configured.store(true);
+  this->get_parameter("can_interface_name", can_interface_name);
+  this->get_parameter("dcf_path", dcf_path);
+  this->get_parameter("yaml_path", yaml_path);
 
   read_yaml();
-
-  // @Todo: Add Devices via Pluginlib?
-  // For now simply add a driver
-  //basicdevice = std::make_shared<ros2_canopen::BasicDevice>();
-  //basicdevice->registerDriver(*exec, *can_master, 2);
+  //Start loop
+  canopen_loop_thread = std::make_unique<std::thread>(std::bind(&ROSCANopen_Node::run, this));
 
   return CallbackReturn::SUCCESS;
 }
@@ -203,12 +221,7 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
 CallbackReturn
 ROSCANopen_Node::on_activate(const rclcpp_lifecycle::State &state)
 {
-  this->active.store(true);
-  // devices
-  // run loop every 10ms
-  //timer_ = this->create_wall_timer(
-  //    500ms, std::bind(&ROSCANopen_Node::run_one, this));
-  canopen_loop_thread = std::make_unique<std::thread>(std::bind(&ROSCANopen_Node::run, this));
+  this->active.store(true);  
   return CallbackReturn::SUCCESS;
 }
 
@@ -216,7 +229,6 @@ CallbackReturn
 ROSCANopen_Node::on_deactivate(const rclcpp_lifecycle::State &state)
 {
   this->active.store(false);
-  canopen_loop_thread->join();
   return CallbackReturn::SUCCESS;
 }
 
@@ -224,6 +236,8 @@ CallbackReturn
 ROSCANopen_Node::on_cleanup(const rclcpp_lifecycle::State &state)
 {
   this->active.store(false);
+  this->configured.store(false);
+  canopen_loop_thread->join();
   return CallbackReturn::SUCCESS;
 }
 
@@ -231,6 +245,7 @@ CallbackReturn
 ROSCANopen_Node::on_shutdown(const rclcpp_lifecycle::State &state)
 {
   this->active.store(false);
+  this->configured.store(true);
   canopen_loop_thread->join();
   return CallbackReturn::SUCCESS;
 }
