@@ -28,38 +28,35 @@ void ROSCANopen_Node::master_nmt(
     response->success = false;
   }
 }
+void ROSCANopen_Node::master_read_sdo8(
+    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo8::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo8::Response> response)
+{
+  auto data = std::make_shared<uint8_t>(0);
+  bool success = read_sdo<uint8_t>(request->nodeid, request->index, request->subindex, data);
+  response->success = success;
+  response->data = *data;
+}
 
 void ROSCANopen_Node::master_read_sdo16(
     const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo16::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo16::Response> response)
 {
-  if (active.load())
-  {
-    ev_exec_t *exe = *exec;
-    lely::canopen::SdoFuture<uint16_t> f;
-    {
-      std::lock_guard<std::mutex> guard(master_mutex);
-      f = can_master->AsyncRead<uint16_t>(exe, request->nodeid, request->index, request->subindex, 100ms);
-    }
-    while (!f.is_ready())
-    {
-      std::this_thread::sleep_for(10ms);
-    }
-    auto res = f.get();
-    if (res.has_error())
-    {
-      response->success = false;
-    }
-    else
-    {
-      response->success = true;
-      response->data = f.get().value();
-    }
-  }
-  else
-  {
-    response->success = false;
-  }
+  auto data = std::make_shared<uint16_t>(0);
+  bool success = read_sdo<uint16_t>(request->nodeid, request->index, request->subindex, data);
+  response->success = success;
+  response->data = *data;
+}
+
+
+void ROSCANopen_Node::master_read_sdo32(
+    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Response> response)
+{
+  auto data = std::make_shared<uint32_t>(0);
+  bool success = read_sdo<uint32_t>(request->nodeid, request->index, request->subindex, data);
+  response->success = success;
+  response->data = *data;
 }
 
 void ROSCANopen_Node::master_write_sdo8(
@@ -102,6 +99,9 @@ void ROSCANopen_Node::run()
   //Create Master from DCF
   //@Todo: Probably read from parameter server
   can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, dcf_path.c_str(), "", 1);
+
+  //@Todo: register drivers!
+
   can_master->Reset();
   while (active.load())
   {
@@ -150,9 +150,23 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
                 std::placeholders::_1,
                 std::placeholders::_2));
   //Create service for read sdo
+  this->master_read_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::MasterReadSdo8>(
+      "master_read8_sdo",
+      std::bind(&ROSCANopen_Node::master_read_sdo8,
+                this,
+                std::placeholders::_1,
+                std::placeholders::_2));
+
   this->master_read_sdo16_service = this->create_service<ros2_canopen_interfaces::srv::MasterReadSdo16>(
-      "master_read_sdo",
+      "master_read16_sdo",
       std::bind(&ROSCANopen_Node::master_read_sdo16,
+                this,
+                std::placeholders::_1,
+                std::placeholders::_2));
+
+  this->master_read_sdo32_service = this->create_service<ros2_canopen_interfaces::srv::MasterReadSdo32>(
+      "master_read32_sdo",
+      std::bind(&ROSCANopen_Node::master_read_sdo32,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));

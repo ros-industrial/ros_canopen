@@ -72,10 +72,13 @@ namespace ros2_canopen
         std::unique_ptr<std::thread> canopen_loop_thread;
 
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterNmt>> master_nmt_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterReadSdo8>> master_read_sdo8_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterReadSdo16>> master_read_sdo16_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterReadSdo32>> master_read_sdo32_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo8>> master_write_sdo8_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo16>> master_write_sdo16_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo32>> master_write_sdo32_service;
+        
         std::atomic<bool> active;
         std::mutex master_mutex;
 
@@ -134,6 +137,39 @@ namespace ros2_canopen
                 }
                 else
                 {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        template <typename T>
+        bool read_sdo(uint8_t nodeid, uint16_t index, uint8_t subindex, std::shared_ptr<T> data)
+        {
+            if (active.load())
+            {
+                ev_exec_t *exe = *exec;
+                lely::canopen::SdoFuture<T> f;
+                {
+                    std::lock_guard<std::mutex> guard(master_mutex);
+                    f = can_master->AsyncRead<T>(exe, nodeid, index, subindex, 100ms);
+                }
+                while (!f.is_ready())
+                {
+                    std::this_thread::sleep_for(10ms);
+                }
+                auto res = f.get();
+                if (res.has_error())
+                {
+                    auto error = res.error();
+                    return false;
+                }
+                else
+                {
+                    *data = res.value();
                     return true;
                 }
             }
