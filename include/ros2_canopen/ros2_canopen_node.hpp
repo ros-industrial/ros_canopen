@@ -85,10 +85,12 @@ namespace ros2_canopen
 
         std::atomic<bool> active;
         std::atomic<bool> configured;
-        std::mutex master_mutex;
+        std::shared_ptr<std::mutex> master_mutex;
         std::future<void> run_f;
         ev::Promise<bool> loop_p;
         ev::Promise<bool> trigger_p;
+        std::promise<void> main_p;
+
 
         //Service Callback Declarations
         void master_nmt(
@@ -281,7 +283,7 @@ namespace ros2_canopen
                 auto f = read_task.get_future();
                 {
                     //get lock on master and the canopen executor
-                    std::scoped_lock<std::mutex> lk(master_mutex);
+                    std::scoped_lock<std::mutex> lk(*master_mutex);
                     //append task to read Sdo
                     exec->post(read_task);
                 }
@@ -316,7 +318,7 @@ namespace ros2_canopen
                 auto f = write_task.get_future();
                 {
                     //get lock on master and the canopen executor
-                    std::scoped_lock<std::mutex> lk(master_mutex);
+                    std::scoped_lock<std::mutex> lk(*master_mutex);
                     exec->post(write_task);
                 }
                 f.wait();
@@ -356,6 +358,17 @@ namespace ros2_canopen
             dcf_path = "";
             yaml_path = "";
             this->register_services();
+            this->master_mutex = std::make_shared<std::mutex>();
+        
+        }
+
+        std::future<void> get_main_future(){
+            main_p = std::promise<void>();
+            return main_p.get_future();
+        }
+
+        std::shared_ptr<ros2_canopen::BasicDriverNode> get_node(){
+            return this->basicdevice->get_node();
         }
     };
 }

@@ -18,7 +18,7 @@ void ROSCANopen_Node::master_nmt(
 {
   if (active.load())
   {
-    std::lock_guard<std::mutex> guard(master_mutex);
+    std::lock_guard<std::mutex> guard(*master_mutex);
     canopen::NmtCommand command = static_cast<canopen::NmtCommand>(request->nmtcommand);
     can_master->Command(command, request->nodeid);
     response->success = true;
@@ -80,7 +80,7 @@ void ROSCANopen_Node::master_set_heartbeat(
     write_task.set_data(can_master, request->nodeid, 0x1017, 0x0, request->heartbeat);
     auto f = write_task.get_future();
     {
-      std::scoped_lock<std::mutex> lk(master_mutex);
+      std::scoped_lock<std::mutex> lk(*master_mutex);
       exec->post(write_task);
     }
     f.wait();
@@ -106,7 +106,7 @@ void ROSCANopen_Node::run()
   while (active.load())
   {
     //get lock on canopen master executor
-    std::scoped_lock<std::mutex> lk(master_mutex);
+    std::scoped_lock<std::mutex> lk(*master_mutex);
     //do work for at max 5ms
     loop->run_one_for(5ms);
   }
@@ -221,9 +221,11 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
   //Create Master from DCF
   //@Todo: Probably read from parameter server
   can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, dcf_path.c_str(), "", 1);
-  auto f = trigger_p.get_future();
-  f.submit(*exec, []
-           { std::cout << "WoHooo!" << std::endl; });
+  basicdevice = std::make_shared<ros2_canopen::BasicDevice>();
+  basicdevice->registerDriver(*exec, *can_master, master_mutex,  2);
+
+  this->main_p.set_value();
+
   //@Todo: register drivers!
   return CallbackReturn::SUCCESS;
 }
@@ -267,8 +269,12 @@ int main(int argc, char *argv[])
 {
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor executor;
-  auto cia402_node = std::make_shared<ROSCANopen_Node>("test_node");
-  executor.add_node(cia402_node->get_node_base_interface());
+  auto canopen_node = std::make_shared<ROSCANopen_Node>("canopen_master");
+  auto f = canopen_node->get_main_future();
+  executor.add_node(canopen_node->get_node_base_interface());
+  executor.spin_until_future_complete(f);
+  // Add code to add driver nodes
+  executor.add_node(canopen_node->get_node()->get_node_base_interface());
   executor.spin();
   rclcpp::shutdown();
   return 0;
