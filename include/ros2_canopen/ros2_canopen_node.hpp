@@ -19,6 +19,7 @@
 #include <lely/io2/sys/timer.hpp>
 #include <lely/coapp/master.hpp>
 #include <lely/coapp/fiber_driver.hpp>
+#include <lely/ev/co_task.hpp>
 
 #include <yaml-cpp/yaml.h>
 
@@ -48,6 +49,7 @@ using namespace lely;
 
 namespace ros2_canopen
 {
+
     class ROSCANopen_Node : public rclcpp_lifecycle::LifecycleNode
     {
     private:
@@ -80,10 +82,13 @@ namespace ros2_canopen
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo8>> master_write_sdo8_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo16>> master_write_sdo16_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo32>> master_write_sdo32_service;
-        
+
         std::atomic<bool> active;
         std::atomic<bool> configured;
         std::mutex master_mutex;
+        std::future<void> run_f;
+        ev::Promise<bool> loop_p;
+        ev::Promise<bool> trigger_p;
 
         //Service Callback Declarations
         void master_nmt(
@@ -101,7 +106,7 @@ namespace ros2_canopen
         void master_read_sdo32(
             const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Response> response);
-        
+
         void master_set_heartbeat(
             const std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Response> response);
@@ -123,70 +128,214 @@ namespace ros2_canopen
         void read_yaml();
         void register_services();
 
-        template <typename T>
-        bool write_sdo(uint8_t nodeid, uint16_t index, uint8_t subindex, T data)
+        class WriteSdoCallbackCoTask : public ev::CoTask
         {
-            if (active.load())
+        private:
+            std::promise<bool> prom;
+            ev::Future<void, std::exception_ptr> f;
+
+        public:
+            WriteSdoCallbackCoTask(ev_exec_t *exec) : CoTask(exec)
             {
-                ev_exec_t *exe = *exec;
-                lely::canopen::SdoFuture<void> f;
+            }
+            void set_lely_future(ev::Future<void, std::exception_ptr> fut)
+            {
+                this->f = fut;
+            }
+            std::future<bool> get_future()
+            {
+                return prom.get_future();
+            }
+            void operator()() noexcept
+            {
+                if (!f.get().has_error())
                 {
-                    std::lock_guard<std::mutex> guard(master_mutex);
-                    f = can_master->AsyncWrite<T>(exe, nodeid, index, subindex, std::move(data), 100ms);
-                }
-                while (!f.is_ready())
-                {
-                    std::this_thread::sleep_for(10ms);
-                }
-                auto res = f.get();
-                if (res.has_error())
-                {
-                    return false;
+                    prom.set_value(true);
                 }
                 else
                 {
-                    return true;
+                    prom.set_exception(f.get().error());
+                }
+            }
+        };
+
+        template <typename T>
+        class WriteSdoCoTask : public ev::CoTask
+        {
+        private:
+            uint16_t index;
+            uint8_t nodeid;
+            uint8_t subindex;
+            T data;
+            std::unique_ptr<WriteSdoCallbackCoTask> callback_task;
+            std::shared_ptr<canopen::AsyncMaster> can_master;
+
+        public:
+            WriteSdoCoTask(ev_exec_t *exec) : CoTask(exec)
+            {
+                callback_task = std::make_unique<WriteSdoCallbackCoTask>(exec);
+            }
+            void set_data(std::shared_ptr<canopen::AsyncMaster> can_master, uint8_t nodeid, uint16_t index, uint8_t subindex, T data)
+            {
+                this->index = index;
+                this->nodeid = nodeid;
+                this->subindex = subindex;
+                this->data = data;
+                this->can_master = can_master;
+            }
+
+            std::future<bool> get_future()
+            {
+
+                return callback_task->get_future();
+            }
+
+            void operator()() noexcept
+            {
+                auto f = can_master->AsyncWrite<T>(this->exec, nodeid, index, subindex, std::move(data), 100ms);
+                callback_task->set_lely_future(f);
+                //set callback task to be executed when future is ready
+                f.submit(*callback_task);
+            }
+        };
+
+        template <typename T>
+        class ReadSdoCallbackCoTask : public ev::CoTask
+        {
+        private:
+            std::promise<T> prom;
+            ev::Future<T, std::exception_ptr> f;
+
+        public:
+            ReadSdoCallbackCoTask(ev_exec_t *exec) : CoTask(exec)
+            {
+            }
+            void set_lely_future(ev::Future<T, std::exception_ptr> fut)
+            {
+                this->f = fut;
+            }
+            std::future<T> get_future()
+            {
+                return prom.get_future();
+            }
+            void operator()() noexcept
+            {
+                if (!f.get().has_error())
+                {
+                    prom.set_value(f.get().value());
+                }
+                else
+                {
+                    prom.set_exception(f.get().error());
+                }
+            }
+        };
+
+        template <typename T>
+        class ReadSdoCoTask : public ev::CoTask
+        {
+        private:
+            uint16_t index;
+            uint8_t nodeid;
+            uint8_t subindex;
+            std::unique_ptr<ReadSdoCallbackCoTask<T>> callback_task;
+            std::shared_ptr<canopen::AsyncMaster> can_master;
+
+        public:
+            ReadSdoCoTask(ev_exec_t *exec) : CoTask(exec)
+            {
+                callback_task = std::make_unique<ReadSdoCallbackCoTask<T>>(exec);
+            }
+            void set_data(std::shared_ptr<canopen::AsyncMaster> can_master, uint8_t nodeid, uint16_t index, uint8_t subindex)
+            {
+                this->index = index;
+                this->nodeid = nodeid;
+                this->subindex = subindex;
+                this->can_master = can_master;
+            }
+
+            std::future<T> get_future()
+            {
+
+                return callback_task->get_future();
+            }
+
+            void operator()() noexcept
+            {
+                auto f = can_master->AsyncRead<T>(this->exec, nodeid, index, subindex, 100ms);
+                callback_task->set_lely_future(f);
+                //set callback task to be executed when future is ready
+                f.submit(*callback_task);
+            }
+        };
+
+        template <typename T, class REQ, class RES>
+        void master_read(
+            const std::shared_ptr<REQ> request,
+            std::shared_ptr<RES> response)
+        {
+            if (active.load())
+            {
+                ReadSdoCoTask<T> read_task(*exec);
+                read_task.set_data(can_master, request->nodeid, request->index, request->subindex);
+                auto f = read_task.get_future();
+                {
+                    //get lock on master and the canopen executor
+                    std::scoped_lock<std::mutex> lk(master_mutex);
+                    //append task to read Sdo
+                    exec->post(read_task);
+                }
+                f.wait();
+                try
+                {
+                    response->data = f.get();
+                    response->success = true;
+                }
+                catch (std::exception &e)
+                {
+                    RCLCPP_ERROR(this->get_logger(), e.what());
+                    response->success = false;
                 }
             }
             else
             {
-                return false;
+                RCLCPP_ERROR(this->get_logger(), "Couldn't write SDO because node not active");
+                response->success = false;
             }
         }
 
-        template <typename T>
-        bool read_sdo(uint8_t nodeid, uint16_t index, uint8_t subindex, std::shared_ptr<T> data)
+        template <typename T, class REQ, class RES>
+        void master_write(
+            const std::shared_ptr<REQ> request,
+            std::shared_ptr<RES> response)
         {
             if (active.load())
             {
-                ev_exec_t *exe = *exec;
-                lely::canopen::SdoFuture<T> f;
+                WriteSdoCoTask<T> write_task(*exec);
+                write_task.set_data(can_master, request->nodeid, request->index, request->subindex, request->data);
+                auto f = write_task.get_future();
                 {
-                    std::lock_guard<std::mutex> guard(master_mutex);
-                    f = can_master->AsyncRead<T>(exe, nodeid, index, subindex, 100ms);
+                    //get lock on master and the canopen executor
+                    std::scoped_lock<std::mutex> lk(master_mutex);
+                    exec->post(write_task);
                 }
-                while (!f.is_ready())
+                f.wait();
+                try
                 {
-                    std::this_thread::sleep_for(10ms);
+                    response->success = f.get();
                 }
-                auto res = f.get();
-                if (res.has_error())
+                catch (std::exception &e)
                 {
-                    auto error = res.error();
-                    return false;
-                }
-                else
-                {
-                    *data = res.value();
-                    return true;
+                    RCLCPP_ERROR(this->get_logger(), e.what());
+                    response->success = false;
                 }
             }
             else
             {
-                return false;
+                RCLCPP_ERROR(this->get_logger(), "Couldn't write SDO because node not active");
+                response->success = false;
             }
         }
-
         //Lifecycle Callback Functions
         CallbackReturn on_configure(const rclcpp_lifecycle::State &state);
         CallbackReturn on_activate(const rclcpp_lifecycle::State &state);

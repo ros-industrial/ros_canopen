@@ -32,94 +32,85 @@ void ROSCANopen_Node::master_read_sdo8(
     const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo8::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo8::Response> response)
 {
-  auto data = std::make_shared<uint8_t>(0);
-  bool success = read_sdo<uint8_t>(request->nodeid, request->index, request->subindex, data);
-  response->success = success;
-  response->data = *data;
+  this->master_read<uint8_t, ros2_canopen_interfaces::srv::MasterReadSdo8::Request, ros2_canopen_interfaces::srv::MasterReadSdo8::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_read_sdo16(
     const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo16::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo16::Response> response)
 {
-  auto data = std::make_shared<uint16_t>(0);
-  bool success = read_sdo<uint16_t>(request->nodeid, request->index, request->subindex, data);
-  response->success = success;
-  response->data = *data;
+  this->master_read<uint16_t, ros2_canopen_interfaces::srv::MasterReadSdo16::Request, ros2_canopen_interfaces::srv::MasterReadSdo16::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_read_sdo32(
     const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Response> response)
 {
-  auto data = std::make_shared<uint32_t>(0);
-  bool success = read_sdo<uint32_t>(request->nodeid, request->index, request->subindex, data);
-  response->success = success;
-  response->data = *data;
+  this->master_read<uint32_t, ros2_canopen_interfaces::srv::MasterReadSdo32::Request, ros2_canopen_interfaces::srv::MasterReadSdo32::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_write_sdo8(
     const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo8::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo8::Response> response)
 {
-  response->success = write_sdo<uint8_t>(request->nodeid, request->index, request->subindex, request->data);
+  this->master_write<uint8_t, ros2_canopen_interfaces::srv::MasterWriteSdo8::Request, ros2_canopen_interfaces::srv::MasterWriteSdo8::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_write_sdo16(
     const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo16::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo16::Response> response)
 {
-  response->success = write_sdo<uint16_t>(request->nodeid, request->index, request->subindex, request->data);
+  this->master_write<uint16_t, ros2_canopen_interfaces::srv::MasterWriteSdo16::Request, ros2_canopen_interfaces::srv::MasterWriteSdo16::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_write_sdo32(
     const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo32::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo32::Response> response)
 {
-  response->success = write_sdo<uint32_t>(request->nodeid, request->index, request->subindex, request->data);
+  this->master_write<uint32_t, ros2_canopen_interfaces::srv::MasterWriteSdo32::Request, ros2_canopen_interfaces::srv::MasterWriteSdo32::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_set_heartbeat(
     const std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Response> response)
 {
-  uint16_t index = 0x1017;
-  uint8_t subindex = 0x0;
-  response->success = write_sdo<uint16_t>(request->nodeid, index, subindex, request->heartbeat);
+  if (active.load())
+  {
+    WriteSdoCoTask<uint16_t> write_task(*exec);
+    write_task.set_data(can_master, request->nodeid, 0x1017, 0x0, request->heartbeat);
+    auto f = write_task.get_future();
+    {
+      std::scoped_lock<std::mutex> lk(master_mutex);
+      exec->post(write_task);
+    }
+    f.wait();
+    try
+    {
+      response->success = f.get();
+    }
+    catch (std::exception &e)
+    {
+      RCLCPP_ERROR(this->get_logger(), e.what());
+      response->success = false;
+    }
+  }
+  else{
+    RCLCPP_ERROR(this->get_logger(), "Couldn't set heartbeat because node not active");
+    response->success = false;
+  }
 }
 
 void ROSCANopen_Node::run()
 {
-  io_guard = std::make_shared<io::IoGuard>();
-  ctx = std::make_shared<io::Context>();
-  poll = std::make_shared<io::Poll>(*ctx);
-  loop = std::make_shared<ev::Loop>(poll->get_poll());
-  exec = std::make_shared<ev::Executor>(loop->get_executor());
-  can_timer = std::make_shared<io::Timer>(*poll, *exec, CLOCK_MONOTONIC);
-
-  //@Todo: Probably read from parameter server
-  ctrl = std::make_shared<io::CanController>(can_interface_name.c_str());
-  chan = std::make_shared<io::CanChannel>(*poll, *exec);
-
-  //Open CAN channel
-  chan->open(*ctrl);
-
-  //Create Master from DCF
-  //@Todo: Probably read from parameter server
-  can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, dcf_path.c_str(), "", 1);
-
-  //@Todo: register drivers!
-
   can_master->Reset();
-  while (configured.load())
+  while (active.load())
   {
-    if (active.load())
-    {
-      std::lock_guard<std::mutex> guard(master_mutex);
-      loop->run_for(20ms);
-    }
-    std::this_thread::sleep_for(20ms);
+    //get lock on canopen master executor
+    std::scoped_lock<std::mutex> lk(master_mutex);
+    //do work for at max 5ms
+    loop->run_one_for(5ms);
   }
+  std::this_thread::sleep_for(10ms);
 }
 
 void ROSCANopen_Node::read_yaml()
@@ -213,15 +204,35 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
 
   read_yaml();
   //Start loop
-  canopen_loop_thread = std::make_unique<std::thread>(std::bind(&ROSCANopen_Node::run, this));
+  io_guard = std::make_shared<io::IoGuard>();
+  ctx = std::make_shared<io::Context>();
+  poll = std::make_shared<io::Poll>(*ctx);
+  loop = std::make_shared<ev::Loop>(poll->get_poll());
+  exec = std::make_shared<ev::Executor>(loop->get_executor());
+  can_timer = std::make_shared<io::Timer>(*poll, *exec, CLOCK_MONOTONIC);
 
+  //@Todo: Probably read from parameter server
+  ctrl = std::make_shared<io::CanController>(can_interface_name.c_str());
+  chan = std::make_shared<io::CanChannel>(*poll, *exec);
+
+  //Open CAN channel
+  chan->open(*ctrl);
+
+  //Create Master from DCF
+  //@Todo: Probably read from parameter server
+  can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, dcf_path.c_str(), "", 1);
+  auto f = trigger_p.get_future();
+  f.submit(*exec, []
+           { std::cout << "WoHooo!" << std::endl; });
+  //@Todo: register drivers!
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
 ROSCANopen_Node::on_activate(const rclcpp_lifecycle::State &state)
 {
-  this->active.store(true);  
+  this->active.store(true);
+  run_f = std::async(std::launch::async, std::bind(&ROSCANopen_Node::run, this));
   return CallbackReturn::SUCCESS;
 }
 
@@ -229,6 +240,7 @@ CallbackReturn
 ROSCANopen_Node::on_deactivate(const rclcpp_lifecycle::State &state)
 {
   this->active.store(false);
+  run_f.wait();
   return CallbackReturn::SUCCESS;
 }
 
