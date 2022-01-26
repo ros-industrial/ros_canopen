@@ -26,6 +26,7 @@ find_package(yaml_cpp_vendor REQUIRED)
 find_package(ros2_canopen_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(ros2_control REQUIRED)
 
 # Liblely is automake project, needs to be imported using pkg_check
 pkg_check_modules(LIBLELY-IO2 REQUIRED liblely-io2)
@@ -45,6 +46,7 @@ ament_target_dependencies(ros2_canopen_node
   ros2_canopen_interfaces 
   std_msgs 
   std_srvs
+  ros2_control
 )
 target_include_directories(ros2_canopen_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
