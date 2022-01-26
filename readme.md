@@ -47,24 +47,18 @@ ros2 param set /test_node dcf_path [Absolute_Path]
 ros2 param set /test_node yaml_path [Absolute_Path]
 ```
 
-5. Activate master node:
+5. Activate master node and driver:
 
 Terminal 4:
 ```
 ros2 lifecycle set /canopen_master configure
+ros2 lifecycle set /BasicDevice2 configure
 ros2 lifecycle set /canopen_master activate
+ros2 lifecycle set /BasicDevice2 activate
 ```
 
-6. Try some services:
+6. Observe some stuff:
 
-Terminal 4:
+Topic nmt_state should show state of driver device.
 
-Reading SDO:
-```
-ros2 service call /master_read16_sdo ros2_canopen_interfaces/srv/MasterReadSdo16 "{nodeid: 2, index: 0x1017, subindex: 0}"
-```
-
-Writing SDO: (Example sets Heartbeat, data is in ms, check candump)
-```
-ros2 service call /master_write16_sdo ros2_canopen_interfaces/srv/MasterWriteSdo16 "{nodeid: 2, index: 0x1017, subindex: 0, data: 1000}"
-```
+Service nmt_reset_node is a std_srv/srv/Trigger and should simply reset the device. This should reflect in nmt_state.
