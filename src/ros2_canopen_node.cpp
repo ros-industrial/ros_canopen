@@ -103,6 +103,12 @@ void ROSCANopen_Node::master_set_heartbeat(
 void ROSCANopen_Node::run()
 {
   can_master->Reset();
+  //Drivers need to be registered in same thread - they seem to start their event loop already.
+  basicdevice = std::make_shared<ros2_canopen::BasicDevice>();
+  basicdevice->registerDriver(exec, can_master, master_mutex,  2);
+  while(!active.load()){
+    std::this_thread::sleep_for(10ms);
+  }
   while (active.load())
   {
     //get lock on canopen master executor
@@ -110,7 +116,6 @@ void ROSCANopen_Node::run()
     //do work for at max 5ms
     loop->run_one_for(5ms);
   }
-  std::this_thread::sleep_for(10ms);
 }
 
 void ROSCANopen_Node::read_yaml()
@@ -221,8 +226,8 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
   //Create Master from DCF
   //@Todo: Probably read from parameter server
   can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, dcf_path.c_str(), "", 1);
-  basicdevice = std::make_shared<ros2_canopen::BasicDevice>();
-  basicdevice->registerDriver(*exec, *can_master, master_mutex,  2);
+  run_f = std::async(std::launch::async, std::bind(&ROSCANopen_Node::run, this));
+  std::this_thread::sleep_for(20ms);
 
   this->main_p.set_value();
 
@@ -234,7 +239,7 @@ CallbackReturn
 ROSCANopen_Node::on_activate(const rclcpp_lifecycle::State &state)
 {
   this->active.store(true);
-  run_f = std::async(std::launch::async, std::bind(&ROSCANopen_Node::run, this));
+  
   return CallbackReturn::SUCCESS;
 }
 
