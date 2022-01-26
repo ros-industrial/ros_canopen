@@ -9,6 +9,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/state.hpp"
+#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "rclcpp/publisher.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/trigger.hpp"
@@ -57,7 +58,7 @@ namespace ros2_canopen
             }            
         }
     };
-    class BasicDeviceDriver : canopen::FiberDriver
+    class BasicDeviceDriver : public canopen::FiberDriver
     {
         std::shared_ptr<ros2_canopen::SharedData> shared_data;
     public:
@@ -106,7 +107,7 @@ namespace ros2_canopen
     private:
         std::shared_ptr<ros2_canopen::BasicDeviceDriver> driver;
         std::shared_ptr<ros2_canopen::SharedData> shared_data;
-        rclcpp::Publisher<std_msgs::msg::String>::SharedPtr nmt_state_publisher;
+        std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>> nmt_state_publisher;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr nmt_state_reset_service;
         std::atomic<bool>  configured;
         std::future<void> nmt_state_publisher_future;
@@ -200,12 +201,14 @@ namespace ros2_canopen
         CallbackReturn
         on_activate(const rclcpp_lifecycle::State &state)
         {
+            nmt_state_publisher->on_activate();
             return CallbackReturn::SUCCESS;
         }
 
         CallbackReturn
         on_deactivate(const rclcpp_lifecycle::State &state)
         {
+            nmt_state_publisher->on_deactivate();
             return CallbackReturn::SUCCESS;
         }
 

@@ -347,9 +347,10 @@ namespace ros2_canopen
 
     public:
         //Constructor Declarations
-        ROSCANopen_Node(const std::string &node_name, bool intra_process_comms = false) : rclcpp_lifecycle::LifecycleNode(
-                                                                                              node_name,
-                                                                                              rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
+        ROSCANopen_Node(const std::string &node_name, bool intra_process_comms = false) 
+        : rclcpp_lifecycle::LifecycleNode(
+                node_name,
+                rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
         {
             this->declare_parameter<std::string>("can_interface_name", "vcan0");
             this->declare_parameter<std::string>("dcf_path", "");
