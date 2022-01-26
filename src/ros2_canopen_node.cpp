@@ -106,6 +106,7 @@ void ROSCANopen_Node::run()
   //Drivers need to be registered in same thread - they seem to start their event loop already.
   basicdevice = std::make_shared<ros2_canopen::BasicDevice>();
   basicdevice->registerDriver(exec, can_master, master_mutex,  2);
+  //Signal to main, that configured was reached.
   this->main_p.set_value();
   while(!active.load()){
     std::this_thread::sleep_for(10ms);
@@ -276,11 +277,18 @@ int main(int argc, char *argv[])
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor executor;
   auto canopen_node = std::make_shared<ROSCANopen_Node>("canopen_master");
+
+  //Get future from master node
   auto f = canopen_node->get_main_future();
+  //master node to executor
   executor.add_node(canopen_node->get_node_base_interface());
+  //sin until future becomes ready (ready when configured and drivers loaded)
   executor.spin_until_future_complete(f);
   // Add code to add driver nodes
   executor.add_node(canopen_node->get_node()->get_node_base_interface());
+  
+
+  //@Todo: Just testcode, should be looped in the future, so that node can be reconfigured.
   executor.spin();
   rclcpp::shutdown();
   return 0;
