@@ -14,6 +14,8 @@ namespace ros2_canopen
             std::shared_ptr<canopen::AsyncMaster> master, 
             std::shared_ptr<std::mutex> master_mutex, 
             uint8_t id) = 0;
+        virtual rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node() = 0;
+
         protected:
         CANopenDevice(){}
     };

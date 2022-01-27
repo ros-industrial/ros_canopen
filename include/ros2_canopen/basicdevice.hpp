@@ -13,6 +13,8 @@
 #include "rclcpp/publisher.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/trigger.hpp"
+#include <lely/coapp/fiber_driver.hpp>
+#include <lely/coapp/master.hpp>
 
 #include "canopen_device_base.hpp"
 
@@ -21,85 +23,81 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 
 namespace ros2_canopen
 {
-    class SharedData {
-        private:
+    class SharedData
+    {
+    private:
         std::promise<canopen::NmtState> nmt_state_promise;
         std::atomic<bool> nmt_state_is_set;
 
-
-
-        public:        
+    public:
         std::shared_ptr<std::mutex> master_mutex;
         std::shared_ptr<canopen::AsyncMaster> master;
         std::shared_ptr<ev::Executor> exec;
         uint8_t id;
         SharedData(
-            std::shared_ptr<std::mutex> master_mutex, 
+            std::shared_ptr<std::mutex> master_mutex,
             std::shared_ptr<canopen::AsyncMaster> can_master,
             std::shared_ptr<ev::Executor> exec,
-            uint8_t id
-            ){
+            uint8_t id)
+        {
             this->master = can_master;
             this->master_mutex = master_mutex;
             this->exec = exec;
             this->id = id;
         }
 
-        std::future<canopen::NmtState> reset_nmt_state_promise(){
+        std::future<canopen::NmtState> reset_nmt_state_promise()
+        {
             nmt_state_is_set.store(false);
             nmt_state_promise = std::promise<canopen::NmtState>();
             return nmt_state_promise.get_future();
         }
 
-        void nmt_state_set(canopen::NmtState state){
-            if(!nmt_state_is_set.load()){
+        void nmt_state_set(canopen::NmtState state)
+        {
+            if (!nmt_state_is_set.load())
+            {
                 nmt_state_is_set.store(true);
                 nmt_state_promise.set_value(state);
-            }            
+            }
         }
     };
     class BasicDeviceDriver : public canopen::FiberDriver
     {
         std::shared_ptr<ros2_canopen::SharedData> shared_data;
+
     public:
         using FiberDriver::FiberDriver;
-        BasicDeviceDriver(std::shared_ptr<ros2_canopen::SharedData> shared_data) 
-        : FiberDriver(*(shared_data->exec), *(shared_data->master), shared_data->id)
+        BasicDeviceDriver(std::shared_ptr<ros2_canopen::SharedData> shared_data)
+            : FiberDriver(*(shared_data->exec), *(shared_data->master), shared_data->id)
         {
             this->shared_data = shared_data;
         }
 
     private:
-
-        void
-        OnBoot(canopen::NmtState state, char es,
-               const std::string &whatisit) noexcept override
-        {
-            //Inform ROS that new NMT state was set.
-            shared_data->nmt_state_set(state);
-        }
-
-
-        void
-        OnConfig(std::function<void(std::error_code ec)> res) noexcept override
-        {}
-
         void
         OnState(canopen::NmtState state) noexcept override
         {
-            //Inform ROS that new NMT state was set.
-            shared_data->nmt_state_set(state);
+            canopen::NmtState st = state;
+            //We assume 1F80 bit 2 is false. All slaves are put into Operational after boot-up.
+            //Lelycore does not track NMT states in this mode except BOOTUP.
+            if (st == canopen::NmtState::BOOTUP)
+            {
+                st = canopen::NmtState::START;
+            }
+
+            shared_data->nmt_state_set(st);
         }
 
         void
         OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override
         {
-
         }
 
         void
         OnEmcy(uint16_t eec, uint8_t er, uint8_t *msef) noexcept override
-        {}
+        {
+        }
     };
 
     class BasicDriverNode : public rclcpp_lifecycle::LifecycleNode
@@ -109,40 +107,68 @@ namespace ros2_canopen
         std::shared_ptr<ros2_canopen::SharedData> shared_data;
         std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>> nmt_state_publisher;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr nmt_state_reset_service;
-        std::atomic<bool>  configured;
+        std::atomic<bool> configured;
         std::future<void> nmt_state_publisher_future;
-        
-        
 
+        template <typename T>
+        class WriteSdoCoTask : public ev::CoTask
+        {
+        private:
+            uint16_t index;
+            uint8_t subindex;
+            T data;
+            std::shared_ptr<canopen::FiberDriver> driver;
+            std::promise<bool>  p;
+
+        public:
+            void set_data(std::shared_ptr<canopen::FiberDriver> driver, uint16_t index, uint8_t subindex, T data)
+            {
+                this->index = index;
+                this->subindex = subindex;
+                this->data = data;
+                this->driver = driver;
+            }
+
+            std::future<bool> get_future()
+            {
+
+                return p.get_future();
+            }
+
+            void operator()() noexcept
+            {
+                Wait(driver->AsyncWrite<T>(index, subindex, std::move(data)));
+                p.set_value(true);
+            }
+        };
 
     public:
         explicit BasicDriverNode(
-            const std::string &node_name,                   
+            const std::string &node_name,
             std::shared_ptr<BasicDeviceDriver> driver,
             std::shared_ptr<ros2_canopen::SharedData> shared_data,
-            bool intra_process_comms = false
-            )
+            bool intra_process_comms = false)
             : rclcpp_lifecycle::LifecycleNode(
                   node_name,
                   rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
         {
             this->shared_data = shared_data;
-            nmt_state_publisher = this->create_publisher<std_msgs::msg::String>("nmt_state", 10);
+            nmt_state_publisher = this->create_publisher<std_msgs::msg::String>(std::string(this->get_name()).append("/nmt_state").c_str(), 10);
             nmt_state_reset_service = this->create_service<std_srvs::srv::Trigger>(
-                "nmt_reset_node", 
+                std::string(this->get_name()).append("/nmt_reset_node").c_str(),
                 std::bind(
-                    &ros2_canopen::BasicDriverNode::nmt_state_reset_service_cb, 
-                    this, 
-                    std::placeholders::_1, 
-                    std::placeholders::_2
-                    )
-                );
+                    &ros2_canopen::BasicDriverNode::nmt_state_reset_service_cb,
+                    this,
+                    std::placeholders::_1,
+                    std::placeholders::_2));
             configured.store(false);
         }
 
-        void on_nmt_state_change_cb(){
-            while(configured.load()){
-                auto  f = shared_data->reset_nmt_state_promise();
+        void on_nmt_state_change_cb()
+        {
+            while (configured.load())
+            {
+                auto f = shared_data->reset_nmt_state_promise();
                 f.wait();
                 on_nmt_state(f.get());
             }
@@ -150,43 +176,49 @@ namespace ros2_canopen
 
         void nmt_state_reset_service_cb(
             const std_srvs::srv::Trigger::Request::SharedPtr request,
-            std_srvs::srv::Trigger::Response::SharedPtr response
-        )
+            std_srvs::srv::Trigger::Response::SharedPtr response)
         {
             std::scoped_lock<std::mutex> lk(*(shared_data->master_mutex));
             shared_data->master->Command(canopen::NmtCommand::RESET_NODE, shared_data->id);
             response->success = true;
         }
 
-        virtual void on_nmt_state(canopen::NmtState nmt_state){
+        virtual void on_nmt_state(canopen::NmtState nmt_state)
+        {
             auto message = std_msgs::msg::String();
-            switch(nmt_state){
-                case canopen::NmtState::BOOTUP:
+
+            switch (nmt_state)
+            {
+            case canopen::NmtState::BOOTUP:
                 message.data = "BOOTUP";
                 break;
-                case canopen::NmtState::PREOP:
+            case canopen::NmtState::PREOP:
                 message.data = "PREOP";
                 break;
-                case canopen::NmtState::RESET_COMM:
+            case canopen::NmtState::RESET_COMM:
                 message.data = "RESET_COMM";
                 break;
-                case canopen::NmtState::RESET_NODE:
+            case canopen::NmtState::RESET_NODE:
                 message.data = "RESET_NODE";
                 break;
-                case canopen::NmtState::START:
+            case canopen::NmtState::START:
                 message.data = "START";
                 break;
-                case canopen::NmtState::STOP:
+            case canopen::NmtState::STOP:
                 message.data = "STOP";
                 break;
-                case canopen::NmtState::TOGGLE:
+            case canopen::NmtState::TOGGLE:
                 message.data = "TOGGLE";
                 break;
-                default:
+            default:
                 RCLCPP_ERROR(this->get_logger(), "Unknown NMT State.");
                 message.data = "ERROR";
                 break;
             }
+            RCLCPP_INFO(this->get_logger(),
+                        "Slave %hhu: Switched NMT state to %s",
+                        this->shared_data->id,
+                        message.data.c_str());
             nmt_state_publisher->publish(message);
         }
 
@@ -231,9 +263,9 @@ namespace ros2_canopen
     {
     public:
         void registerDriver(
-            std::shared_ptr<ev::Executor> exec, 
-            std::shared_ptr<canopen::AsyncMaster> master, 
-            std::shared_ptr<std::mutex> master_mutex, 
+            std::shared_ptr<ev::Executor> exec,
+            std::shared_ptr<canopen::AsyncMaster> master,
+            std::shared_ptr<std::mutex> master_mutex,
             uint8_t id)
         {
             /// Setup driver
@@ -245,11 +277,11 @@ namespace ros2_canopen
             driver_node_ = std::make_shared<BasicDriverNode>(node_name, driver_, shared_data);
         }
 
-        std::shared_ptr<BasicDriverNode> get_node(){
-            return driver_node_;
+        rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node()
+        {
+            return driver_node_->get_node_base_interface();
         }
-        
-    
+
     private:
         std::shared_ptr<ros2_canopen::BasicDeviceDriver> driver_;
         std::shared_ptr<ros2_canopen::BasicDriverNode> driver_node_;

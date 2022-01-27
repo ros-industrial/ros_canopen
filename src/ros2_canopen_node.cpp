@@ -94,7 +94,8 @@ void ROSCANopen_Node::master_set_heartbeat(
       response->success = false;
     }
   }
-  else{
+  else
+  {
     RCLCPP_ERROR(this->get_logger(), "Couldn't set heartbeat because node not active");
     response->success = false;
   }
@@ -103,31 +104,59 @@ void ROSCANopen_Node::master_set_heartbeat(
 void ROSCANopen_Node::run()
 {
   can_master->Reset();
-  //Drivers need to be registered in same thread - they seem to start their event loop already.
   register_drivers();
-  //Signal to main, that configured was reached.
-  this->main_p.set_value();
-  while(!active.load()){
-    std::this_thread::sleep_for(10ms);
-  }
-  while (active.load())
+
+  //Drivers are set and nodes can b added to ros executor, wait for them to be added.
+  this->post_registration.set_value();
+    // Signal to ROS Node that drivers were success fully registered.
+  this->registration_done.set_value();
+
+  this->post_registration_done.wait();
+
+  while (configured)
   {
-    //get lock on canopen master executor
-    std::scoped_lock<std::mutex> lk(*master_mutex);
-    //do work for at max 5ms
-    loop->run_one_for(5ms);
+    //Get future from current active promise
+    auto active_f = this->active_p.get_future();
+    //Wait for future to become ready
+    active_f.wait();
+    //while node is active do the work.
+    while (active.load())
+    {
+      //get lock on canopen master executor
+      std::scoped_lock<std::mutex> lk(*master_mutex);
+      //do work for at max 5ms
+      loop->run_one_for(5ms);
+    }
   }
+  this->pre_deregistration.set_value();
+  this->pre_deregistration_done.wait();
+  //Safe to delete devices.
+  this->deregister_drivers();
+  this->drivers = std::map<int, std::string>();
+  this->ctx->shutdown();
 }
 
-void ROSCANopen_Node::register_drivers(){
-  for(auto it = this->drivers.begin(); it != this->drivers.end(); ++it)
+void ROSCANopen_Node::register_drivers()
+{
+  for (auto it = this->drivers.begin(); it != this->drivers.end(); ++it)
   {
     uint8_t id = (uint8_t)it->first;
     std::string name = it->second;
-    if(name.compare("BasicDevice") == 0){
-      basicdevice = std::make_shared<ros2_canopen::BasicDevice>();
-      basicdevice->registerDriver(exec, can_master, master_mutex,  id);
+    if (name.compare("BasicDevice") == 0)
+    {
+      auto dev = std::make_shared<ros2_canopen::BasicDevice>();
+      this->devices->insert({id, dev});
+      dev->registerDriver(exec, can_master, master_mutex, id);
     }
+  }
+}
+
+void ROSCANopen_Node::deregister_drivers()
+{
+  for (auto it = this->devices->begin(); it != this->devices->end(); ++it)
+  {
+    it->second->get_node()->~NodeBaseInterface();
+    this->devices->erase(it);
   }
 }
 
@@ -158,53 +187,53 @@ void ROSCANopen_Node::register_services()
 {
   //Create service for master_nmt
   this->master_nmt_service = this->create_service<ros2_canopen_interfaces::srv::MasterNmt>(
-      "master_nmt",
+      std::string(this->get_name()).append("/master_nmt").c_str(),
       std::bind(&ROSCANopen_Node::master_nmt,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
   //Create service for read sdo
   this->master_read_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::MasterReadSdo8>(
-      "master_read8_sdo",
+      std::string(this->get_name()).append("/master_read8_sdo").c_str(),
       std::bind(&ROSCANopen_Node::master_read_sdo8,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
 
   this->master_read_sdo16_service = this->create_service<ros2_canopen_interfaces::srv::MasterReadSdo16>(
-      "master_read16_sdo",
+      std::string(this->get_name()).append("/master_read16_sdo").c_str(),
       std::bind(&ROSCANopen_Node::master_read_sdo16,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
 
   this->master_read_sdo32_service = this->create_service<ros2_canopen_interfaces::srv::MasterReadSdo32>(
-      "master_read32_sdo",
+      std::string(this->get_name()).append("/master_read32_sdo").c_str(),
       std::bind(&ROSCANopen_Node::master_read_sdo32,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
   //Create service for write sdo
-  this->master_write_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::MasterWriteSdo8>(
-      "master_write8_sdo",
+  this->master_write_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::MasterWriteSdo8>( 
+      std::string(this->get_name()).append("/master_write8_sdo").c_str(),
       std::bind(&ROSCANopen_Node::master_write_sdo8,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
   this->master_write_sdo16_service = this->create_service<ros2_canopen_interfaces::srv::MasterWriteSdo16>(
-      "master_write16_sdo",
+      std::string(this->get_name()).append("/master_write16_sdo").c_str(),
       std::bind(&ROSCANopen_Node::master_write_sdo16,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
   this->master_write_sdo32_service = this->create_service<ros2_canopen_interfaces::srv::MasterWriteSdo32>(
-      "master_write32_sdo",
+      std::string(this->get_name()).append("/master_write32_sdo").c_str(),
       std::bind(&ROSCANopen_Node::master_write_sdo32,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
   this->master_set_hearbeat_service = this->create_service<ros2_canopen_interfaces::srv::MasterSetHeartbeat>(
-      "master_set_heartbeat",
+      std::string(this->get_name()).append("/master_set_heartbeat").c_str(),
       std::bind(&ROSCANopen_Node::master_set_heartbeat,
                 this,
                 std::placeholders::_1,
@@ -214,6 +243,10 @@ void ROSCANopen_Node::register_services()
 CallbackReturn
 ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
 {
+  //Wait for master Thread to terminate.
+  if(master_thread_running.valid())
+    master_thread_running.wait();
+  
   this->active.store(false);
   this->configured.store(true);
   this->get_parameter("can_interface_name", can_interface_name);
@@ -239,33 +272,40 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
   //Create Master from DCF
   //@Todo: Probably read from parameter server
   can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, dcf_path.c_str(), "", 1);
-  run_f = std::async(std::launch::async, std::bind(&ROSCANopen_Node::run, this));
- 
+  master_thread_running = std::async(std::launch::async, std::bind(&ROSCANopen_Node::run, this));
+
+  //Create new promise
+  active_p = std::promise<void>();
+
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
 ROSCANopen_Node::on_activate(const rclcpp_lifecycle::State &state)
 {
+  //Wait for Drivers to be registered - in case it is called to fast.
+  registration_done.get_future().wait();
+  //Set active to true
   this->active.store(true);
-  
+  //Signal to master thread that we are active, to start loop.
+  active_p.set_value();
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
 ROSCANopen_Node::on_deactivate(const rclcpp_lifecycle::State &state)
 {
+  //Recreate promise so that master can wait for new future.
+  active_p = std::promise<void>();
+  //Stop master loop.
   this->active.store(false);
-  run_f.wait();
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
 ROSCANopen_Node::on_cleanup(const rclcpp_lifecycle::State &state)
 {
-  this->active.store(false);
   this->configured.store(false);
-  canopen_loop_thread->join();
   return CallbackReturn::SUCCESS;
 }
 
@@ -274,7 +314,6 @@ ROSCANopen_Node::on_shutdown(const rclcpp_lifecycle::State &state)
 {
   this->active.store(false);
   this->configured.store(true);
-  canopen_loop_thread->join();
   return CallbackReturn::SUCCESS;
 }
 
@@ -284,19 +323,65 @@ int main(int argc, char *argv[])
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor executor;
   auto canopen_node = std::make_shared<ROSCANopen_Node>("canopen_master");
-
-  //Get future from master node
-  auto f = canopen_node->get_main_future();
-  //master node to executor
   executor.add_node(canopen_node->get_node_base_interface());
-  //sin until future becomes ready (ready when configured and drivers loaded)
-  executor.spin_until_future_complete(f);
-  // Add code to add driver nodes
-  executor.add_node(canopen_node->get_node()->get_node_base_interface());
-  
+  auto devices = canopen_node->get_driver_nodes();
 
-  //@Todo: Just testcode, should be looped in the future, so that node can be reconfigured.
-  executor.spin();
+  while (true)
+  {
+    //////////////////////////////
+    // Unconfigured State
+    //////////////////////////////
+
+    //Set up synchronisation
+    std::promise<void> post_reg_p;
+    std::promise<void> pre_dereg_done_p;
+
+    //Get future that signals drivers were registered
+    auto post_reg_f = canopen_node->get_post_registration_future(post_reg_p.get_future());
+    
+    //Spin until drivers were registered.
+    auto ret = executor.spin_until_future_complete(post_reg_f);
+
+    //Break when interrupted
+    if (ret == rclcpp::FutureReturnCode::INTERRUPTED)
+      break;
+    
+    //Add driver nodes to executor
+    if (devices->size() > 0)
+    {
+      for (auto it = devices->begin(); it != devices->end(); it++)
+      {
+        executor.add_node(it->second->get_node());
+      }
+    }
+
+    //Now create handshake for deconfiguring
+    auto pre_dereg_f = canopen_node->get_pre_deregistration_future(pre_dereg_done_p.get_future());
+    //Signal that driver nodes were added to executor and it is safe to go on.
+    post_reg_p.set_value();
+
+    //////////////////////////////
+    // Configured State
+    //////////////////////////////
+
+    //Wait for deconfigure to remove driver nodes.
+    ret = executor.spin_until_future_complete(pre_dereg_f);
+    if (ret == rclcpp::FutureReturnCode::INTERRUPTED)
+      break;
+
+
+    //If there are drivers present, remove from executor.
+    if (devices->size() > 0)
+    {
+      for (auto it = devices->begin(); it != devices->end(); it++)
+      {
+        executor.remove_node(it->second->get_node());
+      }
+    }
+    //Signal to master threat, that nodes were removed and its safe to remove devices.
+    pre_dereg_done_p.set_value();
+  }
+
   rclcpp::shutdown();
   return 0;
 }

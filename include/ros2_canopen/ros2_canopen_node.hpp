@@ -71,7 +71,7 @@ namespace ros2_canopen
         std::string dcf_path;
         std::string yaml_path;
         std::map<int, std::string> drivers;
-        std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>> devices;
+        std::shared_ptr<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>> devices;
         std::unique_ptr<std::thread> canopen_loop_thread;
 
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterNmt>> master_nmt_service;
@@ -86,10 +86,15 @@ namespace ros2_canopen
         std::atomic<bool> active;
         std::atomic<bool> configured;
         std::shared_ptr<std::mutex> master_mutex;
-        std::future<void> run_f;
-        ev::Promise<bool> loop_p;
-        ev::Promise<bool> trigger_p;
-        std::promise<void> main_p;
+        
+        std::promise<void> post_registration;
+        std::future<void> post_registration_done;
+        std::promise<void> pre_deregistration;
+        std::future<void> pre_deregistration_done;
+        std::promise<void> registration_done;
+        std::promise<void> active_p;
+        std::future<void> master_thread_running;
+
 
 
         //Service Callback Declarations
@@ -130,6 +135,7 @@ namespace ros2_canopen
         void read_yaml();
         void register_services();
         void register_drivers();
+        void deregister_drivers();
 
 
         // Tasks
@@ -363,16 +369,24 @@ namespace ros2_canopen
             yaml_path = "";
             this->register_services();
             this->master_mutex = std::make_shared<std::mutex>();
-        
+            this->devices = std::make_shared<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>>();
         }
 
-        std::future<void> get_main_future(){
-            main_p = std::promise<void>();
-            return main_p.get_future();
+        std::future<void> get_post_registration_future(std::future<void>&& post_done_f){
+            post_registration = std::promise<void>();
+            post_registration_done = std::forward<std::future<void>>(post_done_f);
+            return post_registration.get_future();
         }
 
-        std::shared_ptr<ros2_canopen::BasicDriverNode> get_node(){
-            return this->basicdevice->get_node();
+        std::future<void> get_pre_deregistration_future(std::future<void>&& pre_dereg_f){
+            pre_deregistration = std::promise<void>();
+            pre_deregistration_done = std::forward<std::future<void>>(pre_dereg_f);
+            return pre_deregistration.get_future();
+        }
+
+        std::shared_ptr<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>>
+        get_driver_nodes(){
+            return this->devices;
         }
     };
 }

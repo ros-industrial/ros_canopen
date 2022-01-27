@@ -62,3 +62,7 @@ ros2 lifecycle set /BasicDevice2 activate
 Topic nmt_state should show state of driver device.
 
 Service nmt_reset_node is a std_srv/srv/Trigger and should simply reset the device. This should reflect in nmt_state.
+
+# Limits
+
+0x1F80 bit 2 should always be false. Slaves are automatically booted and put into operational.

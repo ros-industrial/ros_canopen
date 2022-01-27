@@ -23,7 +23,6 @@ main() {
     chan.open(ctrl);
 
     canopen::BasicSlave slave(timer, chan, "/home/christoph/ws_ros2/src/ros2_canopen/ressources/simple.eds", "", 2);
-
     io::SignalSet sigset(poll, exec);
     // Watch for Ctrl+C or process termination.
     sigset.insert(SIGHUP);
