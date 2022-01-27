@@ -71,7 +71,7 @@ namespace ros2_canopen
         std::string dcf_path;
         std::string yaml_path;
         std::map<int, std::string> drivers;
-
+        std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>> devices;
         std::unique_ptr<std::thread> canopen_loop_thread;
 
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterNmt>> master_nmt_service;
@@ -129,7 +129,10 @@ namespace ros2_canopen
         void run();
         void read_yaml();
         void register_services();
+        void register_drivers();
 
+
+        // Tasks
         class WriteSdoCallbackCoTask : public ev::CoTask
         {
         private:

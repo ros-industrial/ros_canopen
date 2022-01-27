@@ -104,8 +104,7 @@ void ROSCANopen_Node::run()
 {
   can_master->Reset();
   //Drivers need to be registered in same thread - they seem to start their event loop already.
-  basicdevice = std::make_shared<ros2_canopen::BasicDevice>();
-  basicdevice->registerDriver(exec, can_master, master_mutex,  2);
+  register_drivers();
   //Signal to main, that configured was reached.
   this->main_p.set_value();
   while(!active.load()){
@@ -117,6 +116,18 @@ void ROSCANopen_Node::run()
     std::scoped_lock<std::mutex> lk(*master_mutex);
     //do work for at max 5ms
     loop->run_one_for(5ms);
+  }
+}
+
+void ROSCANopen_Node::register_drivers(){
+  for(auto it = this->drivers.begin(); it != this->drivers.end(); ++it)
+  {
+    uint8_t id = (uint8_t)it->first;
+    std::string name = it->second;
+    if(name.compare("BasicDevice") == 0){
+      basicdevice = std::make_shared<ros2_canopen::BasicDevice>();
+      basicdevice->registerDriver(exec, can_master, master_mutex,  id);
+    }
   }
 }
 
@@ -229,11 +240,7 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
   //@Todo: Probably read from parameter server
   can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, dcf_path.c_str(), "", 1);
   run_f = std::async(std::launch::async, std::bind(&ROSCANopen_Node::run, this));
-  std::this_thread::sleep_for(20ms);
-
-  
-
-  //@Todo: register drivers!
+ 
   return CallbackReturn::SUCCESS;
 }
 

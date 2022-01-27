@@ -4,4 +4,4 @@ master:
 motioncontroller_1:
   node_id: 2
   dcf: "simple.eds"
-  driver: "CIA402Driver"
+  driver: "BasicDevice"
