@@ -17,24 +17,46 @@
 #include <lely/coapp/master.hpp>
 
 #include "canopen_device_base.hpp"
+#include "ros2_canopen_interfaces/msg/pdo.hpp"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
+
 namespace ros2_canopen
 {
-    class SharedData
+    
+    struct PDOData {
+        public:
+            uint16_t index_;
+            uint8_t subindex_;
+            uint32_t data_;
+        PDOData(            
+            uint16_t index,
+            uint8_t subindex,
+            uint32_t data) : index_(index), subindex_(subindex), data_(data)
+        {}
+
+        PDOData(
+            const PDOData &obj
+        ) : index_(obj.index_), subindex_(obj.subindex_), data_(obj.data_)
+        {}
+    };
+    class BasicDeviceSharedData
     {
     private:
         std::promise<canopen::NmtState> nmt_state_promise;
         std::atomic<bool> nmt_state_is_set;
+
+        std::promise<ros2_canopen::PDOData> rpdo_promise;
+        std::atomic<bool> rpdo_is_set;
 
     public:
         std::shared_ptr<std::mutex> master_mutex;
         std::shared_ptr<canopen::AsyncMaster> master;
         std::shared_ptr<ev::Executor> exec;
         uint8_t id;
-        SharedData(
+        BasicDeviceSharedData(
             std::shared_ptr<std::mutex> master_mutex,
             std::shared_ptr<canopen::AsyncMaster> can_master,
             std::shared_ptr<ev::Executor> exec,
@@ -61,14 +83,31 @@ namespace ros2_canopen
                 nmt_state_promise.set_value(state);
             }
         }
+
+        std::future<ros2_canopen::PDOData> reset_rpdo_promise()
+        {
+            rpdo_is_set.store(false);
+            rpdo_promise = std::promise<ros2_canopen::PDOData>();
+            return rpdo_promise.get_future();
+        }
+
+        void rpdo_set(PDOData data)
+        {
+            if (!rpdo_is_set.load())
+            {
+                rpdo_is_set.store(true);
+                rpdo_promise.set_value(data);
+            }
+        }
+
     };
     class BasicDeviceDriver : public canopen::FiberDriver
     {
-        std::shared_ptr<ros2_canopen::SharedData> shared_data;
+        std::shared_ptr<ros2_canopen::BasicDeviceSharedData> shared_data;
 
     public:
         using FiberDriver::FiberDriver;
-        BasicDeviceDriver(std::shared_ptr<ros2_canopen::SharedData> shared_data)
+        BasicDeviceDriver(std::shared_ptr<ros2_canopen::BasicDeviceSharedData> shared_data)
             : FiberDriver(*(shared_data->exec), *(shared_data->master), shared_data->id)
         {
             this->shared_data = shared_data;
@@ -92,6 +131,9 @@ namespace ros2_canopen
         void
         OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override
         {
+            uint32_t data = (uint32_t)rpdo_mapped[idx][subidx];
+            PDOData  d(idx, subidx, data);
+            shared_data->rpdo_set(d);
         }
 
         void
@@ -104,8 +146,9 @@ namespace ros2_canopen
     {
     private:
         std::shared_ptr<ros2_canopen::BasicDeviceDriver> driver;
-        std::shared_ptr<ros2_canopen::SharedData> shared_data;
+        std::shared_ptr<ros2_canopen::BasicDeviceSharedData> shared_data;
         std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>> nmt_state_publisher;
+        std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<ros2_canopen_interfaces::msg::PDO>> rpdo_publisher;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr nmt_state_reset_service;
         std::atomic<bool> configured;
         std::future<void> nmt_state_publisher_future;
@@ -118,7 +161,7 @@ namespace ros2_canopen
             uint8_t subindex;
             T data;
             std::shared_ptr<canopen::FiberDriver> driver;
-            std::promise<bool>  p;
+            std::promise<bool> p;
 
         public:
             void set_data(std::shared_ptr<canopen::FiberDriver> driver, uint16_t index, uint8_t subindex, T data)
@@ -146,7 +189,7 @@ namespace ros2_canopen
         explicit BasicDriverNode(
             const std::string &node_name,
             std::shared_ptr<BasicDeviceDriver> driver,
-            std::shared_ptr<ros2_canopen::SharedData> shared_data,
+            std::shared_ptr<ros2_canopen::BasicDeviceSharedData> shared_data,
             bool intra_process_comms = false)
             : rclcpp_lifecycle::LifecycleNode(
                   node_name,
@@ -154,6 +197,7 @@ namespace ros2_canopen
         {
             this->shared_data = shared_data;
             nmt_state_publisher = this->create_publisher<std_msgs::msg::String>(std::string(this->get_name()).append("/nmt_state").c_str(), 10);
+            rpdo_publisher = this->create_publisher<std_msgs::msg::String>(std::string(this->get_name()).append("/rpdo").c_str(), 10);
             nmt_state_reset_service = this->create_service<std_srvs::srv::Trigger>(
                 std::string(this->get_name()).append("/nmt_reset_node").c_str(),
                 std::bind(
@@ -171,6 +215,15 @@ namespace ros2_canopen
                 auto f = shared_data->reset_nmt_state_promise();
                 f.wait();
                 on_nmt_state(f.get());
+            }
+        }
+        void on_rdpo_cb()
+        {
+            while (configured.load())
+            {
+                auto f = shared_data->reset_rpdo_promise();
+                f.wait();
+                on_rpdo(f.get());
             }
         }
 
@@ -220,6 +273,21 @@ namespace ros2_canopen
                         this->shared_data->id,
                         message.data.c_str());
             nmt_state_publisher->publish(message);
+        }
+
+        virtual void on_rpdo(ros2_canopen::PDOData d)
+        {
+            RCLCPP_INFO(this->get_logger(),
+                        "Slave %hhu: Sent PDO index %hu, subindex %hhu, data %x",
+                        this->shared_data->id,
+                        d.index_,
+                        d.subindex_,
+                        d.data_);
+            auto message = ros2_canopen_interfaces::msg::PDO();
+            message.index = d.index_;
+            message.subindex = d.subindex_;
+            message.data = d.data_;
+            rpdo_publisher->publish(message);
         }
 
         CallbackReturn
@@ -272,7 +340,7 @@ namespace ros2_canopen
             std::scoped_lock<std::mutex> lk(*master_mutex);
             std::string node_name = "BasicDevice";
             node_name.append(std::to_string(id));
-            auto shared_data = std::make_shared<SharedData>(master_mutex, master, exec, id);
+            auto shared_data = std::make_shared<BasicDeviceSharedData>(master_mutex, master, exec, id);
             driver_ = std::make_shared<BasicDeviceDriver>(shared_data);
             driver_node_ = std::make_shared<BasicDriverNode>(node_name, driver_, shared_data);
         }

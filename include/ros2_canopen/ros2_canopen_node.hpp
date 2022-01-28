@@ -33,14 +33,14 @@
 #include "rclcpp_lifecycle/state.hpp"
 #include "std_msgs/msg/string.hpp"
 
-#include "ros2_canopen_interfaces/srv/master_nmt.hpp"
-#include "ros2_canopen_interfaces/srv/master_read_sdo8.hpp"
-#include "ros2_canopen_interfaces/srv/master_read_sdo16.hpp"
-#include "ros2_canopen_interfaces/srv/master_read_sdo32.hpp"
-#include "ros2_canopen_interfaces/srv/master_set_heartbeat.hpp"
-#include "ros2_canopen_interfaces/srv/master_write_sdo8.hpp"
-#include "ros2_canopen_interfaces/srv/master_write_sdo16.hpp"
-#include "ros2_canopen_interfaces/srv/master_write_sdo32.hpp"
+#include "ros2_canopen_interfaces/srv/co_nmt_id.hpp"
+#include "ros2_canopen_interfaces/srv/co_read_id8.hpp"
+#include "ros2_canopen_interfaces/srv/co_read_id16.hpp"
+#include "ros2_canopen_interfaces/srv/co_read_id32.hpp"
+#include "ros2_canopen_interfaces/srv/co_heartbeat_id.hpp"
+#include "ros2_canopen_interfaces/srv/co_write_id8.hpp"
+#include "ros2_canopen_interfaces/srv/co_write_id16.hpp"
+#include "ros2_canopen_interfaces/srv/co_write_id32.hpp"
 #include "ros2_canopen/basicdevice.hpp"
 
 using namespace std::chrono_literals;
@@ -74,14 +74,14 @@ namespace ros2_canopen
         std::shared_ptr<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>> devices;
         std::unique_ptr<std::thread> canopen_loop_thread;
 
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterNmt>> master_nmt_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterReadSdo8>> master_read_sdo8_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterReadSdo16>> master_read_sdo16_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterReadSdo32>> master_read_sdo32_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterSetHeartbeat>> master_set_hearbeat_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo8>> master_write_sdo8_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo16>> master_write_sdo16_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::MasterWriteSdo32>> master_write_sdo32_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::CONmtID>> master_nmt_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COReadID8>> master_read_sdo8_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COReadID16>> master_read_sdo16_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COReadID32>> master_read_sdo32_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COHeartbeatID>> master_set_hearbeat_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COWriteID8>> master_write_sdo8_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COWriteID16>> master_write_sdo16_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COWriteID32>> master_write_sdo32_service;
 
         std::atomic<bool> active;
         std::atomic<bool> configured;
@@ -99,36 +99,36 @@ namespace ros2_canopen
 
         //Service Callback Declarations
         void master_nmt(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::MasterNmt::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::MasterNmt::Response> response);
+            const std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Response> response);
 
         void master_read_sdo8(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo8::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo8::Response> response);
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID8::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COReadID8::Response> response);
 
         void master_read_sdo16(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo16::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo16::Response> response);
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID16::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COReadID16::Response> response);
 
         void master_read_sdo32(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Response> response);
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID32::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COReadID32::Response> response);
 
         void master_set_heartbeat(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Response> response);
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COHeartbeatID::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COHeartbeatID::Response> response);
 
         void master_write_sdo8(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo8::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo8::Response> response);
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID8::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID8::Response> response);
 
         void master_write_sdo16(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo16::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo16::Response> response);
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID16::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID16::Response> response);
 
         void master_write_sdo32(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo32::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo32::Response> response);
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID32::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID32::Response> response);
 
         //helper functions
         void run();

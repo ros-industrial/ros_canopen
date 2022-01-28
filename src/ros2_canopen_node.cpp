@@ -1,10 +1,3 @@
-/**
- * @file test_node.cpp
- * @author Christoph Hellmann Santos
- * @brief Testnode for integrating lelycore in a ros2 node
- * @version 0.0.1
- * @date 2022-01-19
- */
 #include "ros2_canopen/ros2_canopen_node.hpp"
 
 using namespace std::chrono_literals;
@@ -13,8 +6,8 @@ using namespace lely;
 using namespace ros2_canopen;
 
 void ROSCANopen_Node::master_nmt(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterNmt::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::MasterNmt::Response> response)
+    const std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Response> response)
 {
   if (active.load())
   {
@@ -29,50 +22,50 @@ void ROSCANopen_Node::master_nmt(
   }
 }
 void ROSCANopen_Node::master_read_sdo8(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo8::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo8::Response> response)
+    const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID8::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::COReadID8::Response> response)
 {
-  this->master_read<uint8_t, ros2_canopen_interfaces::srv::MasterReadSdo8::Request, ros2_canopen_interfaces::srv::MasterReadSdo8::Response>(request, response);
+  this->master_read<uint8_t, ros2_canopen_interfaces::srv::COReadID8::Request, ros2_canopen_interfaces::srv::COReadID8::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_read_sdo16(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo16::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo16::Response> response)
+    const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID16::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::COReadID16::Response> response)
 {
-  this->master_read<uint16_t, ros2_canopen_interfaces::srv::MasterReadSdo16::Request, ros2_canopen_interfaces::srv::MasterReadSdo16::Response>(request, response);
+  this->master_read<uint16_t, ros2_canopen_interfaces::srv::COReadID16::Request, ros2_canopen_interfaces::srv::COReadID16::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_read_sdo32(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::MasterReadSdo32::Response> response)
+    const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID32::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::COReadID32::Response> response)
 {
-  this->master_read<uint32_t, ros2_canopen_interfaces::srv::MasterReadSdo32::Request, ros2_canopen_interfaces::srv::MasterReadSdo32::Response>(request, response);
+  this->master_read<uint32_t, ros2_canopen_interfaces::srv::COReadID32::Request, ros2_canopen_interfaces::srv::COReadID32::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_write_sdo8(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo8::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo8::Response> response)
+    const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID8::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID8::Response> response)
 {
-  this->master_write<uint8_t, ros2_canopen_interfaces::srv::MasterWriteSdo8::Request, ros2_canopen_interfaces::srv::MasterWriteSdo8::Response>(request, response);
+  this->master_write<uint8_t, ros2_canopen_interfaces::srv::COWriteID8::Request, ros2_canopen_interfaces::srv::COWriteID8::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_write_sdo16(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo16::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo16::Response> response)
+    const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID16::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID16::Response> response)
 {
-  this->master_write<uint16_t, ros2_canopen_interfaces::srv::MasterWriteSdo16::Request, ros2_canopen_interfaces::srv::MasterWriteSdo16::Response>(request, response);
+  this->master_write<uint16_t, ros2_canopen_interfaces::srv::COWriteID16::Request, ros2_canopen_interfaces::srv::COWriteID16::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_write_sdo32(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo32::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::MasterWriteSdo32::Response> response)
+    const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID32::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID32::Response> response)
 {
-  this->master_write<uint32_t, ros2_canopen_interfaces::srv::MasterWriteSdo32::Request, ros2_canopen_interfaces::srv::MasterWriteSdo32::Response>(request, response);
+  this->master_write<uint32_t, ros2_canopen_interfaces::srv::COWriteID32::Request, ros2_canopen_interfaces::srv::COWriteID32::Response>(request, response);
 }
 
 void ROSCANopen_Node::master_set_heartbeat(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::MasterSetHeartbeat::Response> response)
+    const std::shared_ptr<ros2_canopen_interfaces::srv::COHeartbeatID::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::COHeartbeatID::Response> response)
 {
   if (active.load())
   {
@@ -186,54 +179,54 @@ void ROSCANopen_Node::read_yaml()
 void ROSCANopen_Node::register_services()
 {
   //Create service for master_nmt
-  this->master_nmt_service = this->create_service<ros2_canopen_interfaces::srv::MasterNmt>(
-      std::string(this->get_name()).append("/master_nmt").c_str(),
+  this->master_nmt_service = this->create_service<ros2_canopen_interfaces::srv::CONmtID>(
+      std::string(this->get_name()).append("/set_nmt_by_id").c_str(),
       std::bind(&ROSCANopen_Node::master_nmt,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
   //Create service for read sdo
-  this->master_read_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::MasterReadSdo8>(
-      std::string(this->get_name()).append("/master_read8_sdo").c_str(),
+  this->master_read_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::COReadID8>(
+      std::string(this->get_name()).append("/read_sdo_8").c_str(),
       std::bind(&ROSCANopen_Node::master_read_sdo8,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
 
-  this->master_read_sdo16_service = this->create_service<ros2_canopen_interfaces::srv::MasterReadSdo16>(
-      std::string(this->get_name()).append("/master_read16_sdo").c_str(),
+  this->master_read_sdo16_service = this->create_service<ros2_canopen_interfaces::srv::COReadID16>(
+      std::string(this->get_name()).append("/read_sdo_16").c_str(),
       std::bind(&ROSCANopen_Node::master_read_sdo16,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
 
-  this->master_read_sdo32_service = this->create_service<ros2_canopen_interfaces::srv::MasterReadSdo32>(
-      std::string(this->get_name()).append("/master_read32_sdo").c_str(),
+  this->master_read_sdo32_service = this->create_service<ros2_canopen_interfaces::srv::COReadID32>(
+      std::string(this->get_name()).append("/read_sdo_32").c_str(),
       std::bind(&ROSCANopen_Node::master_read_sdo32,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
   //Create service for write sdo
-  this->master_write_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::MasterWriteSdo8>( 
-      std::string(this->get_name()).append("/master_write8_sdo").c_str(),
+  this->master_write_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::COWriteID8>( 
+      std::string(this->get_name()).append("/write_sdo_8").c_str(),
       std::bind(&ROSCANopen_Node::master_write_sdo8,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
-  this->master_write_sdo16_service = this->create_service<ros2_canopen_interfaces::srv::MasterWriteSdo16>(
-      std::string(this->get_name()).append("/master_write16_sdo").c_str(),
+  this->master_write_sdo16_service = this->create_service<ros2_canopen_interfaces::srv::COWriteID16>(
+      std::string(this->get_name()).append("/write_sdo_16").c_str(),
       std::bind(&ROSCANopen_Node::master_write_sdo16,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
-  this->master_write_sdo32_service = this->create_service<ros2_canopen_interfaces::srv::MasterWriteSdo32>(
-      std::string(this->get_name()).append("/master_write32_sdo").c_str(),
+  this->master_write_sdo32_service = this->create_service<ros2_canopen_interfaces::srv::COWriteID32>(
+      std::string(this->get_name()).append("/write_sdo_32").c_str(),
       std::bind(&ROSCANopen_Node::master_write_sdo32,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
-  this->master_set_hearbeat_service = this->create_service<ros2_canopen_interfaces::srv::MasterSetHeartbeat>(
-      std::string(this->get_name()).append("/master_set_heartbeat").c_str(),
+  this->master_set_hearbeat_service = this->create_service<ros2_canopen_interfaces::srv::COHeartbeatID>(
+      std::string(this->get_name()).append("/set_heartbeat_by_id").c_str(),
       std::bind(&ROSCANopen_Node::master_set_heartbeat,
                 this,
                 std::placeholders::_1,
