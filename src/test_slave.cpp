@@ -120,20 +120,6 @@ private:
 		chan.open(ctrl);
 
 		canopen::BasicSlave slave(timer, chan, eds.c_str(), "", id);
-		io::SignalSet sigset(poll, exec);
-		// Watch for Ctrl+C or process termination.
-		sigset.insert(SIGHUP);
-		sigset.insert(SIGINT);
-		sigset.insert(SIGTERM);
-
-		// Submit a task to be executed when a signal is raised. We don't care which.
-		sigset.submit_wait([&](int /*signo*/)
-						   {
-							   // If the signal is raised again, terminate immediately.
-							   sigset.clear();
-							   // Perform a clean shutdown.
-							   ctx.shutdown();
-						   });
 		slave.Reset();
 		while(active.load()){
 			
