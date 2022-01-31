@@ -175,7 +175,7 @@ DefaultValue=$NODEID+0x200
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0x01
+DefaultValue=255
 
 [1400sub3]
 ParameterName=inhibit time
@@ -212,7 +212,7 @@ ObjectType=0x09
 ParameterName=highest sub-index supported
 DataType=0x0005
 AccessType=const
-DefaultValue=6
+DefaultValue=5
 
 [1800sub1]
 ParameterName=COB-ID used by TPDO
@@ -224,7 +224,7 @@ DefaultValue=$NODEID+0x180
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0x01
+DefaultValue=0xFF
 
 [1800sub3]
 ParameterName=inhibit time
@@ -239,11 +239,6 @@ AccessType=rw
 [1800sub5]
 ParameterName=event timer
 DataType=0x0006
-AccessType=rw
-
-[1800sub6]
-ParameterName=SYNC start value
-DataType=0x0005
 AccessType=rw
 
 [1A00]
