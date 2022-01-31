@@ -58,10 +58,20 @@ add_executable(test_slave
   src/test_slave.cpp
 )
 
-target_link_libraries(test_slave PUBLIC
-  ${LIBLELY-COAPP_LIBRARIES}
-  ${LIBLELY-IO2_LIBRARIES}
+ament_target_dependencies(test_slave 
+  LIBLELY-IO2 
+  LIBLELY-COAPP 
+  rclcpp 
+  rclcpp_lifecycle 
+  lifecycle_msgs 
 )
+
+target_include_directories(test_slave PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  )
+
+
 
 install(TARGETS ros2_canopen_node
   DESTINATION lib/${PROJECT_NAME})

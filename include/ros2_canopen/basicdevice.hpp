@@ -22,25 +22,26 @@
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
-
 namespace ros2_canopen
 {
-    
-    struct PDOData {
-        public:
-            uint16_t index_;
-            uint8_t subindex_;
-            uint32_t data_;
-        PDOData(            
+
+    struct PDOData
+    {
+    public:
+        uint16_t index_;
+        uint8_t subindex_;
+        uint32_t data_;
+        PDOData(
             uint16_t index,
             uint8_t subindex,
             uint32_t data) : index_(index), subindex_(subindex), data_(data)
-        {}
+        {
+        }
 
         PDOData(
-            const PDOData &obj
-        ) : index_(obj.index_), subindex_(obj.subindex_), data_(obj.data_)
-        {}
+            const PDOData &obj) : index_(obj.index_), subindex_(obj.subindex_), data_(obj.data_)
+        {
+        }
     };
     class BasicDeviceSharedData
     {
@@ -50,6 +51,8 @@ namespace ros2_canopen
 
         std::promise<ros2_canopen::PDOData> rpdo_promise;
         std::atomic<bool> rpdo_is_set;
+        std::mutex nmt_mtex;
+        std::mutex pdo_mtex;
 
     public:
         std::shared_ptr<std::mutex> master_mutex;
@@ -70,6 +73,7 @@ namespace ros2_canopen
 
         std::future<canopen::NmtState> reset_nmt_state_promise()
         {
+
             nmt_state_is_set.store(false);
             nmt_state_promise = std::promise<canopen::NmtState>();
             return nmt_state_promise.get_future();
@@ -79,13 +83,19 @@ namespace ros2_canopen
         {
             if (!nmt_state_is_set.load())
             {
-                nmt_state_is_set.store(true);
-                nmt_state_promise.set_value(state);
+                //We do not care so much about missing a message, rather push them through.
+                std::unique_lock<std::mutex> lk(nmt_mtex, std::defer_lock);
+                if (lk.try_lock())
+                {
+                    nmt_state_is_set.store(true);
+                    nmt_state_promise.set_value(state);
+                }
             }
         }
 
         std::future<ros2_canopen::PDOData> reset_rpdo_promise()
         {
+            std::scoped_lock<std::mutex> lk(pdo_mtex);
             rpdo_is_set.store(false);
             rpdo_promise = std::promise<ros2_canopen::PDOData>();
             return rpdo_promise.get_future();
@@ -93,13 +103,16 @@ namespace ros2_canopen
 
         void rpdo_set(PDOData data)
         {
-            if (!rpdo_is_set.load())
+            std::unique_lock<std::mutex> lk(pdo_mtex, std::defer_lock);
+            if (lk.try_lock())
             {
-                rpdo_is_set.store(true);
-                rpdo_promise.set_value(data);
+                if (!rpdo_is_set.load())
+                {
+                    rpdo_is_set.store(true);
+                    rpdo_promise.set_value(data);
+                }
             }
         }
-
     };
     class BasicDeviceDriver : public canopen::FiberDriver
     {
@@ -132,7 +145,7 @@ namespace ros2_canopen
         OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override
         {
             uint32_t data = (uint32_t)rpdo_mapped[idx][subidx];
-            PDOData  d(idx, subidx, data);
+            PDOData d(idx, subidx, data);
             shared_data->rpdo_set(d);
         }
 
@@ -152,6 +165,7 @@ namespace ros2_canopen
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr nmt_state_reset_service;
         std::atomic<bool> configured;
         std::future<void> nmt_state_publisher_future;
+        std::future<void> rpdo_publisher_future;
 
         template <typename T>
         class WriteSdoCoTask : public ev::CoTask
@@ -197,7 +211,7 @@ namespace ros2_canopen
         {
             this->shared_data = shared_data;
             nmt_state_publisher = this->create_publisher<std_msgs::msg::String>(std::string(this->get_name()).append("/nmt_state").c_str(), 10);
-            rpdo_publisher = this->create_publisher<std_msgs::msg::String>(std::string(this->get_name()).append("/rpdo").c_str(), 10);
+            rpdo_publisher = this->create_publisher<ros2_canopen_interfaces::msg::PDO>(std::string(this->get_name()).append("/rpdo").c_str(), 10);
             nmt_state_reset_service = this->create_service<std_srvs::srv::Trigger>(
                 std::string(this->get_name()).append("/nmt_reset_node").c_str(),
                 std::bind(
@@ -295,6 +309,7 @@ namespace ros2_canopen
         {
             configured.store(true);
             nmt_state_publisher_future = std::async(std::launch::async, std::bind(&ros2_canopen::BasicDriverNode::on_nmt_state_change_cb, this));
+            rpdo_publisher_future = std::async(std::launch::async, std::bind(&ros2_canopen::BasicDriverNode::on_rdpo_cb, this));
             return CallbackReturn::SUCCESS;
         }
 
@@ -302,6 +317,7 @@ namespace ros2_canopen
         on_activate(const rclcpp_lifecycle::State &state)
         {
             nmt_state_publisher->on_activate();
+            rpdo_publisher->on_activate();
             return CallbackReturn::SUCCESS;
         }
 
@@ -309,6 +325,7 @@ namespace ros2_canopen
         on_deactivate(const rclcpp_lifecycle::State &state)
         {
             nmt_state_publisher->on_deactivate();
+            rpdo_publisher->on_deactivate();
             return CallbackReturn::SUCCESS;
         }
 
@@ -317,6 +334,7 @@ namespace ros2_canopen
         {
             configured.store(false);
             nmt_state_publisher_future.wait();
+            rpdo_publisher_future.wait();
             return CallbackReturn::SUCCESS;
         }
 
