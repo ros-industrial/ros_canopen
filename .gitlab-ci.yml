@@ -8,4 +8,4 @@ galactic:
     script: .industrial_ci/gitlab.sh ROS_DISTRO=galactic
     when: manual
     tags:
-        - gitlab-srmuc-02
+        - asprunner
