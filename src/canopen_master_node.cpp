@@ -15,7 +15,7 @@
  * 
  */
 
-#include "ros2_canopen/ros2_canopen_node.hpp"
+#include "ros2_canopen/canopen_master_node.hpp"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;

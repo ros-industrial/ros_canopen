@@ -32,14 +32,14 @@ find_package(ros2_control REQUIRED)
 pkg_check_modules(LIBLELY-IO2 REQUIRED liblely-io2)
 pkg_check_modules(LIBLELY-COAPP REQUIRED liblely-coapp)
 
-add_executable(ros2_canopen_node 
-  src/ros2_canopen_node.cpp
+add_executable(canopen_master_node 
+  src/canopen_master_node.cpp
   src/basic_device_driver.cpp
   src/basic_device_node.cpp
   src/proxy_device_node.cpp
   )
 
-ament_target_dependencies(ros2_canopen_node
+ament_target_dependencies(canopen_master_node
   LIBLELY-IO2 
   LIBLELY-COAPP 
   rclcpp 
@@ -51,7 +51,7 @@ ament_target_dependencies(ros2_canopen_node
   std_srvs
   ros2_control
 )
-target_include_directories(ros2_canopen_node PUBLIC
+target_include_directories(canopen_master_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   )
@@ -75,8 +75,7 @@ target_include_directories(test_slave PUBLIC
   )
 
 
-
-install(TARGETS ros2_canopen_node
+install(TARGETS canopen_master_node
   DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS test_slave
@@ -86,7 +85,7 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
   # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
+  # set(ament_cmake_copyright_FOUND TRUE)
   # the following line skips cpplint (only works in a git repo)
   # uncomment the line when this package is not in a git repo
   #set(ament_cmake_cpplint_FOUND TRUE)
