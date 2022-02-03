@@ -13,54 +13,68 @@ void ROSCANopen_Node::master_nmt(
   {
     std::lock_guard<std::mutex> guard(*master_mutex);
     canopen::NmtCommand command = static_cast<canopen::NmtCommand>(request->nmtcommand);
-    can_master->Command(command, request->nodeid);
-    response->success = true;
+    switch (command)
+    {
+    case canopen::NmtCommand::ENTER_PREOP:
+    case canopen::NmtCommand::RESET_COMM:
+    case canopen::NmtCommand::RESET_NODE:
+    case canopen::NmtCommand::START:
+    case canopen::NmtCommand::STOP:
+      can_master->Command(command, request->nodeid);
+      response->success = true;
+      break;
+    default:
+      response->success = false;
+      break;
+    }
   }
   else
   {
     response->success = false;
   }
 }
-void ROSCANopen_Node::master_read_sdo8(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID8::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::COReadID8::Response> response)
+void ROSCANopen_Node::master_read_sdo(
+    const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Response> response)
 {
-  this->master_read<uint8_t, ros2_canopen_interfaces::srv::COReadID8::Request, ros2_canopen_interfaces::srv::COReadID8::Response>(request, response);
+  ros2_canopen::CODataTypes datatype = static_cast<ros2_canopen::CODataTypes>(request->type);
+  switch (datatype)
+  {
+  case ros2_canopen::CODataTypes::COData8:
+    this->master_read<uint8_t>(request, response);
+    break;
+  case ros2_canopen::CODataTypes::COData16:
+    this->master_read<uint16_t>(request, response);
+    break;
+  case ros2_canopen::CODataTypes::COData32:
+    this->master_read<uint32_t>(request, response);
+    break;
+  default:
+    response->success = false;
+    break;
+  }
 }
 
-void ROSCANopen_Node::master_read_sdo16(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID16::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::COReadID16::Response> response)
+void ROSCANopen_Node::master_write_sdo(
+    const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Request> request,
+    std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Response> response)
 {
-  this->master_read<uint16_t, ros2_canopen_interfaces::srv::COReadID16::Request, ros2_canopen_interfaces::srv::COReadID16::Response>(request, response);
-}
-
-void ROSCANopen_Node::master_read_sdo32(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID32::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::COReadID32::Response> response)
-{
-  this->master_read<uint32_t, ros2_canopen_interfaces::srv::COReadID32::Request, ros2_canopen_interfaces::srv::COReadID32::Response>(request, response);
-}
-
-void ROSCANopen_Node::master_write_sdo8(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID8::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID8::Response> response)
-{
-  this->master_write<uint8_t, ros2_canopen_interfaces::srv::COWriteID8::Request, ros2_canopen_interfaces::srv::COWriteID8::Response>(request, response);
-}
-
-void ROSCANopen_Node::master_write_sdo16(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID16::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID16::Response> response)
-{
-  this->master_write<uint16_t, ros2_canopen_interfaces::srv::COWriteID16::Request, ros2_canopen_interfaces::srv::COWriteID16::Response>(request, response);
-}
-
-void ROSCANopen_Node::master_write_sdo32(
-    const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID32::Request> request,
-    std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID32::Response> response)
-{
-  this->master_write<uint32_t, ros2_canopen_interfaces::srv::COWriteID32::Request, ros2_canopen_interfaces::srv::COWriteID32::Response>(request, response);
+  ros2_canopen::CODataTypes datatype = static_cast<ros2_canopen::CODataTypes>(request->type);
+  switch (datatype)
+  {
+  case ros2_canopen::CODataTypes::COData8:
+    this->master_write<uint8_t>(request, response);
+    break;
+  case ros2_canopen::CODataTypes::COData16:
+    this->master_write<uint16_t>(request, response);
+    break;
+  case ros2_canopen::CODataTypes::COData32:
+    this->master_write<uint32_t>(request, response);
+    break;
+  default:
+    response->success = false;
+    break;
+  }
 }
 
 void ROSCANopen_Node::master_set_heartbeat(
@@ -101,7 +115,7 @@ void ROSCANopen_Node::run()
 
   //Drivers are set and nodes can b added to ros executor, wait for them to be added.
   this->post_registration.set_value();
-    // Signal to ROS Node that drivers were success fully registered.
+  // Signal to ROS Node that drivers were success fully registered.
   this->registration_done.set_value();
 
   this->post_registration_done.wait();
@@ -137,7 +151,7 @@ void ROSCANopen_Node::register_drivers()
     std::string name = it->second;
     if (name.compare("BasicDevice") == 0)
     {
-      auto dev = std::make_shared<ros2_canopen::BasicDevice>();
+      auto dev = std::make_shared<ros2_canopen::ProxyDevice>();
       this->devices->insert({id, dev});
       dev->registerDriver(exec, can_master, master_mutex, id);
     }
@@ -180,53 +194,29 @@ void ROSCANopen_Node::register_services()
 {
   //Create service for master_nmt
   this->master_nmt_service = this->create_service<ros2_canopen_interfaces::srv::CONmtID>(
-      std::string(this->get_name()).append("/set_nmt_by_id").c_str(),
+      std::string(this->get_name()).append("/set_nmt").c_str(),
       std::bind(&ROSCANopen_Node::master_nmt,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
   //Create service for read sdo
-  this->master_read_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::COReadID8>(
-      std::string(this->get_name()).append("/read_sdo_8").c_str(),
-      std::bind(&ROSCANopen_Node::master_read_sdo8,
+  this->master_read_sdo_service = this->create_service<ros2_canopen_interfaces::srv::COReadID>(
+      std::string(this->get_name()).append("/read_sdo").c_str(),
+      std::bind(&ROSCANopen_Node::master_read_sdo,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
 
-  this->master_read_sdo16_service = this->create_service<ros2_canopen_interfaces::srv::COReadID16>(
-      std::string(this->get_name()).append("/read_sdo_16").c_str(),
-      std::bind(&ROSCANopen_Node::master_read_sdo16,
-                this,
-                std::placeholders::_1,
-                std::placeholders::_2));
-
-  this->master_read_sdo32_service = this->create_service<ros2_canopen_interfaces::srv::COReadID32>(
-      std::string(this->get_name()).append("/read_sdo_32").c_str(),
-      std::bind(&ROSCANopen_Node::master_read_sdo32,
-                this,
-                std::placeholders::_1,
-                std::placeholders::_2));
   //Create service for write sdo
-  this->master_write_sdo8_service = this->create_service<ros2_canopen_interfaces::srv::COWriteID8>( 
-      std::string(this->get_name()).append("/write_sdo_8").c_str(),
-      std::bind(&ROSCANopen_Node::master_write_sdo8,
+  this->master_write_sdo_service = this->create_service<ros2_canopen_interfaces::srv::COWriteID>(
+      std::string(this->get_name()).append("/write_sdo").c_str(),
+      std::bind(&ROSCANopen_Node::master_write_sdo,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
-  this->master_write_sdo16_service = this->create_service<ros2_canopen_interfaces::srv::COWriteID16>(
-      std::string(this->get_name()).append("/write_sdo_16").c_str(),
-      std::bind(&ROSCANopen_Node::master_write_sdo16,
-                this,
-                std::placeholders::_1,
-                std::placeholders::_2));
-  this->master_write_sdo32_service = this->create_service<ros2_canopen_interfaces::srv::COWriteID32>(
-      std::string(this->get_name()).append("/write_sdo_32").c_str(),
-      std::bind(&ROSCANopen_Node::master_write_sdo32,
-                this,
-                std::placeholders::_1,
-                std::placeholders::_2));
+
   this->master_set_hearbeat_service = this->create_service<ros2_canopen_interfaces::srv::COHeartbeatID>(
-      std::string(this->get_name()).append("/set_heartbeat_by_id").c_str(),
+      std::string(this->get_name()).append("/set_heartbeat").c_str(),
       std::bind(&ROSCANopen_Node::master_set_heartbeat,
                 this,
                 std::placeholders::_1,
@@ -237,9 +227,9 @@ CallbackReturn
 ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
 {
   //Wait for master Thread to terminate.
-  if(master_thread_running.valid())
+  if (master_thread_running.valid())
     master_thread_running.wait();
-  
+
   this->active.store(false);
   this->configured.store(true);
   this->get_parameter("can_interface_name", can_interface_name);
@@ -331,14 +321,14 @@ int main(int argc, char *argv[])
 
     //Get future that signals drivers were registered
     auto post_reg_f = canopen_node->get_post_registration_future(post_reg_p.get_future());
-    
+
     //Spin until drivers were registered.
     auto ret = executor.spin_until_future_complete(post_reg_f);
 
     //Break when interrupted
     if (ret == rclcpp::FutureReturnCode::INTERRUPTED)
       break;
-    
+
     //Add driver nodes to executor
     if (devices->size() > 0)
     {
@@ -361,7 +351,6 @@ int main(int argc, char *argv[])
     ret = executor.spin_until_future_complete(pre_dereg_f);
     if (ret == rclcpp::FutureReturnCode::INTERRUPTED)
       break;
-
 
     //If there are drivers present, remove from executor.
     if (devices->size() > 0)

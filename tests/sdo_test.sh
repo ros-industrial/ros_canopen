@@ -1,5 +1,3 @@
-# Parameter 1 is the path to the spec files.
-
 echo "Activating test slave as simple device"
 ros2 lifecycle set canopen_test_slave configure
 ros2 param set canopen_test_slave test "simple"
@@ -19,6 +17,9 @@ ros2 lifecycle set canopen_master activate
 echo "Activating BasicDeviceNode"
 ros2 lifecycle set basic_device_2 activate
 
-echo "Resetting device"
-ros2 service call basic_device_2/nmt_reset_node std_srvs/srv/Trigger
-
+echo "Service call device"
+for i in {100..110}
+do 
+    ros2 service call basic_device_2/sdo_write ros2_canopen_interfaces/srv/COWrite "{index: 0x1017, subindex: 0, data: $i, type: 16}"
+    ros2 service call basic_device_2/sdo_read ros2_canopen_interfaces/srv/CORead "{index: 0x1017, subindex: 0, type: 16}" 
+done
