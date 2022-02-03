@@ -1,3 +1,20 @@
+/*
+ *  Copyright 2022 Christoph Hellmann Santos
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * 
+ */
+
 #ifndef BASIC_DEVICE_DRIVER_HPP
 #define BASIC_DEVICE_DRIVER_HPP
 #include <memory>
@@ -33,6 +50,13 @@ namespace ros2_canopen
         CODataTypes type_;
     };
 
+    /**
+     * @brief Basic CANopen Device Driver
+     * 
+     * This class provides a basic CANopen Device Driver that
+     * can communicate with ROS2 via asynchronous functions.
+     * 
+     */
     class BasicDeviceDriver : canopen::FiberDriver
     {
         class TPDOWriteTask : public ev::CoTask
@@ -130,15 +154,56 @@ namespace ros2_canopen
             this->Defer(std::bind(&BasicDeviceDriver::sdo_write_event, this));
         }
 
+        /**
+         * @brief Asynchronous SDO Write
+         * 
+         * @param data 
+         * @return std::future<bool> 
+         */
         std::future<bool> async_sdo_write(COData data);
+        /**
+         * @brief Aynchronous SDO Read
+         * 
+         * @param data 
+         * @return std::future<COData> 
+         */
         std::future<COData> async_sdo_read(COData data);
 
+        /**
+         * @brief Asynchronous request for NMT
+         * 
+         * @return std::future<canopen::NmtState> 
+         * The returned future is set when NMT State changes.
+         */
         std::future<canopen::NmtState> async_request_nmt();
+
+        /**
+         * @brief Asynchronous request for RPDO
+         * 
+         * @return std::future<COData> 
+         * The returned future is set when an RPDO event is detected.
+         */
         std::future<COData> async_request_rpdo(); 
 
+        /**
+         * @brief Executes a TPDO transmission
+         * 
+         * @param data 
+         */
         void tpdo_transmit(COData data);
+
+        /**
+         * @brief Executes a NMT Command
+         * 
+         * @param command 
+         */
         void nmt_command(canopen::NmtCommand command);
 
+        /**
+         * @brief Get the nodeid
+         * 
+         * @return uint8_t 
+         */
         uint8_t get_id();
     };
 

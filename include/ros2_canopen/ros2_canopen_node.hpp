@@ -1,3 +1,19 @@
+/*
+ *  Copyright 2022 Christoph Hellmann Santos
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * 
+ */
 #ifndef ROS2_CANOPEN_NODE_HPP
 #define ROS2_CANOPEN_NODE_HPP
 
@@ -37,7 +53,7 @@
 #include "ros2_canopen_interfaces/srv/co_read_id.hpp"
 #include "ros2_canopen_interfaces/srv/co_heartbeat_id.hpp"
 #include "ros2_canopen_interfaces/srv/co_write_id.hpp"
-#include "ros2_canopen/proxy_device_node.hpp"
+#include "ros2_canopen/proxy_device.hpp"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -45,8 +61,13 @@ using namespace lely;
 
 namespace ros2_canopen
 {
-
-    class ROSCANopen_Node : public rclcpp_lifecycle::LifecycleNode
+    /**
+     * @brief CANopen Master Node
+     * 
+     * This class provides a CANopen Master Node.
+     * 
+     */
+    class CANopenNode : public rclcpp_lifecycle::LifecycleNode
     {
     private:
         rclcpp::TimerBase::SharedPtr timer_;
@@ -332,8 +353,13 @@ namespace ros2_canopen
         CallbackReturn on_shutdown(const rclcpp_lifecycle::State &state);
 
     public:
-        //Constructor Declarations
-        ROSCANopen_Node(const std::string &node_name, bool intra_process_comms = false) 
+        /**
+         * @brief Construct a new CANopenNode object
+         * 
+         * @param node_name 
+         * @param intra_process_comms 
+         */
+        CANopenNode(const std::string &node_name, bool intra_process_comms = false) 
         : rclcpp_lifecycle::LifecycleNode(
                 node_name,
                 rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
@@ -349,18 +375,37 @@ namespace ros2_canopen
             this->devices = std::make_shared<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>>();
         }
 
+        /**
+         * @brief Gets Post Registration Future
+         * 
+         * @param post_done_f 
+         * @return std::future<void> 
+         * Is set once drivers are registered.
+         */
         std::future<void> get_post_registration_future(std::future<void>&& post_done_f){
             post_registration = std::promise<void>();
             post_registration_done = std::forward<std::future<void>>(post_done_f);
             return post_registration.get_future();
         }
 
+        /**
+         * @brief Gets Pre-Deregistration Future
+         * 
+         * @param pre_dereg_f 
+         * @return std::future<void> 
+         * Is set before drivers are deregistered.
+         */
         std::future<void> get_pre_deregistration_future(std::future<void>&& pre_dereg_f){
             pre_deregistration = std::promise<void>();
             pre_deregistration_done = std::forward<std::future<void>>(pre_dereg_f);
             return pre_deregistration.get_future();
         }
 
+        /**
+         * @brief Gets a Map of all registered drivers
+         * 
+         * @return std::shared_ptr<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>> 
+         */
         std::shared_ptr<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>>
         get_driver_nodes(){
             return this->devices;
