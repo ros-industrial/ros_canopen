@@ -1,3 +1,20 @@
+/*
+ *  Copyright 2022 Christoph Hellmann Santos
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * 
+ */
+
 #include "ros2_canopen/ros2_canopen_node.hpp"
 
 using namespace std::chrono_literals;
@@ -5,7 +22,7 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 using namespace lely;
 using namespace ros2_canopen;
 
-void ROSCANopen_Node::master_nmt(
+void CANopenNode::master_nmt(
     const std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Response> response)
 {
@@ -33,7 +50,7 @@ void ROSCANopen_Node::master_nmt(
     response->success = false;
   }
 }
-void ROSCANopen_Node::master_read_sdo(
+void CANopenNode::master_read_sdo(
     const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Response> response)
 {
@@ -55,7 +72,7 @@ void ROSCANopen_Node::master_read_sdo(
   }
 }
 
-void ROSCANopen_Node::master_write_sdo(
+void CANopenNode::master_write_sdo(
     const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Response> response)
 {
@@ -77,7 +94,7 @@ void ROSCANopen_Node::master_write_sdo(
   }
 }
 
-void ROSCANopen_Node::master_set_heartbeat(
+void CANopenNode::master_set_heartbeat(
     const std::shared_ptr<ros2_canopen_interfaces::srv::COHeartbeatID::Request> request,
     std::shared_ptr<ros2_canopen_interfaces::srv::COHeartbeatID::Response> response)
 {
@@ -108,7 +125,7 @@ void ROSCANopen_Node::master_set_heartbeat(
   }
 }
 
-void ROSCANopen_Node::run()
+void CANopenNode::run()
 {
   can_master->Reset();
   register_drivers();
@@ -143,7 +160,7 @@ void ROSCANopen_Node::run()
   this->ctx->shutdown();
 }
 
-void ROSCANopen_Node::register_drivers()
+void CANopenNode::register_drivers()
 {
   for (auto it = this->drivers.begin(); it != this->drivers.end(); ++it)
   {
@@ -158,7 +175,7 @@ void ROSCANopen_Node::register_drivers()
   }
 }
 
-void ROSCANopen_Node::deregister_drivers()
+void CANopenNode::deregister_drivers()
 {
   for (auto it = this->devices->begin(); it != this->devices->end(); ++it)
   {
@@ -167,7 +184,7 @@ void ROSCANopen_Node::deregister_drivers()
   }
 }
 
-void ROSCANopen_Node::read_yaml()
+void CANopenNode::read_yaml()
 {
   YAML::Node node = YAML::LoadFile(yaml_path.c_str());
   for (
@@ -190,19 +207,19 @@ void ROSCANopen_Node::read_yaml()
   }
 }
 
-void ROSCANopen_Node::register_services()
+void CANopenNode::register_services()
 {
   //Create service for master_nmt
   this->master_nmt_service = this->create_service<ros2_canopen_interfaces::srv::CONmtID>(
       std::string(this->get_name()).append("/set_nmt").c_str(),
-      std::bind(&ROSCANopen_Node::master_nmt,
+      std::bind(&CANopenNode::master_nmt,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
   //Create service for read sdo
   this->master_read_sdo_service = this->create_service<ros2_canopen_interfaces::srv::COReadID>(
       std::string(this->get_name()).append("/read_sdo").c_str(),
-      std::bind(&ROSCANopen_Node::master_read_sdo,
+      std::bind(&CANopenNode::master_read_sdo,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
@@ -210,21 +227,21 @@ void ROSCANopen_Node::register_services()
   //Create service for write sdo
   this->master_write_sdo_service = this->create_service<ros2_canopen_interfaces::srv::COWriteID>(
       std::string(this->get_name()).append("/write_sdo").c_str(),
-      std::bind(&ROSCANopen_Node::master_write_sdo,
+      std::bind(&CANopenNode::master_write_sdo,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
 
   this->master_set_hearbeat_service = this->create_service<ros2_canopen_interfaces::srv::COHeartbeatID>(
       std::string(this->get_name()).append("/set_heartbeat").c_str(),
-      std::bind(&ROSCANopen_Node::master_set_heartbeat,
+      std::bind(&CANopenNode::master_set_heartbeat,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
 }
 
 CallbackReturn
-ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
+CANopenNode::on_configure(const rclcpp_lifecycle::State &state)
 {
   //Wait for master Thread to terminate.
   if (master_thread_running.valid())
@@ -255,7 +272,7 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
   //Create Master from DCF
   //@Todo: Probably read from parameter server
   can_master = std::make_shared<canopen::AsyncMaster>(*can_timer, *chan, dcf_path.c_str(), "", 1);
-  master_thread_running = std::async(std::launch::async, std::bind(&ROSCANopen_Node::run, this));
+  master_thread_running = std::async(std::launch::async, std::bind(&CANopenNode::run, this));
 
   //Create new promise
   active_p = std::promise<void>();
@@ -264,7 +281,7 @@ ROSCANopen_Node::on_configure(const rclcpp_lifecycle::State &state)
 }
 
 CallbackReturn
-ROSCANopen_Node::on_activate(const rclcpp_lifecycle::State &state)
+CANopenNode::on_activate(const rclcpp_lifecycle::State &state)
 {
   //Wait for Drivers to be registered - in case it is called to fast.
   registration_done.get_future().wait();
@@ -276,7 +293,7 @@ ROSCANopen_Node::on_activate(const rclcpp_lifecycle::State &state)
 }
 
 CallbackReturn
-ROSCANopen_Node::on_deactivate(const rclcpp_lifecycle::State &state)
+CANopenNode::on_deactivate(const rclcpp_lifecycle::State &state)
 {
   //Recreate promise so that master can wait for new future.
   active_p = std::promise<void>();
@@ -286,14 +303,14 @@ ROSCANopen_Node::on_deactivate(const rclcpp_lifecycle::State &state)
 }
 
 CallbackReturn
-ROSCANopen_Node::on_cleanup(const rclcpp_lifecycle::State &state)
+CANopenNode::on_cleanup(const rclcpp_lifecycle::State &state)
 {
   this->configured.store(false);
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
-ROSCANopen_Node::on_shutdown(const rclcpp_lifecycle::State &state)
+CANopenNode::on_shutdown(const rclcpp_lifecycle::State &state)
 {
   this->active.store(false);
   this->configured.store(true);
@@ -305,7 +322,7 @@ int main(int argc, char *argv[])
 {
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor executor;
-  auto canopen_node = std::make_shared<ROSCANopen_Node>("canopen_master");
+  auto canopen_node = std::make_shared<CANopenNode>("canopen_master");
   executor.add_node(canopen_node->get_node_base_interface());
   auto devices = canopen_node->get_driver_nodes();
 

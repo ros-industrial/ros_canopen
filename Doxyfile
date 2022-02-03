@@ -1,0 +1,22 @@
+# All settings not listed here will use the Doxygen default values.
+
+PROJECT_NAME           = "ros2_canopen"
+PROJECT_NUMBER         = master
+PROJECT_BRIEF          = "C++ ROS CANopen Library"
+
+# Use these lines to include the generated logging.hpp (update install path if needed)
+INPUT                  = ./include ./doc readme.md
+
+RECURSIVE              = YES
+OUTPUT_DIRECTORY       = doc_output
+
+EXTRACT_ALL            = YES
+SORT_MEMBER_DOCS       = NO
+
+GENERATE_LATEX         = NO
+
+ENABLE_PREPROCESSING   = YES
+
+DOT_GRAPH_MAX_NODES    = 101
+
+FILE_PATTERNS = *.cpp *.h *.hpp *.md
