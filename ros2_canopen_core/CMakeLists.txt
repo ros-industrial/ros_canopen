@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(ros2_canopen_core)
 
-include(FindPkgConfig)
-
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
@@ -26,11 +24,10 @@ find_package(yaml_cpp_vendor REQUIRED)
 find_package(ros2_canopen_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
-find_package(ros2_control REQUIRED)
+find_package(lely_core_libraries REQUIRED)
 
 # Liblely is automake project, needs to be imported using pkg_check
-pkg_check_modules(LIBLELY-IO2 REQUIRED liblely-io2)
-pkg_check_modules(LIBLELY-COAPP REQUIRED liblely-coapp)
+
 
 add_executable(canopen_master_node 
   src/canopen_master_node.cpp
@@ -40,8 +37,7 @@ add_executable(canopen_master_node
   )
 
 ament_target_dependencies(canopen_master_node
-  LIBLELY-IO2 
-  LIBLELY-COAPP 
+  lely_core_libraries
   rclcpp 
   rclcpp_lifecycle 
   lifecycle_msgs 
@@ -49,7 +45,6 @@ ament_target_dependencies(canopen_master_node
   ros2_canopen_interfaces 
   std_msgs 
   std_srvs
-  ros2_control
 )
 target_include_directories(canopen_master_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -62,8 +57,7 @@ add_executable(test_slave
 )
 
 ament_target_dependencies(test_slave 
-  LIBLELY-IO2 
-  LIBLELY-COAPP 
+  lely_core_libraries
   rclcpp 
   rclcpp_lifecycle 
   lifecycle_msgs 

@@ -5,6 +5,7 @@ galactic:
     before_script:
     - apk add --update bash coreutils tar
     - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci .industrial_ci -b master
+    
     script: .industrial_ci/gitlab.sh ROS_DISTRO=galactic
     when: manual
     tags:

@@ -10,6 +10,13 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>ros2_canopen_interfaces</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>yaml_cpp_vendor</depend>
+  <depend>lifecycle_msgs</depend>
+  <depend>lely_core_libraries</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
