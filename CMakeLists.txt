@@ -34,6 +34,9 @@ pkg_check_modules(LIBLELY-COAPP REQUIRED liblely-coapp)
 
 add_executable(ros2_canopen_node 
   src/ros2_canopen_node.cpp
+  src/basic_device_driver.cpp
+  src/basic_device_node.cpp
+  src/proxy_device_node.cpp
   )
 
 ament_target_dependencies(ros2_canopen_node

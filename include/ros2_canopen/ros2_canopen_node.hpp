@@ -34,14 +34,10 @@
 #include "std_msgs/msg/string.hpp"
 
 #include "ros2_canopen_interfaces/srv/co_nmt_id.hpp"
-#include "ros2_canopen_interfaces/srv/co_read_id8.hpp"
-#include "ros2_canopen_interfaces/srv/co_read_id16.hpp"
-#include "ros2_canopen_interfaces/srv/co_read_id32.hpp"
+#include "ros2_canopen_interfaces/srv/co_read_id.hpp"
 #include "ros2_canopen_interfaces/srv/co_heartbeat_id.hpp"
-#include "ros2_canopen_interfaces/srv/co_write_id8.hpp"
-#include "ros2_canopen_interfaces/srv/co_write_id16.hpp"
-#include "ros2_canopen_interfaces/srv/co_write_id32.hpp"
-#include "ros2_canopen/basicdevice.hpp"
+#include "ros2_canopen_interfaces/srv/co_write_id.hpp"
+#include "ros2_canopen/proxy_device_node.hpp"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -64,7 +60,7 @@ namespace ros2_canopen
         std::shared_ptr<io::CanChannel> chan;
         std::shared_ptr<io::Timer> can_timer;
         std::shared_ptr<canopen::AsyncMaster> can_master;
-        std::shared_ptr<ros2_canopen::BasicDevice> basicdevice;
+        std::shared_ptr<ros2_canopen::ProxyDevice> basicdevice;
         std::shared_ptr<std::string> nmt_status;
 
         std::string can_interface_name;
@@ -75,13 +71,9 @@ namespace ros2_canopen
         std::unique_ptr<std::thread> canopen_loop_thread;
 
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::CONmtID>> master_nmt_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COReadID8>> master_read_sdo8_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COReadID16>> master_read_sdo16_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COReadID32>> master_read_sdo32_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COReadID>> master_read_sdo_service;
         std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COHeartbeatID>> master_set_hearbeat_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COWriteID8>> master_write_sdo8_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COWriteID16>> master_write_sdo16_service;
-        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COWriteID32>> master_write_sdo32_service;
+        std::shared_ptr<rclcpp::Service<ros2_canopen_interfaces::srv::COWriteID>> master_write_sdo_service;
 
         std::atomic<bool> active;
         std::atomic<bool> configured;
@@ -102,33 +94,18 @@ namespace ros2_canopen
             const std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Response> response);
 
-        void master_read_sdo8(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID8::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::COReadID8::Response> response);
-
-        void master_read_sdo16(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID16::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::COReadID16::Response> response);
-
-        void master_read_sdo32(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID32::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::COReadID32::Response> response);
+        void master_read_sdo(
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Response> response);
 
         void master_set_heartbeat(
             const std::shared_ptr<ros2_canopen_interfaces::srv::COHeartbeatID::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::COHeartbeatID::Response> response);
 
-        void master_write_sdo8(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID8::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID8::Response> response);
+        void master_write_sdo(
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Response> response);
 
-        void master_write_sdo16(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID16::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID16::Response> response);
-
-        void master_write_sdo32(
-            const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID32::Request> request,
-            std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID32::Response> response);
 
         //helper functions
         void run();
@@ -280,10 +257,10 @@ namespace ros2_canopen
             }
         };
 
-        template <typename T, class REQ, class RES>
+        template <typename T>
         void master_read(
-            const std::shared_ptr<REQ> request,
-            std::shared_ptr<RES> response)
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Response> response)
         {
             if (active.load())
             {
@@ -299,7 +276,7 @@ namespace ros2_canopen
                 f.wait();
                 try
                 {
-                    response->data = f.get();
+                    response->data = (uint32_t)f.get();
                     response->success = true;
                 }
                 catch (std::exception &e)
@@ -315,15 +292,15 @@ namespace ros2_canopen
             }
         }
 
-        template <typename T, class REQ, class RES>
+        template <typename T>
         void master_write(
-            const std::shared_ptr<REQ> request,
-            std::shared_ptr<RES> response)
+            const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Request> request,
+            std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Response> response)
         {
             if (active.load())
             {
                 WriteSdoCoTask<T> write_task(*exec);
-                write_task.set_data(can_master, request->nodeid, request->index, request->subindex, request->data);
+                write_task.set_data(can_master, request->nodeid, request->index, request->subindex, static_cast<T>(request->data));
                 auto f = write_task.get_future();
                 {
                     //get lock on master and the canopen executor
