@@ -11,7 +11,9 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <build_depend>git</build_depend>
-  <build_depend>autotools-dev</build_depend>
+  <build_depend>autoconf</build_depend>
+  <build_depend>automake</build_depend>
+  <build_depend>libtool</build_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
