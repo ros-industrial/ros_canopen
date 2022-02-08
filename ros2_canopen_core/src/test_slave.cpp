@@ -11,10 +11,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-#include <future>
-#include <atomic>
-#include <mutex>
-#include <thread>
+
 
 #include <lely/ev/loop.hpp>
 #include <lely/io2/linux/can.hpp>
@@ -23,6 +20,11 @@
 #include <lely/io2/sys/sigset.hpp>
 #include <lely/io2/sys/timer.hpp>
 #include <lely/coapp/slave.hpp>
+
+#include <future>
+#include <atomic>
+#include <mutex>
+#include <thread>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
