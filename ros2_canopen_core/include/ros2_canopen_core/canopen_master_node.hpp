@@ -48,12 +48,13 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "pluginlib/class_loader.hpp"
 
 #include "ros2_canopen_interfaces/srv/co_nmt_id.hpp"
 #include "ros2_canopen_interfaces/srv/co_read_id.hpp"
 #include "ros2_canopen_interfaces/srv/co_heartbeat_id.hpp"
 #include "ros2_canopen_interfaces/srv/co_write_id.hpp"
-#include "ros2_canopen/proxy_device.hpp"
+#include "ros2_canopen_core/proxy_device.hpp"
 
 using namespace std::chrono_literals;
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -351,7 +352,7 @@ namespace ros2_canopen
         CallbackReturn on_deactivate(const rclcpp_lifecycle::State &state);
         CallbackReturn on_cleanup(const rclcpp_lifecycle::State &state);
         CallbackReturn on_shutdown(const rclcpp_lifecycle::State &state);
-
+        pluginlib::ClassLoader<ros2_canopen::CANopenDevice> poly_loader;
     public:
         /**
          * @brief Construct a new CANopenNode object
@@ -362,7 +363,8 @@ namespace ros2_canopen
         CANopenNode(const std::string &node_name, bool intra_process_comms = false) 
         : rclcpp_lifecycle::LifecycleNode(
                 node_name,
-                rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
+                rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms)),
+          poly_loader("ros2_canopen_core", "ros2_canopen::CANopenDevice")
         {
             this->declare_parameter<std::string>("can_interface_name", "vcan0");
             this->declare_parameter<std::string>("dcf_path", "");

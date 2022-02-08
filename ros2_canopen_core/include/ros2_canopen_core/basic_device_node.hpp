@@ -25,7 +25,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/trigger.hpp"
 
-#include "ros2_canopen/basic_device_driver.hpp"
+#include "ros2_canopen_core/basic_device_driver.hpp"
 #include "ros2_canopen_interfaces/msg/co_data.hpp"
 #include "ros2_canopen_interfaces/srv/co_read.hpp"
 #include "ros2_canopen_interfaces/srv/co_write.hpp"

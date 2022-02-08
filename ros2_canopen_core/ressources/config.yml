@@ -1,0 +1,14 @@
+slave_node_2:
+  ros__parameters:
+    eds: "/home/christoph/ws_ros2/src/ros2_canopen/ros2_canopen_core/ressources/technosoft.eds"
+    slave_id: 2
+
+slave_node_3:
+  ros__parameters:
+    eds: "/home/christoph/ws_ros2/src/ros2_canopen/ros2_canopen_core/ressources/simple.eds"
+    slave_id: 3
+
+canopen_master:
+  ros__parameters:
+    dcf_path: "/home/christoph/ws_ros2/src/ros2_canopen/ros2_canopen_core/ressources/master.dcf"
+    yaml_path: "/home/christoph/ws_ros2/src/ros2_canopen/ros2_canopen_core/ressources/technosoft.yaml"

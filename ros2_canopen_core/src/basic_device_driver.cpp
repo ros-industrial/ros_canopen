@@ -12,9 +12,9 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- * 
+ *
  */
-#include "ros2_canopen/basic_device_driver.hpp"
+#include "ros2_canopen_core/basic_device_driver.hpp"
 
 namespace ros2_canopen
 {
@@ -112,15 +112,15 @@ namespace ros2_canopen
         // Handle Result and set response
         sdo_read_data_promise.set_value(res);
 
-        //Reschedule task for next sdo request.
+        // Reschedule task for next sdo request.
         this->Defer(std::bind(&BasicDeviceDriver::sdo_read_event, this));
     }
 
     void BasicDeviceDriver::OnState(canopen::NmtState state) noexcept
     {
         canopen::NmtState st = state;
-        //We assume 1F80 bit 2 is false. All slaves are put into Operational after boot-up.
-        //Lelycore does not track NMT states in this mode except BOOTUP.
+        // We assume 1F80 bit 2 is false. All slaves are put into Operational after boot-up.
+        // Lelycore does not track NMT states in this mode except BOOTUP.
         if (st == canopen::NmtState::BOOTUP)
         {
             st = canopen::NmtState::START;
@@ -128,7 +128,7 @@ namespace ros2_canopen
 
         if (!nmt_state_is_set.load())
         {
-            //We do not care so much about missing a message, rather push them through.
+            // We do not care so much about missing a message, rather push them through.
             std::unique_lock<std::mutex> lk(nmt_mtex, std::defer_lock);
             if (lk.try_lock())
             {
@@ -143,7 +143,7 @@ namespace ros2_canopen
         uint32_t data = (uint32_t)rpdo_mapped[idx][subidx];
         COData codata = {idx, subidx, data, CODataTypes::CODataUnkown};
 
-        //We do not care so much about missing a message, rather push them through.
+        // We do not care so much about missing a message, rather push them through.
         std::unique_lock<std::mutex> lk(pdo_mtex, std::defer_lock);
         if (lk.try_lock())
         {

@@ -14,7 +14,7 @@
  *  limitations under the License.
  * 
  */
-#include "ros2_canopen/basic_device_node.hpp"
+#include "ros2_canopen_core/basic_device_node.hpp"
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 using namespace lely;

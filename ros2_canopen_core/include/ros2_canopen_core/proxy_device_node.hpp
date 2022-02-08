@@ -17,7 +17,7 @@
 #ifndef PROXY_DEVICE_NODE_HPP
 #define PROXY_DEVICE_NODE_HPP
 
-#include "ros2_canopen/basic_device_node.hpp"
+#include "ros2_canopen_core/basic_device_node.hpp"
 
 namespace ros2_canopen
 {

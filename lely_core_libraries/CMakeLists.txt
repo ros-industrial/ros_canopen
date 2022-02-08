@@ -3,7 +3,7 @@ project(lely_core_libraries)
 find_package(ament_cmake REQUIRED)
 
 include(ExternalProject)
-ExternalProject_Add(upstream_igh_eml    # Name for custom target
+ExternalProject_Add(upstr_lely_core_libraries    # Name for custom target
   #--Download step--------------
   GIT_REPOSITORY https://gitlab.com/lely_industries/lely-core.git
   GIT_TAG f13629b4fcc042744ff497c8bf7428cf2775aba8
@@ -13,12 +13,12 @@ ExternalProject_Add(upstream_igh_eml    # Name for custom target
     COMMAND mkdir -p <SOURCE_DIR>/include <SOURCE_DIR>/lib 
     COMMAND touch <SOURCE_DIR>/python/dcf-tools/README.md
   #--Configure step-------------
-  CONFIGURE_COMMAND autoreconf -i <SOURCE_DIR> COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --disable-cython --disable-shared --disable-doc --disable-tests
+  CONFIGURE_COMMAND autoreconf -i <SOURCE_DIR> COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --disable-diag --disable-daemon --disable-cython --disable-doc --disable-tests --disable-static "CPPFLAGS=-DNDEBUG" "CFLAGS=-DNDEBUG" "CXXFLAGS=-DNDEBUG"
   #--Build step-----------------
   BUILD_IN_SOURCE 1         # Use source dir for build dir
   #--Install step---------------
   INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}"  # Installation prefix
-  BUILD_COMMAND cd <SOURCE_DIR> COMMAND $(MAKE) --silent
+  BUILD_COMMAND cd <SOURCE_DIR>  COMMAND $(MAKE) --silent
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib DESTINATION ${CMAKE_INSTALL_PREFIX})

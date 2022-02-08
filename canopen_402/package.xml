@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>canopen_402</name>
+  <version>0.0.0</version>
+  <description>This implements the CANopen device profile for drives and motion control. CiA(r) 402</description>
+  <maintainer email="christoph.hellmann.santos@ipa.fraunhofer.de">Christoph Hellmann Santos</maintainer>
+  <author email="tdf@ipa.fhg.de">Thiago de Freitas</author>
+  <author email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</author>
+  <license>LGPLv3</license>
+
+  <buildtool_depend>ament_cmake_ros</buildtool_depend>
+
+  <depend>Boost</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>lifecycle_msgs</depend>
+  <depend>ros2_canopen_core</depend>
+  <depend>ros2_canopen_interfaces</depend>
+  <depend>pluginlib</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
