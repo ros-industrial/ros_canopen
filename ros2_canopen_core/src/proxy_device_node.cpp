@@ -14,7 +14,7 @@
  *  limitations under the License.
  * 
  */
-#include "ros2_canopen/proxy_device_node.hpp"
+#include "ros2_canopen_core/proxy_device_node.hpp"
 
 using namespace ros2_canopen;
 

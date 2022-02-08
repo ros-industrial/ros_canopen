@@ -17,6 +17,7 @@
   <depend>yaml_cpp_vendor</depend>
   <depend>lifecycle_msgs</depend>
   <depend>lely_core_libraries</depend>
+  <depend>pluginlib</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

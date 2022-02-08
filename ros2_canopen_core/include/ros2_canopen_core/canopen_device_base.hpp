@@ -4,6 +4,7 @@
 
 #include <lely/coapp/master.hpp>
 #include <lely/coapp/fiber_driver.hpp>
+#include <rclcpp/rclcpp.hpp>
 using namespace lely;
 namespace ros2_canopen
 {

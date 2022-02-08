@@ -68,7 +68,7 @@ public:
 										  rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
 	{
 		this->declare_parameter<uint8_t>("slave_id", 2);
-		this->declare_parameter<std::string>("eds", "/home/christoph/ws_ros2/src/ros2_canopen/ressources/simple.eds");
+		this->declare_parameter<std::string>("eds", "/home/christoph/ws_ros2/src/ros2_canopen/ros2_canopen_core/ressources/simple.eds");
 		this->declare_parameter<std::string>("can_ifname", "vcan0");
 		this->declare_parameter<std::string>("test", "simple");
 	}
