@@ -11,7 +11,7 @@
 
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
 
-  <depend>Boost</depend>
+  <depend>libboost-dev</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
   <depend>rclcpp</depend>
