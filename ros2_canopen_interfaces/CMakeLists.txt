@@ -14,12 +14,12 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/COHeartbeatID.srv"
-  "srv/CONmtID.srv"  
-  "srv/CORead.srv" 
+  "srv/CONmtID.srv"
+  "srv/CORead.srv"
   "srv/COReadID.srv"
   "srv/COWrite.srv"
   "srv/COWriteID.srv"
-  "srv/COTargetDouble.srv"             
+  "srv/COTargetDouble.srv"
   "msg/COData.msg"
 )
 
