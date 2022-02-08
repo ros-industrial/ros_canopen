@@ -14,3 +14,7 @@ galactic:
   extends: [.build]
   image: ros:galactic
 
+foxy:
+  extends: [.build]
+  image: ros:foxy
+
