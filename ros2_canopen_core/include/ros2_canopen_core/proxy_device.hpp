@@ -33,14 +33,12 @@ namespace ros2_canopen
         void registerDriver(
             std::shared_ptr<ev::Executor> exec,
             std::shared_ptr<canopen::AsyncMaster> master,
-            std::shared_ptr<std::mutex> master_mutex,
             uint8_t id) override
         {
             /// Setup driver
-            std::scoped_lock<std::mutex> lk(*master_mutex);
             std::string node_name = "basic_device_";
             node_name.append(std::to_string(id));
-            driver_ = std::make_shared<BasicDeviceDriver>(*exec, *master, id, master_mutex);
+            driver_ = std::make_shared<BasicDeviceDriver>(*exec, *master, id);
             driver_node_ = std::make_shared<ProxyDeviceNode>(node_name, driver_);
         }
 

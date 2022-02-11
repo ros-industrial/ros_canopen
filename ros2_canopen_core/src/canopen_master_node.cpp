@@ -28,7 +28,6 @@ void CANopenNode::master_nmt(
 {
 	if (active.load())
 	{
-		std::lock_guard<std::mutex> guard(*master_mutex);
 		canopen::NmtCommand command = static_cast<canopen::NmtCommand>(request->nmtcommand);
 		switch (command)
 		{
@@ -149,7 +148,7 @@ void CANopenNode::run()
 			// get lock on canopen master executor
 			std::scoped_lock<std::mutex> lk(*master_mutex);
 			// do work for at max 5ms
-			loop->run_one_for(5ms);
+			loop->run_one_for(500ms);
 		}
 	}
 	this->pre_deregistration.set_value();
@@ -170,7 +169,7 @@ void CANopenNode::register_drivers()
 		{
 			auto dev = std::make_shared<ros2_canopen::ProxyDevice>();
 			this->devices->insert({id, dev});
-			dev->registerDriver(exec, can_master, master_mutex, id);
+			dev->registerDriver(exec, can_master, id);
 		}
 		else
 		{
@@ -181,7 +180,7 @@ void CANopenNode::register_drivers()
 			{
 				std::shared_ptr<ros2_canopen::CANopenDevice> dev = poly_loader.createSharedInstance(name.c_str());
 				this->devices->insert({id, dev});
-				dev->registerDriver(exec, can_master, master_mutex, id);
+				dev->registerDriver(exec, can_master, id);
 			}
 			catch (pluginlib::PluginlibException &ex)
 			{

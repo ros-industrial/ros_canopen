@@ -42,8 +42,8 @@ namespace canopen_402
             }
         }
 
-        MCDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id, std::shared_ptr<std::mutex> master_mtx)
-            : BasicDeviceDriver(exec, master, id, master_mtx)
+        MCDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
+            : BasicDeviceDriver(exec, master, id)
         {
         }
     };
