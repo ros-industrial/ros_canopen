@@ -1,4 +1,24 @@
+stages:
+  - doc
+  - build
+
+doxygen:
+  stage: doc
+  image: ubuntu:latest
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq doxygen graphviz
+  script:
+    - cd ros2_canopen_core && doxygen
+  artifacts:
+    paths:
+    - ros2_canopen_core/doc_output/
+  tags:
+   - asprunner
+
+
 .build:
+  stage: build
   before_script:
     - apt-get update -qq
     - apt-get install -y -qq git-core
@@ -14,7 +34,7 @@ galactic:
   extends: [.build]
   image: ros:galactic
 
-foxy:
-  extends: [.build]
-  image: ros:foxy
+#foxy:
+#  extends: [.build]
+#  image: ros:foxy
 
