@@ -91,8 +91,6 @@ namespace ros2_canopen
         };
 
     private:
-        std::shared_ptr<std::mutex>
-            master_mutex;
 
         // SDO Read synchronisation items
         ev::Promise<COData, std::exception_ptr> sdo_read_promise;
@@ -140,10 +138,9 @@ namespace ros2_canopen
 
     public:
         using FiberDriver::FiberDriver;
-        BasicDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id, std::shared_ptr<std::mutex> master_mtx)
+        BasicDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
             : FiberDriver(exec, master, id)
         {
-            master_mutex = master_mtx;
             nodeid = id;
             sdo_read_lock = std::unique_lock<std::mutex>(sdo_read_mutex, std::adopt_lock);
             sdo_write_lock = std::unique_lock<std::mutex>(sdo_write_mutex, std::adopt_lock);

@@ -92,6 +92,22 @@ target_include_directories(test_slave PUBLIC
   $<INSTALL_INTERFACE:include>
   )
 
+add_executable(test_loop
+  src/test_loop.cpp
+)
+
+ament_target_dependencies(test_loop 
+  lely_core_libraries
+  rclcpp 
+  rclcpp_lifecycle 
+  lifecycle_msgs 
+)
+
+target_include_directories(test_loop PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  )
+
 
 install(
   DIRECTORY include/
@@ -102,6 +118,9 @@ install(TARGETS canopen_master_node
   DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS test_slave
+  DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS test_loop
   DESTINATION lib/${PROJECT_NAME})
 
 install(

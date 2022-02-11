@@ -19,14 +19,12 @@ namespace canopen_402
         void registerDriver(
             std::shared_ptr<ev::Executor> exec,
             std::shared_ptr<canopen::AsyncMaster> master,
-            std::shared_ptr<std::mutex> master_mutex,
             uint8_t id) override
         {
             /// Setup driver
-            std::scoped_lock<std::mutex> lk(*master_mutex);
             std::string node_name = "mc_device_";
             node_name.append(std::to_string(id));
-            driver_ = std::make_shared<MCDeviceDriver>(*exec, *master, id, master_mutex);
+            driver_ = std::make_shared<MCDeviceDriver>(*exec, *master, id);
             motor_ =  std::make_shared<Motor402>(std::string("motor"), driver_);
             driver_node_ = std::make_shared<MCDeviceNode>(node_name, driver_, motor_);
         }

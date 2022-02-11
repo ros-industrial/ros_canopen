@@ -158,7 +158,6 @@ namespace ros2_canopen
     std::future<bool> BasicDeviceDriver::async_sdo_write(COData data)
     {
         std::scoped_lock<std::mutex> lk2(sdo_write_mutex);
-        std::scoped_lock<std::mutex> lk1(*master_mutex);
         sdo_write_promise.set(data);
         return sdo_write_data_promise.get_future();
     }
@@ -166,7 +165,6 @@ namespace ros2_canopen
     std::future<COData> BasicDeviceDriver::async_sdo_read(COData data)
     {
         std::scoped_lock<std::mutex> lk2(sdo_read_mutex);
-        std::scoped_lock<std::mutex> lk1(*master_mutex);
         sdo_read_promise.set(data);
         return sdo_read_data_promise.get_future();
     }
@@ -193,8 +191,11 @@ namespace ros2_canopen
         task.driver = this;
         task.data = data;
         {
-            std::scoped_lock<std::mutex> lk(*master_mutex);
-            this->GetStrand().post(task);
+            this->master.GetExecutor().post(
+                [&task, this]{
+                    this->GetStrand().post(task);
+                }
+            );
         }
         // Wait for task to finish.
         std::scoped_lock<std::mutex> lk(task.mtx);
@@ -202,7 +203,6 @@ namespace ros2_canopen
 
     void BasicDeviceDriver::nmt_command(canopen::NmtCommand command)
     {
-        std::scoped_lock<std::mutex> lk(*master_mutex);
         this->master.Command(command, nodeid);
     }
 

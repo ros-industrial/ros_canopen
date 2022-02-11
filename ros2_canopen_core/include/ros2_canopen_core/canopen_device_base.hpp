@@ -41,13 +41,11 @@ namespace ros2_canopen
          * 
          * @param [in] exec Executor to be used as basis
          * @param [in] master CANopen master to be register with
-         * @param [in] master_mutex CANopen master mutex used by #CANopenNode
          * @param [in] id CANopen nodeid to use for the driver
          */
         virtual void registerDriver(
             std::shared_ptr<ev::Executor> exec, 
             std::shared_ptr<canopen::AsyncMaster> master, 
-            std::shared_ptr<std::mutex> master_mutex, 
             uint8_t id) = 0;
 
         /**

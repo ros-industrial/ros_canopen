@@ -110,6 +110,19 @@ def generate_launch_description():
         )
     )
 
+    sub_node = launch_ros.actions.LifecycleNode(
+        name="mc_device_2", 
+        namespace="", 
+        package="ros2_canopen_core"
+    )
+    launch_ros.actions.load_composable_nodes.
+    launch.actions.TimerAction(
+        period = 10.0,
+        actions = [
+            launch_ros.ros_adapters.get_ros_node(),
+        ]
+    )
+
     ld.add_action(slave_2_inactive_state_handler)
     ld.add_action(slave_3_inactive_state_handler)
     # ld.add_action(master_node_inactive_state_handler)
