@@ -1,6 +1,7 @@
 stages:
   - doc
   - build
+  - dockerize
 
 doxygen:
   stage: doc
