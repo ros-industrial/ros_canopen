@@ -15,9 +15,13 @@ import launch_ros.events.lifecycle
 import lifecycle_msgs.msg
 
 
-parameters_file = "/home/christoph/ws_ros2/src/ros2_canopen/ros2_canopen_core/ressources/simple_config.yml"
-
 def generate_launch_description():
+
+    parameter_file = launch.substitutions.LaunchConfiguration('parameter_file_path')
+    parameter_file_arg = launch.actions.DeclareLaunchArgument(
+        'parameter_file_path',
+        default_value=''
+    )
     ld = launch.LaunchDescription()
 
     master_node = launch_ros.actions.LifecycleNode(
@@ -26,7 +30,7 @@ def generate_launch_description():
         package="ros2_canopen_core", 
         output="screen", 
         executable="canopen_master_node",
-        parameters= [parameters_file],
+        parameters= [parameter_file],
     )
 
     master_node_inactive_state_handler = launch.actions.RegisterEventHandler(
@@ -50,7 +54,7 @@ def generate_launch_description():
         )
     )
 
-
+    ld.add_action(parameter_file_arg)
     ld.add_action(master_node_inactive_state_handler)
     ld.add_action(master_node)
     ld.add_action(master_node_configure)
