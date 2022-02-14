@@ -1,9 +1,0 @@
-canopen_master:
-  ros__parameters:
-    dcf_path: "/home/christoph/ws_ros2/src/ros2_canopen/ros2_canopen_core/ressources/simple.dcf"
-    yaml_path: "/home/christoph/ws_ros2/src/ros2_canopen/ros2_canopen_core/ressources/simple.yaml"
-
-slave_node_2:
-  ros__parameters:
-    eds: "/home/christoph/ws_ros2/src/ros2_canopen/ros2_canopen_core/ressources/simple.eds"
-    slave_id: 2
