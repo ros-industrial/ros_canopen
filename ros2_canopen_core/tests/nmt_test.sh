@@ -11,13 +11,9 @@ ros2 param set canopen_master yaml_path $1/simple.yaml
 
 echo "Configuring ros2_canopen_node"
 ros2 lifecycle set canopen_master configure
-echo "Configuring BasicDeviceNode"
-ros2 lifecycle set basic_device_2 configure
 
 echo "Activating ros2_canopen_node"
 ros2 lifecycle set canopen_master activate
-echo "Activating BasicDeviceNode"
-ros2 lifecycle set basic_device_2 activate
 
 echo "Resetting device"
 ros2 service call basic_device_2/nmt_reset_node std_srvs/srv/Trigger

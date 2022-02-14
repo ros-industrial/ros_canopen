@@ -11,13 +11,9 @@ ros2 param set canopen_master yaml_path $1/simple.yaml
 
 echo "Configuring ros2_canopen_node"
 ros2 lifecycle set canopen_master configure
-echo "Configuring BasicDeviceNode"
-ros2 lifecycle set BasicDevice2 configure
 
 echo "Activating ros2_canopen_node"
 ros2 lifecycle set canopen_master activate
-echo "Activating BasicDeviceNode"
-ros2 lifecycle set BasicDevice2 activate
 
 echo "Testing NMT by ID"
 ros2 service call /canopen_master/set_nmt ros2_canopen_interfaces/srv/CONmtID "{nmtcommand: 0x81, nodeid: 2}"

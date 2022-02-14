@@ -1,2 +1,3 @@
 .vscode/
 ros2_canopen_core/doc_output/
+**/__pycache__/
