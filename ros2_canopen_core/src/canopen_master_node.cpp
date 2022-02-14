@@ -135,6 +135,7 @@ void CANopenNode::run()
 	this->registration_done.set_value();
 
 	this->post_registration_done.wait();
+	this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
 	while (configured)
 	{
@@ -142,6 +143,8 @@ void CANopenNode::run()
 		auto active_f = this->active_p.get_future();
 		// Wait for future to become ready
 		active_f.wait();
+		// activate devices
+		this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
 		// while node is active do the work.
 		while (active.load())
 		{
@@ -150,7 +153,9 @@ void CANopenNode::run()
 			// do work for at max 5ms
 			loop->run_one_for(500ms);
 		}
+		this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_DEACTIVATE);
 	}
+	this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_CLEANUP);
 	this->pre_deregistration.set_value();
 	this->pre_deregistration_done.wait();
 	// Safe to delete devices.
@@ -173,9 +178,7 @@ void CANopenNode::register_drivers()
 		}
 		else
 		{
-			
-			
-			
+
 			try
 			{
 				std::shared_ptr<ros2_canopen::CANopenDevice> dev = poly_loader.createSharedInstance(name.c_str());
@@ -226,14 +229,14 @@ void CANopenNode::register_services()
 {
 	// Create service for master_nmt
 	this->master_nmt_service = this->create_service<ros2_canopen_interfaces::srv::CONmtID>(
-		std::string(this->get_name()).append("/set_nmt").c_str(),
+		std::string("~/set_nmt").c_str(),
 		std::bind(&CANopenNode::master_nmt,
 				  this,
 				  std::placeholders::_1,
 				  std::placeholders::_2));
 	// Create service for read sdo
 	this->master_read_sdo_service = this->create_service<ros2_canopen_interfaces::srv::COReadID>(
-		std::string(this->get_name()).append("/read_sdo").c_str(),
+		std::string("~/read_sdo").c_str(),
 		std::bind(&CANopenNode::master_read_sdo,
 				  this,
 				  std::placeholders::_1,
@@ -241,18 +244,86 @@ void CANopenNode::register_services()
 
 	// Create service for write sdo
 	this->master_write_sdo_service = this->create_service<ros2_canopen_interfaces::srv::COWriteID>(
-		std::string(this->get_name()).append("/write_sdo").c_str(),
+		std::string("~/write_sdo").c_str(),
 		std::bind(&CANopenNode::master_write_sdo,
 				  this,
 				  std::placeholders::_1,
 				  std::placeholders::_2));
 
 	this->master_set_hearbeat_service = this->create_service<ros2_canopen_interfaces::srv::COHeartbeatID>(
-		std::string(this->get_name()).append("/set_heartbeat").c_str(),
+		std::string("~/set_heartbeat").c_str(),
 		std::bind(&CANopenNode::master_set_heartbeat,
 				  this,
 				  std::placeholders::_1,
 				  std::placeholders::_2));
+}
+
+template <typename FutureT, typename WaitTimeT>
+std::future_status
+wait_for_result(
+	FutureT &future,
+	WaitTimeT time_to_wait)
+{
+	auto end = std::chrono::steady_clock::now() + time_to_wait;
+	std::chrono::milliseconds wait_period(100);
+	std::future_status status = std::future_status::timeout;
+	do
+	{
+		auto now = std::chrono::steady_clock::now();
+		auto time_left = end - now;
+		if (time_left <= std::chrono::seconds(0))
+		{
+			break;
+		}
+		status = future.wait_for((time_left < wait_period) ? time_left : wait_period);
+	} while (rclcpp::ok() && status != std::future_status::ready);
+	return status;
+}
+
+CallbackReturn
+CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds time_out)
+{
+	//Iterate through nodes and activate specified tranisiton
+	for (auto it = this->devices->begin(); it != this->devices->end(); ++it)
+	{
+		std::shared_ptr<rclcpp::node_interfaces::NodeBaseInterface> node = it->second->get_node();
+		std::string qualitfied_node_name = node->get_fully_qualified_name();
+		std::string change_state_name = qualitfied_node_name.append("/change_state");
+		std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::ChangeState>> change_state_ =
+			this->create_client<lifecycle_msgs::srv::ChangeState>(change_state_name);
+
+		std::shared_ptr<lifecycle_msgs::srv::ChangeState::Request> request =
+			std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
+		request->transition.id = transition;
+
+		if (!change_state_->wait_for_service(time_out))
+		{
+			RCLCPP_ERROR(
+				get_logger(),
+				"Service %s is not available.",
+				change_state_->get_service_name());
+			return CallbackReturn::FAILURE;
+		}
+
+		auto future_result = change_state_->async_send_request(request);
+		auto future_status = wait_for_result(future_result, time_out);
+
+		if (future_status != std::future_status::ready)
+		{
+			RCLCPP_ERROR(
+				get_logger(), "Server time out while getting current state for node %s", qualitfied_node_name.c_str());
+			return CallbackReturn::FAILURE;
+		}
+
+		// We have an answer, let's print our success.
+		if (!future_result.get()->success)
+		{
+			RCLCPP_WARN(
+				get_logger(), "Failed to trigger transition %u", static_cast<unsigned int>(transition));
+			return CallbackReturn::FAILURE;
+		}
+	}
+	return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn

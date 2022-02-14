@@ -65,6 +65,7 @@ target_link_libraries(canopen_master_node
 ament_target_dependencies(canopen_master_node 
   yaml_cpp_vendor 
   ros2_canopen_interfaces 
+  lifecycle_msgs 
   pluginlib
 )
 
