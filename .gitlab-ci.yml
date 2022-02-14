@@ -49,14 +49,15 @@ dockerize-job:
     DOCKER_DRIVER: overlay2
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
-    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    IMAGE_TAG: $CI_REGISTRY_IMAGE/ros2_canopen:$CI_COMMIT_REF_SLUG
+    IMAGE_TAG_LATEST: $CI_REGISTRY_IMAGE/ros2_canopen:latest
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker info
   script:
-    - docker pull $CI_REGISTRY_IMAGE:latest || true
-    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $IMAGE_TAG --tag $CI_REGISTRY_IMAGE:latest .
+    - docker pull IMAGE_TAG_LATEST || true
+    - docker build --cache-from IMAGE_TAG_LATEST --tag $IMAGE_TAG --tag $IMAGE_TAG_LATEST .
     - docker push $IMAGE_TAG
-    - docker push $CI_REGISTRY_IMAGE:latest
+    - docker push $IMAGE_TAG_LATEST
   tags:
     - vbox-runner
