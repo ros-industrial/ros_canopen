@@ -7,18 +7,18 @@ ROS2 CANopen is being developed and maintainted by the [ROS-Industrial Consortiu
 
 
 ## Getting started
-The package builds on Lely CANopen, currently the library is not available as a ROS package. Therefore it needs to be installed manually. this can be done by:
+Clone the ros2_canopen repository into your workspace's source directory and build:
 
+      git clone git@gitlab.cc-asp.fraunhofer.de:ipa326/ros-industrial/ros2_canopen.git
 
-    sudo add-apt-repository ppa:lely/ppa
-    sudo apt-get update
-    sudo apt-get install liblely-coapp-dev liblely-co-tools python3-dcf-tools
-    sudo apt-get install pkg-config
+      cd ..
 
+      colcon build
 
-The library is being developed on ROS2 galactic. Therefore, please install ROS2 galactic.
+      . install/setup.sh
 
-The package can be build using colcon, binaries are currently not available.
+Once built, you are ready to use the package but you need to setup the can interface.
+
 
 ## Setting up your CANopen network configuration
 In order to use the package for your CANopen network, you need to create a network configuration. We recommend the tools Lely CANopen provides for this (dcfgen). How to do this:
@@ -40,12 +40,20 @@ In order to use the package for your CANopen network, you need to create a netwo
 
         dcfgen -r [path to yaml file]
 
+4. Create a ROS parameters YAML file setting the path to your created dcf and yaml file:
+
+        canopen_master:
+          ros__parameters:
+            dcf_path: [Absolute path to your master dcf]
+            yaml_path: [Absolute path to your bus yaml]
+            can_interface_name: [interface name]
 
 
-## Running ROS2 canopen (preliminary)
-1. Start the ros2_canopen_node.
 
-        ros2 run ros2_canopen ros2_canopen_node
+## ROS2 canopen (preliminary)
+1. 
+
+        ros2 launch bring_up_master.launch.py parameter_file_path:=[Path to your config yaml]
 
 
 2. Set configuration files and can interface.
