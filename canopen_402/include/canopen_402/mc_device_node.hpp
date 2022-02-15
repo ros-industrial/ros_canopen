@@ -72,7 +72,7 @@ namespace canopen_402
 
             RCLCPP_INFO(this->get_logger(), "Registered Default modes");
             timer_ = this->create_wall_timer(
-                50ms, std::bind(&MCDeviceNode::run, this));
+                500ms, std::bind(&MCDeviceNode::run, this));
 
             RCLCPP_INFO(this->get_logger(), "Store Active");
             active.store(true);

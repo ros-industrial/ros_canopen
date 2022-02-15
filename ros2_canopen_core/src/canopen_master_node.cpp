@@ -130,10 +130,6 @@ void CANopenNode::run()
 	can_master->Reset();
 	register_drivers();
 
-	// Drivers are set and nodes can b added to ros executor, wait for them to be added.
-	this->post_registration.set_value();
-
-	this->post_registration_done.wait();
 	this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
 	// Signal to ROS Node that drivers were success fully registered.
@@ -162,9 +158,7 @@ void CANopenNode::run()
 		this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_DEACTIVATE);
 	}
 	this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_CLEANUP);
-	this->pre_deregistration.set_value();
-	this->pre_deregistration_done.wait();
-	// Safe to delete devices.
+
 	this->deregister_drivers();
 	this->drivers = std::map<int, std::string>();
 	this->ctx->shutdown();
@@ -181,6 +175,7 @@ void CANopenNode::register_drivers()
 			auto dev = std::make_shared<ros2_canopen::ProxyDevice>();
 			this->devices->insert({id, dev});
 			dev->registerDriver(exec, can_master, id);
+			this->executor_->add_node(dev->get_node());
 		}
 		else
 		{
@@ -190,6 +185,7 @@ void CANopenNode::register_drivers()
 				std::shared_ptr<ros2_canopen::CANopenDevice> dev = poly_loader.createSharedInstance(name.c_str());
 				this->devices->insert({id, dev});
 				dev->registerDriver(exec, can_master, id);
+				this->executor_->add_node(dev->get_node());
 			}
 			catch (pluginlib::PluginlibException &ex)
 			{
@@ -203,6 +199,7 @@ void CANopenNode::deregister_drivers()
 {
 	for (auto it = this->devices->begin(); it != this->devices->end(); ++it)
 	{
+		this->executor_->remove_node(it->second->get_node());
 		it->second->get_node()->~NodeBaseInterface();
 		this->devices->erase(it);
 	}
@@ -414,66 +411,10 @@ using namespace ros2_canopen;
 int main(int argc, char *argv[])
 {
 	rclcpp::init(argc, argv);
-	rclcpp::executors::MultiThreadedExecutor executor;
-	auto canopen_node = std::make_shared<CANopenNode>("canopen_master");
-	executor.add_node(canopen_node->get_node_base_interface());
-	auto devices = canopen_node->get_driver_nodes();
-
-	while (true)
-	{
-		//////////////////////////////
-		// Unconfigured State
-		//////////////////////////////
-
-		// Set up synchronisation
-		std::promise<void> post_reg_p;
-		std::promise<void> pre_dereg_done_p;
-
-		// Get future that signals drivers were registered
-		auto post_reg_f = canopen_node->get_post_registration_future(post_reg_p.get_future());
-
-		// Spin until drivers were registered.
-		auto ret = executor.spin_until_future_complete(post_reg_f);
-
-		// Break when interrupted
-		if (ret == rclcpp::FutureReturnCode::INTERRUPTED)
-			break;
-
-		// Add driver nodes to executor
-		if (devices->size() > 0)
-		{
-			for (auto it = devices->begin(); it != devices->end(); it++)
-			{
-				executor.add_node(it->second->get_node());
-			}
-		}
-
-		// Now create handshake for deconfiguring
-		auto pre_dereg_f = canopen_node->get_pre_deregistration_future(pre_dereg_done_p.get_future());
-		// Signal that driver nodes were added to executor and it is safe to go on.
-		post_reg_p.set_value();
-
-		//////////////////////////////
-		// Configured State
-		//////////////////////////////
-
-		// Wait for deconfigure to remove driver nodes.
-		ret = executor.spin_until_future_complete(pre_dereg_f);
-		if (ret == rclcpp::FutureReturnCode::INTERRUPTED)
-			break;
-
-		// If there are drivers present, remove from executor.
-		if (devices->size() > 0)
-		{
-			for (auto it = devices->begin(); it != devices->end(); it++)
-			{
-				executor.remove_node(it->second->get_node());
-			}
-		}
-		// Signal to master threat, that nodes were removed and its safe to remove devices.
-		pre_dereg_done_p.set_value();
-	}
-
+	std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+	auto canopen_node = std::make_shared<CANopenNode>("canopen_master", executor);
+	executor->add_node(canopen_node->get_node_base_interface());
+	executor->spin();
 	rclcpp::shutdown();
 	return 0;
 }

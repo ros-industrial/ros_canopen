@@ -351,6 +351,7 @@ namespace ros2_canopen
         CallbackReturn on_cleanup(const rclcpp_lifecycle::State &state);
         CallbackReturn on_shutdown(const rclcpp_lifecycle::State &state);
         pluginlib::ClassLoader<ros2_canopen::CANopenDevice> poly_loader;
+        std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
     public:
         /**
          * @brief Construct a new CANopenNode object
@@ -358,11 +359,12 @@ namespace ros2_canopen
          * @param node_name 
          * @param intra_process_comms 
          */
-        CANopenNode(const std::string &node_name, bool intra_process_comms = false) 
+        CANopenNode(const std::string &node_name, std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor, bool intra_process_comms = false) 
         : rclcpp_lifecycle::LifecycleNode(
                 node_name,
                 rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms)),
-          poly_loader("ros2_canopen_core", "ros2_canopen::CANopenDevice")
+          poly_loader("ros2_canopen_core", "ros2_canopen::CANopenDevice"),
+          executor_(executor)
         {
             this->declare_parameter<std::string>("can_interface_name", "vcan0");
             this->declare_parameter<std::string>("dcf_path", "");

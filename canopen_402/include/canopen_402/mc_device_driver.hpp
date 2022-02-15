@@ -20,7 +20,6 @@ namespace canopen_402
 {
     class RemoteObject;
 
-
     class MCDeviceDriver : public BasicDeviceDriver
     {
     public:
@@ -28,14 +27,16 @@ namespace canopen_402
         std::vector<RemoteObject *> objs;
 
     public:
-        void append_obj(RemoteObject * obj){
+        void append_obj(RemoteObject *obj)
+        {
             objs.push_back(obj);
         }
 
-        void remove_obj(RemoteObject * obj){
-            for(auto it = objs.begin(); it != objs.end(); ++it)
+        void remove_obj(RemoteObject *obj)
+        {
+            for (auto it = objs.begin(); it != objs.end(); ++it)
             {
-                if(*it == obj)
+                if (*it == obj)
                 {
                     objs.erase(it);
                 }
@@ -128,7 +129,15 @@ namespace canopen_402
             COData data = {index_, subindex_, 0U, TPY};
             auto f = driver_->async_sdo_read(data);
             f.wait();
-            return static_cast<T>(f.get().data_);
+            try
+            {
+                return static_cast<T>(f.get().data_);
+            }
+            catch (std::exception &e)
+            {
+                std::cout << e.what() << std::endl;
+            }
+            
         }
 
         template <typename T, CODataTypes TPY>
@@ -298,7 +307,7 @@ namespace canopen_402
 
     public:
         ModeForwardHelper(std::shared_ptr<MCDeviceDriver> driver) : ModeTargetHelper<TYPE>(ID),
-                                                                                  obj(OBJ, SUB, TPY, driver)
+                                                                    obj(OBJ, SUB, TPY, driver)
         {
             driver->objs.push_back(&obj);
         }
