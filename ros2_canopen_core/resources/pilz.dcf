@@ -266,7 +266,7 @@ DefaultValue=0x40000080
 ParameterName=Communication cycle period
 DataType=0x0007
 AccessType=rw
-DefaultValue=10000
+DefaultValue=0
 
 [1007]
 ParameterName=Synchronous window length

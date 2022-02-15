@@ -1,6 +1,5 @@
 master:
   node_id: 1
-  sync_period: 10000
 
 prbt_joint_1:
   node_id: 3
