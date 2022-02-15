@@ -60,4 +60,4 @@ dockerize-job:
     - docker push $IMAGE_TAG
     - docker push $IMAGE_TAG_LATEST
   tags:
-    - vbox-runner
+    - docker-build
