@@ -16,6 +16,7 @@ import lifecycle_msgs.msg
 
 
 def generate_launch_description():
+    path_to_test = os.path.dirname(__file__)
 
     parameter_file = launch.substitutions.LaunchConfiguration('parameter_file_path')
     parameter_file_arg = launch.actions.DeclareLaunchArgument(
@@ -30,7 +31,11 @@ def generate_launch_description():
         package="ros2_canopen_core", 
         output="screen", 
         executable="canopen_master_node",
-        parameters= [parameter_file],
+        parameters= [{
+                    "yaml_path": os.path.join(path_to_test, ".." ,  "resources" , "simple.yml"),
+                    "dcf_path": os.path.join(path_to_test, ".." , "resources" , "simple.dcf"),
+                }
+        ],
     )
 
     master_node_inactive_state_handler = launch.actions.RegisterEventHandler(
@@ -54,6 +59,43 @@ def generate_launch_description():
         )
     )
 
+    slave_node_2 = launch_ros.actions.LifecycleNode(
+        name="slave_node_2", 
+        namespace="", 
+        package="ros2_canopen_core", 
+        output="screen", 
+        executable="test_slave",
+        parameters=[
+            {
+                "eds": os.path.join(path_to_test, ".." , "resources" , "simple.eds"),
+                "slave_id": 2
+            }
+            ],
+    )
+
+    slave_2_inactive_state_handler = launch.actions.RegisterEventHandler(
+        launch_ros.event_handlers.OnStateTransition(
+            target_lifecycle_node=slave_node_2, goal_state='inactive',
+            entities=[
+                launch.actions.LogInfo(
+                    msg="node 'slave_node_2' reached the 'inactive' state, 'activating'."),
+                launch.actions.EmitEvent(event=launch_ros.events.lifecycle.ChangeState(
+                    lifecycle_node_matcher=launch.events.matches_action(slave_node_2),
+                    transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
+                )),
+            ],
+        )
+    )
+
+    slave_2_configure = launch.actions.EmitEvent(
+        event=launch_ros.events.lifecycle.ChangeState(
+            lifecycle_node_matcher=launch.events.matches_action(slave_node_2),
+            transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
+        )
+    )
+    ld.add_action(slave_2_inactive_state_handler)
+    ld.add_action(slave_node_2)
+    ld.add_action(slave_2_configure)
     ld.add_action(parameter_file_arg)
     ld.add_action(master_node_inactive_state_handler)
     ld.add_action(master_node)
