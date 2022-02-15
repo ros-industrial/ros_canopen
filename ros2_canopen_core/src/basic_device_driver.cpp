@@ -89,28 +89,49 @@ namespace ros2_canopen
             auto f2 = AsyncRead<uint8_t>(d.index_, d.subindex_);
 
             Wait(f2);
-
-            auto r = f2.get().value();
-            res = {d.index_, d.subindex_, r, CODataTypes::COData8};
+            if (!f2.get().has_error())
+            {
+                auto r = f2.get().value();
+                res = {d.index_, d.subindex_, r, CODataTypes::COData8};
+            }
+            else
+            {
+                sdo_read_data_promise.set_exception(f2.get().error());
+            }
         }
         else if (d.type_ == CODataTypes::COData16)
         {
             auto f2 = AsyncRead<uint16_t>(d.index_, d.subindex_);
 
             Wait(f2);
-
-            auto r = f2.get().value();
-            res = {d.index_, d.subindex_, r, CODataTypes::COData16};
+            if (!f2.get().has_error())
+            {
+                auto r = f2.get().value();
+                res = {d.index_, d.subindex_, r, CODataTypes::COData16};
+                sdo_read_data_promise.set_value(res);
+            }
+            else
+            {
+                sdo_read_data_promise.set_exception(f2.get().error());
+            }
         }
         else if (d.type_ == CODataTypes::COData32)
         {
             auto f2 = AsyncRead<uint32_t>(d.index_, d.subindex_);
 
             Wait(f2);
+            if (!f2.get().has_error())
+            {
+                auto r = f2.get().value();
+                res = {d.index_, d.subindex_, r, CODataTypes::COData32};
+            }
+            else
+            {
+                sdo_read_data_promise.set_exception(f2.get().error());
+            }
         }
 
         // Handle Result and set response
-        sdo_read_data_promise.set_value(res);
 
         // Reschedule task for next sdo request.
         this->Defer(std::bind(&BasicDeviceDriver::sdo_read_event, this));
@@ -192,10 +213,10 @@ namespace ros2_canopen
         task.data = data;
         {
             this->master.GetExecutor().post(
-                [&task, this]{
+                [&task, this]
+                {
                     this->GetStrand().post(task);
-                }
-            );
+                });
         }
         // Wait for task to finish.
         std::scoped_lock<std::mutex> lk(task.mtx);
