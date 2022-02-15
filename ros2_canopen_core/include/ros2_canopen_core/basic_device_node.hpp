@@ -142,7 +142,7 @@ namespace ros2_canopen
             bool intra_process_comms = false)
             : rclcpp_lifecycle::LifecycleNode(
                   node_name,
-                  rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
+                  rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms).use_global_arguments(false))
         {
             this->driver = driver;
         };

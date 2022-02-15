@@ -361,7 +361,7 @@ DefaultValue=0x00000183
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0x01
+DefaultValue=0xFF
 
 [1402sub3]
 ParameterName=inhibit time
@@ -618,7 +618,7 @@ DefaultValue=0x00000203
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0x01
+DefaultValue=0xFF
 
 [1804sub3]
 ParameterName=inhibit time

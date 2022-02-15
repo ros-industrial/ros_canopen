@@ -65,6 +65,7 @@ target_link_libraries(canopen_master_node
 ament_target_dependencies(canopen_master_node 
   yaml_cpp_vendor 
   ros2_canopen_interfaces 
+  lifecycle_msgs 
   pluginlib
 )
 
@@ -145,6 +146,8 @@ if(BUILD_TESTING)
   # uncomment the line when this package is not in a git repo
   #set(ament_cmake_cpplint_FOUND TRUE)
   #ament_lint_auto_find_test_dependencies()
+  #find_package(launch_testing_ament_cmake)
+  #add_launch_test(tests/test_device_up.py)
 endif()
 
 ament_export_include_directories(

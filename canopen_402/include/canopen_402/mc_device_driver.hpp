@@ -105,7 +105,6 @@ namespace canopen_402
     public:
         RemoteObject(uint16_t index, uint8_t subindex, CODataTypes type, std::shared_ptr<MCDeviceDriver> driver) : index_(index), subindex_(subindex), type_(type), driver_(driver)
         {
-            std::cout << "Hello" << std::endl;
         }
 
         template <typename T, CODataTypes TPY>

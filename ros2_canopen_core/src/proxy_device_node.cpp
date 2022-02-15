@@ -66,12 +66,12 @@ void ProxyDeviceNode::on_sdo_write(
 
 void ProxyDeviceNode::on_rpdo(COData d)
 {
-    RCLCPP_INFO(this->get_logger(),
-                "Slave %hhu: Sent PDO index %hu, subindex %hhu, data %x",
-                this->driver->get_id(),
-                d.index_,
-                d.subindex_,
-                d.data_);
+    // RCLCPP_INFO(this->get_logger(),
+    //             "Slave %hhu: Sent PDO index %hu, subindex %hhu, data %x",
+    //             this->driver->get_id(),
+    //             d.index_,
+    //             d.subindex_,
+    //             d.data_);
     auto message = ros2_canopen_interfaces::msg::COData();
     message.index = d.index_;
     message.subindex = d.subindex_;

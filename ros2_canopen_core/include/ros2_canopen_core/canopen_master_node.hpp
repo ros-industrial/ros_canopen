@@ -39,6 +39,7 @@
 #include "rclcpp/macros.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "lifecycle_msgs/srv/change_state.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "pluginlib/class_loader.hpp"
@@ -128,6 +129,9 @@ namespace ros2_canopen
         void register_services();
         void register_drivers();
         void deregister_drivers();
+        CallbackReturn change_state(
+            const std::uint8_t transition, 
+            std::chrono::seconds time_out = 3s);
 
 
         // Tasks
