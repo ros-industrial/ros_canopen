@@ -39,8 +39,17 @@ void ProxyDeviceNode::on_sdo_read(
     // Wait for response
     f.wait();
     // Process response
-    response->data = f.get().data_;
-    response->success = true;
+    try
+    {
+        response->data = f.get().data_;
+        response->success = true;
+    }
+    catch (std::exception &e)
+    {
+        RCLCPP_ERROR(this->get_logger(), e.what());
+        response->success = false;
+    }
+
 }
 
 void ProxyDeviceNode::on_sdo_write(
@@ -61,7 +70,15 @@ void ProxyDeviceNode::on_sdo_write(
     f.wait();
 
     // Process response
-    response->success = f.get();
+    try
+    {
+        response->success = f.get();
+    }
+    catch (std::exception &e)
+    {
+        RCLCPP_ERROR(this->get_logger(), e.what());
+        response->success = false;
+    }
 }
 
 void ProxyDeviceNode::on_rpdo(COData d)

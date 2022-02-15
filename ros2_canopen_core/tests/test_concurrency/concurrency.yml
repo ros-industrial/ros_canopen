@@ -1,0 +1,37 @@
+master:
+  node_id: 1
+
+motioncontroller_2:
+  node_id: 2
+  dcf: "simple.eds"
+  driver: "BasicDevice"
+
+motioncontroller_3:
+  node_id: 3
+  dcf: "simple.eds"
+  driver: "BasicDevice"
+
+motioncontroller_4:
+  node_id: 4
+  dcf: "simple.eds"
+  driver: "BasicDevice"
+
+motioncontroller_5:
+  node_id: 5
+  dcf: "simple.eds"
+  driver: "BasicDevice"
+
+motioncontroller_6:
+  node_id: 6
+  dcf: "simple.eds"
+  driver: "BasicDevice"
+
+motioncontroller_7:
+  node_id: 7
+  dcf: "simple.eds"
+  driver: "BasicDevice"
+
+motioncontroller_8:
+  node_id: 8
+  dcf: "simple.eds"
+  driver: "BasicDevice"

@@ -322,6 +322,7 @@ CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds ti
 				get_logger(), "Failed to trigger transition %u", static_cast<unsigned int>(transition));
 			return CallbackReturn::FAILURE;
 		}
+		std::this_thread::sleep_for(20ms);
 	}
 	return CallbackReturn::SUCCESS;
 }
