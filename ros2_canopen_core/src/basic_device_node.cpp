@@ -49,12 +49,15 @@ BasicDeviceNode::on_configure(const rclcpp_lifecycle::State &state)
 CallbackReturn
 BasicDeviceNode::on_activate(const rclcpp_lifecycle::State &state)
 {
-    return on_activate_app(state);
+    auto res = on_activate_app(state);
+    activated.store(true);
+    return res;
 }
 
 CallbackReturn
 BasicDeviceNode::on_deactivate(const rclcpp_lifecycle::State &state)
 {
+    activated.store(false);
     return on_deactivate_app(state);
 }
 

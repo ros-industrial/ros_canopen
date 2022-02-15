@@ -102,6 +102,7 @@ namespace ros2_canopen
         std::promise<void> registration_done;
         std::promise<void> active_p;
         std::future<void> master_thread_running;
+        std::mutex lifecycle_mutex;
 
 
 
@@ -131,7 +132,7 @@ namespace ros2_canopen
         void deregister_drivers();
         CallbackReturn change_state(
             const std::uint8_t transition, 
-            std::chrono::seconds time_out = 3s);
+            std::chrono::seconds time_out = 4s);
 
 
         // Tasks

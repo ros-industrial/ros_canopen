@@ -65,6 +65,7 @@ namespace ros2_canopen
     protected:
         std::shared_ptr<ros2_canopen::BasicDeviceDriver> driver;
         std::atomic<bool> configured;
+        std::atomic<bool> activated;
 
         /**
          * @brief NMT State Change Callback

@@ -126,25 +126,31 @@ void CANopenNode::master_set_heartbeat(
 
 void CANopenNode::run()
 {
+
 	can_master->Reset();
 	register_drivers();
 
 	// Drivers are set and nodes can b added to ros executor, wait for them to be added.
 	this->post_registration.set_value();
-	// Signal to ROS Node that drivers were success fully registered.
-	this->registration_done.set_value();
 
 	this->post_registration_done.wait();
 	this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
+	// Signal to ROS Node that drivers were success fully registered.
+	this->registration_done.set_value();
+
+	RCLCPP_INFO(this->get_logger(), "Done configuring.");
 	while (configured)
 	{
 		// Get future from current active promise
 		auto active_f = this->active_p.get_future();
 		// Wait for future to become ready
 		active_f.wait();
+
 		// activate devices
 		this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
+
+		RCLCPP_INFO(this->get_logger(), "Done activating.");
 		// while node is active do the work.
 		while (active.load())
 		{
@@ -311,7 +317,7 @@ CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds ti
 		if (future_status != std::future_status::ready)
 		{
 			RCLCPP_ERROR(
-				get_logger(), "Server time out while getting current state for node %s", qualitfied_node_name.c_str());
+				get_logger(), "Server time out while setting %hhu for node %s", transition, qualitfied_node_name.c_str());
 			return CallbackReturn::FAILURE;
 		}
 
@@ -322,7 +328,6 @@ CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds ti
 				get_logger(), "Failed to trigger transition %u", static_cast<unsigned int>(transition));
 			return CallbackReturn::FAILURE;
 		}
-		std::this_thread::sleep_for(20ms);
 	}
 	return CallbackReturn::SUCCESS;
 }
@@ -330,6 +335,7 @@ CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds ti
 CallbackReturn
 CANopenNode::on_configure(const rclcpp_lifecycle::State &state)
 {
+	std::scoped_lock<std::mutex> lk(lifecycle_mutex);
 	// Wait for master Thread to terminate.
 	if (master_thread_running.valid())
 		master_thread_running.wait();
@@ -369,6 +375,7 @@ CANopenNode::on_configure(const rclcpp_lifecycle::State &state)
 CallbackReturn
 CANopenNode::on_activate(const rclcpp_lifecycle::State &state)
 {
+	std::scoped_lock<std::mutex> lk(lifecycle_mutex);
 	// Wait for Drivers to be registered - in case it is called to fast.
 	registration_done.get_future().wait();
 	// Set active to true
@@ -407,7 +414,7 @@ using namespace ros2_canopen;
 int main(int argc, char *argv[])
 {
 	rclcpp::init(argc, argv);
-	rclcpp::executors::SingleThreadedExecutor executor;
+	rclcpp::executors::MultiThreadedExecutor executor;
 	auto canopen_node = std::make_shared<CANopenNode>("canopen_master");
 	executor.add_node(canopen_node->get_node_base_interface());
 	auto devices = canopen_node->get_driver_nodes();

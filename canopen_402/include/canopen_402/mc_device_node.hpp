@@ -56,10 +56,6 @@ namespace canopen_402
         }
 
     protected:
-        virtual void on_nmt(canopen::NmtState nmt_state) override
-        {
-            RCLCPP_INFO(this->get_logger(), "on_nmt not implemented");
-        }
         virtual void on_rpdo(COData data) override
         {
             RCLCPP_INFO(this->get_logger(), "on_rpo not implemented");
@@ -71,11 +67,16 @@ namespace canopen_402
         }
         virtual CallbackReturn on_activate_app(const rclcpp_lifecycle::State &state) override
         {
+            RCLCPP_INFO(this->get_logger(), "Activating node");
             motor_->registerDefaultModes();
-            
+
+            RCLCPP_INFO(this->get_logger(), "Registered Default modes");
             timer_ = this->create_wall_timer(
-                10ms, std::bind(&MCDeviceNode::run, this));
+                50ms, std::bind(&MCDeviceNode::run, this));
+
+            RCLCPP_INFO(this->get_logger(), "Store Active");
             active.store(true);
+            RCLCPP_INFO(this->get_logger(), "Done Activate");
             return CallbackReturn::SUCCESS;
         }
         virtual CallbackReturn on_deactivate_app(const rclcpp_lifecycle::State &state) override

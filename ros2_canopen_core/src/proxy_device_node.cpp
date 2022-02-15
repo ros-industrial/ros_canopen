@@ -139,8 +139,7 @@ void ProxyDeviceNode::on_nmt(canopen::NmtState nmt_state)
                 "Slave %hhu: Switched NMT state to %s",
                 this->driver->get_id(),
                 message.data.c_str());
-
-    nmt_state_publisher->publish(message);
+    if(activated) nmt_state_publisher->publish(message);
 }
 
 CallbackReturn ProxyDeviceNode::on_configure_app(const rclcpp_lifecycle::State &state)
