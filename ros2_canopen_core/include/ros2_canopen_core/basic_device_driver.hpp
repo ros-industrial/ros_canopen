@@ -19,6 +19,7 @@
 #include <atomic>
 #include <future>
 #include <thread>
+#include <condition_variable>
 
 #include <lely/coapp/fiber_driver.hpp>
 #include <lely/coapp/master.hpp>
@@ -93,18 +94,11 @@ namespace ros2_canopen
     private:
 
         // SDO Read synchronisation items
-        ev::Promise<COData, std::exception_ptr> sdo_read_promise;
-        ev::Future<COData, std::exception_ptr> sdo_read_future;
-        std::promise<COData> sdo_read_data_promise;
-        std::mutex sdo_read_mutex;
-        std::unique_lock<std::mutex> sdo_read_lock;
-
-        // SDO Write synchronisation items
-        ev::Promise<COData, std::exception_ptr> sdo_write_promise;
-        ev::Future<COData, std::exception_ptr> sdo_write_future;
-        std::promise<bool> sdo_write_data_promise;
-        std::mutex sdo_write_mutex;
-        std::unique_lock<std::mutex> sdo_write_lock;
+        std::shared_ptr<std::promise<COData>> sdo_read_data_promise;
+        std::shared_ptr<std::promise<bool>> sdo_write_data_promise;
+        std::mutex sdo_mutex;
+        bool running;
+        std::condition_variable sdo_cond;
 
         // NMT synchronisation items
         std::promise<canopen::NmtState> nmt_state_promise;
@@ -123,11 +117,6 @@ namespace ros2_canopen
         uint8_t nodeid;
 
 
-        void sdo_write_event();
-        void sdo_write_event_cb();
-
-        void sdo_read_event();
-        void sdo_read_event_cb();
 
         void
         OnState(canopen::NmtState state) noexcept override;
@@ -142,10 +131,7 @@ namespace ros2_canopen
             : FiberDriver(exec, master, id)
         {
             nodeid = id;
-            sdo_read_lock = std::unique_lock<std::mutex>(sdo_read_mutex, std::adopt_lock);
-            sdo_write_lock = std::unique_lock<std::mutex>(sdo_write_mutex, std::adopt_lock);
-            this->Defer(std::bind(&BasicDeviceDriver::sdo_read_event, this));
-            this->Defer(std::bind(&BasicDeviceDriver::sdo_write_event, this));
+            running = false;
         }
 
         /**
