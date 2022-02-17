@@ -5,7 +5,7 @@
 #include "std_srvs/srv/trigger.hpp"
 #include "ros2_canopen_interfaces/srv/co_target_double.hpp"
 #include "ros2_canopen_core/proxy_device_node.hpp"
-#include "canopen_402/mc_device_driver.hpp"
+#include "canopen_402/motor.hpp"
 
 using namespace std::chrono_literals;
 using namespace ros2_canopen;
