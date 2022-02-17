@@ -95,14 +95,11 @@ namespace ros2_canopen
         std::atomic<bool> configured;
         std::shared_ptr<std::mutex> master_mutex;
         
-        std::promise<void> post_registration;
-        std::future<void> post_registration_done;
-        std::promise<void> pre_deregistration;
-        std::future<void> pre_deregistration_done;
-        std::promise<void> registration_done;
-        std::promise<void> active_p;
+        std::promise<void> activation_done;
+        std::promise<void> configuration_done;
+        std::promise<void> activation_started;
+        std::promise<void> cleanup_done;
         std::future<void> master_thread_running;
-        std::mutex lifecycle_mutex;
 
 
 
@@ -132,7 +129,7 @@ namespace ros2_canopen
         void deregister_drivers();
         CallbackReturn change_state(
             const std::uint8_t transition, 
-            std::chrono::seconds time_out = 4s);
+            std::chrono::seconds time_out = 1s);
 
 
         // Tasks
@@ -352,6 +349,7 @@ namespace ros2_canopen
         CallbackReturn on_shutdown(const rclcpp_lifecycle::State &state);
         pluginlib::ClassLoader<ros2_canopen::CANopenDevice> poly_loader;
         std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
+        rclcpp::CallbackGroup::SharedPtr lifecycle_manager_group;
     public:
         /**
          * @brief Construct a new CANopenNode object
@@ -375,43 +373,9 @@ namespace ros2_canopen
             this->register_services();
             this->master_mutex = std::make_shared<std::mutex>();
             this->devices = std::make_shared<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>>();
+            lifecycle_manager_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         }
 
-        /**
-         * @brief Gets Post Registration Future
-         * 
-         * @param post_done_f 
-         * @return std::future<void> 
-         * Is set once drivers are registered.
-         */
-        std::future<void> get_post_registration_future(std::future<void>&& post_done_f){
-            post_registration = std::promise<void>();
-            post_registration_done = std::forward<std::future<void>>(post_done_f);
-            return post_registration.get_future();
-        }
-
-        /**
-         * @brief Gets Pre-Deregistration Future
-         * 
-         * @param pre_dereg_f 
-         * @return std::future<void> 
-         * Is set before drivers are deregistered.
-         */
-        std::future<void> get_pre_deregistration_future(std::future<void>&& pre_dereg_f){
-            pre_deregistration = std::promise<void>();
-            pre_deregistration_done = std::forward<std::future<void>>(pre_dereg_f);
-            return pre_deregistration.get_future();
-        }
-
-        /**
-         * @brief Gets a Map of all registered drivers
-         * 
-         * @return std::shared_ptr<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>> 
-         */
-        std::shared_ptr<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>>
-        get_driver_nodes(){
-            return this->devices;
-        }
     };
 }
 

@@ -129,23 +129,22 @@ void CANopenNode::run()
 
 	can_master->Reset();
 	register_drivers();
-
+	
 	this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
 	// Signal to ROS Node that drivers were success fully registered.
-	this->registration_done.set_value();
+	this->configuration_done.set_value();
 
 	RCLCPP_INFO(this->get_logger(), "Done configuring.");
 	while (configured)
 	{
 		// Get future from current active promise
-		auto active_f = this->active_p.get_future();
-		// Wait for future to become ready
-		active_f.wait();
+		this->activation_started.get_future().wait();
 
 		// activate devices
 		this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
 
+		this->activation_done.set_value();
 		RCLCPP_INFO(this->get_logger(), "Done activating.");
 		// while node is active do the work.
 		while (active.load())
@@ -158,10 +157,10 @@ void CANopenNode::run()
 		this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_DEACTIVATE);
 	}
 	this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_CLEANUP);
-
 	this->deregister_drivers();
 	this->drivers = std::map<int, std::string>();
 	this->ctx->shutdown();
+	cleanup_done.set_value();
 }
 
 void CANopenNode::register_drivers()
@@ -286,6 +285,7 @@ wait_for_result(
 CallbackReturn
 CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds time_out)
 {
+
 	//Iterate through nodes and activate specified tranisiton
 	for (auto it = this->devices->begin(); it != this->devices->end(); ++it)
 	{
@@ -293,10 +293,11 @@ CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds ti
 		std::string qualitfied_node_name = node->get_fully_qualified_name();
 		std::string change_state_name = qualitfied_node_name.append("/change_state");
 		std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::ChangeState>> change_state_ =
-			this->create_client<lifecycle_msgs::srv::ChangeState>(change_state_name);
+			this->create_client<lifecycle_msgs::srv::ChangeState>(change_state_name, rmw_qos_profile_services_default, lifecycle_manager_group);
 
 		std::shared_ptr<lifecycle_msgs::srv::ChangeState::Request> request =
 			std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
+		
 		request->transition.id = transition;
 
 		if (!change_state_->wait_for_service(time_out))
@@ -332,13 +333,17 @@ CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds ti
 CallbackReturn
 CANopenNode::on_configure(const rclcpp_lifecycle::State &state)
 {
-	std::scoped_lock<std::mutex> lk(lifecycle_mutex);
 	// Wait for master Thread to terminate.
 	if (master_thread_running.valid())
 		master_thread_running.wait();
 
 	this->active.store(false);
 	this->configured.store(true);
+	configuration_done = std::promise<void>();
+	activation_done = std::promise<void>();
+	activation_started = std::promise<void>();
+	cleanup_done = std::promise<void>();
+
 	this->get_parameter("can_interface_name", can_interface_name);
 	this->get_parameter("dcf_path", dcf_path);
 	this->get_parameter("yaml_path", yaml_path);
@@ -364,30 +369,25 @@ CANopenNode::on_configure(const rclcpp_lifecycle::State &state)
 	master_thread_running = std::async(std::launch::async, std::bind(&CANopenNode::run, this));
 
 	// Create new promise
-	active_p = std::promise<void>();
-
+	configuration_done.get_future().wait();
 	return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
 CANopenNode::on_activate(const rclcpp_lifecycle::State &state)
 {
-	std::scoped_lock<std::mutex> lk(lifecycle_mutex);
-	// Wait for Drivers to be registered - in case it is called to fast.
-	registration_done.get_future().wait();
-	// Set active to true
 	this->active.store(true);
-	// Signal to master thread that we are active, to start loop.
-	active_p.set_value();
+	activation_started.set_value();
+	activation_done.get_future().wait();
 	return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
 CANopenNode::on_deactivate(const rclcpp_lifecycle::State &state)
 {
-	// Recreate promise so that master can wait for new future.
-	active_p = std::promise<void>();
 	// Stop master loop.
+	activation_done = std::promise<void>();
+	activation_started = std::promise<void>();
 	this->active.store(false);
 	return CallbackReturn::SUCCESS;
 }
@@ -396,6 +396,7 @@ CallbackReturn
 CANopenNode::on_cleanup(const rclcpp_lifecycle::State &state)
 {
 	this->configured.store(false);
+	cleanup_done.get_future().wait();
 	return CallbackReturn::SUCCESS;
 }
 
