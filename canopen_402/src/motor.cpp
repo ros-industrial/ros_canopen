@@ -447,8 +447,16 @@ namespace canopen_402
         state_handler_.read(sw);
 
         std::unique_lock lock(mode_mutex_);
-        /// @todo uint16_t new_mode = monitor_mode_ ? driver->rpdo_mapped[op_mode_display_][0] : op_mode_display_.get_cached();
-        uint16_t new_mode = monitor_mode_ ? driver->get_remote_obj<int8_t>(op_mode_display_) : driver->get_remote_obj_cached<int8_t>(op_mode_display_) ;
+        uint16_t new_mode;
+        if(monitor_mode_)
+        {
+            new_mode = driver->get_remote_obj<int8_t>(op_mode_display_);
+        }
+        else
+        {
+            new_mode = driver->get_remote_obj_cached<int8_t>(op_mode_display_);
+        }
+
         if (selected_mode_ && selected_mode_->mode_id_ == new_mode)
         {
             if (!selected_mode_->read(sw))
