@@ -99,17 +99,24 @@ void CANopenNode::master_set_heartbeat(
 {
 	if (active.load())
 	{
-		WriteSdoCoTask<uint16_t> write_task(*exec);
-		write_task.set_data(can_master, request->nodeid, 0x1017, 0x0, request->heartbeat);
-		auto f = write_task.get_future();
-		{
-			std::scoped_lock<std::mutex> lk(*master_mutex);
-			exec->post(write_task);
-		}
+		sdo_write_data_promise = std::promise<void>();
+		this->can_master->SubmitWrite(
+			*(this->exec),
+			request->nodeid,
+			0x1017,
+			0,
+			request->heartbeat,
+			std::bind(&CANopenNode::write_callback, this,
+					  std::placeholders::_1,
+					  std::placeholders::_2,
+					  std::placeholders::_3,
+					  std::placeholders::_4));
+		auto f = sdo_write_data_promise.get_future();
 		f.wait();
 		try
 		{
-			response->success = f.get();
+			f.get();
+			response->success = true;
 		}
 		catch (std::exception &e)
 		{
@@ -119,7 +126,7 @@ void CANopenNode::master_set_heartbeat(
 	}
 	else
 	{
-		RCLCPP_ERROR(this->get_logger(), "Couldn't set heartbeat because node not active");
+		RCLCPP_ERROR(this->get_logger(), "Couldn't write SDO because node not active");
 		response->success = false;
 	}
 }
@@ -129,7 +136,7 @@ void CANopenNode::run()
 
 	can_master->Reset();
 	register_drivers();
-	
+
 	this->change_state(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
 	// Signal to ROS Node that drivers were success fully registered.
@@ -286,7 +293,7 @@ CallbackReturn
 CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds time_out)
 {
 
-	//Iterate through nodes and activate specified tranisiton
+	// Iterate through nodes and activate specified tranisiton
 	for (auto it = this->devices->begin(); it != this->devices->end(); ++it)
 	{
 		std::shared_ptr<rclcpp::node_interfaces::NodeBaseInterface> node = it->second->get_node();
@@ -297,7 +304,7 @@ CANopenNode::change_state(const std::uint8_t transition, std::chrono::seconds ti
 
 		std::shared_ptr<lifecycle_msgs::srv::ChangeState::Request> request =
 			std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
-		
+
 		request->transition.id = transition;
 
 		if (!change_state_->wait_for_service(time_out))

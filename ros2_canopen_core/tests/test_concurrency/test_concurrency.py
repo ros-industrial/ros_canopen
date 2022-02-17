@@ -395,7 +395,7 @@ class TestBasicDevice(unittest.TestCase):
             duration = 0.0
             for i in range(1,10):
                 req = ros2_canopen_interfaces.srv.COWrite.Request()
-                req.data = 0
+                req.data = 1000
                 req.index = 0x1017
                 req.subindex = 0
                 req.type = 16

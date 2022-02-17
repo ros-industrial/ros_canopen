@@ -1,5 +1,5 @@
 //    Copyright 2022 Christoph Hellmann Santos
-// 
+//
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
 //    You may obtain a copy of the License at
@@ -58,9 +58,9 @@ namespace ros2_canopen
 {
     /**
      * @brief CANopen Master Node
-     * 
+     *
      * This class provides a CANopen Master Node.
-     * 
+     *
      */
     class CANopenNode : public rclcpp_lifecycle::LifecycleNode
     {
@@ -94,16 +94,14 @@ namespace ros2_canopen
         std::atomic<bool> active;
         std::atomic<bool> configured;
         std::shared_ptr<std::mutex> master_mutex;
-        
+
         std::promise<void> activation_done;
         std::promise<void> configuration_done;
         std::promise<void> activation_started;
         std::promise<void> cleanup_done;
         std::future<void> master_thread_running;
 
-
-
-        //Service Callback Declarations
+        // Service Callback Declarations
         void master_nmt(
             const std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::CONmtID::Response> response);
@@ -120,159 +118,30 @@ namespace ros2_canopen
             const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Response> response);
 
-
-        //helper functions
+        // helper functions
         void run();
         void read_yaml();
         void register_services();
         void register_drivers();
         void deregister_drivers();
         CallbackReturn change_state(
-            const std::uint8_t transition, 
+            const std::uint8_t transition,
             std::chrono::seconds time_out = 1s);
 
-
         // Tasks
-        class WriteSdoCallbackCoTask : public ev::CoTask
+
+
+        std::promise<uint32_t> sdo_read_data_promise;
+        void read_callback(uint8_t id, uint16_t idx, uint8_t subidx,
+                            ::std::error_code ec, uint32_t value) 
         {
-        private:
-            std::promise<bool> prom;
-            ev::Future<void, std::exception_ptr> f;
-
-        public:
-            WriteSdoCallbackCoTask(ev_exec_t *exec) : CoTask(exec)
+            if (ec)
+                this->sdo_read_data_promise.set_exception(lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, "Master Write SDO"));
+            else
             {
+                this->sdo_read_data_promise.set_value((uint32_t) value);
             }
-            void set_lely_future(ev::Future<void, std::exception_ptr> fut)
-            {
-                this->f = fut;
-            }
-            std::future<bool> get_future()
-            {
-                return prom.get_future();
-            }
-            void operator()() noexcept
-            {
-                if (!f.get().has_error())
-                {
-                    prom.set_value(true);
-                }
-                else
-                {
-                    prom.set_exception(f.get().error());
-                }
-            }
-        };
-
-        template <typename T>
-        class WriteSdoCoTask : public ev::CoTask
-        {
-        private:
-            uint16_t index;
-            uint8_t nodeid;
-            uint8_t subindex;
-            T data;
-            std::unique_ptr<WriteSdoCallbackCoTask> callback_task;
-            std::shared_ptr<canopen::AsyncMaster> can_master;
-
-        public:
-            WriteSdoCoTask(ev_exec_t *exec) : CoTask(exec)
-            {
-                callback_task = std::make_unique<WriteSdoCallbackCoTask>(exec);
-            }
-            void set_data(std::shared_ptr<canopen::AsyncMaster> can_master, uint8_t nodeid, uint16_t index, uint8_t subindex, T data)
-            {
-                this->index = index;
-                this->nodeid = nodeid;
-                this->subindex = subindex;
-                this->data = data;
-                this->can_master = can_master;
-            }
-
-            std::future<bool> get_future()
-            {
-
-                return callback_task->get_future();
-            }
-
-            void operator()() noexcept
-            {
-                auto f = can_master->AsyncWrite<T>(this->exec, nodeid, index, subindex, std::move(data), 100ms);
-                callback_task->set_lely_future(f);
-                //set callback task to be executed when future is ready
-                f.submit(*callback_task);
-            }
-        };
-
-        template <typename T>
-        class ReadSdoCallbackCoTask : public ev::CoTask
-        {
-        private:
-            std::promise<T> prom;
-            ev::Future<T, std::exception_ptr> f;
-
-        public:
-            ReadSdoCallbackCoTask(ev_exec_t *exec) : CoTask(exec)
-            {
-            }
-            void set_lely_future(ev::Future<T, std::exception_ptr> fut)
-            {
-                this->f = fut;
-            }
-            std::future<T> get_future()
-            {
-                return prom.get_future();
-            }
-            void operator()() noexcept
-            {
-                if (!f.get().has_error())
-                {
-                    prom.set_value(f.get().value());
-                }
-                else
-                {
-                    prom.set_exception(f.get().error());
-                }
-            }
-        };
-
-        template <typename T>
-        class ReadSdoCoTask : public ev::CoTask
-        {
-        private:
-            uint16_t index;
-            uint8_t nodeid;
-            uint8_t subindex;
-            std::unique_ptr<ReadSdoCallbackCoTask<T>> callback_task;
-            std::shared_ptr<canopen::AsyncMaster> can_master;
-
-        public:
-            ReadSdoCoTask(ev_exec_t *exec) : CoTask(exec)
-            {
-                callback_task = std::make_unique<ReadSdoCallbackCoTask<T>>(exec);
-            }
-            void set_data(std::shared_ptr<canopen::AsyncMaster> can_master, uint8_t nodeid, uint16_t index, uint8_t subindex)
-            {
-                this->index = index;
-                this->nodeid = nodeid;
-                this->subindex = subindex;
-                this->can_master = can_master;
-            }
-
-            std::future<T> get_future()
-            {
-
-                return callback_task->get_future();
-            }
-
-            void operator()() noexcept
-            {
-                auto f = can_master->AsyncRead<T>(this->exec, nodeid, index, subindex, 100ms);
-                callback_task->set_lely_future(f);
-                //set callback task to be executed when future is ready
-                f.submit(*callback_task);
-            }
-        };
+        }
 
         template <typename T>
         void master_read(
@@ -281,19 +150,25 @@ namespace ros2_canopen
         {
             if (active.load())
             {
-                ReadSdoCoTask<T> read_task(*exec);
-                read_task.set_data(can_master, request->nodeid, request->index, request->subindex);
-                auto f = read_task.get_future();
-                {
-                    //get lock on master and the canopen executor
-                    std::scoped_lock<std::mutex> lk(*master_mutex);
-                    //append task to read Sdo
-                    exec->post(read_task);
-                }
+                sdo_read_data_promise = std::promise<uint32_t>();
+                this->can_master->SubmitRead<T>(
+                    *(this->exec),
+                    request->nodeid, 
+                    request->index, 
+                    request->subindex,
+                    std::bind(&CANopenNode::read_callback, this, 
+                        std::placeholders::_1, 
+                        std::placeholders::_2,
+                        std::placeholders::_3,
+                        std::placeholders::_4,
+                        std::placeholders::_5
+                        )
+                    );
+                auto f = sdo_read_data_promise.get_future();
                 f.wait();
                 try
                 {
-                    response->data = (uint32_t)f.get();
+                    response->data = f.get();
                     response->success = true;
                 }
                 catch (std::exception &e)
@@ -309,25 +184,45 @@ namespace ros2_canopen
             }
         }
 
+        std::promise<void> sdo_write_data_promise;
+        void write_callback(uint8_t id, uint16_t idx, uint8_t subidx,
+                            ::std::error_code ec) 
+        {
+            if (ec)
+                this->sdo_write_data_promise.set_exception(lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, "Master Write SDO"));
+            else
+            {
+                this->sdo_write_data_promise.set_value();
+            }
+        }
+
         template <typename T>
         void master_write(
             const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Response> response)
         {
             if (active.load())
-            {
-                WriteSdoCoTask<T> write_task(*exec);
-                write_task.set_data(can_master, request->nodeid, request->index, request->subindex, static_cast<T>(request->data));
-                auto f = write_task.get_future();
-                {
-                    //get lock on master and the canopen executor
-                    std::scoped_lock<std::mutex> lk(*master_mutex);
-                    exec->post(write_task);
-                }
+            { 
+                sdo_write_data_promise = std::promise<void>();
+                this->can_master->SubmitWrite(
+                    *(this->exec),
+                    request->nodeid, 
+                    request->index, 
+                    request->subindex, 
+                    static_cast<T>(request->data), 
+                    std::bind(&CANopenNode::write_callback, this, 
+                        std::placeholders::_1, 
+                        std::placeholders::_2,
+                        std::placeholders::_3,
+                        std::placeholders::_4
+                        )
+                    );
+                auto f = sdo_write_data_promise.get_future();
                 f.wait();
                 try
                 {
-                    response->success = f.get();
+                    f.get();
+                    response->success = true;
                 }
                 catch (std::exception &e)
                 {
@@ -341,7 +236,7 @@ namespace ros2_canopen
                 response->success = false;
             }
         }
-        //Lifecycle Callback Functions
+        // Lifecycle Callback Functions
         CallbackReturn on_configure(const rclcpp_lifecycle::State &state);
         CallbackReturn on_activate(const rclcpp_lifecycle::State &state);
         CallbackReturn on_deactivate(const rclcpp_lifecycle::State &state);
@@ -350,19 +245,20 @@ namespace ros2_canopen
         pluginlib::ClassLoader<ros2_canopen::CANopenDevice> poly_loader;
         std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
         rclcpp::CallbackGroup::SharedPtr lifecycle_manager_group;
+
     public:
         /**
          * @brief Construct a new CANopenNode object
-         * 
-         * @param node_name 
-         * @param intra_process_comms 
+         *
+         * @param node_name
+         * @param intra_process_comms
          */
-        CANopenNode(const std::string &node_name, std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor, bool intra_process_comms = false) 
-        : rclcpp_lifecycle::LifecycleNode(
-                node_name,
-                rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms)),
-          poly_loader("ros2_canopen_core", "ros2_canopen::CANopenDevice"),
-          executor_(executor)
+        CANopenNode(const std::string &node_name, std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor, bool intra_process_comms = false)
+            : rclcpp_lifecycle::LifecycleNode(
+                  node_name,
+                  rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms)),
+              poly_loader("ros2_canopen_core", "ros2_canopen::CANopenDevice"),
+              executor_(executor)
         {
             this->declare_parameter<std::string>("can_interface_name", "vcan0");
             this->declare_parameter<std::string>("dcf_path", "");
@@ -375,7 +271,6 @@ namespace ros2_canopen
             this->devices = std::make_shared<std::map<int, std::shared_ptr<ros2_canopen::CANopenDevice>>>();
             lifecycle_manager_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         }
-
     };
 }
 
