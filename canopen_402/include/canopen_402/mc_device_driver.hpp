@@ -12,13 +12,14 @@
 using namespace ros2_canopen;
 namespace canopen_402
 {
-    struct RemoteObject 
+    struct RemoteObject
     {
         uint16_t index;
         uint8_t subindex;
         uint32_t data;
         CODataTypes type;
-        bool pdo_mapped;
+        bool tpdo_mapped;
+        bool rpdo_mapped;
         bool valid;
     };
 
@@ -30,48 +31,50 @@ namespace canopen_402
     public:
         std::shared_ptr<RemoteObject> create_remote_obj(uint16_t index, uint8_t subindex, CODataTypes type)
         {
-            RemoteObject obj = {index, subindex, 0, type, false, true};
-            objs.push_back(std::make_shared<RemoteObject>(obj));
+            RemoteObject obj = {index, subindex, 0, type, false, false, true};
+            std::shared_ptr<RemoteObject> objp = std::make_shared<RemoteObject>(obj);
+            objs.push_back(objp);
+            return objp;
         }
 
-        void OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override 
+        void OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override
         {
-            for(auto it = objs.begin(); it != objs.end(); ++it)
+            for (auto it = objs.begin(); it != objs.end(); ++it)
             {
                 std::shared_ptr<RemoteObject> obj = *it;
-                if(obj->index == idx && obj->subindex == subidx)
+                if (obj->index == idx && obj->subindex == subidx)
                 {
-                    obj->pdo_mapped == true;
+
                     obj->data = rpdo_mapped[idx][subidx];
                     break;
                 }
             }
         }
 
-        template<typename  T>
+        template <typename T>
         void set_remote_obj(std::shared_ptr<RemoteObject> obj, T data)
         {
             T data_ = data;
             std::memcpy(&(obj->data), &data_, sizeof(T));
 
             COData d = {obj->index, obj->subindex, obj->data, obj->type};
-            if(!obj->pdo_mapped == true)
+            if (!obj->tpdo_mapped)
             {
-                
+
                 auto f = this->async_sdo_write(d);
                 f.wait();
             }
             else
             {
-                this->tpdo_transmit(d);
+                this->tpdo_mapped[obj->index][obj->subindex] = data;
+                this->tpdo_mapped[obj->index][obj->subindex].WriteEvent();
             }
-
         }
 
-        template<typename  T>
+        template <typename T>
         T get_remote_obj(std::shared_ptr<RemoteObject> obj)
         {
-            if(!obj->pdo_mapped == true)
+            if (!obj->rpdo_mapped)
             {
                 COData d = {obj->index, obj->subindex, 0U, obj->type};
                 auto f = this->async_sdo_read(d);
@@ -90,7 +93,7 @@ namespace canopen_402
             return data;
         }
 
-        template<typename  T>
+        template <typename T>
         T get_remote_obj_cached(std::shared_ptr<RemoteObject> obj)
         {
             T data;
@@ -98,32 +101,89 @@ namespace canopen_402
             return data;
         }
 
-        template<typename  T>
+        template <typename T>
         void set_remote_obj_cached(std::shared_ptr<RemoteObject> obj, const T data)
         {
             T data_ = data;
             std::memcpy(&(obj->data), &data_, sizeof(T));
         }
 
-        void validate_objs(){
-            for(auto it = objs.begin(); it != objs.end(); ++it)
+        void validate_objs()
+        {
+            for (auto it = objs.begin(); it != objs.end(); ++it)
             {
                 std::shared_ptr<RemoteObject> obj = *it;
-                if(obj->type == CODataTypes::COData8) this->get_remote_obj<uint8_t>(obj);
-                if(obj->type == CODataTypes::COData16) this->get_remote_obj<uint16_t>(obj);
-                if(obj->type == CODataTypes::COData32) this->get_remote_obj<uint32_t>(obj);
+
+                try
+                {
+                    switch (obj->type)
+                    {
+                    case CODataTypes::COData8:
+                        obj->rpdo_mapped = this->tpdo_mapped[obj->index][obj->subindex].Read<uint8_t>();
+                        break;
+                    case CODataTypes::COData16:
+                        obj->rpdo_mapped = this->tpdo_mapped[obj->index][obj->subindex].Read<uint16_t>();
+                        break;
+                    case CODataTypes::COData32:
+                        obj->rpdo_mapped = this->tpdo_mapped[obj->index][obj->subindex].Read<uint32_t>();
+                        break;
+                    }
+                    obj->tpdo_mapped = true;
+                }
+                catch (lely::canopen::SdoError &e)
+                {
+                    obj->tpdo_mapped = false;
+                }
+
+                try
+                {
+                    switch (obj->type)
+                    {
+                    case CODataTypes::COData8:
+                        obj->rpdo_mapped = this->rpdo_mapped[obj->index][obj->subindex].Read<uint8_t>();
+                        break;
+                    case CODataTypes::COData16:
+                        obj->rpdo_mapped = this->rpdo_mapped[obj->index][obj->subindex].Read<uint16_t>();
+                        break;
+                    case CODataTypes::COData32:
+                        obj->rpdo_mapped = this->rpdo_mapped[obj->index][obj->subindex].Read<uint32_t>();
+                        break;
+                    }
+                    obj->rpdo_mapped = true;
+                }
+                catch (lely::canopen::SdoError &e)
+                {
+                    obj->rpdo_mapped = false;
+                }
+
+                switch (obj->type)
+                {
+                case CODataTypes::COData8:
+                    obj->data = get_remote_obj<uint8_t>(obj);
+                    break;
+                case CODataTypes::COData16:
+                    obj->data = get_remote_obj<uint16_t>(obj);
+                    break;
+                case CODataTypes::COData32:
+                    obj->data = get_remote_obj<uint32_t>(obj);
+                    break;
+                }
+                std::cout << "Initialised object :" 
+                    << this->get_id() << " " 
+                    << std::hex << obj->index << " " 
+                    << std::dec << obj->subindex << " " 
+                    << obj->data << " "
+                    << "RPDO: " << (obj->rpdo_mapped ? "yes" : "no") << " "
+                    << "TPDO: " << (obj->tpdo_mapped ? "yes" : "no") << " "
+                    << std::endl;
             }
         }
 
         MCDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
             : BasicDeviceDriver(exec, master, id)
         {
-            
         }
-
     };
 
 }
-
-
 #endif

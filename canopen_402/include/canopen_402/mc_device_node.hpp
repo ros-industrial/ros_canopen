@@ -50,7 +50,6 @@ namespace canopen_402
 
         void run()
         {
-            //RCLCPP_INFO(this->get_logger(), "Running");
             motor_->handleRead();
             motor_->handleWrite();
         }
@@ -69,11 +68,11 @@ namespace canopen_402
         {
             RCLCPP_INFO(this->get_logger(), "Activating node");
             motor_->registerDefaultModes();
+            RCLCPP_INFO(this->get_logger(), "Valdiating objs");
             mc_driver->validate_objs();
-
             RCLCPP_INFO(this->get_logger(), "Registered Default modes");
             timer_ = this->create_wall_timer(
-                500ms, std::bind(&MCDeviceNode::run, this));
+                20ms, std::bind(&MCDeviceNode::run, this));
 
             RCLCPP_INFO(this->get_logger(), "Store Active");
             active.store(true);
@@ -125,6 +124,6 @@ namespace canopen_402
         
     };
 
-};
+}
 
 #endif
