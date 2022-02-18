@@ -27,6 +27,7 @@ namespace canopen_402
     {
     private:
         std::vector<std::shared_ptr<RemoteObject>> objs;
+        bool sync;
 
     public:
         std::shared_ptr<RemoteObject> create_remote_obj(uint16_t index, uint8_t subindex, CODataTypes type)
@@ -44,8 +45,12 @@ namespace canopen_402
                 std::shared_ptr<RemoteObject> obj = *it;
                 if (obj->index == idx && obj->subindex == subidx)
                 {
-
-                    obj->data = rpdo_mapped[idx][subidx];
+                    if(obj->type == CODataTypes::COData8)
+                        obj->data = rpdo_mapped[idx][subidx].Read<uint8_t>();
+                    else if(obj->type == CODataTypes::COData16)
+                        obj->data = rpdo_mapped[idx][subidx].Read<uint16_t>();
+                    else if(obj->type == CODataTypes::COData32)
+                        obj->data = rpdo_mapped[idx][subidx].Read<uint32_t>();
                     break;
                 }
             }
@@ -67,7 +72,8 @@ namespace canopen_402
             else
             {
                 this->tpdo_mapped[obj->index][obj->subindex] = data;
-                this->tpdo_mapped[obj->index][obj->subindex].WriteEvent();
+                if(!sync) 
+                    this->tpdo_mapped[obj->index][obj->subindex].WriteEvent();
             }
         }
 
@@ -182,6 +188,7 @@ namespace canopen_402
         MCDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
             : BasicDeviceDriver(exec, master, id)
         {
+            sync = true;
         }
     };
 
