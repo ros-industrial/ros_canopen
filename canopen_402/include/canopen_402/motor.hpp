@@ -384,7 +384,7 @@ namespace canopen_402
         {
             this->driver = driver;
             status_word_entry_ = driver->create_remote_obj(status_word_entry_index, 0U, CODataTypes::COData16);
-            control_word_entry_ = driver->create_remote_obj(status_word_entry_index, 0U, CODataTypes::COData16);
+            control_word_entry_ = driver->create_remote_obj(control_word_entry_index, 0U, CODataTypes::COData16);
             op_mode_display_ = driver->create_remote_obj(op_mode_display_index, 0U, CODataTypes::COData8);
             op_mode_ = driver->create_remote_obj(op_mode_index, 0U, CODataTypes::COData8);
             supported_drive_modes_ = driver->create_remote_obj(supported_drive_modes_index, 0U, CODataTypes::COData32);
