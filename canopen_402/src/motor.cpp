@@ -423,7 +423,8 @@ namespace canopen_402
         {
             std::unique_lock lock(cw_mutex_);
             State402::InternalState next = State402::Unknown;
-            if (!Command402::setTransition(control_word_, state, target_state_, &next))
+            bool success = Command402::setTransition(control_word_, state, target_state_, &next);
+            if (!success)
             {
                 std::cout <<"Could not set transition" << std::endl;
                 return false;
@@ -517,11 +518,11 @@ namespace canopen_402
         }
         if (start_fault_reset_.exchange(false))
         {
-            this->driver->set_remote_obj_cached<uint16_t>(control_word_entry_,control_word_ & ~(1 << Command402::CW_Fault_Reset));
+            this->driver->set_remote_obj<uint16_t>(control_word_entry_,control_word_ & ~(1 << Command402::CW_Fault_Reset));
         }
         else
         {
-           this->driver->set_remote_obj_cached<uint16_t>(control_word_entry_, control_word_);
+           this->driver->set_remote_obj<uint16_t>(control_word_entry_, control_word_);
         }
     }
     void Motor402::handleDiag()
