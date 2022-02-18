@@ -146,7 +146,7 @@ DefaultValue=0x40000080
 ParameterName=Communication cycle period
 DataType=0x0007
 AccessType=rw
-DefaultValue=0
+DefaultValue=10000
 
 [1007]
 ParameterName=Synchronous window length
@@ -272,7 +272,7 @@ DefaultValue=0x00000182
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0xFF
+DefaultValue=0x01
 
 [1400sub3]
 ParameterName=inhibit time
@@ -311,7 +311,7 @@ DefaultValue=0x00000282
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0xFF
+DefaultValue=0x01
 
 [1401sub3]
 ParameterName=inhibit time
@@ -373,7 +373,7 @@ DefaultValue=0x00000202
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0xFF
+DefaultValue=0x01
 
 [1800sub3]
 ParameterName=inhibit time
@@ -419,7 +419,7 @@ DefaultValue=0x00000302
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0xFF
+DefaultValue=0x01
 
 [1801sub3]
 ParameterName=inhibit time
@@ -465,7 +465,7 @@ DefaultValue=0x00000402
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0xFF
+DefaultValue=0x01
 
 [1802sub3]
 ParameterName=inhibit time
@@ -511,7 +511,7 @@ DefaultValue=0x00000502
 ParameterName=transmission type
 DataType=0x0005
 AccessType=rw
-DefaultValue=0xFF
+DefaultValue=0x01
 
 [1803sub3]
 ParameterName=inhibit time

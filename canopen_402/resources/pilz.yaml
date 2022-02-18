@@ -1,5 +1,6 @@
 master:
   node_id: 1
+  sync_period: 10000
 
 prbt_joint_1:
   node_id: 3
@@ -11,22 +12,27 @@ prbt_joint_2:
   dcf: "pilz.eds"
   driver: "canopen_402::MCDevice"
 
+
 prbt_joint_3:
   node_id: 5
   dcf: "pilz.eds"
   driver: "canopen_402::MCDevice"
+
 
 prbt_joint_4:
   node_id: 6
   dcf: "pilz.eds"
   driver: "canopen_402::MCDevice"
 
+
 prbt_joint_5:
   node_id: 7
   dcf: "pilz.eds"
   driver: "canopen_402::MCDevice"
 
+
 prbt_joint_6:
   node_id: 8
   dcf: "pilz.eds"
   driver: "canopen_402::MCDevice"
+

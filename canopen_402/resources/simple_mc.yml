@@ -1,5 +1,6 @@
 master:
   node_id: 1
+  sync_period: 10000
 
 mc_device_2:
   node_id: 2

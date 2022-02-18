@@ -454,7 +454,7 @@ ParameterName=Transmission type
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=255
+DefaultValue=0x01
 PDOMapping=0
 
 [1401]
@@ -485,7 +485,7 @@ ParameterName=Transmission type
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=255
+DefaultValue=0x01
 PDOMapping=0
 
 [1402]
@@ -516,7 +516,7 @@ ParameterName=Transmission type
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=255
+DefaultValue=0x01
 PDOMapping=0
 
 [1403]
@@ -547,7 +547,7 @@ ParameterName=Transmission type
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=255
+DefaultValue=0x01
 PDOMapping=0
 
 [1600]
@@ -894,7 +894,7 @@ ParameterName=Transmission type
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=255
+DefaultValue=0x01
 PDOMapping=0
 
 [1800sub3]
@@ -941,7 +941,7 @@ ParameterName=Transmission type
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=255
+DefaultValue=0x01
 PDOMapping=0
 
 [1801sub3]
@@ -988,7 +988,7 @@ ParameterName=Transmision type
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=255
+DefaultValue=0x01
 PDOMapping=0
 
 [1802sub3]
@@ -1035,7 +1035,7 @@ ParameterName=Transmission type
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=255
+DefaultValue=0x01
 PDOMapping=0
 
 [1803sub3]
