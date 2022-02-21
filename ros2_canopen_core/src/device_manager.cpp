@@ -10,21 +10,28 @@
 #include <yaml-cpp/yaml.h>
 #include "ros2_canopen_core/device_manager.hpp"
 
+
+bool DeviceManager::load_component(const std::string& pkg_name, const std::string& plugin_name) {
+    const std::shared_ptr<rmw_request_id_t> request_header =
+        std::make_shared<rmw_request_id_t>();
+    const std::shared_ptr<LoadNode::Request> request =
+        std::make_shared<LoadNode::Request>();
+    std::shared_ptr<LoadNode::Response> response =
+        std::make_shared<LoadNode::Response>();
+
+    request->package_name = pkg_name;
+    request->plugin_name = plugin_name;
+    this->OnLoadNode(request_header, request, response);
+    RCLCPP_INFO(this->get_logger(), "Component loaded? %s %s",
+        response->success, response->error_message);
+    return response->success;
+}
+
 bool DeviceManager::load_driver(std::string& device_name,
         uint32_t node_id) {
-    try {
-            std::string plugin_name = "ros2_canopen::" + device_name;
-            std::shared_ptr<ros2_canopen::CANopenDriverWrapper> driver =
-                poly_loader_.createSharedInstance(plugin_name.c_str());
-            driver->init(*exec_, *can_master_, node_id);
-            drivers_.insert({node_id, driver});
-            RCLCPP_INFO(this->get_logger(), "Added driver: %s", plugin_name.c_str());
-        }
-        catch (pluginlib::PluginlibException &ex) {   
-            RCLCPP_ERROR(this->get_logger(), "%s", ex.what());
-            return false;
-        }
-    return true;
+
+    std::string plugin_name = "ros2_canopen::" + device_name;
+    return this->load_component("proxy_driver_plugins", plugin_name);
 }
 
 bool DeviceManager::init_devices_from_config(io::Timer& timer,
@@ -130,7 +137,7 @@ bool DeviceManager::init() {
     // node' command.
     can_master_->Reset();
 
-    loop.run();     // TODO: run on a separate thread
+    loop.run();
     return true;
 }
 
@@ -139,11 +146,11 @@ int main(int argc, char const *argv[]) {
     rclcpp::init(argc, argv);
     auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
     auto device_manager = std::make_shared<DeviceManager>(exec);
-    if (!device_manager->init()) {
-        std::cerr << "Initialization failed!" << std::endl;
-        return -1;
-    }
+    std::thread spinThread([&device_manager]() {
+        std::cout << "Init success: " << device_manager->init() << std::endl;
+    });
     exec->add_node(device_manager);
     exec->spin();
+    spinThread.join();
     return 0;
 }

@@ -18,8 +18,12 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_ros REQUIRED)
-find_package(pluginlib REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(ros2_canopen_core REQUIRED)
+
+
+set(node_plugins "")
 
 add_library(proxy_driver SHARED
   src/proxy_driver.cpp)
@@ -29,15 +33,17 @@ target_include_directories(proxy_driver PUBLIC
   $<INSTALL_INTERFACE:include>)
 ament_target_dependencies(
   proxy_driver
+  rclcpp
+  rclcpp_components
   ros2_canopen_core
-  pluginlib
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(proxy_driver PRIVATE "PROXY_DRIVER_PLUGINS_BUILDING_LIBRARY")
 
-pluginlib_export_plugin_description_file(ros2_canopen_core proxy_driver.xml)
+rclcpp_components_register_nodes(proxy_driver "ros2_canopen::ProxyDriverWrapper")
+set(node_plugins "${node_plugins}ros2_canopen::ProxyDriverWrapper;$<TARGET_FILE:proxy_driver>\n")
 
 install(
   DIRECTORY include/

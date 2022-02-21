@@ -78,7 +78,7 @@ int main(int argc, char const *argv[]) {
     chan.open(ctrl);
 
     // Create a CANopen slave with node-ID 2.
-    MySlave slave(timer, chan, "/home/ipa-hsd/projects/ros_i/ros2_canopen/cpp_tests/cpp-slave.eds", "", 2);
+    MySlave slave(timer, chan, "/home/ipa-hsd/projects/ros_i/ros2_canopen/can_ws/install/ros2_canopen_core/share/ros2_canopen_core/resources/slave.eds", "", 2);
 
     // Create a signal handler.
     io::SignalSet sigset(poll, exec);

@@ -14,8 +14,12 @@ using namespace lely;
 namespace ros2_canopen {
     // Base class for driver plugin
     // Pluginlib API does allows only default constructors
-    class CANopenDriverWrapper {
+    class CANopenDriverWrapper : public rclcpp::Node{
     public:
+        CANopenDriverWrapper(const std::string& node_name,
+            const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions()) :
+            rclcpp::Node(node_name, node_options) {}
+
         virtual void init(ev::Executor& exec,
             canopen::AsyncMaster& master,
             uint32_t node_id) noexcept = 0;

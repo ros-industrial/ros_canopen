@@ -97,6 +97,9 @@ namespace ros2_canopen {
 
     class ProxyDriverWrapper : public CANopenDriverWrapper {
     public:
+        ProxyDriverWrapper(const rclcpp::NodeOptions & options) :
+            CANopenDriverWrapper("proxy_driver_node", options) {}
+
         void init(ev::Executor& exec,
             canopen::AsyncMaster& master,
             uint32_t node_id) noexcept override {
@@ -109,5 +112,6 @@ namespace ros2_canopen {
     };
 }   // end namespace ros2_canopen
 
-#include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(ros2_canopen::ProxyDriverWrapper, ros2_canopen::CANopenDriverWrapper)
+#include "rclcpp_components/register_node_macro.hpp"
+
+RCLCPP_COMPONENTS_REGISTER_NODE(ros2_canopen::ProxyDriverWrapper)
