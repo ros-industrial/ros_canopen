@@ -29,8 +29,8 @@ SimpleBootUpSlave=0
 Granularity=1
 DynamicChannelsSupported=0
 GroupMessaging=0
-NrOfRxPDO=2
-NrOfTxPDO=4
+NrOfRxPDO=3
+NrOfTxPDO=2
 LSS_Supported=1
 
 [DummyUsage]
@@ -59,7 +59,7 @@ SupportedObjects=3
 3=0x1018
 
 [OptionalObjects]
-SupportedObjects=36
+SupportedObjects=35
 1=0x1003
 2=0x1005
 3=0x1006
@@ -74,49 +74,44 @@ SupportedObjects=36
 12=0x102A
 13=0x1400
 14=0x1401
-15=0x1600
-16=0x1601
-17=0x1800
-18=0x1801
-19=0x1802
-20=0x1803
+15=0x1402
+16=0x1600
+17=0x1601
+18=0x1602
+19=0x1800
+20=0x1801
 21=0x1A00
 22=0x1A01
-23=0x1A02
-24=0x1A03
-25=0x1F25
-26=0x1F55
-27=0x1F80
-28=0x1F81
-29=0x1F82
-30=0x1F84
-31=0x1F85
-32=0x1F86
-33=0x1F87
-34=0x1F88
-35=0x1F89
-36=0x1F8A
+23=0x1F22
+24=0x1F25
+25=0x1F55
+26=0x1F80
+27=0x1F81
+28=0x1F82
+29=0x1F84
+30=0x1F85
+31=0x1F86
+32=0x1F87
+33=0x1F88
+34=0x1F89
+35=0x1F8A
 
 [ManufacturerObjects]
-SupportedObjects=18
+SupportedObjects=14
 1=0x2000
 2=0x2001
 3=0x2200
 4=0x2201
-5=0x2202
-6=0x2203
-7=0x5800
-8=0x5801
-9=0x5A00
-10=0x5A01
+5=0x5800
+6=0x5801
+7=0x5802
+8=0x5A00
+9=0x5A01
+10=0x5A02
 11=0x5C00
 12=0x5C01
-13=0x5C02
-14=0x5C03
-15=0x5E00
-16=0x5E01
-17=0x5E02
-18=0x5E03
+13=0x5E00
+14=0x5E01
 
 [1000]
 ParameterName=Device type
@@ -174,7 +169,8 @@ AccessType=rw
 CompactSubObj=127
 
 [1016Value]
-NrOfEntries=0
+NrOfEntries=1
+1=0x0003012C
 
 [1017]
 ParameterName=Producer heartbeat time
@@ -232,7 +228,7 @@ CompactSubObj=127
 
 [1028Value]
 NrOfEntries=1
-2=0x00000082
+3=0x00000083
 
 [1029]
 ParameterName=Error behavior object
@@ -266,7 +262,7 @@ DefaultValue=5
 ParameterName=COB-ID used by RPDO
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000182
+DefaultValue=0x00000183
 
 [1400sub2]
 ParameterName=transmission type
@@ -305,7 +301,7 @@ DefaultValue=5
 ParameterName=COB-ID used by RPDO
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000282
+DefaultValue=0x00000283
 
 [1401sub2]
 ParameterName=transmission type
@@ -329,16 +325,57 @@ DataType=0x0006
 AccessType=rw
 DefaultValue=0
 
+[1402]
+SubNumber=6
+ParameterName=RPDO communication parameter
+ObjectType=0x09
+
+[1402sub0]
+ParameterName=highest sub-index supported
+DataType=0x0005
+AccessType=const
+DefaultValue=5
+
+[1402sub1]
+ParameterName=COB-ID used by RPDO
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000383
+
+[1402sub2]
+ParameterName=transmission type
+DataType=0x0005
+AccessType=rw
+DefaultValue=0x01
+
+[1402sub3]
+ParameterName=inhibit time
+DataType=0x0006
+AccessType=rw
+
+[1402sub4]
+ParameterName=compatibility entry
+DataType=0x0005
+AccessType=rw
+
+[1402sub5]
+ParameterName=event-timer
+DataType=0x0006
+AccessType=rw
+DefaultValue=0
+
 [1600]
 ParameterName=RPDO mapping parameter
 ObjectType=0x09
 DataType=0x0007
 AccessType=rw
-CompactSubObj=1
+CompactSubObj=3
 
 [1600Value]
-NrOfEntries=1
+NrOfEntries=3
 1=0x20000110
+2=0x20000208
+3=0x20000320
 
 [1601]
 ParameterName=RPDO mapping parameter
@@ -349,8 +386,20 @@ CompactSubObj=2
 
 [1601Value]
 NrOfEntries=2
-1=0x20000110
-2=0x20010108
+1=0x20010120
+2=0x20010220
+
+[1602]
+ParameterName=RPDO mapping parameter
+ObjectType=0x09
+DataType=0x0007
+AccessType=rw
+CompactSubObj=2
+
+[1602Value]
+NrOfEntries=2
+1=0x20000320
+2=0x20010220
 
 [1800]
 SubNumber=7
@@ -367,7 +416,7 @@ DefaultValue=6
 ParameterName=COB-ID used by TPDO
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000202
+DefaultValue=0x00000203
 
 [1800sub2]
 ParameterName=transmission type
@@ -413,7 +462,7 @@ DefaultValue=6
 ParameterName=COB-ID used by TPDO
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000302
+DefaultValue=0x00000303
 
 [1801sub2]
 ParameterName=transmission type
@@ -444,108 +493,18 @@ DataType=0x0005
 AccessType=rw
 DefaultValue=0
 
-[1802]
-SubNumber=7
-ParameterName=TPDO communication parameter
-ObjectType=0x09
-
-[1802sub0]
-ParameterName=highest sub-index supported
-DataType=0x0005
-AccessType=const
-DefaultValue=6
-
-[1802sub1]
-ParameterName=COB-ID used by TPDO
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000402
-
-[1802sub2]
-ParameterName=transmission type
-DataType=0x0005
-AccessType=rw
-DefaultValue=0x01
-
-[1802sub3]
-ParameterName=inhibit time
-DataType=0x0006
-AccessType=rw
-DefaultValue=0
-
-[1802sub4]
-ParameterName=reserved
-DataType=0x0005
-AccessType=rw
-
-[1802sub5]
-ParameterName=event timer
-DataType=0x0006
-AccessType=rw
-DefaultValue=0
-
-[1802sub6]
-ParameterName=SYNC start value
-DataType=0x0005
-AccessType=rw
-DefaultValue=0
-
-[1803]
-SubNumber=7
-ParameterName=TPDO communication parameter
-ObjectType=0x09
-
-[1803sub0]
-ParameterName=highest sub-index supported
-DataType=0x0005
-AccessType=const
-DefaultValue=6
-
-[1803sub1]
-ParameterName=COB-ID used by TPDO
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000502
-
-[1803sub2]
-ParameterName=transmission type
-DataType=0x0005
-AccessType=rw
-DefaultValue=0x01
-
-[1803sub3]
-ParameterName=inhibit time
-DataType=0x0006
-AccessType=rw
-DefaultValue=0
-
-[1803sub4]
-ParameterName=reserved
-DataType=0x0005
-AccessType=rw
-
-[1803sub5]
-ParameterName=event timer
-DataType=0x0006
-AccessType=rw
-DefaultValue=0
-
-[1803sub6]
-ParameterName=SYNC start value
-DataType=0x0005
-AccessType=rw
-DefaultValue=0
-
 [1A00]
 ParameterName=TPDO mapping parameter
 ObjectType=0x09
 DataType=0x0007
 AccessType=rw
-CompactSubObj=1
+CompactSubObj=3
 
 [1A00Value]
-NrOfEntries=1
+NrOfEntries=3
 1=0x22000110
+2=0x22000220
+3=0x22000310
 
 [1A01]
 ParameterName=TPDO mapping parameter
@@ -556,32 +515,655 @@ CompactSubObj=2
 
 [1A01Value]
 NrOfEntries=2
-1=0x22000110
-2=0x22010108
+1=0x22010120
+2=0x22010220
 
-[1A02]
-ParameterName=TPDO mapping parameter
-ObjectType=0x09
-DataType=0x0007
-AccessType=rw
-CompactSubObj=2
+[1F22]
+SubNumber=128
+ParameterName=Concise DCF
+ObjectType=0x08
 
-[1A02Value]
-NrOfEntries=2
-1=0x22000110
-2=0x22020120
+[1F22sub0]
+ParameterName=Highest sub-index supported
+DataType=0x0005
+AccessType=const
+DefaultValue=127
 
-[1A03]
-ParameterName=TPDO mapping parameter
-ObjectType=0x09
-DataType=0x0007
-AccessType=rw
-CompactSubObj=2
+[1F22sub1]
+ParameterName=Node-ID 1
+DataType=0x000F
+AccessType=ro
 
-[1A03Value]
-NrOfEntries=2
-1=0x22000110
-2=0x22030120
+[1F22sub2]
+ParameterName=Node-ID 2
+DataType=0x000F
+AccessType=ro
+
+[1F22sub3]
+ParameterName=Node-ID 3
+DataType=0x000F
+AccessType=ro
+UploadFile=simple_mc.bin
+
+[1F22sub4]
+ParameterName=Node-ID 4
+DataType=0x000F
+AccessType=ro
+
+[1F22sub5]
+ParameterName=Node-ID 5
+DataType=0x000F
+AccessType=ro
+
+[1F22sub6]
+ParameterName=Node-ID 6
+DataType=0x000F
+AccessType=ro
+
+[1F22sub7]
+ParameterName=Node-ID 7
+DataType=0x000F
+AccessType=ro
+
+[1F22sub8]
+ParameterName=Node-ID 8
+DataType=0x000F
+AccessType=ro
+
+[1F22sub9]
+ParameterName=Node-ID 9
+DataType=0x000F
+AccessType=ro
+
+[1F22subA]
+ParameterName=Node-ID 10
+DataType=0x000F
+AccessType=ro
+
+[1F22subB]
+ParameterName=Node-ID 11
+DataType=0x000F
+AccessType=ro
+
+[1F22subC]
+ParameterName=Node-ID 12
+DataType=0x000F
+AccessType=ro
+
+[1F22subD]
+ParameterName=Node-ID 13
+DataType=0x000F
+AccessType=ro
+
+[1F22subE]
+ParameterName=Node-ID 14
+DataType=0x000F
+AccessType=ro
+
+[1F22subF]
+ParameterName=Node-ID 15
+DataType=0x000F
+AccessType=ro
+
+[1F22sub10]
+ParameterName=Node-ID 16
+DataType=0x000F
+AccessType=ro
+
+[1F22sub11]
+ParameterName=Node-ID 17
+DataType=0x000F
+AccessType=ro
+
+[1F22sub12]
+ParameterName=Node-ID 18
+DataType=0x000F
+AccessType=ro
+
+[1F22sub13]
+ParameterName=Node-ID 19
+DataType=0x000F
+AccessType=ro
+
+[1F22sub14]
+ParameterName=Node-ID 20
+DataType=0x000F
+AccessType=ro
+
+[1F22sub15]
+ParameterName=Node-ID 21
+DataType=0x000F
+AccessType=ro
+
+[1F22sub16]
+ParameterName=Node-ID 22
+DataType=0x000F
+AccessType=ro
+
+[1F22sub17]
+ParameterName=Node-ID 23
+DataType=0x000F
+AccessType=ro
+
+[1F22sub18]
+ParameterName=Node-ID 24
+DataType=0x000F
+AccessType=ro
+
+[1F22sub19]
+ParameterName=Node-ID 25
+DataType=0x000F
+AccessType=ro
+
+[1F22sub1A]
+ParameterName=Node-ID 26
+DataType=0x000F
+AccessType=ro
+
+[1F22sub1B]
+ParameterName=Node-ID 27
+DataType=0x000F
+AccessType=ro
+
+[1F22sub1C]
+ParameterName=Node-ID 28
+DataType=0x000F
+AccessType=ro
+
+[1F22sub1D]
+ParameterName=Node-ID 29
+DataType=0x000F
+AccessType=ro
+
+[1F22sub1E]
+ParameterName=Node-ID 30
+DataType=0x000F
+AccessType=ro
+
+[1F22sub1F]
+ParameterName=Node-ID 31
+DataType=0x000F
+AccessType=ro
+
+[1F22sub20]
+ParameterName=Node-ID 32
+DataType=0x000F
+AccessType=ro
+
+[1F22sub21]
+ParameterName=Node-ID 33
+DataType=0x000F
+AccessType=ro
+
+[1F22sub22]
+ParameterName=Node-ID 34
+DataType=0x000F
+AccessType=ro
+
+[1F22sub23]
+ParameterName=Node-ID 35
+DataType=0x000F
+AccessType=ro
+
+[1F22sub24]
+ParameterName=Node-ID 36
+DataType=0x000F
+AccessType=ro
+
+[1F22sub25]
+ParameterName=Node-ID 37
+DataType=0x000F
+AccessType=ro
+
+[1F22sub26]
+ParameterName=Node-ID 38
+DataType=0x000F
+AccessType=ro
+
+[1F22sub27]
+ParameterName=Node-ID 39
+DataType=0x000F
+AccessType=ro
+
+[1F22sub28]
+ParameterName=Node-ID 40
+DataType=0x000F
+AccessType=ro
+
+[1F22sub29]
+ParameterName=Node-ID 41
+DataType=0x000F
+AccessType=ro
+
+[1F22sub2A]
+ParameterName=Node-ID 42
+DataType=0x000F
+AccessType=ro
+
+[1F22sub2B]
+ParameterName=Node-ID 43
+DataType=0x000F
+AccessType=ro
+
+[1F22sub2C]
+ParameterName=Node-ID 44
+DataType=0x000F
+AccessType=ro
+
+[1F22sub2D]
+ParameterName=Node-ID 45
+DataType=0x000F
+AccessType=ro
+
+[1F22sub2E]
+ParameterName=Node-ID 46
+DataType=0x000F
+AccessType=ro
+
+[1F22sub2F]
+ParameterName=Node-ID 47
+DataType=0x000F
+AccessType=ro
+
+[1F22sub30]
+ParameterName=Node-ID 48
+DataType=0x000F
+AccessType=ro
+
+[1F22sub31]
+ParameterName=Node-ID 49
+DataType=0x000F
+AccessType=ro
+
+[1F22sub32]
+ParameterName=Node-ID 50
+DataType=0x000F
+AccessType=ro
+
+[1F22sub33]
+ParameterName=Node-ID 51
+DataType=0x000F
+AccessType=ro
+
+[1F22sub34]
+ParameterName=Node-ID 52
+DataType=0x000F
+AccessType=ro
+
+[1F22sub35]
+ParameterName=Node-ID 53
+DataType=0x000F
+AccessType=ro
+
+[1F22sub36]
+ParameterName=Node-ID 54
+DataType=0x000F
+AccessType=ro
+
+[1F22sub37]
+ParameterName=Node-ID 55
+DataType=0x000F
+AccessType=ro
+
+[1F22sub38]
+ParameterName=Node-ID 56
+DataType=0x000F
+AccessType=ro
+
+[1F22sub39]
+ParameterName=Node-ID 57
+DataType=0x000F
+AccessType=ro
+
+[1F22sub3A]
+ParameterName=Node-ID 58
+DataType=0x000F
+AccessType=ro
+
+[1F22sub3B]
+ParameterName=Node-ID 59
+DataType=0x000F
+AccessType=ro
+
+[1F22sub3C]
+ParameterName=Node-ID 60
+DataType=0x000F
+AccessType=ro
+
+[1F22sub3D]
+ParameterName=Node-ID 61
+DataType=0x000F
+AccessType=ro
+
+[1F22sub3E]
+ParameterName=Node-ID 62
+DataType=0x000F
+AccessType=ro
+
+[1F22sub3F]
+ParameterName=Node-ID 63
+DataType=0x000F
+AccessType=ro
+
+[1F22sub40]
+ParameterName=Node-ID 64
+DataType=0x000F
+AccessType=ro
+
+[1F22sub41]
+ParameterName=Node-ID 65
+DataType=0x000F
+AccessType=ro
+
+[1F22sub42]
+ParameterName=Node-ID 66
+DataType=0x000F
+AccessType=ro
+
+[1F22sub43]
+ParameterName=Node-ID 67
+DataType=0x000F
+AccessType=ro
+
+[1F22sub44]
+ParameterName=Node-ID 68
+DataType=0x000F
+AccessType=ro
+
+[1F22sub45]
+ParameterName=Node-ID 69
+DataType=0x000F
+AccessType=ro
+
+[1F22sub46]
+ParameterName=Node-ID 70
+DataType=0x000F
+AccessType=ro
+
+[1F22sub47]
+ParameterName=Node-ID 71
+DataType=0x000F
+AccessType=ro
+
+[1F22sub48]
+ParameterName=Node-ID 72
+DataType=0x000F
+AccessType=ro
+
+[1F22sub49]
+ParameterName=Node-ID 73
+DataType=0x000F
+AccessType=ro
+
+[1F22sub4A]
+ParameterName=Node-ID 74
+DataType=0x000F
+AccessType=ro
+
+[1F22sub4B]
+ParameterName=Node-ID 75
+DataType=0x000F
+AccessType=ro
+
+[1F22sub4C]
+ParameterName=Node-ID 76
+DataType=0x000F
+AccessType=ro
+
+[1F22sub4D]
+ParameterName=Node-ID 77
+DataType=0x000F
+AccessType=ro
+
+[1F22sub4E]
+ParameterName=Node-ID 78
+DataType=0x000F
+AccessType=ro
+
+[1F22sub4F]
+ParameterName=Node-ID 79
+DataType=0x000F
+AccessType=ro
+
+[1F22sub50]
+ParameterName=Node-ID 80
+DataType=0x000F
+AccessType=ro
+
+[1F22sub51]
+ParameterName=Node-ID 81
+DataType=0x000F
+AccessType=ro
+
+[1F22sub52]
+ParameterName=Node-ID 82
+DataType=0x000F
+AccessType=ro
+
+[1F22sub53]
+ParameterName=Node-ID 83
+DataType=0x000F
+AccessType=ro
+
+[1F22sub54]
+ParameterName=Node-ID 84
+DataType=0x000F
+AccessType=ro
+
+[1F22sub55]
+ParameterName=Node-ID 85
+DataType=0x000F
+AccessType=ro
+
+[1F22sub56]
+ParameterName=Node-ID 86
+DataType=0x000F
+AccessType=ro
+
+[1F22sub57]
+ParameterName=Node-ID 87
+DataType=0x000F
+AccessType=ro
+
+[1F22sub58]
+ParameterName=Node-ID 88
+DataType=0x000F
+AccessType=ro
+
+[1F22sub59]
+ParameterName=Node-ID 89
+DataType=0x000F
+AccessType=ro
+
+[1F22sub5A]
+ParameterName=Node-ID 90
+DataType=0x000F
+AccessType=ro
+
+[1F22sub5B]
+ParameterName=Node-ID 91
+DataType=0x000F
+AccessType=ro
+
+[1F22sub5C]
+ParameterName=Node-ID 92
+DataType=0x000F
+AccessType=ro
+
+[1F22sub5D]
+ParameterName=Node-ID 93
+DataType=0x000F
+AccessType=ro
+
+[1F22sub5E]
+ParameterName=Node-ID 94
+DataType=0x000F
+AccessType=ro
+
+[1F22sub5F]
+ParameterName=Node-ID 95
+DataType=0x000F
+AccessType=ro
+
+[1F22sub60]
+ParameterName=Node-ID 96
+DataType=0x000F
+AccessType=ro
+
+[1F22sub61]
+ParameterName=Node-ID 97
+DataType=0x000F
+AccessType=ro
+
+[1F22sub62]
+ParameterName=Node-ID 98
+DataType=0x000F
+AccessType=ro
+
+[1F22sub63]
+ParameterName=Node-ID 99
+DataType=0x000F
+AccessType=ro
+
+[1F22sub64]
+ParameterName=Node-ID 100
+DataType=0x000F
+AccessType=ro
+
+[1F22sub65]
+ParameterName=Node-ID 101
+DataType=0x000F
+AccessType=ro
+
+[1F22sub66]
+ParameterName=Node-ID 102
+DataType=0x000F
+AccessType=ro
+
+[1F22sub67]
+ParameterName=Node-ID 103
+DataType=0x000F
+AccessType=ro
+
+[1F22sub68]
+ParameterName=Node-ID 104
+DataType=0x000F
+AccessType=ro
+
+[1F22sub69]
+ParameterName=Node-ID 105
+DataType=0x000F
+AccessType=ro
+
+[1F22sub6A]
+ParameterName=Node-ID 106
+DataType=0x000F
+AccessType=ro
+
+[1F22sub6B]
+ParameterName=Node-ID 107
+DataType=0x000F
+AccessType=ro
+
+[1F22sub6C]
+ParameterName=Node-ID 108
+DataType=0x000F
+AccessType=ro
+
+[1F22sub6D]
+ParameterName=Node-ID 109
+DataType=0x000F
+AccessType=ro
+
+[1F22sub6E]
+ParameterName=Node-ID 110
+DataType=0x000F
+AccessType=ro
+
+[1F22sub6F]
+ParameterName=Node-ID 111
+DataType=0x000F
+AccessType=ro
+
+[1F22sub70]
+ParameterName=Node-ID 112
+DataType=0x000F
+AccessType=ro
+
+[1F22sub71]
+ParameterName=Node-ID 113
+DataType=0x000F
+AccessType=ro
+
+[1F22sub72]
+ParameterName=Node-ID 114
+DataType=0x000F
+AccessType=ro
+
+[1F22sub73]
+ParameterName=Node-ID 115
+DataType=0x000F
+AccessType=ro
+
+[1F22sub74]
+ParameterName=Node-ID 116
+DataType=0x000F
+AccessType=ro
+
+[1F22sub75]
+ParameterName=Node-ID 117
+DataType=0x000F
+AccessType=ro
+
+[1F22sub76]
+ParameterName=Node-ID 118
+DataType=0x000F
+AccessType=ro
+
+[1F22sub77]
+ParameterName=Node-ID 119
+DataType=0x000F
+AccessType=ro
+
+[1F22sub78]
+ParameterName=Node-ID 120
+DataType=0x000F
+AccessType=ro
+
+[1F22sub79]
+ParameterName=Node-ID 121
+DataType=0x000F
+AccessType=ro
+
+[1F22sub7A]
+ParameterName=Node-ID 122
+DataType=0x000F
+AccessType=ro
+
+[1F22sub7B]
+ParameterName=Node-ID 123
+DataType=0x000F
+AccessType=ro
+
+[1F22sub7C]
+ParameterName=Node-ID 124
+DataType=0x000F
+AccessType=ro
+
+[1F22sub7D]
+ParameterName=Node-ID 125
+DataType=0x000F
+AccessType=ro
+
+[1F22sub7E]
+ParameterName=Node-ID 126
+DataType=0x000F
+AccessType=ro
+
+[1F22sub7F]
+ParameterName=Node-ID 127
+DataType=0x000F
+AccessType=ro
 
 [1F25]
 ParameterName=Configuration request
@@ -612,7 +1194,7 @@ CompactSubObj=127
 
 [1F81Value]
 NrOfEntries=1
-2=0x00000005
+3=0x00000005
 
 [1F82]
 ParameterName=Request NMT
@@ -629,8 +1211,7 @@ AccessType=rw
 CompactSubObj=127
 
 [1F84Value]
-NrOfEntries=1
-2=0x00060192
+NrOfEntries=0
 
 [1F85]
 ParameterName=Vendor identification
@@ -640,8 +1221,7 @@ AccessType=rw
 CompactSubObj=127
 
 [1F85Value]
-NrOfEntries=1
-2=0x000001A3
+NrOfEntries=0
 
 [1F86]
 ParameterName=Product code
@@ -684,7 +1264,7 @@ CompactSubObj=127
 NrOfEntries=0
 
 [2000]
-SubNumber=2
+SubNumber=4
 ParameterName=Mapped application objects for RPDO 1
 ObjectType=0x09
 
@@ -692,16 +1272,28 @@ ObjectType=0x09
 ParameterName=Highest sub-index supported
 DataType=0x0005
 AccessType=const
-DefaultValue=1
+DefaultValue=3
 
 [2000sub1]
-ParameterName=mc_device_2: Status word
+ParameterName=simple_mc: statusword
 DataType=0x0006
 AccessType=rww
 PDOMapping=1
 
+[2000sub2]
+ParameterName=simple_mc: modes_of_operation_display
+DataType=0x0002
+AccessType=rww
+PDOMapping=1
+
+[2000sub3]
+ParameterName=simple_mc: position_actual_value
+DataType=0x0004
+AccessType=rww
+PDOMapping=1
+
 [2001]
-SubNumber=2
+SubNumber=3
 ParameterName=Mapped application objects for RPDO 2
 ObjectType=0x09
 
@@ -709,16 +1301,22 @@ ObjectType=0x09
 ParameterName=Highest sub-index supported
 DataType=0x0005
 AccessType=const
-DefaultValue=1
+DefaultValue=2
 
 [2001sub1]
-ParameterName=mc_device_2: Modes of Operation Display
-DataType=0x0002
+ParameterName=simple_mc: velocity_demand_value
+DataType=0x0004
+AccessType=rww
+PDOMapping=1
+
+[2001sub2]
+ParameterName=simple_mc: velocity_actual_value
+DataType=0x0004
 AccessType=rww
 PDOMapping=1
 
 [2200]
-SubNumber=2
+SubNumber=4
 ParameterName=Mapped application objects for TPDO 1
 ObjectType=0x09
 
@@ -726,16 +1324,28 @@ ObjectType=0x09
 ParameterName=Highest sub-index supported
 DataType=0x0005
 AccessType=const
-DefaultValue=1
+DefaultValue=3
 
 [2200sub1]
-ParameterName=mc_device_2: Control word
+ParameterName=simple_mc: controlword
 DataType=0x0006
 AccessType=rwr
 PDOMapping=1
 
+[2200sub2]
+ParameterName=simple_mc: interpolation_data_record_setpoint_1
+DataType=0x0004
+AccessType=rwr
+PDOMapping=1
+
+[2200sub3]
+ParameterName=simple_mc: vl_target_velocity
+DataType=0x0003
+AccessType=rwr
+PDOMapping=1
+
 [2201]
-SubNumber=2
+SubNumber=3
 ParameterName=Mapped application objects for TPDO 2
 ObjectType=0x09
 
@@ -743,45 +1353,17 @@ ObjectType=0x09
 ParameterName=Highest sub-index supported
 DataType=0x0005
 AccessType=const
-DefaultValue=1
+DefaultValue=2
 
 [2201sub1]
-ParameterName=mc_device_2: Modes of Operation
-DataType=0x0002
-AccessType=rwr
-PDOMapping=1
-
-[2202]
-SubNumber=2
-ParameterName=Mapped application objects for TPDO 3
-ObjectType=0x09
-
-[2202sub0]
-ParameterName=Highest sub-index supported
-DataType=0x0005
-AccessType=const
-DefaultValue=1
-
-[2202sub1]
-ParameterName=mc_device_2: Target position
+ParameterName=simple_mc: target_position
 DataType=0x0004
 AccessType=rwr
 PDOMapping=1
 
-[2203]
-SubNumber=2
-ParameterName=Mapped application objects for TPDO 4
-ObjectType=0x09
-
-[2203sub0]
-ParameterName=Highest sub-index supported
-DataType=0x0005
-AccessType=const
-DefaultValue=1
-
-[2203sub1]
-ParameterName=mc_device_2: Target velocity
-DataType=0x0004
+[2201sub2]
+ParameterName=simple_mc: profile_velocity
+DataType=0x0007
 AccessType=rwr
 PDOMapping=1
 
@@ -789,24 +1371,32 @@ PDOMapping=1
 ParameterName=Remote TPDO number and node-ID
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000102
+DefaultValue=0x00000103
 
 [5801]
 ParameterName=Remote TPDO number and node-ID
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000202
+DefaultValue=0x00000203
+
+[5802]
+ParameterName=Remote TPDO number and node-ID
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000303
 
 [5A00]
 ParameterName=Remote TPDO mapping parameter
 ObjectType=0x08
 DataType=0x0007
 AccessType=rw
-CompactSubObj=1
+CompactSubObj=3
 
 [5A00Value]
-NrOfEntries=1
+NrOfEntries=3
 1=0x60410010
+2=0x60610008
+3=0x60640020
 
 [5A01]
 ParameterName=Remote TPDO mapping parameter
@@ -817,43 +1407,45 @@ CompactSubObj=2
 
 [5A01Value]
 NrOfEntries=2
-1=0x60410010
-2=0x60610008
+1=0x606B0020
+2=0x606C0020
+
+[5A02]
+ParameterName=Remote TPDO mapping parameter
+ObjectType=0x08
+DataType=0x0007
+AccessType=rw
+CompactSubObj=2
+
+[5A02Value]
+NrOfEntries=2
+1=0x60640020
+2=0x606C0020
 
 [5C00]
 ParameterName=Remote RPDO number and node-ID
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000102
+DefaultValue=0x00000103
 
 [5C01]
 ParameterName=Remote RPDO number and node-ID
 DataType=0x0007
 AccessType=rw
-DefaultValue=0x00000202
-
-[5C02]
-ParameterName=Remote RPDO number and node-ID
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000302
-
-[5C03]
-ParameterName=Remote RPDO number and node-ID
-DataType=0x0007
-AccessType=rw
-DefaultValue=0x00000402
+DefaultValue=0x00000203
 
 [5E00]
 ParameterName=Remote RPDO mapping parameter
 ObjectType=0x08
 DataType=0x0007
 AccessType=rw
-CompactSubObj=1
+CompactSubObj=3
 
 [5E00Value]
-NrOfEntries=1
+NrOfEntries=3
 1=0x60400010
+2=0x60C10120
+3=0x60420010
 
 [5E01]
 ParameterName=Remote RPDO mapping parameter
@@ -864,29 +1456,5 @@ CompactSubObj=2
 
 [5E01Value]
 NrOfEntries=2
-1=0x60400010
-2=0x60600008
-
-[5E02]
-ParameterName=Remote RPDO mapping parameter
-ObjectType=0x08
-DataType=0x0007
-AccessType=rw
-CompactSubObj=2
-
-[5E02Value]
-NrOfEntries=2
-1=0x60400010
-2=0x607A0020
-
-[5E03]
-ParameterName=Remote RPDO mapping parameter
-ObjectType=0x08
-DataType=0x0007
-AccessType=rw
-CompactSubObj=2
-
-[5E03Value]
-NrOfEntries=2
-1=0x60400010
-2=0x60FF0020
+1=0x607A0020
+2=0x60810020
