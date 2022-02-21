@@ -1,0 +1,7 @@
+<library path="proxy_driver">
+  <class
+        type="ros2_canopen::ProxyDriverWrapper" 
+        base_class_type="ros2_canopen::CANopenDriverWrapper">
+    <description>Proxy CANopen driver</description>
+  </class>
+</library>
