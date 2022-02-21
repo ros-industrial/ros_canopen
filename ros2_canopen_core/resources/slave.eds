@@ -1,0 +1,270 @@
+[DeviceInfo]
+VendorName=Lely Industries N.V.
+VendorNumber=0x00000360
+ProductName=
+ProductNumber=0x00000000
+RevisionNumber=0x00000000
+OrderCode=
+BaudRate_10=1
+BaudRate_20=1
+BaudRate_50=1
+BaudRate_125=1
+BaudRate_250=1
+BaudRate_500=1
+BaudRate_800=1
+BaudRate_1000=1
+SimpleBootUpMaster=0
+SimpleBootUpSlave=1
+Granularity=1
+DynamicChannelsSupported=0
+GroupMessaging=0
+NrOfRxPDO=1
+NrOfTxPDO=1
+LSS_Supported=1
+
+[DummyUsage]
+Dummy0001=1
+Dummy0002=1
+Dummy0003=1
+Dummy0004=1
+Dummy0005=1
+Dummy0006=1
+Dummy0007=1
+Dummy0010=1
+Dummy0011=1
+Dummy0012=1
+Dummy0013=1
+Dummy0014=1
+Dummy0015=1
+Dummy0016=1
+Dummy0018=1
+Dummy0019=1
+Dummy001A=1
+Dummy001B=1
+
+[MandatoryObjects]
+SupportedObjects=3
+1=0x1000
+2=0x1001
+3=0x1018
+
+[OptionalObjects]
+SupportedObjects=11
+1=0x1003
+2=0x1005
+3=0x1014
+4=0x1015
+5=0x1016
+6=0x1017
+7=0x1029
+8=0x1400
+9=0x1600
+10=0x1800
+11=0x1A00
+
+[ManufacturerObjects]
+SupportedObjects=2
+1=0x4000
+2=0x4001
+
+[1000]
+ParameterName=Device type
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x00000000
+
+[1001]
+ParameterName=Error register
+DataType=0x0005
+AccessType=ro
+
+[1003]
+ParameterName=Pre-defined error field
+ObjectType=0x08
+DataType=0x0007
+AccessType=ro
+CompactSubObj=254
+
+[1005]
+ParameterName=COB-ID SYNC message
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000080
+
+[1014]
+ParameterName=COB-ID EMCY
+DataType=0x0007
+AccessType=rw
+DefaultValue=$NODEID+0x80
+
+[1015]
+ParameterName=Inhibit time EMCY
+DataType=0x0006
+AccessType=rw
+DefaultValue=0
+
+[1016]
+ParameterName=Consumer heartbeat time
+ObjectType=0x08
+DataType=0x0007
+AccessType=rw
+CompactSubObj=1
+
+[1017]
+ParameterName=Producer heartbeat time
+DataType=0x0006
+AccessType=rw
+
+[1018]
+SubNumber=5
+ParameterName=Identity object
+ObjectType=0x09
+
+[1018sub0]
+ParameterName=Highest sub-index supported
+DataType=0x0005
+AccessType=const
+DefaultValue=4
+
+[1018sub1]
+ParameterName=Vendor-ID
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x00000360
+
+[1018sub2]
+ParameterName=Product code
+DataType=0x0007
+AccessType=ro
+
+[1018sub3]
+ParameterName=Revision number
+DataType=0x0007
+AccessType=ro
+
+[1018sub4]
+ParameterName=Serial number
+DataType=0x0007
+AccessType=ro
+
+[1029]
+ParameterName=Error behavior object
+ObjectType=0x08
+DataType=0x0005
+AccessType=rw
+CompactSubObj=1
+
+[1400]
+SubNumber=6
+ParameterName=RPDO communication parameter
+ObjectType=0x09
+
+[1400sub0]
+ParameterName=highest sub-index supported
+DataType=0x0005
+AccessType=const
+DefaultValue=5
+
+[1400sub1]
+ParameterName=COB-ID used by RPDO
+DataType=0x0007
+AccessType=rw
+DefaultValue=$NODEID+0x200
+
+[1400sub2]
+ParameterName=transmission type
+DataType=0x0005
+AccessType=rw
+DefaultValue=0xFF
+
+[1400sub3]
+ParameterName=inhibit time
+DataType=0x0006
+AccessType=rw
+
+[1400sub4]
+ParameterName=compatibility entry
+DataType=0x0005
+AccessType=rw
+
+[1400sub5]
+ParameterName=event-timer
+DataType=0x0006
+AccessType=rw
+
+[1600]
+ParameterName=RPDO mapping parameter
+ObjectType=0x08
+DataType=0x0007
+AccessType=rw
+CompactSubObj=1
+
+[1600Value]
+NrOfEntries=1
+1=0x40000020
+
+[1800]
+SubNumber=7
+ParameterName=TPDO communication parameter
+ObjectType=0x09
+
+[1800sub0]
+ParameterName=highest sub-index supported
+DataType=0x0005
+AccessType=const
+DefaultValue=6
+
+[1800sub1]
+ParameterName=COB-ID used by TPDO
+DataType=0x0007
+AccessType=rw
+DefaultValue=$NODEID+0x180
+
+[1800sub2]
+ParameterName=transmission type
+DataType=0x0005
+AccessType=rw
+DefaultValue=0xFF
+
+[1800sub3]
+ParameterName=inhibit time
+DataType=0x0006
+AccessType=rw
+
+[1800sub4]
+ParameterName=reserved
+DataType=0x0005
+AccessType=rw
+
+[1800sub5]
+ParameterName=event timer
+DataType=0x0006
+AccessType=rw
+
+[1800sub6]
+ParameterName=SYNC start value
+DataType=0x0005
+AccessType=rw
+
+[1A00]
+ParameterName=TPDO mapping parameter
+ObjectType=0x08
+DataType=0x0007
+AccessType=rw
+CompactSubObj=1
+
+[1A00Value]
+NrOfEntries=1
+1=0x40010020
+
+[4000]
+ParameterName=UNSIGNED32 received by slave
+DataType=0x0007
+AccessType=rww
+PDOMapping=1
+
+[4001]
+ParameterName=UNSIGNED32 sent from slave
+DataType=0x0007
+AccessType=rwr
+PDOMapping=1

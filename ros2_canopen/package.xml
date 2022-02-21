@@ -11,7 +11,6 @@
   <exec_depend>ros2_canopen_interfaces</exec_depend>
   <exec_depend>ros2_canopen_core</exec_depend>
 
-
   <export>
     <build_type>ament_cmake</build_type>
   </export>

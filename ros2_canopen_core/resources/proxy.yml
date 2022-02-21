@@ -1,0 +1,7 @@
+master:
+  node_id: 1
+
+slave_1:
+  node_id: 2
+  dcf: "simple.eds"
+  driver: "ProxyDriverWrapper"
