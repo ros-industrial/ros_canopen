@@ -21,6 +21,7 @@ find_package(ament_cmake_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(ros2_canopen_core REQUIRED)
+find_package(lely_core_libraries REQUIRED)
 
 
 set(node_plugins "")
@@ -31,11 +32,13 @@ add_library(proxy_driver SHARED
 target_include_directories(proxy_driver PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
+  
 ament_target_dependencies(
   proxy_driver
   rclcpp
   rclcpp_components
   ros2_canopen_core
+  lely_core_libraries
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,

@@ -11,27 +11,36 @@
 #include "ros2_canopen_core/device_manager.hpp"
 
 
-bool DeviceManager::load_component(const std::string& pkg_name, const std::string& plugin_name) {
-    const std::shared_ptr<rmw_request_id_t> request_header =
-        std::make_shared<rmw_request_id_t>();
-    const std::shared_ptr<LoadNode::Request> request =
-        std::make_shared<LoadNode::Request>();
-    std::shared_ptr<LoadNode::Response> response =
-        std::make_shared<LoadNode::Response>();
-
-    request->package_name = pkg_name;
-    request->plugin_name = plugin_name;
-    this->OnLoadNode(request_header, request, response);
-    RCLCPP_INFO(this->get_logger(), "Component loaded? %s %s",
-        response->success, response->error_message);
-    return response->success;
+bool DeviceManager::load_component(const std::string& pkg_name, const std::string& plugin_name, uint32_t node_id) {
+    ComponentResource component;
+    std::vector<ComponentResource> components = this->get_component_resources(pkg_name);
+    for(auto it = components.begin(); it != components.end(); ++it)
+    {
+        if(it->first.compare(plugin_name) == 0)
+        {
+            auto factory_node = this->create_component_factory(*it);
+            RCLCPP_INFO(this->get_logger(), "Component loaded %s %s from path %s",
+                        pkg_name.c_str(), plugin_name.c_str(), it->second.c_str());
+            rclcpp_components::NodeInstanceWrapper wrapper = factory_node->create_node_instance(rclcpp::NodeOptions());
+            
+            std::shared_ptr<ros2_canopen::CANopenDriverWrapper> node_instance = std::static_pointer_cast<ros2_canopen::CANopenDriverWrapper>(wrapper.get_node_instance());
+            drivers_.insert({node_id, node_instance});
+            lely::ev::Executor exec = can_master_->get_executor();
+            node_instance->init(exec, *can_master_, node_id);
+           
+            if(auto execuc = executor_.lock())
+                execuc->add_node(wrapper.get_node_base_interface(), true);
+            return true;
+        }
+    }
+    return false;
 }
 
 bool DeviceManager::load_driver(std::string& device_name,
         uint32_t node_id) {
 
     std::string plugin_name = "ros2_canopen::" + device_name;
-    return this->load_component("proxy_driver_plugins", plugin_name);
+    return this->load_component("proxy_driver_plugins", plugin_name, node_id);
 }
 
 bool DeviceManager::init_devices_from_config(io::Timer& timer,

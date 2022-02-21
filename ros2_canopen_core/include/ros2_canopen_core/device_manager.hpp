@@ -15,7 +15,8 @@ public:
             .start_parameter_services(false)
             .start_parameter_event_publisher(false)) :
             rclcpp_components::ComponentManager(executor, node_name, node_options) {
-
+        
+        executor_ = executor;
         this->declare_parameter("can_interface_name");
         this->declare_parameter("dcf_txt");
         this->declare_parameter("dcf_config");    
@@ -27,8 +28,9 @@ private:
     std::map<uint32_t, std::shared_ptr<ros2_canopen::CANopenDriverWrapper>> drivers_;
     std::shared_ptr<ros2_canopen::MasterDevice> can_master_;
     std::shared_ptr<ev::Executor> exec_;
+    std::weak_ptr<rclcpp::Executor> executor_;
 
-    bool load_component(const std::string& pkg_name, const std::string& plugin_name);
+    bool load_component(const std::string& pkg_name, const std::string& plugin_name, uint32_t node_id);
     bool load_driver(std::string& device_name, uint32_t node_id);   // can make a ROS service for this
 
     bool init_devices_from_config(io::Timer& timer,

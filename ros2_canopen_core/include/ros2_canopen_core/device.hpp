@@ -1,5 +1,4 @@
 
-#include <lely/coapp/device.hpp>
 #include <lely/coapp/fiber_driver.hpp>
 #include <lely/coapp/master.hpp>
 #include <lely/coapp/slave.hpp>
