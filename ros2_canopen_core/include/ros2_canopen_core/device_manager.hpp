@@ -30,8 +30,9 @@ private:
     std::shared_ptr<ev::Executor> exec_;
     std::weak_ptr<rclcpp::Executor> executor_;
 
-    bool load_component(const std::string& pkg_name, const std::string& plugin_name, uint32_t node_id);
-    bool load_driver(std::string& device_name, uint32_t node_id);   // can make a ROS service for this
+    bool load_component(const std::string& pkg_name, const std::string& plugin_name, uint32_t node_id, std::string& node_name);
+    bool load_driver(std::string& package_name, std::string& device_name,
+        uint32_t node_id, std::string& node_name);   // can make a ROS service for this
 
     bool init_devices_from_config(io::Timer& timer,
         io::CanChannel& chan,    // assuming linux

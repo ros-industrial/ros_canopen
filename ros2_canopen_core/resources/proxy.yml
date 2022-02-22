@@ -1,7 +1,8 @@
 master:
   node_id: 1
 
-slave_1:
+proxy_driver:
   node_id: 2
   dcf: "simple.eds"
   driver: "ProxyDriverWrapper"
+  package: "proxy_driver_plugins"

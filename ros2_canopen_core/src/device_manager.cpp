@@ -11,7 +11,7 @@
 #include "ros2_canopen_core/device_manager.hpp"
 
 
-bool DeviceManager::load_component(const std::string& pkg_name, const std::string& plugin_name, uint32_t node_id) {
+bool DeviceManager::load_component(const std::string& pkg_name, const std::string& plugin_name, uint32_t node_id, std::string& node_name) {
     ComponentResource component;
     std::vector<ComponentResource> components = this->get_component_resources(pkg_name);
     for(auto it = components.begin(); it != components.end(); ++it)
@@ -19,28 +19,37 @@ bool DeviceManager::load_component(const std::string& pkg_name, const std::strin
         if(it->first.compare(plugin_name) == 0)
         {
             auto factory_node = this->create_component_factory(*it);
-            RCLCPP_INFO(this->get_logger(), "Component loaded %s %s from path %s",
-                        pkg_name.c_str(), plugin_name.c_str(), it->second.c_str());
+            rclcpp::NodeOptions opts;
+            opts.use_global_arguments(false);
+            opts.append_parameter_override("__name", node_name);
             rclcpp_components::NodeInstanceWrapper wrapper = factory_node->create_node_instance(rclcpp::NodeOptions());
+            auto node_instance = std::static_pointer_cast<ros2_canopen::CANopenDriverWrapper>(wrapper.get_node_instance());
             
-            std::shared_ptr<ros2_canopen::CANopenDriverWrapper> node_instance = std::static_pointer_cast<ros2_canopen::CANopenDriverWrapper>(wrapper.get_node_instance());
             drivers_.insert({node_id, node_instance});
-            lely::ev::Executor exec = can_master_->get_executor();
-            node_instance->init(exec, *can_master_, node_id);
-           
-            if(auto execuc = executor_.lock())
-                execuc->add_node(wrapper.get_node_base_interface(), true);
+            
+            exec_->post([this, node_id, node_instance](){
+                node_instance->init(*exec_, *can_master_, node_id);
+            });
+            
+
+            RCLCPP_INFO(this->get_logger(), "Initialising loaded %s", plugin_name.c_str());
+            if(auto exec = executor_.lock())
+            {
+                exec->add_node(wrapper.get_node_base_interface(), true);
+                RCLCPP_INFO(this->get_logger(), "Added %s of type %s to executor", node_name.c_str(), plugin_name.c_str());
+            }
+                
             return true;
         }
     }
     return false;
 }
 
-bool DeviceManager::load_driver(std::string& device_name,
-        uint32_t node_id) {
+bool DeviceManager::load_driver(std::string& package_name, std::string& device_name,
+        uint32_t node_id, std::string& node_name) {
 
     std::string plugin_name = "ros2_canopen::" + device_name;
-    return this->load_component("proxy_driver_plugins", plugin_name, node_id);
+    return this->load_component(package_name, plugin_name, node_id, node_name);
 }
 
 bool DeviceManager::init_devices_from_config(io::Timer& timer,
@@ -74,16 +83,20 @@ bool DeviceManager::init_devices_from_config(io::Timer& timer,
             try {
                 can_master_ = 
                     std::make_shared<ros2_canopen::MasterDevice>(timer, chan,
-                        dcf_txt, node_id, "canopen_master_node");
+                        dcf_txt, node_id, driver_name);
             } catch(const std::exception& e) {
                 std::cerr << e.what() << '\n';
             }            
         } else {
 			// load the driver
 			std::string plugin_name = config["driver"].as<std::string>();
+            std::string package_name = config["package"].as<std::string>();
             //TODO: if one of the driver fails to load,
             // should the state change or exit with FAILURE?
-            this->load_driver(plugin_name, node_id);
+            std::thread t([this, &package_name, &plugin_name, node_id, &driver_name]() {
+                load_driver(package_name, plugin_name, node_id, driver_name);
+            });
+            t.join();            
 		}
 	}
     return true;
@@ -106,6 +119,7 @@ bool DeviceManager::init() {
     io::Context ctx;
     io::Poll poll(ctx);
     ev::Loop loop(poll.get_poll());
+    
     exec_ = std::make_shared<ev::Executor>(loop.get_executor());
     io::Timer timer(poll, *exec_, CLOCK_MONOTONIC);
 #if _WIN32
