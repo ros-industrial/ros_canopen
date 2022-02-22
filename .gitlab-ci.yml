@@ -17,6 +17,20 @@ doxygen:
   tags:
    - asprunner
 
+sphinx:
+  stage: doc
+  image: sphinxdoc/sphinx:latest
+  before_script:
+    - pip install sphinx-rtd-theme
+  script:
+    - cd ros2_canopen/sphinx/
+    - make html
+  artifacts:
+    paths:
+    - ros2_canopen/sphinx/build_
+  tags:
+    - asprunner 
+
 
 .build:
   stage: build
