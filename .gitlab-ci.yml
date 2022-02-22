@@ -28,7 +28,7 @@ sphinx:
     - make html
   artifacts:
     paths:
-    - ros2_canopen/sphinx/build_
+    - ros2_canopen/sphinx/_build
   tags:
     - asprunner 
 
