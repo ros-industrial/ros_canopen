@@ -27,6 +27,7 @@ sphinx:
     - cd ros2_canopen/sphinx/
     - make html
   artifacts:
+    name: documentation
     paths:
     - ros2_canopen/sphinx/_build
   tags:
