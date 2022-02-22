@@ -22,6 +22,7 @@ sphinx:
   image: sphinxdoc/sphinx:latest
   before_script:
     - pip install sphinx-rtd-theme
+    - pip install sphinx-mdinclude
   script:
     - cd ros2_canopen/sphinx/
     - make html
