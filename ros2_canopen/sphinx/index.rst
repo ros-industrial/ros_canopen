@@ -12,21 +12,25 @@
     
 .. toctree::
   :maxdepth: 1
-  :caption: Nodes
+  :caption: Concepts and Design
 
+  configuration
   device-manager
   master
   proxy-device
   motion-controller
+  ros-control
 
 .. toctree::
   :maxdepth: 1
-  :caption: Configuration
-
-  configuration
+  :caption: Usage
+  
+  configuration-package
+  
 
 .. toctree::
   :maxdepth: 1
-  :caption: Developer Resources
+  :caption: Extension
 
   new-driver
+  new-device-manager
