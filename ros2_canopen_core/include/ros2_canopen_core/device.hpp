@@ -21,7 +21,7 @@ namespace ros2_canopen {
 
         virtual void init(ev::Executor& exec,
             canopen::AsyncMaster& master,
-            uint32_t node_id) noexcept = 0;
+            uint8_t node_id) noexcept = 0;
     };
 
 

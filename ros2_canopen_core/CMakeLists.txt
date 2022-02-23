@@ -15,23 +15,49 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   #add_compile_options(-Wall -Wextra)# -Wpedantic)
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -WNo-dev")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(lely_core_libraries REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(pluginlib REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
+find_package(ros2_canopen_interfaces REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 
 set (dependencies 
   lely_core_libraries
-  pluginlib
   rclcpp
   rclcpp_components
   yaml_cpp_vendor
 )
+
+# Add core library
+add_library(ros2_canopen_core SHARED
+  src/basic_device_driver.cpp
+  src/base_driver.cpp
+)
+target_compile_features(ros2_canopen_core PUBLIC c_std_99 cxx_std_17)
+target_include_directories(ros2_canopen_core PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+target_compile_definitions(ros2_canopen_core PRIVATE "ROS2_CANOPEN_CORE_BUILDING_LIBRARY")
+
+ament_target_dependencies(ros2_canopen_core 
+  ros2_canopen_interfaces 
+  std_msgs 
+  std_srvs
+  rclcpp 
+  rclcpp_components 
+  lely_core_libraries
+)
+
+
+
+
 
 # device manager node
 add_executable(device_manager_node 
@@ -97,6 +123,12 @@ endif()
 
 ament_export_include_directories(
   include
+)
+ament_export_libraries(
+  ros2_canopen_core
+)
+ament_export_targets(
+  export_${PROJECT_NAME}
 )
 
 ament_package()

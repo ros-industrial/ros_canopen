@@ -10,11 +10,9 @@
 #include <algorithm>
 #include <iostream>
 
-#include "canopen_402/mc_device_driver.hpp"
+#include "motion_controller_driver/mc_device_driver.hpp"
 
-
-using namespace ros2_canopen;
-namespace canopen_402
+namespace ros2_canopen
 {
     class State402
     {

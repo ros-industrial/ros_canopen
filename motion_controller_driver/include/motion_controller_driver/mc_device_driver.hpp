@@ -6,11 +6,11 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <cstring>
 
-#include "canopen_402/base.h"
+#include "motion_controller_driver/base.hpp"
 #include "ros2_canopen_core/basic_device_driver.hpp"
 
 using namespace ros2_canopen;
-namespace canopen_402
+namespace ros2_canopen
 {
     struct RemoteObject
     {

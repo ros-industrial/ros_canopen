@@ -1,15 +1,20 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>proxy_driver_plugins</name>
+  <name>motion_controller_driver</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="harshavardhan.deshpande@ipa.fraunhofer.de">ipa-hsd</maintainer>
-  <license>TODO: License declaration</license>
+  <maintainer email="christoph.hellmann.santos@ipa.fraunhofer.de">christoph</maintainer>
+  <license>LGPL</license>
 
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
 
+  <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
+  <depend>ros2_canopen_interfaces</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>lely_core_libraries</depend>
   <depend>ros2_canopen_core</depend>
 
   <test_depend>ament_lint_auto</test_depend>
