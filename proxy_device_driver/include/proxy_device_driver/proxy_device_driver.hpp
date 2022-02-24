@@ -1,5 +1,5 @@
 //    Copyright 2022 Christoph Hellmann Santos
-// 
+//
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
 //    You may obtain a copy of the License at
@@ -15,27 +15,27 @@
 #ifndef PROXY_DEVICE_DRIVER__PROXY_DRIVER_HPP_
 #define PROXY_DEVICE_DRIVER__PROXY_DRIVER_HPP_
 
-#include "ros2_canopen_core/base_driver.hpp"
+#include "proxy_device_driver/base_driver.hpp"
 
 namespace ros2_canopen
 {
-    /**
-     * @brief ROS2 node for a ProxyDevice
-     * 
-     * This class provides a ros2 node for a simple Proxy
-     * device that forwards nmt, pdo and sdo.
-     */
-    class ProxyDriver : public ros2_canopen::BaseDriver
+    class ProxyDeviceDriver : public BaseDriver
     {
-    private:
-        rclcpp::Publisher<std_msgs::msg::String>::SharedPtr                    nmt_state_publisher;
-        rclcpp::Publisher<ros2_canopen_interfaces::msg::COData>::SharedPtr     rpdo_publisher;
-        rclcpp::Subscription<ros2_canopen_interfaces::msg::COData>::SharedPtr   tpdo_subscriber;
-        rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr                      nmt_state_reset_service;
-        rclcpp::Service<ros2_canopen_interfaces::srv::CORead>::SharedPtr        sdo_read_service;
-        rclcpp::Service<ros2_canopen_interfaces::srv::COWrite>::SharedPtr       sdo_write_service;
+        rclcpp::Publisher<std_msgs::msg::String>::SharedPtr nmt_state_publisher;
+        rclcpp::Publisher<ros2_canopen_interfaces::msg::COData>::SharedPtr rpdo_publisher;
+        rclcpp::Subscription<ros2_canopen_interfaces::msg::COData>::SharedPtr tpdo_subscriber;
+        rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr nmt_state_reset_service;
+        rclcpp::Service<ros2_canopen_interfaces::srv::CORead>::SharedPtr sdo_read_service;
+        rclcpp::Service<ros2_canopen_interfaces::srv::COWrite>::SharedPtr sdo_write_service;
 
         std::mutex sdo_mtex;
+    protected:
+
+        void on_nmt(canopen::NmtState nmt_state);
+
+        void on_tpdo(const ros2_canopen_interfaces::msg::COData::SharedPtr msg);
+
+        void on_rpdo(COData d);
 
         void on_nmt_state_reset(
             const std_srvs::srv::Trigger::Request::SharedPtr request,
@@ -49,18 +49,20 @@ namespace ros2_canopen
             const ros2_canopen_interfaces::srv::COWrite::Request::SharedPtr request,
             ros2_canopen_interfaces::srv::COWrite::Response::SharedPtr response);
 
-        void on_tpdo(const ros2_canopen_interfaces::msg::COData::SharedPtr msg);
-
     public:
-        explicit ProxyDriver(
-            const rclcpp::NodeOptions & options)
-            : BaseDriver(options)
+        ProxyDeviceDriver(const rclcpp::NodeOptions &options) : BaseDriver(options) {}
+
+        virtual void init(ev::Executor &exec,
+                          canopen::AsyncMaster &master,
+                          uint8_t node_id) noexcept override
         {
+            RCLCPP_INFO(this->get_logger(), "Intitialising ProxyDeviceDriver");
+            BaseDriver::init(exec, master, node_id);
             nmt_state_publisher = this->create_publisher<std_msgs::msg::String>(std::string(this->get_name()).append("/nmt_state").c_str(), 10);
             tpdo_subscriber = this->create_subscription<ros2_canopen_interfaces::msg::COData>(
                 std::string(this->get_name()).append("/tpdo").c_str(),
                 10,
-                std::bind(&ProxyDriver::on_tpdo, this, std::placeholders::_1));
+                std::bind(&ProxyDeviceDriver::on_tpdo, this, std::placeholders::_1));
 
             rpdo_publisher = this->create_publisher<ros2_canopen_interfaces::msg::COData>(
                 std::string(this->get_name()).append("/rpdo").c_str(), 10);
@@ -68,7 +70,7 @@ namespace ros2_canopen
             nmt_state_reset_service = this->create_service<std_srvs::srv::Trigger>(
                 std::string(this->get_name()).append("/nmt_reset_node").c_str(),
                 std::bind(
-                    &ros2_canopen::ProxyDriver::on_nmt_state_reset,
+                    &ros2_canopen::ProxyDeviceDriver::on_nmt_state_reset,
                     this,
                     std::placeholders::_1,
                     std::placeholders::_2));
@@ -76,7 +78,7 @@ namespace ros2_canopen
             sdo_read_service = this->create_service<ros2_canopen_interfaces::srv::CORead>(
                 std::string(this->get_name()).append("/sdo_read").c_str(),
                 std::bind(
-                    &ros2_canopen::ProxyDriver::on_sdo_read,
+                    &ros2_canopen::ProxyDeviceDriver::on_sdo_read,
                     this,
                     std::placeholders::_1,
                     std::placeholders::_2));
@@ -84,21 +86,14 @@ namespace ros2_canopen
             sdo_write_service = this->create_service<ros2_canopen_interfaces::srv::COWrite>(
                 std::string(this->get_name()).append("/sdo_write").c_str(),
                 std::bind(
-                    &ros2_canopen::ProxyDriver::on_sdo_write,
+                    &ros2_canopen::ProxyDeviceDriver::on_sdo_write,
                     this,
                     std::placeholders::_1,
                     std::placeholders::_2));
         }
 
-        void init(ev::Executor& exec,
-            canopen::AsyncMaster& master,
-            uint8_t node_id) noexcept override;
 
-    protected:
-        virtual void on_nmt(canopen::NmtState nmt_state) override;
-        virtual void on_rpdo(COData data) override;
     };
-
-
 }
+
 #endif

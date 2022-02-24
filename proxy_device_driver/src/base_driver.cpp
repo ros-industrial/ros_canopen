@@ -12,7 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#include "ros2_canopen_core/base_driver.hpp"
+#include "proxy_device_driver/base_driver.hpp"
 
 using namespace lely;
 using namespace ros2_canopen;

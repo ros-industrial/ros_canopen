@@ -7,7 +7,7 @@
 #include <cstring>
 
 #include "motion_controller_driver/base.hpp"
-#include "ros2_canopen_core/basic_device_driver.hpp"
+#include "proxy_device_driver/basic_device_driver.hpp"
 
 using namespace ros2_canopen;
 namespace ros2_canopen

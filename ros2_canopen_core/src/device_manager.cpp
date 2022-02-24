@@ -21,8 +21,12 @@ bool DeviceManager::load_component(const std::string& pkg_name, const std::strin
             auto factory_node = this->create_component_factory(*it);
             rclcpp::NodeOptions opts;
             opts.use_global_arguments(false);
-            opts.append_parameter_override("__name", node_name);
-            rclcpp_components::NodeInstanceWrapper wrapper = factory_node->create_node_instance(rclcpp::NodeOptions());
+            std::vector<std::string> remap_rules;
+            remap_rules.push_back("--ros-args");
+            remap_rules.push_back("-r");
+            remap_rules.push_back("__node:=" + node_name);
+            opts.arguments(remap_rules);
+            rclcpp_components::NodeInstanceWrapper wrapper = factory_node->create_node_instance(opts);
             auto node_instance = std::static_pointer_cast<ros2_canopen::CANopenDriverWrapper>(wrapper.get_node_instance());
             
             drivers_.insert({node_id, node_instance});
@@ -48,7 +52,7 @@ bool DeviceManager::load_component(const std::string& pkg_name, const std::strin
 bool DeviceManager::load_driver(std::string& package_name, std::string& device_name,
         uint32_t node_id, std::string& node_name) {
 
-    std::string plugin_name = "ros2_canopen::" + device_name;
+    std::string plugin_name = device_name;
     return this->load_component(package_name, plugin_name, node_id, node_name);
 }
 

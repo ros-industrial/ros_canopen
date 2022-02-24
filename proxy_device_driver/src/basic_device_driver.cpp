@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-#include "ros2_canopen_core/basic_device_driver.hpp"
+#include "proxy_device_driver/basic_device_driver.hpp"
 
 namespace ros2_canopen
 {

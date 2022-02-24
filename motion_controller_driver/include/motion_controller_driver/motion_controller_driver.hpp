@@ -4,7 +4,7 @@
 
 #include "std_srvs/srv/trigger.hpp"
 #include "ros2_canopen_interfaces/srv/co_target_double.hpp"
-#include "proxy_device_driver/proxy_driver.hpp"
+#include "proxy_device_driver/proxy_device_driver.hpp"
 #include "motion_controller_driver/motor.hpp"
 
 using namespace std::chrono_literals;
@@ -17,7 +17,7 @@ namespace ros2_canopen
      * This class provides a ros2 node for a simple Proxy
      * device that forwards nmt, pdo and sdo.
      */
-    class MotionControllerDriver : public ProxyDriver
+    class MotionControllerDriver : public ProxyDeviceDriver
     {
     private:
         std::shared_ptr<MCDeviceDriver> mc_driver_;
@@ -34,7 +34,7 @@ namespace ros2_canopen
 
     public:
         explicit MotionControllerDriver(const rclcpp::NodeOptions &options)
-            : ProxyDriver(options)
+            : ProxyDeviceDriver(options)
         {
             
         }

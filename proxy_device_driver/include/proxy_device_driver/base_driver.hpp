@@ -15,14 +15,11 @@
 #ifndef BASE_DEVICE_NODE_HPP
 #define BASE_DEVICE_NODE_HPP
 #include "rclcpp/rclcpp.hpp"
-#include "rclcpp_lifecycle/lifecycle_node.hpp"
-#include "rclcpp_lifecycle/state.hpp"
-#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "rclcpp/publisher.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/trigger.hpp"
 
-#include "ros2_canopen_core/basic_device_driver.hpp"
+#include "proxy_device_driver/basic_device_driver.hpp"
 #include "ros2_canopen_core/device.hpp"
 #include "ros2_canopen_interfaces/msg/co_data.hpp"
 #include "ros2_canopen_interfaces/srv/co_read.hpp"
@@ -58,7 +55,10 @@ namespace ros2_canopen
          * 
          * @param [in] nmt_state New NMT state
          */
-        virtual void on_nmt(canopen::NmtState nmt_state) = 0;
+        virtual void on_nmt(canopen::NmtState nmt_state)
+        {
+            RCLCPP_INFO(this->get_logger(), "on_nmt not implemented");
+        }
 
         /**
          * @brief RPDO Callback
@@ -69,7 +69,10 @@ namespace ros2_canopen
          * 
          * @param [in] data Changed object
          */
-        virtual void on_rpdo(COData data) = 0;
+        virtual void on_rpdo(COData data)
+        {
+            RCLCPP_INFO(this->get_logger(), "on_rpdo not implemented");
+        }
 
  
         explicit BaseDriver(

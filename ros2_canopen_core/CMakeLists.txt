@@ -27,35 +27,14 @@ find_package(ros2_canopen_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 
+
+
 set (dependencies 
   lely_core_libraries
   rclcpp
   rclcpp_components
   yaml_cpp_vendor
 )
-
-# Add core library
-add_library(ros2_canopen_core SHARED
-  src/basic_device_driver.cpp
-  src/base_driver.cpp
-)
-target_compile_features(ros2_canopen_core PUBLIC c_std_99 cxx_std_17)
-target_include_directories(ros2_canopen_core PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-
-target_compile_definitions(ros2_canopen_core PRIVATE "ROS2_CANOPEN_CORE_BUILDING_LIBRARY")
-
-ament_target_dependencies(ros2_canopen_core 
-  ros2_canopen_interfaces 
-  std_msgs 
-  std_srvs
-  rclcpp 
-  rclcpp_components 
-  lely_core_libraries
-)
-
-
 
 
 
@@ -108,6 +87,8 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}/
 )
 
+
+
 if(BUILD_TESTING)
   #find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
@@ -123,12 +104,6 @@ endif()
 
 ament_export_include_directories(
   include
-)
-ament_export_libraries(
-  ros2_canopen_core
-)
-ament_export_targets(
-  export_${PROJECT_NAME}
 )
 
 ament_package()

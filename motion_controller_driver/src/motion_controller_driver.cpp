@@ -108,7 +108,8 @@ void MotionControllerDriver::init(ev::Executor &exec,
           canopen::AsyncMaster &master,
           uint8_t node_id) noexcept
 {
-    ProxyDriver::init(exec, master, node_id);
+    RCLCPP_INFO(this->get_logger(), "Intitialising MotionControllerDriver");
+    ProxyDeviceDriver::init(exec, master, node_id);
     mc_driver_ = std::make_shared<MCDeviceDriver>(exec, master, node_id);
     motor_ = std::make_shared<Motor402>(std::string("motor"), mc_driver_);
     register_services();

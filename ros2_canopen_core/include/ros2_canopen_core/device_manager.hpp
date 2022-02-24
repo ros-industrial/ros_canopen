@@ -1,7 +1,7 @@
 #include <memory>
+#include <vector>
 #include <rclcpp/executors.hpp>
 #include <rclcpp_components/component_manager.hpp>
-#include <rclcpp_lifecycle/lifecycle_node.hpp>
 
 #include "device.hpp"
 
