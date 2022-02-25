@@ -1,4 +1,5 @@
 .vscode/
-ros2_canopen_core/doc_output/
+**/doc_output/
 **/__pycache__/
-ros2_canopen/sphinx/_build
+**/_build
+**/api

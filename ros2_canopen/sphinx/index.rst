@@ -47,3 +47,7 @@ This is the documentation of the ROS2 CANopen stack.
 
   new-driver
   new-device-manager
+  api/library_root
+
+
+  

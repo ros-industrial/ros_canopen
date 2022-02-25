@@ -30,7 +30,37 @@ release = '0.0.1'
 extensions = [
  'sphinx_rtd_theme',
  'sphinx_mdinclude',
+ 'sphinx.ext.imgmath',
+ 'sphinx.ext.todo',
+ 'sphinx.ext.graphviz',
+ 'breathe',
+ 'exhale'
 ]
+
+breathe_projects = { "ros2_canopen": "../doxygen/doc_output/xml" }
+breathe_default_project = "ros2_canopen"
+
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./api",
+    "rootFileName":          "library_root.rst",
+    "doxygenStripFromPath":  "..",
+    # Heavily encouraged optional argument (see docs)
+    "rootFileTitle":         "API Reference",
+    # Suggested optional arguments
+    "createTreeView":        True,
+    # TIP: if using the sphinx-bootstrap-theme, you need
+    # "treeViewIsBootstrap": True,
+    "exhaleExecutesDoxygen": True,
+    "exhaleDoxygenStdin":    "INPUT = ../../ros2_canopen_core/include/ ../../base_device_driver/include ../../motion_controller_driver/include ../../proxy_device_driver/include"
+}
+
+# Tell sphinx what the primary language being documented is.
+primary_domain = 'cpp'
+
+# Tell sphinx what the pygments highlight language should be.
+highlight_language = 'cpp'
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

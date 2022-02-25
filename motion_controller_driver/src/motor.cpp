@@ -1,7 +1,7 @@
 #include "motion_controller_driver/motor.hpp"
+using namespace ros2_canopen;
 
-
-namespace ros2_canopen
+namespace canopen_402
 {
 
     State402::InternalState State402::getState()

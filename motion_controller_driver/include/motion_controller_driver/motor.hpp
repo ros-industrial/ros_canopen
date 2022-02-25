@@ -11,8 +11,8 @@
 #include <iostream>
 
 #include "motion_controller_driver/mc_device_driver.hpp"
-
-namespace ros2_canopen
+using namespace ros2_canopen;
+namespace canopen_402
 {
     class State402
     {

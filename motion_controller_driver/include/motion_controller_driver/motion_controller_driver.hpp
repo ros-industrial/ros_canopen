@@ -10,6 +10,7 @@
 
 using namespace std::chrono_literals;
 using namespace ros2_canopen;
+using namespace canopen_402;
 namespace ros2_canopen
 {
     /**
