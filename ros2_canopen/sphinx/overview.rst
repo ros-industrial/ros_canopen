@@ -22,13 +22,20 @@ ros2_canopen contains a number of packages that serve different serve different 
   Contains the core structures of the ros2_canopen stack such as the device manager
   and the master node and the driver node interface.
 
-* **proxy_driver**:
+* **base_device_driver**:
+  
+  This package contains the base implementation of a ROS2 CANopen device driver. It can base
+  used by other drivers for easy extension.
+
+* **proxy_device_driver**:
   
   Contains an implmentation of a proxy driver which simply forwards CANopen functionality
   for a specific device via ROS2 services and messages.
 
-* **canopen_402_driver**:
+* **motion_controller_driver**:
 
   Contains an implementation of the CIA402 profile for motion controllers and exposes
-  the profiles functionalities via ROS2 services and messages.
+  the profiles functionalities via ROS2 services and messages. The implementation is
+  copied from ros_canopen/canopen_402 and this package is licensed accordingly under 
+  GNU Lesser General Public License v3.0!
 
