@@ -17,6 +17,7 @@ find_package(lely_core_libraries REQUIRED)
 find_package(ros2_canopen_core REQUIRED)
 find_package(proxy_device_driver REQUIRED)
 find_package(base_device_driver REQUIRED)
+find_package(Boost REQUIRED COMPONENTS container)
 
 add_library(motion_controller_driver 
   src/motion_controller_driver.cpp
