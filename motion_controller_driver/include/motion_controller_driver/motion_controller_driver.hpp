@@ -2,6 +2,7 @@
 #ifndef MC_DEVICE_NODE_HPP
 #define MC_DEVICE_NODE_HPP
 
+#include "motion_controller_driver/visibility_control.h"
 #include "std_srvs/srv/trigger.hpp"
 #include "ros2_canopen_interfaces/srv/co_target_double.hpp"
 #include "proxy_device_driver/proxy_device_driver.hpp"

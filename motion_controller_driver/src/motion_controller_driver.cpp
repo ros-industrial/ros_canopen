@@ -110,7 +110,9 @@ void MotionControllerDriver::init(ev::Executor &exec,
 {
     RCLCPP_INFO(this->get_logger(), "Intitialising MotionControllerDriver");
     ProxyDeviceDriver::init(exec, master, node_id);
+    driver.reset();
     mc_driver_ = std::make_shared<MCDeviceDriver>(exec, master, node_id);
+    driver = std::static_pointer_cast<LelyBridge>(mc_driver_);
     motor_ = std::make_shared<Motor402>(std::string("motor"), mc_driver_);
     register_services();
     timer_ = this->create_wall_timer(

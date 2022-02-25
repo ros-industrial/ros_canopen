@@ -16,6 +16,7 @@
   <depend>std_srvs</depend>
   <depend>lely_core_libraries</depend>
   <depend>ros2_canopen_core</depend>
+  <depend>proxy_device_driver</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

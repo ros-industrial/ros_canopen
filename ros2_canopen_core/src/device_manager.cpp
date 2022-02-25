@@ -112,8 +112,8 @@ bool DeviceManager::init() {
     std::string dcf_config;
 
     this->get_parameter("can_interface_name", can_interface_name);
-	this->get_parameter("dcf_txt", dcf_txt);
-	this->get_parameter("dcf_config", dcf_config);
+	this->get_parameter("master_config", dcf_txt);
+	this->get_parameter("bus_config", dcf_config);
 
     io::IoGuard io_guard;
 #if _WIN32

@@ -26,7 +26,8 @@ find_package(yaml_cpp_vendor REQUIRED)
 find_package(ros2_canopen_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
-
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 
 
 set (dependencies 
@@ -34,6 +35,8 @@ set (dependencies
   rclcpp
   rclcpp_components
   yaml_cpp_vendor
+  rclcpp_lifecycle
+  lifecycle_msgs
 )
 
 
@@ -77,15 +80,7 @@ install(TARGETS device_manager_node
 install(TARGETS slave_node
   DESTINATION lib/${PROJECT_NAME})
 
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}/
-)
 
-install(DIRECTORY
-  resources
-  DESTINATION share/${PROJECT_NAME}/
-)
 
 
 

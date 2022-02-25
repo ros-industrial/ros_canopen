@@ -14,12 +14,12 @@
 
 #ifndef PROXY_DEVICE_DRIVER__PROXY_DRIVER_HPP_
 #define PROXY_DEVICE_DRIVER__PROXY_DRIVER_HPP_
-
-#include "proxy_device_driver/base_driver.hpp"
+#include "proxy_device_driver/visibility_control.h"
+#include "base_device_driver/base_device_driver.hpp"
 
 namespace ros2_canopen
 {
-    class ProxyDeviceDriver : public BaseDriver
+    class ProxyDeviceDriver : public BaseDeviceDriver
     {
         rclcpp::Publisher<std_msgs::msg::String>::SharedPtr nmt_state_publisher;
         rclcpp::Publisher<ros2_canopen_interfaces::msg::COData>::SharedPtr rpdo_publisher;
@@ -50,14 +50,14 @@ namespace ros2_canopen
             ros2_canopen_interfaces::srv::COWrite::Response::SharedPtr response);
 
     public:
-        ProxyDeviceDriver(const rclcpp::NodeOptions &options) : BaseDriver(options) {}
+        ProxyDeviceDriver(const rclcpp::NodeOptions &options) : BaseDeviceDriver(options) {}
 
         virtual void init(ev::Executor &exec,
                           canopen::AsyncMaster &master,
                           uint8_t node_id) noexcept override
         {
             RCLCPP_INFO(this->get_logger(), "Intitialising ProxyDeviceDriver");
-            BaseDriver::init(exec, master, node_id);
+            BaseDeviceDriver::init(exec, master, node_id);
             nmt_state_publisher = this->create_publisher<std_msgs::msg::String>(std::string(this->get_name()).append("/nmt_state").c_str(), 10);
             tpdo_subscriber = this->create_subscription<ros2_canopen_interfaces::msg::COData>(
                 std::string(this->get_name()).append("/tpdo").c_str(),

@@ -7,7 +7,7 @@
 #include <cstring>
 
 #include "motion_controller_driver/base.hpp"
-#include "proxy_device_driver/basic_device_driver.hpp"
+#include "base_device_driver/lely_bridge.hpp"
 
 using namespace ros2_canopen;
 namespace ros2_canopen
@@ -23,7 +23,7 @@ namespace ros2_canopen
         bool valid;
     };
 
-    class MCDeviceDriver : public BasicDeviceDriver
+    class MCDeviceDriver : public LelyBridge
     {
     private:
         std::vector<std::shared_ptr<RemoteObject>> objs;
@@ -186,7 +186,7 @@ namespace ros2_canopen
         }
 
         MCDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
-            : BasicDeviceDriver(exec, master, id)
+            : LelyBridge(exec, master, id)
         {
             sync = true;
         }

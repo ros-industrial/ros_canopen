@@ -17,9 +17,10 @@ public:
             rclcpp_components::ComponentManager(executor, node_name, node_options) {
         
         executor_ = executor;
-        this->declare_parameter("can_interface_name");
-        this->declare_parameter("dcf_txt");
-        this->declare_parameter("dcf_config");    
+        this->declare_parameter<std::string>("can_interface_name");
+        this->declare_parameter<std::string>("master_config");
+        this->declare_parameter<std::string>("bus_config");
+        this->declare_parameter<bool>("enable_lazy_loading", true);   
     }
 
     bool init();

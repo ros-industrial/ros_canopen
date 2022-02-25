@@ -55,13 +55,13 @@ namespace ros2_canopen
      * can communicate with ROS2 via asynchronous functions.
      * 
      */
-    class BasicDeviceDriver : public canopen::FiberDriver
+    class LelyBridge : public canopen::FiberDriver
     {
         class TPDOWriteTask : public ev::CoTask
         {
         public:
             COData data;
-            BasicDeviceDriver *driver;
+            LelyBridge *driver;
             std::mutex mtx;
             TPDOWriteTask(ev_exec_t *exec) : ev::CoTask(exec)
             {
@@ -127,7 +127,7 @@ namespace ros2_canopen
 
     public:
         using FiberDriver::FiberDriver;
-        BasicDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
+        LelyBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
             : FiberDriver(exec, master, id)
         {
             nodeid = id;

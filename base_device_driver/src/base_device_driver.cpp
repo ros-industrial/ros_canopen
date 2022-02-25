@@ -12,12 +12,12 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#include "proxy_device_driver/base_driver.hpp"
+#include "base_device_driver/base_device_driver.hpp"
 
 using namespace lely;
 using namespace ros2_canopen;
 
-void BaseDriver::nmt_listener()
+void BaseDeviceDriver::nmt_listener()
 {
     while (rclcpp::ok())
     {
@@ -27,7 +27,7 @@ void BaseDriver::nmt_listener()
     }
 }
 
-void BaseDriver::rdpo_listener()
+void BaseDeviceDriver::rdpo_listener()
 {
     while (rclcpp::ok())
     {
@@ -37,9 +37,9 @@ void BaseDriver::rdpo_listener()
     }
 }
 
-void BaseDriver::init(ev::Executor& exec, canopen::AsyncMaster& master, uint8_t node_id) noexcept
+void BaseDeviceDriver::init(ev::Executor& exec, canopen::AsyncMaster& master, uint8_t node_id) noexcept
 {
-    driver = std::make_shared<ros2_canopen::BasicDeviceDriver>(exec, master, node_id);
-    nmt_state_publisher_future = std::async(std::launch::async, std::bind(&ros2_canopen::BaseDriver::nmt_listener, this));
-    rpdo_publisher_future = std::async(std::launch::async, std::bind(&ros2_canopen::BaseDriver::rdpo_listener, this));
+    driver = std::make_shared<ros2_canopen::LelyBridge>(exec, master, node_id);
+    nmt_state_publisher_future = std::async(std::launch::async, std::bind(&ros2_canopen::BaseDeviceDriver::nmt_listener, this));
+    rpdo_publisher_future = std::async(std::launch::async, std::bind(&ros2_canopen::BaseDeviceDriver::rdpo_listener, this));
 }

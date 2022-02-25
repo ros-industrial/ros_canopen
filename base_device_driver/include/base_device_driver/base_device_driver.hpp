@@ -1,25 +1,13 @@
-//    Copyright 2022 Christoph Hellmann Santos
-// 
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//        http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
+#ifndef BASE_DEVICE_DRIVER__BASE_DEVICE_DRIVER_HPP_
+#define BASE_DEVICE_DRIVER__BASE_DEVICE_DRIVER_HPP_
 
-#ifndef BASE_DEVICE_NODE_HPP
-#define BASE_DEVICE_NODE_HPP
+#include "base_device_driver/visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp/publisher.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/trigger.hpp"
 
-#include "proxy_device_driver/basic_device_driver.hpp"
+#include "base_device_driver/lely_bridge.hpp"
 #include "ros2_canopen_core/device.hpp"
 #include "ros2_canopen_interfaces/msg/co_data.hpp"
 #include "ros2_canopen_interfaces/srv/co_read.hpp"
@@ -34,7 +22,7 @@ namespace ros2_canopen
      * This class provides the base functionality for creating a
      * CANopen device node. It provides callbacks for nmt and rpdo.
      */
-    class BaseDriver : public CANopenDriverWrapper
+    class BaseDeviceDriver : public CANopenDriverWrapper
     {
 
     private:
@@ -45,13 +33,13 @@ namespace ros2_canopen
         void rdpo_listener();
 
     protected:
-        std::shared_ptr<ros2_canopen::BasicDeviceDriver> driver;
+        std::shared_ptr<ros2_canopen::LelyBridge> driver;
 
         /**
          * @brief NMT State Change Callback
          * 
          * This function is called, when the NMT State of the
-         * associated BasicDeviceDriver changes,
+         * associated LelyBridge changes,
          * 
          * @param [in] nmt_state New NMT state
          */
@@ -64,7 +52,7 @@ namespace ros2_canopen
          * @brief RPDO Callback
          * 
          * This funciton is called when the associated 
-         * BasicDeviceDriver detects a change 
+         * LelyBridge detects a change 
          * on a specific object, due to an RPDO event.
          * 
          * @param [in] data Changed object
@@ -75,7 +63,7 @@ namespace ros2_canopen
         }
 
  
-        explicit BaseDriver(
+        explicit BaseDeviceDriver(
             const rclcpp::NodeOptions & options) : CANopenDriverWrapper("base_driver",options) {}
     
     public:

@@ -16,6 +16,7 @@ find_package(std_srvs REQUIRED)
 find_package(lely_core_libraries REQUIRED)
 find_package(ros2_canopen_core REQUIRED)
 find_package(proxy_device_driver REQUIRED)
+find_package(base_device_driver REQUIRED)
 
 add_library(motion_controller_driver 
   src/motion_controller_driver.cpp
@@ -36,6 +37,7 @@ ament_target_dependencies(
   "lely_core_libraries"
   "ros2_canopen_core"
   "proxy_device_driver"
+  "base_device_driver"
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,

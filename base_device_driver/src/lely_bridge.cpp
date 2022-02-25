@@ -14,12 +14,12 @@
  *  limitations under the License.
  *
  */
-#include "proxy_device_driver/basic_device_driver.hpp"
+#include "base_device_driver/lely_bridge.hpp"
 
 namespace ros2_canopen
 {
 
-    void BasicDeviceDriver::OnState(canopen::NmtState state) noexcept
+    void LelyBridge::OnState(canopen::NmtState state) noexcept
     {
         canopen::NmtState st = state;
         // We assume 1F80 bit 2 is false. All slaves are put into Operational after boot-up.
@@ -41,7 +41,7 @@ namespace ros2_canopen
         }
     }
 
-    void BasicDeviceDriver::OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept
+    void LelyBridge::OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept
     {
         uint32_t data = (uint32_t)rpdo_mapped[idx][subidx];
         COData codata = {idx, subidx, data, CODataTypes::CODataUnkown};
@@ -58,7 +58,7 @@ namespace ros2_canopen
         }
     }
 
-    std::future<bool> BasicDeviceDriver::async_sdo_write(COData data)
+    std::future<bool> LelyBridge::async_sdo_write(COData data)
     {
         std::unique_lock<std::mutex> lck(sdo_mutex);
         if (running)
@@ -123,7 +123,7 @@ namespace ros2_canopen
         return sdo_write_data_promise->get_future();
     }
 
-    std::future<COData> BasicDeviceDriver::async_sdo_read(COData data)
+    std::future<COData> LelyBridge::async_sdo_read(COData data)
     {
         std::unique_lock<std::mutex> lck(sdo_mutex);
         if (running)
@@ -196,7 +196,7 @@ namespace ros2_canopen
         return sdo_read_data_promise->get_future();
     }
 
-    std::future<canopen::NmtState> BasicDeviceDriver::async_request_nmt()
+    std::future<canopen::NmtState> LelyBridge::async_request_nmt()
     {
         std::scoped_lock<std::mutex> lk(nmt_mtex);
         nmt_state_is_set.store(false);
@@ -204,7 +204,7 @@ namespace ros2_canopen
         return nmt_state_promise.get_future();
     }
 
-    std::future<COData> BasicDeviceDriver::async_request_rpdo()
+    std::future<COData> LelyBridge::async_request_rpdo()
     {
         std::scoped_lock<std::mutex> lk(pdo_mtex);
         rpdo_is_set.store(false);
@@ -212,7 +212,7 @@ namespace ros2_canopen
         return rpdo_promise.get_future();
     }
 
-    void BasicDeviceDriver::tpdo_transmit(COData data)
+    void LelyBridge::tpdo_transmit(COData data)
     {
         TPDOWriteTask task(this->GetStrand());
         task.driver = this;
@@ -228,12 +228,12 @@ namespace ros2_canopen
         std::scoped_lock<std::mutex> lk(task.mtx);
     }
 
-    void BasicDeviceDriver::nmt_command(canopen::NmtCommand command)
+    void LelyBridge::nmt_command(canopen::NmtCommand command)
     {
         this->master.Command(command, nodeid);
     }
 
-    uint8_t BasicDeviceDriver::get_id()
+    uint8_t LelyBridge::get_id()
     {
         return nodeid;
     }
