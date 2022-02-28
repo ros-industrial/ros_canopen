@@ -73,11 +73,11 @@ protected:
   virtual void on_rpdo(COData data)
   {
     RCLCPP_INFO(
-        this->get_logger(), 
-        "Received PDO index %hu subindex %hhu data %u",
-        data.index_,
-        data.subindex_,
-        data.data_);
+      this->get_logger(),
+      "Received PDO index %hu subindex %hhu data %u",
+      data.index_,
+      data.subindex_,
+      data.data_);
   }
 
 
