@@ -16,10 +16,11 @@ find_package(std_srvs REQUIRED)
 find_package(lely_core_libraries REQUIRED)
 find_package(ros2_canopen_core REQUIRED)
 
-add_library(base_device_driver SHARED
+add_library(base_device_driver
+  SHARED
   src/base_device_driver.cpp
   src/lely_bridge.cpp
-  )
+)
 target_compile_features(base_device_driver PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(base_device_driver PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -53,13 +54,7 @@ install(
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
-  # ament_lint_auto_find_test_dependencies()
+  ament_lint_auto_find_test_dependencies()
 endif()
 
 ament_export_include_directories(

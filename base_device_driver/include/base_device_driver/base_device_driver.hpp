@@ -1,5 +1,19 @@
+//    Copyright 2022 Christoph Hellmann Santos
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
 #ifndef BASE_DEVICE_DRIVER__BASE_DEVICE_DRIVER_HPP_
 #define BASE_DEVICE_DRIVER__BASE_DEVICE_DRIVER_HPP_
+#include <memory>
 
 #include "base_device_driver/visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
@@ -16,61 +30,67 @@
 
 namespace ros2_canopen
 {
-    /**
-     * @brief Abstract Class for a DeviceNode
-     * 
-     * This class provides the base functionality for creating a
-     * CANopen device node. It provides callbacks for nmt and rpdo.
-     */
-    class BaseDeviceDriver : public CANopenDriverWrapper
-    {
+/**
+ * @brief Abstract Class for a DeviceNode
+ *
+ * This class provides the base functionality for creating a
+ * CANopen device node. It provides callbacks for nmt and rpdo.
+ */
+class BaseDeviceDriver : public CANopenDriverWrapper
+{
+private:
+  std::future<void> nmt_state_publisher_future;
+  std::future<void> rpdo_publisher_future;
 
-    private:
-        std::future<void> nmt_state_publisher_future;
-        std::future<void> rpdo_publisher_future;
+  void nmt_listener();
+  void rdpo_listener();
 
-        void nmt_listener();
-        void rdpo_listener();
+protected:
+  std::shared_ptr<ros2_canopen::LelyBridge> driver;
 
-    protected:
-        std::shared_ptr<ros2_canopen::LelyBridge> driver;
+  /**
+   * @brief NMT State Change Callback
+   *
+   * This function is called, when the NMT State of the
+   * associated LelyBridge changes,
+   *
+   * @param [in] nmt_state New NMT state
+   */
+  virtual void on_nmt(canopen::NmtState nmt_state)
+  {
+    RCLCPP_INFO(this->get_logger(), "New NMT state %d", (int)nmt_state);
+  }
 
-        /**
-         * @brief NMT State Change Callback
-         * 
-         * This function is called, when the NMT State of the
-         * associated LelyBridge changes,
-         * 
-         * @param [in] nmt_state New NMT state
-         */
-        virtual void on_nmt(canopen::NmtState nmt_state)
-        {
-            RCLCPP_INFO(this->get_logger(), "on_nmt not implemented");
-        }
+  /**
+   * @brief RPDO Callback
+   *
+   * This funciton is called when the associated
+   * LelyBridge detects a change
+   * on a specific object, due to an RPDO event.
+   *
+   * @param [in] data Changed object
+   */
+  virtual void on_rpdo(COData data)
+  {
+    RCLCPP_INFO(
+        this->get_logger(), 
+        "Received PDO index %hu subindex %hhu data %u",
+        data.index_,
+        data.subindex_,
+        data.data_);
+  }
 
-        /**
-         * @brief RPDO Callback
-         * 
-         * This funciton is called when the associated 
-         * LelyBridge detects a change 
-         * on a specific object, due to an RPDO event.
-         * 
-         * @param [in] data Changed object
-         */
-        virtual void on_rpdo(COData data)
-        {
-            RCLCPP_INFO(this->get_logger(), "on_rpdo not implemented");
-        }
 
- 
-        explicit BaseDeviceDriver(
-            const rclcpp::NodeOptions & options) : CANopenDriverWrapper("base_driver",options) {}
-    
-    public:
-        void init(ev::Executor& exec,
-            canopen::AsyncMaster& master,
-            uint8_t node_id) noexcept override;
-    };
-}
+  explicit BaseDeviceDriver(
+    const rclcpp::NodeOptions & options)
+  : CANopenDriverWrapper("base_driver", options) {}
 
-#endif
+public:
+  void init(
+    ev::Executor & exec,
+    canopen::AsyncMaster & master,
+    uint8_t node_id) noexcept override;
+};
+}  // namespace ros2_canopen
+
+#endif  // BASE_DEVICE_DRIVER__BASE_DEVICE_DRIVER_HPP_
