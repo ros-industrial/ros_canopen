@@ -21,6 +21,8 @@ sphinx:
   stage: doc
   image: sphinxdoc/sphinx:latest
   before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq doxygen graphviz
     - pip install sphinx-rtd-theme
     - pip install sphinx-mdinclude
     - pip install breathe
