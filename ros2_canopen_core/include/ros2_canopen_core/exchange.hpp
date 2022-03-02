@@ -1,6 +1,7 @@
 #ifndef EXCHANGE_HPP
 #define EXCHANGE_HPP
 
+namespace ros2_canopen {
 enum CODataTypes
 {
   CODataUnkown = 0,
@@ -17,5 +18,6 @@ public:
   uint32_t data_;
   CODataTypes type_;
 };
+}
 
 #endif  // EXCHANGE_HPP
