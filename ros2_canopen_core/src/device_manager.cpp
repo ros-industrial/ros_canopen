@@ -108,7 +108,7 @@ bool DeviceManager::init_devices_from_config(
                 can_master_ =
                     std::make_shared<ros2_canopen::MasterNode>(
                         "master",
-                        rclcpp::NodeOptions(),
+                        rclcpp::NodeOptions().use_global_arguments(false),
                         dcf_txt,
                         dcf_bin,
                         can_interface_name,
