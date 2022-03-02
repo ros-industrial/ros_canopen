@@ -81,6 +81,6 @@ def generate_launch_description():
     ld.add_action(slave_inactive_state_handler)
     ld.add_action(slave_node)
     ld.add_action(slave_configure)
-    #ld.add_action(master_node)
+    ld.add_action(master_node)
 
     return ld
