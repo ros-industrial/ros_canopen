@@ -43,7 +43,9 @@ set (dependencies
 
 # device manager node
 add_executable(device_manager_node 
-  src/device_manager.cpp)
+  src/device_manager.cpp
+  src/lely_master_bridge.cpp
+  )
 
 ament_target_dependencies(device_manager_node 
   ${dependencies}

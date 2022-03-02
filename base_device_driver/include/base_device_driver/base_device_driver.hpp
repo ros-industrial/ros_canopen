@@ -27,70 +27,73 @@
 #include "ros2_canopen_interfaces/srv/co_read.hpp"
 #include "ros2_canopen_interfaces/srv/co_write.hpp"
 
-
 namespace ros2_canopen
 {
-/**
- * @brief Abstract Class for a DeviceNode
- *
- * This class provides the base functionality for creating a
- * CANopen device node. It provides callbacks for nmt and rpdo.
- */
-class BaseDeviceDriver : public CANopenDriverWrapper
-{
-private:
-  std::future<void> nmt_state_publisher_future;
-  std::future<void> rpdo_publisher_future;
-
-  void nmt_listener();
-  void rdpo_listener();
-
-protected:
-  std::shared_ptr<ros2_canopen::LelyBridge> driver;
-
   /**
-   * @brief NMT State Change Callback
+   * @brief Abstract Class for a DeviceNode
    *
-   * This function is called, when the NMT State of the
-   * associated LelyBridge changes,
-   *
-   * @param [in] nmt_state New NMT state
+   * This class provides the base functionality for creating a
+   * CANopen device node. It provides callbacks for nmt and rpdo.
    */
-  virtual void on_nmt(canopen::NmtState nmt_state)
+  class BaseDeviceDriver : public CANopenDriverWrapper
   {
-    RCLCPP_INFO(this->get_logger(), "New NMT state %d", (int)nmt_state);
-  }
+  private:
+    std::future<void> nmt_state_publisher_future;
+    std::future<void> rpdo_publisher_future;
 
-  /**
-   * @brief RPDO Callback
-   *
-   * This funciton is called when the associated
-   * LelyBridge detects a change
-   * on a specific object, due to an RPDO event.
-   *
-   * @param [in] data Changed object
-   */
-  virtual void on_rpdo(COData data)
-  {
-    RCLCPP_INFO(
-      this->get_logger(),
-      "Received PDO index %hu subindex %hhu data %u",
-      data.index_,
-      data.subindex_,
-      data.data_);
-  }
+    void nmt_listener();
+    void rdpo_listener();
 
+  protected:
+    std::shared_ptr<ros2_canopen::LelyBridge> driver;
 
-  explicit BaseDeviceDriver(
-    const rclcpp::NodeOptions & options)
-  : CANopenDriverWrapper("base_driver", options) {}
+    /**
+     * @brief NMT State Change Callback
+     *
+     * This function is called, when the NMT State of the
+     * associated LelyBridge changes,
+     *
+     * @param [in] nmt_state New NMT state
+     */
+    virtual void on_nmt(canopen::NmtState nmt_state)
+    {
+      RCLCPP_INFO(this->get_logger(), "New NMT state %d", (int)nmt_state);
+    }
 
-public:
-  void init(
-    ev::Executor & exec,
-    canopen::AsyncMaster & master,
-    uint8_t node_id) noexcept override;
-};
-}  // namespace ros2_canopen
+    /**
+     * @brief RPDO Callback
+     *
+     * This funciton is called when the associated
+     * LelyBridge detects a change
+     * on a specific object, due to an RPDO event.
+     *
+     * @param [in] data Changed object
+     */
+    virtual void on_rpdo(COData data)
+    {
+      RCLCPP_INFO(
+          this->get_logger(),
+          "Received PDO index %hu subindex %hhu data %u",
+          data.index_,
+          data.subindex_,
+          data.data_);
+    }
 
-#endif  // BASE_DEVICE_DRIVER__BASE_DEVICE_DRIVER_HPP_
+    explicit BaseDeviceDriver(
+        const rclcpp::NodeOptions &options)
+        : CANopenDriverWrapper("base_driver", options) {}
+
+  public:
+    void init(
+        ev::Executor &exec,
+        canopen::AsyncMaster &master,
+        uint8_t node_id) noexcept override;
+
+    void remove(
+      ev::Executor &exec,
+      canopen::AsyncMaster &master,
+      uint8_t node_id) noexcept override;
+  };
+} // namespace ros2_canopen
+
+#endif // BASE_DEVICE_DRIVER__BASE_DEVICE_DRIVER_HPP_

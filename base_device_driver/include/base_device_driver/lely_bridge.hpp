@@ -28,27 +28,13 @@
 #include <vector>
 #include <condition_variable>
 
+#include "ros2_canopen_core/exchange.hpp"
+
 using namespace std::chrono_literals;
 using namespace lely;
 
 namespace ros2_canopen
 {
-enum CODataTypes
-{
-  CODataUnkown = 0,
-  COData8 = 8,
-  COData16 = 16,
-  COData32 = 32
-};
-
-struct COData
-{
-public:
-  uint16_t index_;
-  uint8_t subindex_;
-  uint32_t data_;
-  CODataTypes type_;
-};
 
 /**
  * @brief Basic CANopen Device Driver

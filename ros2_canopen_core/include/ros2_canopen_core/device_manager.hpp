@@ -17,6 +17,7 @@
 #include <vector>
 #include <rclcpp/executors.hpp>
 #include <rclcpp_components/component_manager.hpp>
+#include "ros2_canopen_core/master_node.hpp"
 
 #include "device.hpp"
 
@@ -42,7 +43,7 @@ public:
 
 private:
     std::map<uint32_t, std::shared_ptr<ros2_canopen::CANopenDriverWrapper>> drivers_;
-    std::shared_ptr<ros2_canopen::MasterDevice> can_master_;
+    std::shared_ptr<ros2_canopen::MasterNode> can_master_;
     std::shared_ptr<ev::Executor> exec_;
     std::weak_ptr<rclcpp::Executor> executor_;
 
@@ -50,8 +51,5 @@ private:
     bool load_driver(std::string& package_name, std::string& device_name,
         uint32_t node_id, std::string& node_name);   // can make a ROS service for this
 
-    bool init_devices_from_config(io::Timer& timer,
-        io::CanChannel& chan,    // assuming linux
-        ev::Executor& exec,
-        std::string& dcf_txt, std::string& dcf_config);
+    bool init_devices_from_config(std::string& dcf_txt, std::string& bus_config, std::string &dcf_bin, std::string &can_interface_name);
 };
