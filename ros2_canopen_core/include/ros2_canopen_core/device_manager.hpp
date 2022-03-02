@@ -36,6 +36,7 @@ public:
         this->declare_parameter<std::string>("can_interface_name", "");
         this->declare_parameter<std::string>("master_config", "");
         this->declare_parameter<std::string>("bus_config", "");
+        this->declare_parameter<std::string>("master_bin", "");
         this->declare_parameter<bool>("enable_lazy_loading", true);   
     }
 
