@@ -10,12 +10,32 @@ doxygen:
     - apt-get update -qq
     - apt-get install -y -qq doxygen graphviz
   script:
-    - cd ros2_canopen_core && doxygen
+    - cd ros2_canopen/doxygen && doxygen
   artifacts:
     paths:
-    - ros2_canopen_core/doc_output/
+    - ros2_canopen/doxygen/doc_output/
   tags:
    - asprunner
+
+sphinx:
+  stage: doc
+  image: sphinxdoc/sphinx:latest
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq doxygen graphviz
+    - pip install sphinx-rtd-theme
+    - pip install sphinx-mdinclude
+    - pip install breathe
+    - pip install exhale
+  script:
+    - cd ros2_canopen/sphinx/
+    - make html
+  artifacts:
+    name: documentation
+    paths:
+    - ros2_canopen/sphinx/_build
+  tags:
+    - asprunner 
 
 
 .build:

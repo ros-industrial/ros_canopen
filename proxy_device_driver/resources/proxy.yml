@@ -1,0 +1,14 @@
+master:
+  node_id: 1
+
+proxy_device_driver:
+  node_id: 2
+  dcf: "simple.eds"
+  driver: "ros2_canopen::ProxyDeviceDriver"
+  package: "proxy_device_driver"
+
+motion_controller_driver:
+  node_id: 3
+  dcf: "simple.eds"
+  driver: "ros2_canopen::MotionControllerDriver"
+  package: "motion_controller_driver"

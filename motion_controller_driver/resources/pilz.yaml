@@ -1,0 +1,34 @@
+master:
+  node_id: 1
+  sync_period: 10000
+
+prbt_joint_1:
+  node_id: 3
+  dcf: "pilz.eds"
+  driver: "canopen_402::MCDevice"
+  dcf_bin: "prbt_joint_1.bin"
+  tpdo:
+    1:
+      enabled: true
+      mapping:
+        - {index: 0x6041, sub_index: 0}
+        - {index: 0x6061, sub_index: 0}
+        - {index: 0x6064, sub_index: 0}
+    2:
+      enabled: true
+      mapping:
+        - {index: 0x606b, sub_index: 0}
+        - {index: 0x606c, sub_index: 0}
+  rpdo:
+    1:
+      enabled: true
+      mapping:
+        - {index: 0x6040, sub_index: 0}
+        - {index: 0x60c1, sub_index: 1}
+        - {index: 0x6042, sub_index: 0}
+    2:
+      enabled: true
+      mapping:
+        - {index: 0x607a, sub_index: 0}
+        - {index: 0x6081, sub_index: 0}
+

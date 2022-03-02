@@ -13,7 +13,7 @@ ExternalProject_Add(upstr_lely_core_libraries    # Name for custom target
     COMMAND mkdir -p <SOURCE_DIR>/include <SOURCE_DIR>/lib 
     COMMAND touch <SOURCE_DIR>/python/dcf-tools/README.md
   #--Configure step-------------
-  CONFIGURE_COMMAND autoreconf -i <SOURCE_DIR> COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --disable-diag --disable-daemon --disable-cython --disable-doc --disable-tests --disable-static "CPPFLAGS=-DNDEBUG" "CFLAGS=-DNDEBUG" "CXXFLAGS=-DNDEBUG"
+  CONFIGURE_COMMAND autoreconf -i <SOURCE_DIR> COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --disable-cython --disable-doc --disable-tests --disable-static "CPPFLAGS=-DNDEBUG" "CFLAGS=-DNDEBUG" "CXXFLAGS=-DNDEBUG"
   #--Build step-----------------
   BUILD_IN_SOURCE 1         # Use source dir for build dir
   #--Install step---------------
@@ -23,6 +23,11 @@ ExternalProject_Add(upstr_lely_core_libraries    # Name for custom target
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/ DESTINATION bin
+        PATTERN "bin/*"
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+        GROUP_EXECUTE GROUP_READ)
+
 
 ament_export_include_directories(include)
 ament_export_libraries(lely-can lely-co lely-coapp lely-ev lely-io2 lely-io lely-libc lely-tap lely-util)

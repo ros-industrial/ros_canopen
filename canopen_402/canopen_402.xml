@@ -1,7 +1,0 @@
-<library path="canopen_402">
-  <class 
-        type="canopen_402::MCDevice" 
-        base_class_type="ros2_canopen::CANopenDevice">
-    <description>Motion controller for CIA402</description>
-  </class>
-</library>
