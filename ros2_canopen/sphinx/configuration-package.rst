@@ -7,27 +7,50 @@ ROS2 package creation
 1. **Create a configuration package**
     .. code-block:: console
 
-      $ ros2 pkg create --build-type ament_cmake <package_name>
+      $ ros2 pkg create --dependencies ros2_canopen --build-type ament_cmake <package_name>
       $ cd <package_name>
-      $ mkdir resource
+      $ rm -rf inlcude src
+      $ mkdir config
+      $ mkdir launch
 
 2. **Adjust your CMAKELists.txt file**
+   We want colcon to install launch and configuration files that are stored
+   in launch and config folder.
+
     .. code-block:: cmake
 
-      cmake_minimum_required(VERSION 3.5)
-      project([package_name])
-      
-      
+      cmake_minimum_required(VERSION 3.8)
+      project(trinamic_pd42_can)
+
+      if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-Wall -Wextra -Wpedantic)
+      endif()
+
+      # find dependencies
+      find_package(ament_cmake REQUIRED)
+      find_package(ros2_canopen REQUIRED)
+
+
+      # install launch file
       install(DIRECTORY
         launch
         DESTINATION share/${PROJECT_NAME}/
       )
-      
+
+      # install configuration file
       install(DIRECTORY
-        resources
+        config
         DESTINATION share/${PROJECT_NAME}/
       )
+
+
+      if(BUILD_TESTING)
+        find_package(ament_lint_auto REQUIRED)
+      endif()
+
       ament_package()
+
+3. **Adjust your package.xml as needed**
 
 
 CANopen configuration creation
@@ -69,6 +92,11 @@ CANopen configuration creation
     .. code-block:: console
 
       $ dcfgen -r -S bus.yml
+
+    This will create your master.dcf as well as a number of .bin files depending on
+    your bus.yml. The .bin files are concise dcf files that are used by the can master
+    to configure itself and the devices on the bus.
+
 
 
 
@@ -118,3 +146,4 @@ run.
 **Option2: Load all drivers on start-up**:
 
 By setting parameter lazy_load_enabled to false, all drivers will be loaded on start-up.
+The Device Manager can be started as normal node instead of ComposableNodeContainer.
