@@ -30,6 +30,7 @@ find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 
 
+
 set (dependencies 
   lely_core_libraries
   rclcpp
@@ -37,6 +38,7 @@ set (dependencies
   yaml_cpp_vendor
   rclcpp_lifecycle
   lifecycle_msgs
+  ros2_canopen_interfaces
 )
 
 
