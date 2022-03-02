@@ -15,6 +15,7 @@ This is the documentation of the ROS2 CANopen stack.
   :maxdepth: 1
   :caption: Concepts and Design
 
+  ros1-ros2
   configuration
   device-manager
   master
@@ -34,6 +35,7 @@ This is the documentation of the ROS2 CANopen stack.
   :caption: Extension
 
   new-driver
+  new-master
   new-device-manager
   api/library_root
 

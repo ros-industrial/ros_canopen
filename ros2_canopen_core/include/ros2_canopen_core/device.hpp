@@ -75,6 +75,16 @@ namespace ros2_canopen
         uint8_t node_id_;
 
     public:
+        /**
+         * @brief Construct a new Master Interface object
+         * 
+         * @param node_name 
+         * @param node_options 
+         * @param dcf_txt 
+         * @param dcf_bin 
+         * @param can_interface_name 
+         * @param nodeid 
+         */
         MasterInterface(
             const std::string &node_name,
             const rclcpp::NodeOptions &node_options,
@@ -88,8 +98,18 @@ namespace ros2_canopen
             can_interface_name_ = can_interface_name;
             node_id_ = nodeid;
         }
-
+        /**
+         * @brief Adds a driver
+         * 
+         * @param node_id 
+         */
         virtual void add_driver(std::shared_ptr<ros2_canopen::DriverInterface>, uint8_t node_id) = 0;
+
+        /**
+         * @brief Removes a driver
+         * 
+         * @param node_id 
+         */
         virtual void remove_driver(std::shared_ptr<ros2_canopen::DriverInterface>, uint8_t node_id) = 0;
     };
 
