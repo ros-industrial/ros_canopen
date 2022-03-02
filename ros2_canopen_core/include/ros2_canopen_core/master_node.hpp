@@ -91,7 +91,7 @@ namespace ros2_canopen
                     std::placeholders::_2));
         }
 
-        void add_driver(std::shared_ptr<ros2_canopen::CANopenDriverWrapper> node_instance, uint8_t node_id) override
+        void add_driver(std::shared_ptr<ros2_canopen::DriverInterface> node_instance, uint8_t node_id) override
         {
             std::shared_ptr<std::promise<void>> prom = std::make_shared<std::promise<void>>();
             auto f = prom->get_future();
@@ -101,7 +101,8 @@ namespace ros2_canopen
                             prom->set_value(); });
             f.wait();
         }
-        void remove_driver(std::shared_ptr<ros2_canopen::CANopenDriverWrapper> node_instance, uint8_t node_id) override
+
+        void remove_driver(std::shared_ptr<ros2_canopen::DriverInterface> node_instance, uint8_t node_id) override
         {
             std::shared_ptr<std::promise<void>> prom = std::make_shared<std::promise<void>>();
             auto f = prom->get_future();
@@ -112,6 +113,12 @@ namespace ros2_canopen
             f.wait();
         }
 
+        /**
+         * @brief on_sdo_read
+         * 
+         * @param request 
+         * @param response 
+         */
         void on_sdo_read(
             const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Response> response)
@@ -132,6 +139,12 @@ namespace ros2_canopen
             }
         }
 
+        /**
+         * @brief on_sdo_write
+         * 
+         * @param request 
+         * @param response 
+         */
         void on_sdo_write(
             const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Response> response)

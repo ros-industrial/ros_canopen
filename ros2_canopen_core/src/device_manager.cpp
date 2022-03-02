@@ -43,7 +43,7 @@ bool DeviceManager::load_component(const std::string &pkg_name, const std::strin
             remap_rules.push_back("__node:=" + node_name);
             opts.arguments(remap_rules);
             rclcpp_components::NodeInstanceWrapper wrapper = factory_node->create_node_instance(opts);
-            auto node_instance = std::static_pointer_cast<ros2_canopen::CANopenDriverWrapper>(wrapper.get_node_instance());
+            auto node_instance = std::static_pointer_cast<ros2_canopen::DriverInterface>(wrapper.get_node_instance());
 
             drivers_.insert({node_id, node_instance});
 
