@@ -8,7 +8,7 @@
 #include "ros2_canopen_interfaces/srv/co_read_id.hpp"
 namespace ros2_canopen
 {
-    class MasterNode : public MasterDevice
+    class MasterNode : public MasterInterface
     {
     protected:
         std::shared_ptr<LelyMasterBridge> master_;
@@ -33,7 +33,7 @@ namespace ros2_canopen
             std::string dcf_txt,
             std::string dcf_bin,
             std::string can_interface_name,
-            uint8_t nodeid) : MasterDevice(node_name, node_options, dcf_txt, dcf_bin, can_interface_name, nodeid)
+            uint8_t nodeid) : MasterInterface(node_name, node_options, dcf_txt, dcf_bin, can_interface_name, nodeid)
         {
             io_guard_ = std::make_unique<lely::io::IoGuard>();
             ctx_ = std::make_unique<lely::io::Context>();
@@ -91,7 +91,7 @@ namespace ros2_canopen
                     std::placeholders::_2));
         }
 
-        void add_driver(std::shared_ptr<ros2_canopen::CANopenDriverWrapper> node_instance, uint8_t node_id) override
+        void add_driver(std::shared_ptr<ros2_canopen::DriverInterface> node_instance, uint8_t node_id) override
         {
             std::shared_ptr<std::promise<void>> prom = std::make_shared<std::promise<void>>();
             auto f = prom->get_future();
@@ -101,7 +101,8 @@ namespace ros2_canopen
                             prom->set_value(); });
             f.wait();
         }
-        void remove_driver(std::shared_ptr<ros2_canopen::CANopenDriverWrapper> node_instance, uint8_t node_id) override
+
+        void remove_driver(std::shared_ptr<ros2_canopen::DriverInterface> node_instance, uint8_t node_id) override
         {
             std::shared_ptr<std::promise<void>> prom = std::make_shared<std::promise<void>>();
             auto f = prom->get_future();
@@ -112,6 +113,12 @@ namespace ros2_canopen
             f.wait();
         }
 
+        /**
+         * @brief on_sdo_read
+         * 
+         * @param request 
+         * @param response 
+         */
         void on_sdo_read(
             const std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::COReadID::Response> response)
@@ -132,6 +139,12 @@ namespace ros2_canopen
             }
         }
 
+        /**
+         * @brief on_sdo_write
+         * 
+         * @param request 
+         * @param response 
+         */
         void on_sdo_write(
             const std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Request> request,
             std::shared_ptr<ros2_canopen_interfaces::srv::COWriteID::Response> response)

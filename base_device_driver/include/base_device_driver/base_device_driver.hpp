@@ -35,7 +35,7 @@ namespace ros2_canopen
    * This class provides the base functionality for creating a
    * CANopen device node. It provides callbacks for nmt and rpdo.
    */
-  class BaseDeviceDriver : public CANopenDriverWrapper
+  class BaseDeviceDriver : public DriverInterface
   {
   private:
     std::future<void> nmt_state_publisher_future;
@@ -81,7 +81,7 @@ namespace ros2_canopen
 
     explicit BaseDeviceDriver(
         const rclcpp::NodeOptions &options)
-        : CANopenDriverWrapper("base_driver", options) {}
+        : DriverInterface("base_driver", options) {}
 
   public:
     void init(

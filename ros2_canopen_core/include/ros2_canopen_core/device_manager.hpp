@@ -43,7 +43,7 @@ public:
     bool init();
 
 private:
-    std::map<uint32_t, std::shared_ptr<ros2_canopen::CANopenDriverWrapper>> drivers_;
+    std::map<uint32_t, std::shared_ptr<ros2_canopen::DriverInterface>> drivers_;
     std::shared_ptr<ros2_canopen::MasterNode> can_master_;
     std::shared_ptr<ev::Executor> exec_;
     std::weak_ptr<rclcpp::Executor> executor_;
