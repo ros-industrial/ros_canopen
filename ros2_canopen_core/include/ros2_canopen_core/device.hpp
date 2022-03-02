@@ -66,7 +66,7 @@ namespace ros2_canopen
                             uint8_t node_id) noexcept = 0;
     };
 
-    class MasterDevice : public rclcpp::Node
+    class MasterInterface : public rclcpp::Node
     {
     protected:
         std::string dcf_txt_;
@@ -75,7 +75,7 @@ namespace ros2_canopen
         uint8_t node_id_;
 
     public:
-        MasterDevice(
+        MasterInterface(
             const std::string &node_name,
             const rclcpp::NodeOptions &node_options,
             std::string dcf_txt,

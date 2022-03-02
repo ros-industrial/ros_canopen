@@ -8,7 +8,7 @@
 #include "ros2_canopen_interfaces/srv/co_read_id.hpp"
 namespace ros2_canopen
 {
-    class MasterNode : public MasterDevice
+    class MasterNode : public MasterInterface
     {
     protected:
         std::shared_ptr<LelyMasterBridge> master_;
@@ -33,7 +33,7 @@ namespace ros2_canopen
             std::string dcf_txt,
             std::string dcf_bin,
             std::string can_interface_name,
-            uint8_t nodeid) : MasterDevice(node_name, node_options, dcf_txt, dcf_bin, can_interface_name, nodeid)
+            uint8_t nodeid) : MasterInterface(node_name, node_options, dcf_txt, dcf_bin, can_interface_name, nodeid)
         {
             io_guard_ = std::make_unique<lely::io::IoGuard>();
             ctx_ = std::make_unique<lely::io::Context>();
