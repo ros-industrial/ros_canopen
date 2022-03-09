@@ -86,6 +86,14 @@ void ProxyDeviceDriver::on_nmt_state_reset(
   response->success = true;
 }
 
+void ProxyDeviceDriver::on_nmt_state_start(
+  const std_srvs::srv::Trigger::Request::SharedPtr request,
+  std_srvs::srv::Trigger::Response::SharedPtr response)
+{
+  driver->nmt_command(canopen::NmtCommand::START);
+  response->success = true;
+}
+
 void ProxyDeviceDriver::on_sdo_read(
   const ros2_canopen_interfaces::srv::CORead::Request::SharedPtr request,
   ros2_canopen_interfaces::srv::CORead::Response::SharedPtr response)

@@ -27,6 +27,7 @@ class ProxyDeviceDriver : public BaseDeviceDriver
   rclcpp::Publisher<ros2_canopen_interfaces::msg::COData>::SharedPtr rpdo_publisher;
   rclcpp::Subscription<ros2_canopen_interfaces::msg::COData>::SharedPtr tpdo_subscriber;
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr nmt_state_reset_service;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr nmt_state_start_service;
   rclcpp::Service<ros2_canopen_interfaces::srv::CORead>::SharedPtr sdo_read_service;
   rclcpp::Service<ros2_canopen_interfaces::srv::COWrite>::SharedPtr sdo_write_service;
 
@@ -40,6 +41,10 @@ protected:
   void on_rpdo(COData d);
 
   void on_nmt_state_reset(
+    const std_srvs::srv::Trigger::Request::SharedPtr request,
+    std_srvs::srv::Trigger::Response::SharedPtr response);
+
+  void on_nmt_state_start(
     const std_srvs::srv::Trigger::Request::SharedPtr request,
     std_srvs::srv::Trigger::Response::SharedPtr response);
 
@@ -77,6 +82,14 @@ public:
       std::string(this->get_name()).append("/nmt_reset_node").c_str(),
       std::bind(
         &ros2_canopen::ProxyDeviceDriver::on_nmt_state_reset,
+        this,
+        std::placeholders::_1,
+        std::placeholders::_2));
+
+    nmt_state_start_service = this->create_service<std_srvs::srv::Trigger>(
+      std::string(this->get_name()).append("/nmt_start_node").c_str(),
+      std::bind(
+        &ros2_canopen::ProxyDeviceDriver::on_nmt_state_start,
         this,
         std::placeholders::_1,
         std::placeholders::_2));
