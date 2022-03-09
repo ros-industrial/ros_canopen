@@ -212,8 +212,8 @@ namespace canopen_402
 
     bool DefaultHomingMode::executeHoming()
     {
-
-        if (driver->get_remote_obj_cached<int8_t>(obj) == 0)
+        int hmode = driver->get_remote_obj<int8_t>(obj);
+        if ( hmode == 0)
         {
             return true;
         }
@@ -302,7 +302,11 @@ namespace canopen_402
         {
             //THROW_EXCEPTION(std::runtime_error("Supported drive modes (object 6502) is not valid"));
         }
-        return mode > 0 && mode <= 32 && (driver->get_remote_obj_cached<uint32_t>(supported_drive_modes_) & (1 << (mode - 1)));
+        uint32_t supported_modes = driver->get_remote_obj_cached<uint32_t>(supported_drive_modes_);
+        bool supported = supported_modes & (1 << (mode - 1));
+        bool below_max = mode <= 32;
+        bool above_min = mode > 0;
+        return below_max && above_min && supported;
     }
     void Motor402::registerMode(uint16_t id, const ModeSharedPtr &m)
     {
@@ -346,13 +350,13 @@ namespace canopen_402
         ModeSharedPtr next_mode = allocMode(mode);
         if (!next_mode)
         {
-            std::cout <<"Mode is not supported." << std::endl;
+            RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Mode is not supported.");
             return false;
         }
 
         if (!next_mode->start())
         {
-            std::cout <<"Could not start mode." << std::endl;
+            RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Could not  start mode.");
             return false;
         }
 
@@ -403,7 +407,7 @@ namespace canopen_402
             }
             else
             {
-                std::cout <<"Mode switch timed out." << std::endl;
+                RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Mode switch timed out.");
                 driver->set_remote_obj<int8_t>(op_mode_, mode_id_);
             }
         }
@@ -426,13 +430,13 @@ namespace canopen_402
             bool success = Command402::setTransition(control_word_, state, target_state_, &next);
             if (!success)
             {
-                std::cout <<"Could not set transition" << std::endl;
+                RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Could not set transition.");
                 return false;
             }
             lock.unlock();
             if (state != next && !state_handler_.waitForNewState(abstime, state))
             {
-                std::cout <<"Transition timeout" << std::endl;
+                RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Transition timed out.");
                 return false;
             }
         }
@@ -463,7 +467,7 @@ namespace canopen_402
             if (!selected_mode_->read(sw))
             {
 
-                std::cout <<"Mode handler has error" << std::endl;
+                RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Mode handler has error.");
             }
         }
         if (new_mode != mode_id_)
@@ -473,17 +477,17 @@ namespace canopen_402
         }
         if (selected_mode_ && selected_mode_->mode_id_ != new_mode)
         {
-            std::cout << "mode does not match" << std::endl;
+            RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Mode does not match.");
         }
         if (sw & (1 << State402::SW_Internal_limit))
         {
             if (old_sw & (1 << State402::SW_Internal_limit))
             {
-                std::cout << "Internal limit active" << std::endl;
+                RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Internal limit active");
             }
             else
             {
-                std::cout <<"Internal limit active" << std::endl;
+                RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Internal limit active");
             }
         }
 
@@ -518,10 +522,12 @@ namespace canopen_402
         }
         if (start_fault_reset_.exchange(false))
         {
+            RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Fault reset");
             this->driver->set_remote_obj<uint16_t>(control_word_entry_,control_word_ & ~(1 << Command402::CW_Fault_Reset));
         }
         else
         {
+           //RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Control Word %s", std::bitset<16>{control_word_}.to_string());
            this->driver->set_remote_obj<uint16_t>(control_word_entry_, control_word_);
         }
     }
@@ -567,7 +573,7 @@ namespace canopen_402
         {
             (it->second)();
         }
-
+        RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Init: Read State");
         if (!readState())
         {
             std::cout <<"Could not read motor state" << std::endl;
@@ -578,12 +584,13 @@ namespace canopen_402
             control_word_ = 0;
             start_fault_reset_ = true;
         }
+        RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Init: Enable");
         if (!switchState(State402::Operation_Enable))
         {
             std::cout <<"Could not enable motor" << std::endl;
             return;
         }
-
+       
         ModeSharedPtr m = allocMode(MotorBase::Homing);
         if (!m)
         {
@@ -597,20 +604,24 @@ namespace canopen_402
             std::cout <<"Homing mode has incorrect handler" << std::endl;
             return;
         }
-
+        RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Init: Switch to homing");
         if (!switchMode(MotorBase::Homing))
         {
             std::cout <<"Could not enter homing mode" << std::endl;
             return;
         }
-
+        RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Init: Execute homing");
         if (!homing->executeHoming())
         {
             std::cout <<"Homing failed" << std::endl;
             return;
         }
-
-        switchMode(No_Mode);
+        RCLCPP_INFO(rclcpp::get_logger("motion_controller_driver"), "Init: Switch no mode");
+        if (!switchMode(MotorBase::No_Mode))
+        {
+            std::cout <<"Could not enter no mode" << std::endl;
+            return;
+        }
     }
     void Motor402::handleShutdown()
     {

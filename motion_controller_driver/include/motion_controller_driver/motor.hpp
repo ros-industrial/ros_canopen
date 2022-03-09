@@ -9,6 +9,8 @@
 #include <limits>
 #include <algorithm>
 #include <iostream>
+#include <bitset>
+#include "rclcpp/rclcpp.hpp"
 
 #include "motion_controller_driver/mc_device_driver.hpp"
 using namespace ros2_canopen;
@@ -218,7 +220,7 @@ namespace canopen_402
     public:
         ModeForwardHelper(std::shared_ptr<MCDeviceDriver> driver) : ModeTargetHelper<TYPE>(ID)
         {
-            driver->create_remote_obj(OBJ, SUB, TPY);
+            this->obj = driver->create_remote_obj(OBJ, SUB, TPY);
             this->driver = driver;
         }
         virtual bool read(const uint16_t &sw) { return true; }
