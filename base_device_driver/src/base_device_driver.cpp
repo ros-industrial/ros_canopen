@@ -52,6 +52,7 @@ void BaseDeviceDriver::init(
     std::launch::async,
     std::bind(&ros2_canopen::BaseDeviceDriver::rdpo_listener, this)
     );
+  driver->Boot();
 }
 
 void BaseDeviceDriver::remove(
