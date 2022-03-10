@@ -27,24 +27,39 @@ namespace ros2_canopen
         rclcpp::TimerBase::SharedPtr timer_;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_init_service;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_halt_service;
+        rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_recover_service;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_position_service;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_torque_service;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_velocity_service;
+        rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_velocity_service;
         rclcpp::Service<ros2_canopen_interfaces::srv::COTargetDouble>::SharedPtr handle_set_target_service;
-
+        rclcpp::CallbackGroup::SharedPtr timer_group;
+        bool intialised;
         void register_services();
 
     public:
         explicit MotionControllerDriver(const rclcpp::NodeOptions &options)
             : ProxyDeviceDriver(options)
         {
-            
+            intialised = false;
         }
 
         void run()
         {
+            if(!intialised)
+            {
+                RCLCPP_INFO(this->get_logger(), "Intitialise");
+                timer_->cancel();
+                intialised = true;
+                motor_->registerDefaultModes();
+                mc_driver_->validate_objs();
+                timer_= this->create_wall_timer(
+                        100ms, std::bind(&MotionControllerDriver::run, this), timer_group);
+            }
+            
             motor_->handleRead();
             motor_->handleWrite();
+            motor_->handleDiag();
         }
 
         void init(ev::Executor &exec,
@@ -62,6 +77,9 @@ namespace ros2_canopen
         void handle_init(
             const std_srvs::srv::Trigger::Request::SharedPtr request,
             std_srvs::srv::Trigger::Response::SharedPtr response);
+        void handle_recover(
+            const std_srvs::srv::Trigger::Request::SharedPtr request,
+            std_srvs::srv::Trigger::Response::SharedPtr response);
 
         void handle_halt(
             const std_srvs::srv::Trigger::Request::SharedPtr request,
@@ -72,6 +90,11 @@ namespace ros2_canopen
             std_srvs::srv::Trigger::Response::SharedPtr response);
 
         void handle_set_mode_velocity(
+            const std_srvs::srv::Trigger::Request::SharedPtr request,
+            std_srvs::srv::Trigger::Response::SharedPtr response);
+
+
+        void handle_set_mode_cyclic_velocity(
             const std_srvs::srv::Trigger::Request::SharedPtr request,
             std_srvs::srv::Trigger::Response::SharedPtr response);
 

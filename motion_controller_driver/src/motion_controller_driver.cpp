@@ -10,6 +10,18 @@ void MotionControllerDriver::handle_init(
     if (active.load())
     {
         motor_->handleInit();
+        mc_driver_->validate_objs();
+        response->success = true;
+    }
+}
+
+void MotionControllerDriver::handle_recover(
+    const std_srvs::srv::Trigger::Request::SharedPtr request,
+    std_srvs::srv::Trigger::Response::SharedPtr response)
+{
+    if (active.load())
+    {
+        motor_->handleRecover();
         response->success = true;
     }
 }
@@ -33,8 +45,10 @@ void MotionControllerDriver::handle_set_mode_position(
         if (motor_->getMode() != MotorBase::Profiled_Position)
         {
             response->success = motor_->enterModeAndWait(MotorBase::Profiled_Position);
+            return;
         }
-        response->success = true;
+
+        response->success = false;
     }
 }
 
@@ -47,8 +61,25 @@ void MotionControllerDriver::handle_set_mode_velocity(
         if (motor_->getMode() != MotorBase::Profiled_Velocity)
         {
             response->success = motor_->enterModeAndWait(MotorBase::Profiled_Velocity);
+            return;
         }
-        response->success = true;
+        response->success = false;
+    }
+}
+
+
+void MotionControllerDriver::handle_set_mode_cyclic_velocity(
+    const std_srvs::srv::Trigger::Request::SharedPtr request,
+    std_srvs::srv::Trigger::Response::SharedPtr response)
+{
+    if (active.load())
+    {
+        if (motor_->getMode() != MotorBase::Cyclic_Synchronous_Velocity)
+        {
+            response->success = motor_->enterModeAndWait(MotorBase::Cyclic_Synchronous_Velocity);
+            return;
+        }
+        response->success = false;
     }
 }
 
@@ -86,6 +117,10 @@ void MotionControllerDriver::register_services()
         std::string(this->get_name()).append("/halt").c_str(),
         std::bind(&MotionControllerDriver::handle_halt, this, _1, _2));
 
+    handle_recover_service = this->create_service<std_srvs::srv::Trigger>(
+        std::string(this->get_name()).append("/recover").c_str(),
+        std::bind(&MotionControllerDriver::handle_recover, this, _1, _2));
+
     handle_set_mode_position_service = this->create_service<std_srvs::srv::Trigger>(
         std::string(this->get_name()).append("/position_mode").c_str(),
         std::bind(&MotionControllerDriver::handle_set_mode_position, this, _1, _2));
@@ -93,6 +128,10 @@ void MotionControllerDriver::register_services()
     handle_set_mode_velocity_service = this->create_service<std_srvs::srv::Trigger>(
         std::string(this->get_name()).append("/velocity_mode").c_str(),
         std::bind(&MotionControllerDriver::handle_set_mode_velocity, this, _1, _2));
+
+    handle_set_mode_cyclic_velocity_service = this->create_service<std_srvs::srv::Trigger>(
+        std::string(this->get_name()).append("/cyclic_velocity_mode").c_str(),
+        std::bind(&MotionControllerDriver::handle_set_mode_cyclic_velocity, this, _1, _2));
 
     handle_set_mode_torque_service = this->create_service<std_srvs::srv::Trigger>(
         std::string(this->get_name()).append("/torque_mode").c_str(),
@@ -115,8 +154,12 @@ void MotionControllerDriver::init(ev::Executor &exec,
     driver = std::static_pointer_cast<LelyBridge>(mc_driver_);
     motor_ = std::make_shared<Motor402>(std::string("motor"), mc_driver_);
     register_services();
+    timer_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
     timer_ = this->create_wall_timer(
-        20ms, std::bind(&MotionControllerDriver::run, this));
+        2000ms, std::bind(&MotionControllerDriver::run, this), timer_group);
+    driver->Boot();
+    active.store(true);
+    RCLCPP_INFO(this->get_logger(), "Intialised with nodeid %hhu.", node_id);
 }
 
 #include "rclcpp_components/register_node_macro.hpp"

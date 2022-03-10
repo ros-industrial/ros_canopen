@@ -71,9 +71,8 @@ namespace ros2_canopen
             }
             else
             {
-                this->tpdo_mapped[obj->index][obj->subindex] = data;
-                if(!sync) 
-                    this->tpdo_mapped[obj->index][obj->subindex].WriteEvent();
+                this->tpdo_mapped[obj->index][obj->subindex] = data; 
+                this->tpdo_mapped[obj->index][obj->subindex].WriteEvent();
             }
         }
 
