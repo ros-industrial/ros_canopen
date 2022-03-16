@@ -62,14 +62,6 @@ bool DeviceManager::load_component(const std::string &pkg_name, const std::strin
     return false;
 }
 
-bool DeviceManager::load_driver(std::string &package_name, std::string &device_name,
-                                uint32_t node_id, std::string &node_name)
-{
-
-    std::string plugin_name = device_name;
-    return this->load_component(package_name, plugin_name, node_id, node_name);
-}
-
 bool DeviceManager::init_devices_from_config(
     std::string &dcf_txt,
     std::string &bus_config,
@@ -132,7 +124,7 @@ bool DeviceManager::init_devices_from_config(
             // TODO: if one of the driver fails to load,
             //  should the state change or exit with FAILURE?
 
-            load_driver(package_name, plugin_name, node_id, driver_name);
+            this->load_component(package_name, plugin_name, node_id, driver_name);
         }
     }
     return true;
