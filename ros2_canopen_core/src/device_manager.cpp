@@ -178,10 +178,13 @@ bool DeviceManager::init_devices_from_config(
             // load the driver
             std::string plugin_name = config["driver"].as<std::string>();
             std::string package_name = config["package"].as<std::string>();
+            bool enable_lazy_load = config["enable_lazy_load"].as<bool>();
             // TODO: if one of the driver fails to load,
             //  should the state change or exit with FAILURE?
 
-            this->load_component(package_name, plugin_name, node_id, driver_name);
+            if(!enable_lazy_load) {
+                this->load_component(package_name, plugin_name, node_id, driver_name);
+            }
         }
     }
     auto components = list_components();
