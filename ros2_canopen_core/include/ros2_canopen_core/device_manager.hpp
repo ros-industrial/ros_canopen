@@ -47,8 +47,14 @@ private:
     std::shared_ptr<ros2_canopen::MasterNode> can_master_;
     std::shared_ptr<ev::Executor> exec_;
     std::weak_ptr<rclcpp::Executor> executor_;
+    std::map<uint32_t, rclcpp_components::NodeInstanceWrapper> node_wrappers_;
+
+    void set_executor(const std::weak_ptr<rclcpp::Executor> executor);
+    void add_node_to_executor(const std::string &plugin_name, const uint32_t node_id, const std::string &node_name);
+    void remove_node_from_executor(const std::string &plugin_name, const uint32_t node_id, const std::string &node_name);
 
     bool load_component(const std::string& pkg_name, const std::string& plugin_name, uint32_t node_id, std::string& node_name);
+    std::map<uint32_t, std::string> list_components();
 
     bool init_devices_from_config(std::string& dcf_txt, std::string& bus_config, std::string &dcf_bin, std::string &can_interface_name);
 };
