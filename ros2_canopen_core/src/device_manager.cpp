@@ -45,6 +45,7 @@ DeviceManager::add_node_to_executor(const std::string &plugin_name, const uint32
         // maybe this is not necessary anymore since node_wrappers_ is storing the wrappers
         drivers_.insert({node_id, node_instance});
 
+        active_drivers_.insert({node_name, std::make_pair(node_id, plugin_name)});
         can_master_->add_driver(node_instance, node_id);
 
         RCLCPP_INFO(this->get_logger(), "Added %s of type %s to executor", node_name.c_str(), plugin_name.c_str());
@@ -146,7 +147,7 @@ bool DeviceManager::init_devices_from_config(
         std::string driver_name = it->first.as<std::string>();
         // Device config
         YAML::Node config = it->second;
-        int node_id = config["node_id"].as<int>();
+        uint32_t node_id = config["node_id"].as<uint32_t>();
 
         // init master
         if (driver_name.find("master") != std::string::npos)
@@ -179,6 +180,7 @@ bool DeviceManager::init_devices_from_config(
             std::string plugin_name = config["driver"].as<std::string>();
             std::string package_name = config["package"].as<std::string>();
             bool enable_lazy_load = config["enable_lazy_load"].as<bool>();
+            registered_drivers_.insert({driver_name, std::make_pair(node_id, plugin_name)});
             // TODO: if one of the driver fails to load,
             //  should the state change or exit with FAILURE?
 
@@ -210,6 +212,76 @@ bool DeviceManager::init()
 
     init_devices_from_config(dcf_txt, bus_config, dcf_bin, can_interface_name);
     return true;
+}
+
+void DeviceManager::on_load_node(
+    const std::shared_ptr<rmw_request_id_t> request_header,
+    const std::shared_ptr<LoadNode::Request> request,
+    std::shared_ptr<LoadNode::Response> response)
+{
+    (void) request_header;
+    std::string package_name = request->package_name;
+    std::string plugin_name = request->plugin_name;
+    std::string node_name = request->node_name;
+
+    if(node_name.empty())
+    {
+        response->error_message = "Node name cannot be empty. To pass node name use '-n' option.";
+        response->success = false;
+        return;
+    }
+
+    auto registered_it = registered_drivers_.find(node_name);
+    auto active_it = active_drivers_.find(node_name);
+    if(registered_it == registered_drivers_.end())
+    {
+        response->error_message = "No node registered with the name " + node_name + ".";
+        response->success = false;
+        return;
+    }
+    if(active_it != active_drivers_.end())
+    {
+        response->error_message = node_name + " is already loaded.";
+        response->success = false;
+        return;
+    }
+
+    // pair of {node_id, plugin_name}
+    auto plugin_info = registered_drivers_[node_name];
+
+    bool is_loaded = this->load_component(package_name, plugin_name, plugin_info.first, node_name);
+    if(is_loaded)
+    {
+        response->full_node_name = node_name;
+        response->unique_id = plugin_info.first;
+        response->success = true;
+    } else
+    {
+        response->error_message = "Failed to find class with the requested plugin name.";
+        response->success = false;
+    }
+}
+
+void DeviceManager::on_unload_node(
+    const std::shared_ptr<rmw_request_id_t> request_header,
+    const std::shared_ptr<UnloadNode::Request> request,
+    std::shared_ptr<UnloadNode::Response> response)
+{
+}
+
+void DeviceManager::on_list_nodes(
+    const std::shared_ptr<rmw_request_id_t> request_header,
+    const std::shared_ptr<ListNodes::Request> request,
+    std::shared_ptr<ListNodes::Response> response)
+{
+    auto components = list_components();
+    // RCLCPP_INFO(this->get_logger(), "List of active components:");
+    for(auto it = components.begin(); it != components.end(); ++it)
+    {
+        // RCLCPP_INFO(this->get_logger(), "%i : %s", it->first, it->second.c_str());
+        response->unique_ids.push_back(it->first);
+        response->full_node_names.push_back(it->second);
+    }
 }
 
 int main(int argc, char const *argv[])

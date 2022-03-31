@@ -42,8 +42,65 @@ public:
 
     bool init();
 
+    RCLCPP_COMPONENTS_PUBLIC
+    virtual void
+    on_load_node(
+        const std::shared_ptr<rmw_request_id_t> request_header,
+        const std::shared_ptr<LoadNode::Request> request,
+        std::shared_ptr<LoadNode::Response> response);
+
+    [[deprecated("Use on_load_node() instead")]]
+    RCLCPP_COMPONENTS_PUBLIC
+    virtual void
+    OnLoadNode(
+        const std::shared_ptr<rmw_request_id_t> request_header,
+        const std::shared_ptr<LoadNode::Request> request,
+        std::shared_ptr<LoadNode::Response> response) override
+    {
+        on_load_node(request_header, request, response);
+    }
+
+    RCLCPP_COMPONENTS_PUBLIC
+    virtual void
+    on_unload_node(
+        const std::shared_ptr<rmw_request_id_t> request_header,
+        const std::shared_ptr<UnloadNode::Request> request,
+        std::shared_ptr<UnloadNode::Response> response);
+
+    [[deprecated("Use on_unload_node() instead")]]
+    RCLCPP_COMPONENTS_PUBLIC
+    virtual void
+    OnUnloadNode(
+        const std::shared_ptr<rmw_request_id_t> request_header,
+        const std::shared_ptr<UnloadNode::Request> request,
+        std::shared_ptr<UnloadNode::Response> response) override
+    {
+        on_unload_node(request_header, request, response);
+    }
+
+    RCLCPP_COMPONENTS_PUBLIC
+    virtual void
+    on_list_nodes(
+        const std::shared_ptr<rmw_request_id_t> request_header,
+        const std::shared_ptr<ListNodes::Request> request,
+        std::shared_ptr<ListNodes::Response> response);
+
+    [[deprecated("Use on_list_nodes() instead")]]
+    RCLCPP_COMPONENTS_PUBLIC
+    virtual void
+    OnListNodes(
+        const std::shared_ptr<rmw_request_id_t> request_header,
+        const std::shared_ptr<ListNodes::Request> request,
+        std::shared_ptr<ListNodes::Response> response) override
+    {
+        on_list_nodes(request_header, request, response);
+    }
+
+
 private:
     std::map<uint32_t, std::shared_ptr<ros2_canopen::DriverInterface>> drivers_;
+    std::map<std::string, std::pair<uint32_t, std::string>> registered_drivers_;
+    std::map<std::string, std::pair<uint32_t, std::string>> active_drivers_;
     std::shared_ptr<ros2_canopen::MasterNode> can_master_;
     std::shared_ptr<ev::Executor> exec_;
     std::weak_ptr<rclcpp::Executor> executor_;
