@@ -1,0 +1,16 @@
+master:
+  node_id: 1
+
+canopen_proxy_driver:
+  node_id: 2
+  dcf: "simple.eds"
+  driver: "ros2_canopen::ProxyDriver"
+  package: "canopen_proxy_driver"
+  enable_lazy_load: false
+
+canopen_402_driver:
+  node_id: 3
+  dcf: "simple.eds"
+  driver: "ros2_canopen::MotionControllerDriver"
+  package: "canopen_402_driver"
+  enable_lazy_load: true
