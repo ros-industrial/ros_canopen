@@ -46,17 +46,17 @@ Tested service calls
     - OK
     - None
   * - ~/init
-    - TBD
-    - Not tested yet
+    - OK
+    - No comments
   * - ~/halt
-    - TBD
-    - Not tested yet
+    - OK
+    - No comments
   * - ~/position_mode
-    - TBD
-    - Not tested yet
+    - OK
+    - No comments
   * - ~/velocity_mode
-    - TBD
-    - Not tested yet
+    - OK
+    - No comments
   * - ~/target
-    - TBD
-    - Not tested yet
+    - OK
+    - Tested for profiled velocity and position mode.

@@ -30,7 +30,7 @@
 namespace ros2_canopen
 {
   /**
-   * @brief Abstract Class for a DeviceNode
+   * @brief Abstract Class for a CANopen Device Node
    *
    * This class provides the base functionality for creating a
    * CANopen device node. It provides callbacks for nmt and rpdo.
@@ -84,11 +84,30 @@ namespace ros2_canopen
         : DriverInterface("base_driver", options) {}
 
   public:
+    /**
+     * @brief Initializer for the driver
+     * 
+     * Initializes the driver, adds it to the CANopen Master.
+     * This function needs to be executed inside the masters
+     * event loop or the masters thread!
+     * 
+     * @param [in] exec       The executor to be used for the driver
+     * @param [in] master     The master the driver should be added to
+     * @param [in] node_id    The nodeid of the device the driver commands
+     */
     void init(
         ev::Executor &exec,
         canopen::AsyncMaster &master,
         uint8_t node_id) noexcept override;
-
+    /**
+     * @brief Removes the driver from master
+     * 
+     * @todo Check interface!
+     * 
+     * @param [in] exec     
+     * @param [in] master 
+     * @param [in] node_id 
+     */
     void remove(
       ev::Executor &exec,
       canopen::AsyncMaster &master,

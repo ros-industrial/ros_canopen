@@ -67,6 +67,20 @@ void MotionControllerDriver::handle_set_mode_velocity(
     }
 }
 
+void MotionControllerDriver::handle_set_mode_cyclic_position(
+    const std_srvs::srv::Trigger::Request::SharedPtr request,
+    std_srvs::srv::Trigger::Response::SharedPtr response)
+{
+    if (active.load())
+    {
+        if (motor_->getMode() != MotorBase::Cyclic_Synchronous_Position)
+        {
+            response->success = motor_->enterModeAndWait(MotorBase::Cyclic_Synchronous_Position);
+            return;
+        }
+        response->success = false;
+    }
+}
 
 void MotionControllerDriver::handle_set_mode_cyclic_velocity(
     const std_srvs::srv::Trigger::Request::SharedPtr request,
@@ -107,6 +121,12 @@ void MotionControllerDriver::handle_set_target(
     }
 }
 
+void MotionControllerDriver::target_callback(const std_msgs::msg::Float64 msg) const
+{
+    motor_->setTarget(msg.data);
+}
+
+
 void MotionControllerDriver::register_services()
 {
     handle_init_service = this->create_service<std_srvs::srv::Trigger>(
@@ -133,19 +153,26 @@ void MotionControllerDriver::register_services()
         std::string(this->get_name()).append("/cyclic_velocity_mode").c_str(),
         std::bind(&MotionControllerDriver::handle_set_mode_cyclic_velocity, this, _1, _2));
 
+    handle_set_mode_cyclic_position_service = this->create_service<std_srvs::srv::Trigger>(
+        std::string(this->get_name()).append("/cyclic_position_mode").c_str(),
+        std::bind(&MotionControllerDriver::handle_set_mode_cyclic_position, this, _1, _2));
+
     handle_set_mode_torque_service = this->create_service<std_srvs::srv::Trigger>(
         std::string(this->get_name()).append("/torque_mode").c_str(),
         std::bind(&MotionControllerDriver::handle_set_mode_torque, this, _1, _2));
 
     handle_set_target_service = this->create_service<ros2_canopen_interfaces::srv::COTargetDouble>(
         std::string(this->get_name()).append("/target").c_str(),
-        std::bind(&MotionControllerDriver::handle_set_target, this, _1, _2)
+        std::bind(&MotionControllerDriver::handle_set_target, this, _1, _2));
 
-    );
+    target_subscription = this->create_subscription<ros2_canopen_interfaces::srv::COTargetDouble>(
+        "~/target",
+        10,
+        std::bind(&MotionControllerDriver::target_callback, this, _1));
 }
 void MotionControllerDriver::init(ev::Executor &exec,
-          canopen::AsyncMaster &master,
-          uint8_t node_id) noexcept
+                                  canopen::AsyncMaster &master,
+                                  uint8_t node_id) noexcept
 {
     RCLCPP_INFO(this->get_logger(), "Intitialising MotionControllerDriver");
     ProxyDeviceDriver::init(exec, master, node_id);
