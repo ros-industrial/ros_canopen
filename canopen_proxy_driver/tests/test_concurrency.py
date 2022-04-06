@@ -27,7 +27,6 @@ import std_srvs.srv
 @pytest.mark.rostest
 def generate_test_description():
     path_to_test = os.path.dirname(__file__)
-    print(os.path.join(path_to_test, "master.dcf"))
 
     ld = launch.LaunchDescription()
 
@@ -38,14 +37,13 @@ def generate_test_description():
         output="screen",
         executable="device_manager_node",
         parameters=[{
-            "bus_config": os.path.join(path_to_test, "concurrency.yml"),
-            "master_config": os.path.join(path_to_test, "concurrency.dcf"),
+            "bus_config": os.path.join(path_to_test, "../config/concurrency_test","concurrency.yml"),
+            "master_config": os.path.join(path_to_test, "../config/concurrency_test" ,"master.dcf"),
             "can_interface_name": "vcan0"}
         ],
     )
 
     for i in range(2, 7):
-        print(os.path.join(path_to_test, "simle.eds"))
         slave_node = launch_ros.actions.LifecycleNode(
             name="slave_node_{}".format(i),
             namespace="",
@@ -53,7 +51,7 @@ def generate_test_description():
             output="screen",
             executable="slave_node",
             parameters=[{
-                    "eds": os.path.join(path_to_test, "simple.eds"),
+                    "eds": os.path.join(path_to_test, "../config/concurrency_test", "simple.eds"),
                     "slave_id": i}
             ],
         )
@@ -162,7 +160,7 @@ class TestBasicDevice(unittest.TestCase):
         print("Start Executor")
         spinner.start()
 
-        time.sleep(2.0)
+        time.sleep(3.0)
 
         for t in threads:
             print("Start Thread")

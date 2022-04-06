@@ -17,12 +17,7 @@ import lifecycle_msgs.msg
 
 def generate_launch_description():
     path_to_test = os.path.dirname(__file__)
-
-    parameter_file = launch.substitutions.LaunchConfiguration('parameter_file_path')
-    parameter_file_arg = launch.actions.DeclareLaunchArgument(
-        'parameter_file_path',
-        default_value=''
-    )
+    print(os.path.join(path_to_test, ".." ,  "config" , "simple_mc.yml"))
     ld = launch.LaunchDescription()
 
     master_node = launch_ros.actions.Node(
@@ -32,18 +27,47 @@ def generate_launch_description():
         output="screen", 
         executable="device_manager_node",
         parameters= [{
-                    "yaml_path": os.path.join(path_to_test, ".." ,  "resources" , "simple_mc.yml"),
-                    "dcf_path": os.path.join(path_to_test, ".." , "resources" , "simple_mc.dcf"),
+                    "bus_config": os.path.join(path_to_test, ".." ,  "config" , "simple_mc.yml"),
+                    "master_config": os.path.join(path_to_test, ".." , "config" , "master.dcf"),
+                    "can_interface_name": "vcan0"
                 }
         ],
     )
-
-    ld.add_action(slave_2_inactive_state_handler)
-    ld.add_action(slave_node_2)
-    ld.add_action(slave_2_configure)
-    ld.add_action(parameter_file_arg)
-    ld.add_action(master_node_inactive_state_handler)
+    slave_node = launch_ros.actions.LifecycleNode(
+        name="slave_node", 
+        namespace="", 
+        package="canopen_core", 
+        output="screen", 
+        executable="slave_node",
+        parameters=[{
+                "eds": os.path.join(path_to_test, ".." , "config" , "technosoft.eds"),
+                "slave_id": 2}
+            ],
+    )
+    slave_inactive_state_handler = launch.actions.RegisterEventHandler(
+        launch_ros.event_handlers.OnStateTransition(
+            target_lifecycle_node=slave_node, goal_state='inactive',
+            entities=[
+                launch.actions.LogInfo(
+                    msg="node 'slave_node_{}' reached the 'inactive' state, 'activating'.".format(2)),
+                launch.actions.EmitEvent(event=launch_ros.events.lifecycle.ChangeState(
+                    lifecycle_node_matcher=launch.events.matches_action(
+                        slave_node),
+                    transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
+                )),
+            ],
+        )
+    )
+    slave_configure = launch.actions.EmitEvent(
+        event=launch_ros.events.lifecycle.ChangeState(
+            lifecycle_node_matcher=launch.events.matches_action(
+                slave_node),
+            transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
+        )
+    )
+    ld.add_action(slave_inactive_state_handler)
+    ld.add_action(slave_node)
+    ld.add_action(slave_configure)
     ld.add_action(master_node)
-    ld.add_action(master_node_configure)
 
     return ld

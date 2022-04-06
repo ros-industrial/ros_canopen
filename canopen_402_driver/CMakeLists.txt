@@ -49,10 +49,28 @@ rclcpp_components_register_nodes(${PROJECT_NAME}  "ros2_canopen::MotionControlle
 set(node_plugins "${node_plugins}ros2_canopen::MotionControllerDriver;$<TARGET_FILE:${PROJECT_NAME} >\n")
 
 
+dcfgen(${CMAKE_CURRENT_SOURCE_DIR}/config/ simple_mc.yml ${CMAKE_BINARY_DIR}/config/)
+
 install(
   DIRECTORY include/
   DESTINATION include
 )
+
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+install(
+  DIRECTORY ${CMAKE_BINARY_DIR}/config/
+  DESTINATION share/${PROJECT_NAME}/config
+)
+
+install(
+  DIRECTORY config/
+  DESTINATION share/${PROJECT_NAME}/config
+)
+
 install(
   TARGETS ${PROJECT_NAME} 
   EXPORT export_${PROJECT_NAME}

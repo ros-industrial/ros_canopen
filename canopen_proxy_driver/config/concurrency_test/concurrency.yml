@@ -6,37 +6,43 @@ motioncontroller_2:
   dcf: "simple.eds"
   driver: "ros2_canopen::ProxyDriver"
   package: "canopen_proxy_driver"
+  enable_lazy_load: false
 
 motioncontroller_3:
   node_id: 3
   dcf: "simple.eds"
   driver: "ros2_canopen::ProxyDriver"
   package: "canopen_proxy_driver"
+  enable_lazy_load: false
 
 motioncontroller_4:
   node_id: 4
   dcf: "simple.eds"
   driver: "ros2_canopen::ProxyDriver"
   package: "canopen_proxy_driver"
+  enable_lazy_load: false
 
 motioncontroller_5:
   node_id: 5
   dcf: "simple.eds"
   driver: "ros2_canopen::ProxyDriver"
   package: "canopen_proxy_driver"
+  enable_lazy_load: false
 
 motioncontroller_6:
   node_id: 6
   dcf: "simple.eds"
   driver: "ros2_canopen::ProxyDriver"
   package: "canopen_proxy_driver"
+  enable_lazy_load: false
 
-#motioncontroller_7:
-#  node_id: 7
-#  dcf: "simple.eds"
-#  driver: "ros2_canopen::ProxyDriver"
-#  package: "canopen_proxy_driver"
-#
+motioncontroller_7:
+  node_id: 7
+  dcf: "simple.eds"
+  driver: "ros2_canopen::ProxyDriver"
+  package: "canopen_proxy_driver"
+  enable_lazy_load: false
+
 #motioncontroller_8:
 #  node_id: 8
 #  dcf: "simple.eds"

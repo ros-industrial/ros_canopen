@@ -2,11 +2,12 @@ master:
   node_id: 1
   sync_period: 10000
 
-prbt_joint_1:
-  node_id: 3
-  dcf: "pilz.eds"
-  driver: "canopen_402::MCDevice"
-  dcf_bin: "prbt_joint_1.bin"
+simple_mc:
+  node_id: 2
+  dcf: "technosoft.eds"
+  driver: "ros2_canopen::MotionControllerDriver"
+  package: "canopen_402_driver"
+  enable_lazy_loading: false
   tpdo:
     1:
       enabled: true
@@ -25,10 +26,8 @@ prbt_joint_1:
       mapping:
         - {index: 0x6040, sub_index: 0}
         - {index: 0x60c1, sub_index: 1}
-        - {index: 0x6042, sub_index: 0}
     2:
       enabled: true
       mapping:
         - {index: 0x607a, sub_index: 0}
         - {index: 0x6081, sub_index: 0}
-

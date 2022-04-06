@@ -40,8 +40,8 @@ def generate_launch_description():
         output="screen", 
         executable="device_manager_node",
         parameters= [{
-            "bus_config": os.path.join(path_to_test, ".." ,  "resources" , "proxy.yml"),
-            "master_config": os.path.join(path_to_test, ".." , "resources" , "master.dcf"),
+            "bus_config": os.path.join(path_to_test, ".." ,  "config" , "proxy.yml"),
+            "master_config": os.path.join(path_to_test, ".." , "config" , "master.dcf"),
             "can_interface_name": "vcan0"}
         ],
     )
@@ -53,7 +53,7 @@ def generate_launch_description():
         output="screen", 
         executable="slave_node",
         parameters=[{
-                "eds": os.path.join(path_to_test, ".." , "resources" , "slave.eds"),
+                "eds": os.path.join(path_to_test, ".." , "config" , "slave.eds"),
                 "slave_id": 2}
             ],
     )
