@@ -7,7 +7,7 @@ lelycore's configutaration toolchain.
 
 ros2_canopen contains a number of packages that serve different serve different puposes.
 
-* **ros2_canopen**:
+* **canopen**:
   
   Meta-package for easy installation and contains overall documentation
   of the ros2_canopen stack.

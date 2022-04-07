@@ -1,10 +1,6 @@
 Device Manager Configuration
 ============================
 
-
-Bus Configuration
-=================
-
 The ros2_canopen stack relies on configuration files that describe the bus topology.
 In total three different configuration file types are used.
 

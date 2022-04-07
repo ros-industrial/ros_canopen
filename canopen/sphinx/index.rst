@@ -36,8 +36,6 @@ This is the documentation of the ROS2 CANopen stack.
 
   new-driver
   new-master
-  new-device-manager
-  api/library_root
 
 .. toctree::
   :maxdepth: 1
@@ -45,11 +43,3 @@ This is the documentation of the ROS2 CANopen stack.
 
   sil-tests
   tested-hardware
-  
-.. toctree::
-  :maxdepth: 1
-  :caption: Services
-
-  driver-implementation
-  testing-and-benchmarking
-  integration
