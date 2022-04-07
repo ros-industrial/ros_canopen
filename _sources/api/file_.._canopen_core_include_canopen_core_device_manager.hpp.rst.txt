@@ -1,0 +1,50 @@
+
+.. _file_.._canopen_core_include_canopen_core_device_manager.hpp:
+
+File device_manager.hpp
+=======================
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``../canopen_core/include/canopen_core/device_manager.hpp``)
+------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_.._canopen_core_include_canopen_core_device_manager.hpp.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``canopen_core/master_node.hpp`` (:ref:`file_.._canopen_core_include_canopen_core_master_node.hpp`)
+
+- ``device.hpp`` (:ref:`file_.._canopen_core_include_canopen_core_device.hpp`)
+
+- ``memory``
+
+- ``rclcpp/executors.hpp``
+
+- ``rclcpp_components/component_manager.hpp``
+
+- ``vector``
+
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classDeviceManager`
+

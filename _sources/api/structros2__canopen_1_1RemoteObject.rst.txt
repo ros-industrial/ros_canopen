@@ -1,0 +1,17 @@
+.. _exhale_struct_structros2__canopen_1_1RemoteObject:
+
+Struct RemoteObject
+===================
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_mc_device_driver.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: ros2_canopen::RemoteObject
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

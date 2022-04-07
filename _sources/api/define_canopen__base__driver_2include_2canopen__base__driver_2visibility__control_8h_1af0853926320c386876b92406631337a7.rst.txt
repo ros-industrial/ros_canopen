@@ -1,0 +1,14 @@
+.. _exhale_define_canopen__base__driver_2include_2canopen__base__driver_2visibility__control_8h_1af0853926320c386876b92406631337a7:
+
+Define CANOPEN_BASE_DRIVER_IMPORT
+=================================
+
+- Defined in :ref:`file_.._canopen_base_driver_include_canopen_base_driver_visibility_control.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: CANOPEN_BASE_DRIVER_IMPORT
+   :project: ros2_canopen

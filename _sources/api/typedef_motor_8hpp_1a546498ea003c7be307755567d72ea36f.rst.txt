@@ -1,0 +1,14 @@
+.. _exhale_typedef_motor_8hpp_1a546498ea003c7be307755567d72ea36f:
+
+Typedef canopen_402::InterpolatedPositionMode
+=============================================
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: canopen_402::InterpolatedPositionMode
+   :project: ros2_canopen

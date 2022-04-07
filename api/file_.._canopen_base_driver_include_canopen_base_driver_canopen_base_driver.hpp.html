@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File canopen_base_driver.hpp &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ros2_canopen
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ros1-ros2.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Device Manager Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ros-control.html">ROS2 Control Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration-package.html">Creating a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Extension</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sil-tests.html">Software in the loop Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tested-hardware.html">Tested Hardware</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>File canopen_base_driver.hpp</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/file_.._canopen_base_driver_include_canopen_base_driver_canopen_base_driver.hpp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-canopen-base-driver-hpp">
+<span id="file-canopen-base-driver-include-canopen-base-driver-canopen-base-driver-hpp"></span><h1>File canopen_base_driver.hpp<a class="headerlink" href="#file-canopen-base-driver-hpp" title="Permalink to this headline"></a></h1>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-canopen-base-driver-include-canopen-base-driver-canopen-base-driver-hpp" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">../canopen_base_driver/include/canopen_base_driver/canopen_base_driver.hpp</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id2">Includes</a></p></li>
+<li><p><a class="reference internal" href="#included-by" id="id3">Included By</a></p></li>
+<li><p><a class="reference internal" href="#namespaces" id="id4">Namespaces</a></p></li>
+<li><p><a class="reference internal" href="#classes" id="id5">Classes</a></p></li>
+</ul>
+</div>
+<section id="definition-canopen-base-driver-include-canopen-base-driver-canopen-base-driver-hpp">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">../canopen_base_driver/include/canopen_base_driver/canopen_base_driver.hpp</span></code>)<a class="headerlink" href="#definition-canopen-base-driver-include-canopen-base-driver-canopen-base-driver-hpp" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_.._canopen_base_driver_include_canopen_base_driver_canopen_base_driver.hpp.html">Program Listing for File canopen_base_driver.hpp</a></li>
+</ul>
+</div>
+</section>
+<section id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">canopen_base_driver/lely_bridge.hpp</span></code> (<a class="reference internal" href="file_.._canopen_base_driver_include_canopen_base_driver_lely_bridge.hpp.html#file-canopen-base-driver-include-canopen-base-driver-lely-bridge-hpp"><span class="std std-ref">File lely_bridge.hpp</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">canopen_base_driver/visibility_control.h</span></code> (<a class="reference internal" href="file_.._canopen_base_driver_include_canopen_base_driver_visibility_control.h.html#file-canopen-base-driver-include-canopen-base-driver-visibility-control-h"><span class="std std-ref">File visibility_control.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">canopen_core/device.hpp</span></code> (<a class="reference internal" href="file_.._canopen_core_include_canopen_core_device.hpp.html#file-canopen-core-include-canopen-core-device-hpp"><span class="std std-ref">File device.hpp</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">canopen_interfaces/msg/co_data.hpp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">canopen_interfaces/srv/co_read.hpp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">canopen_interfaces/srv/co_write.hpp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">memory</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rclcpp/publisher.hpp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rclcpp/rclcpp.hpp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std_msgs/msg/string.hpp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std_srvs/srv/trigger.hpp</span></code></p></li>
+</ul>
+</section>
+<section id="included-by">
+<h2>Included By<a class="headerlink" href="#included-by" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="file_.._canopen_proxy_driver_include_canopen_proxy_driver_canopen_proxy_driver.hpp.html#file-canopen-proxy-driver-include-canopen-proxy-driver-canopen-proxy-driver-hpp"><span class="std std-ref">File canopen_proxy_driver.hpp</span></a></p></li>
+</ul>
+</section>
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespace_ros2_canopen.html#namespace-ros2-canopen"><span class="std std-ref">Namespace ros2_canopen</span></a></p></li>
+</ul>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="classros2__canopen_1_1BaseDriver.html#exhale-class-classros2-canopen-1-1basedriver"><span class="std std-ref">Class BaseDriver</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

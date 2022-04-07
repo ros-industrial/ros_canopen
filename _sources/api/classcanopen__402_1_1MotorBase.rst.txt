@@ -1,0 +1,26 @@
+.. _exhale_class_classcanopen__402_1_1MotorBase:
+
+Class MotorBase
+===============
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_base.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public canopen_402::Motor402`` (:ref:`exhale_class_classcanopen__402_1_1Motor402`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: canopen_402::MotorBase
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

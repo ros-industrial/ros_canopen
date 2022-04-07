@@ -1,0 +1,23 @@
+.. _exhale_struct_structcanopen__402_1_1Command402_1_1Op:
+
+Struct Command402::Op
+=====================
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classcanopen__402_1_1Command402`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: canopen_402::Command402::Op
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

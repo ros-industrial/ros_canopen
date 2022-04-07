@@ -1,0 +1,26 @@
+.. _exhale_class_classros2__canopen_1_1MotionControllerDriver:
+
+Class MotionControllerDriver
+============================
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_canopen_402_driver.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public ros2_canopen::ProxyDriver`` (:ref:`exhale_class_classros2__canopen_1_1ProxyDriver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: ros2_canopen::MotionControllerDriver
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File device_manager.hpp &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ros2_canopen
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ros1-ros2.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Device Manager Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ros-control.html">ROS2 Control Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration-package.html">Creating a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Extension</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sil-tests.html">Software in the loop Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tested-hardware.html">Tested Hardware</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Program Listing for File device_manager.hpp</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/program_listing_file_.._canopen_core_include_canopen_core_device_manager.hpp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-device-manager-hpp">
+<span id="program-listing-file-canopen-core-include-canopen-core-device-manager-hpp"></span><h1>Program Listing for File device_manager.hpp<a class="headerlink" href="#program-listing-for-file-device-manager-hpp" title="Permalink to this headline"></a></h1>
+<p>↰ <a class="reference internal" href="file_.._canopen_core_include_canopen_core_device_manager.hpp.html#file-canopen-core-include-canopen-core-device-manager-hpp"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">../canopen_core/include/canopen_core/device_manager.hpp</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//    Copyright 2022 Harshavadan Deshpande</span>
+<span class="c1">//                   Christoph Hellmann Santos</span>
+<span class="c1">//</span>
+<span class="c1">//    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">//    you may not use this file except in compliance with the License.</span>
+<span class="c1">//    You may obtain a copy of the License at</span>
+<span class="c1">//</span>
+<span class="c1">//        http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">//</span>
+<span class="c1">//    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">//    distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">//    See the License for the specific language governing permissions and</span>
+<span class="c1">//    limitations under the License.</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;memory&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;rclcpp/executors.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;rclcpp_components/component_manager.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_core/master_node.hpp&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;device.hpp&quot;</span><span class="cp"></span>
+
+<span class="k">class</span> <span class="nc">DeviceManager</span> <span class="o">:</span> <span class="k">public</span> <span class="n">rclcpp_components</span><span class="o">::</span><span class="n">ComponentManager</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">DeviceManager</span><span class="p">(</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">executor</span> <span class="o">=</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">executors</span><span class="o">::</span><span class="n">MultiThreadedExecutor</span><span class="o">&gt;</span><span class="p">(),</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">node_name</span> <span class="o">=</span> <span class="s">&quot;device_manager&quot;</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span> <span class="n">node_options</span> <span class="o">=</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span><span class="p">()</span>
+            <span class="p">.</span><span class="n">start_parameter_services</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">start_parameter_event_publisher</span><span class="p">(</span><span class="nb">false</span><span class="p">))</span> <span class="o">:</span>
+            <span class="n">rclcpp_components</span><span class="o">::</span><span class="n">ComponentManager</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="n">executor_</span> <span class="o">=</span> <span class="n">executor</span><span class="p">;</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;can_interface_name&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;master_config&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;bus_config&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;master_bin&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;enable_lazy_loading&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kt">bool</span> <span class="n">init</span><span class="p">();</span>
+
+    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
+    <span class="k">virtual</span> <span class="kt">void</span>
+    <span class="nf">on_load_node</span><span class="p">(</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
+
+    <span class="p">[[</span><span class="n">deprecated</span><span class="p">(</span><span class="s">&quot;Use on_load_node() instead&quot;</span><span class="p">)]]</span>
+    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
+    <span class="k">virtual</span> <span class="kt">void</span>
+    <span class="n">OnLoadNode</span><span class="p">(</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
+    <span class="p">{</span>
+        <span class="n">on_load_node</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
+    <span class="k">virtual</span> <span class="kt">void</span>
+    <span class="n">on_unload_node</span><span class="p">(</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
+
+    <span class="p">[[</span><span class="n">deprecated</span><span class="p">(</span><span class="s">&quot;Use on_unload_node() instead&quot;</span><span class="p">)]]</span>
+    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
+    <span class="k">virtual</span> <span class="kt">void</span>
+    <span class="n">OnUnloadNode</span><span class="p">(</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
+    <span class="p">{</span>
+        <span class="n">on_unload_node</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
+    <span class="k">virtual</span> <span class="kt">void</span>
+    <span class="n">on_list_nodes</span><span class="p">(</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
+
+    <span class="p">[[</span><span class="n">deprecated</span><span class="p">(</span><span class="s">&quot;Use on_list_nodes() instead&quot;</span><span class="p">)]]</span>
+    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
+    <span class="k">virtual</span> <span class="kt">void</span>
+    <span class="n">OnListNodes</span><span class="p">(</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
+    <span class="p">{</span>
+        <span class="n">on_list_nodes</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
+    <span class="p">}</span>
+
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;&gt;</span> <span class="n">drivers_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span> <span class="n">registered_drivers_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span> <span class="n">active_drivers_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">MasterNode</span><span class="o">&gt;</span> <span class="n">can_master_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">exec_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">executor_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">rclcpp_components</span><span class="o">::</span><span class="n">NodeInstanceWrapper</span><span class="o">&gt;</span> <span class="n">node_wrappers_</span><span class="p">;</span>
+
+    <span class="kt">void</span> <span class="nf">set_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">executor</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">add_node_to_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">plugin_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">remove_node_from_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">plugin_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">);</span>
+
+    <span class="kt">bool</span> <span class="nf">load_component</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">pkg_name</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">node_name</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">list_components</span><span class="p">();</span>
+
+    <span class="kt">bool</span> <span class="nf">init_devices_from_config</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">dcf_txt</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">bus_config</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">dcf_bin</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">can_interface_name</span><span class="p">);</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

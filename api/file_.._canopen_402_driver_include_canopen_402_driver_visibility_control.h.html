@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File visibility_control.h &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ros2_canopen
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ros1-ros2.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Device Manager Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ros-control.html">ROS2 Control Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration-package.html">Creating a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Extension</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sil-tests.html">Software in the loop Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tested-hardware.html">Tested Hardware</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>File visibility_control.h</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/file_.._canopen_402_driver_include_canopen_402_driver_visibility_control.h.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-visibility-control-h">
+<span id="file-canopen-402-driver-include-canopen-402-driver-visibility-control-h"></span><h1>File visibility_control.h<a class="headerlink" href="#file-visibility-control-h" title="Permalink to this headline"></a></h1>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-canopen-402-driver-include-canopen-402-driver-visibility-control-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">../canopen_402_driver/include/canopen_402_driver/visibility_control.h</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#included-by" id="id2">Included By</a></p></li>
+<li><p><a class="reference internal" href="#defines" id="id3">Defines</a></p></li>
+</ul>
+</div>
+<section id="definition-canopen-402-driver-include-canopen-402-driver-visibility-control-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">../canopen_402_driver/include/canopen_402_driver/visibility_control.h</span></code>)<a class="headerlink" href="#definition-canopen-402-driver-include-canopen-402-driver-visibility-control-h" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_.._canopen_402_driver_include_canopen_402_driver_visibility_control.h.html">Program Listing for File visibility_control.h</a></li>
+</ul>
+</div>
+</section>
+<section id="included-by">
+<h2>Included By<a class="headerlink" href="#included-by" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="file_.._canopen_402_driver_include_canopen_402_driver_canopen_402_driver.hpp.html#file-canopen-402-driver-include-canopen-402-driver-canopen-402-driver-hpp"><span class="std std-ref">File canopen_402_driver.hpp</span></a></p></li>
+</ul>
+</section>
+<section id="defines">
+<h2>Defines<a class="headerlink" href="#defines" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="define_canopen__402__driver_2include_2canopen__402__driver_2visibility__control_8h_1a13320092e69155643990b841a3333603.html#exhale-define-canopen-402-driver-2include-2canopen-402-driver-2visibility-control-8h-1a13320092e69155643990b841a3333603"><span class="std std-ref">Define CANOPEN_402_DRIVER_EXPORT</span></a></p></li>
+<li><p><a class="reference internal" href="define_canopen__402__driver_2include_2canopen__402__driver_2visibility__control_8h_1a45067bf44ea7311bb10c6102950936bd.html#exhale-define-canopen-402-driver-2include-2canopen-402-driver-2visibility-control-8h-1a45067bf44ea7311bb10c6102950936bd"><span class="std std-ref">Define CANOPEN_402_DRIVER_IMPORT</span></a></p></li>
+<li><p><a class="reference internal" href="define_canopen__402__driver_2include_2canopen__402__driver_2visibility__control_8h_1a01b4a5145d9c609aa005276a456864f1.html#exhale-define-canopen-402-driver-2include-2canopen-402-driver-2visibility-control-8h-1a01b4a5145d9c609aa005276a456864f1"><span class="std std-ref">Define CANOPEN_402_DRIVER_LOCAL</span></a></p></li>
+<li><p><a class="reference internal" href="define_canopen__402__driver_2include_2canopen__402__driver_2visibility__control_8h_1a97d8f8fadd00a0168096b7ccb72070af.html#exhale-define-canopen-402-driver-2include-2canopen-402-driver-2visibility-control-8h-1a97d8f8fadd00a0168096b7ccb72070af"><span class="std std-ref">Define CANOPEN_402_DRIVER_PUBLIC</span></a></p></li>
+<li><p><a class="reference internal" href="define_canopen__402__driver_2include_2canopen__402__driver_2visibility__control_8h_1a13978e3963d9a92bee431284abca94bc.html#exhale-define-canopen-402-driver-2include-2canopen-402-driver-2visibility-control-8h-1a13978e3963d9a92bee431284abca94bc"><span class="std std-ref">Define CANOPEN_402_DRIVER_PUBLIC_TYPE</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

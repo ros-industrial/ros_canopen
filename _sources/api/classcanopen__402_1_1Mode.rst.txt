@@ -1,0 +1,29 @@
+.. _exhale_class_classcanopen__402_1_1Mode:
+
+Class Mode
+==========
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public canopen_402::HomingMode`` (:ref:`exhale_class_classcanopen__402_1_1HomingMode`)
+- ``public canopen_402::ModeTargetHelper< T >`` (:ref:`exhale_class_classcanopen__402_1_1ModeTargetHelper`)
+- ``public canopen_402::ModeTargetHelper< int32_t >`` (:ref:`exhale_class_classcanopen__402_1_1ModeTargetHelper`)
+- ``public canopen_402::ModeTargetHelper< TYPE >`` (:ref:`exhale_class_classcanopen__402_1_1ModeTargetHelper`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: canopen_402::Mode
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,32 @@
+.. _exhale_class_classcanopen__402_1_1HomingMode:
+
+Class HomingMode
+================
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public canopen_402::Mode`` (:ref:`exhale_class_classcanopen__402_1_1Mode`)
+
+
+Derived Type
+************
+
+- ``public canopen_402::DefaultHomingMode`` (:ref:`exhale_class_classcanopen__402_1_1DefaultHomingMode`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: canopen_402::HomingMode
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

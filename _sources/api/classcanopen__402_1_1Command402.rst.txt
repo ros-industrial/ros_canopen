@@ -1,0 +1,28 @@
+.. _exhale_class_classcanopen__402_1_1Command402:
+
+Class Command402
+================
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structcanopen__402_1_1Command402_1_1Op`
+- :ref:`exhale_class_classcanopen__402_1_1Command402_1_1TransitionTable`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: canopen_402::Command402
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

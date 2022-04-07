@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File master_node.hpp &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ros2_canopen
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ros1-ros2.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Device Manager Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ros-control.html">ROS2 Control Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration-package.html">Creating a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Extension</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sil-tests.html">Software in the loop Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tested-hardware.html">Tested Hardware</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Program Listing for File master_node.hpp</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/program_listing_file_.._canopen_core_include_canopen_core_master_node.hpp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-master-node-hpp">
+<span id="program-listing-file-canopen-core-include-canopen-core-master-node-hpp"></span><h1>Program Listing for File master_node.hpp<a class="headerlink" href="#program-listing-for-file-master-node-hpp" title="Permalink to this headline"></a></h1>
+<p>↰ <a class="reference internal" href="file_.._canopen_core_include_canopen_core_master_node.hpp.html#file-canopen-core-include-canopen-core-master-node-hpp"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">../canopen_core/include/canopen_core/master_node.hpp</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//    Copyright 2022 Harshavadan Deshpande</span>
+<span class="c1">//                   Christoph Hellmann Santos</span>
+<span class="c1">//</span>
+<span class="c1">//    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">//    you may not use this file except in compliance with the License.</span>
+<span class="c1">//    You may obtain a copy of the License at</span>
+<span class="c1">//</span>
+<span class="c1">//        http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">//</span>
+<span class="c1">//    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">//    distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">//    See the License for the specific language governing permissions and</span>
+<span class="c1">//    limitations under the License.</span>
+<span class="cp">#ifndef MASTER_NODE_HPP</span>
+<span class="cp">#define MASTER_NODE_HPP</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;memory&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;thread&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_core/exchange.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_core/device.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_core/lely_master_bridge.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_interfaces/srv/co_write_id.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_interfaces/srv/co_read_id.hpp&quot;</span><span class="cp"></span>
+<span class="k">namespace</span> <span class="n">ros2_canopen</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">MasterNode</span> <span class="o">:</span> <span class="k">public</span> <span class="n">MasterInterface</span>
+    <span class="p">{</span>
+    <span class="k">protected</span><span class="o">:</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LelyMasterBridge</span><span class="o">&gt;</span> <span class="n">master_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">IoGuard</span><span class="o">&gt;</span> <span class="n">io_guard_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Context</span><span class="o">&gt;</span> <span class="n">ctx_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Poll</span><span class="o">&gt;</span> <span class="n">poll_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">ev</span><span class="o">::</span><span class="n">Loop</span><span class="o">&gt;</span> <span class="n">loop_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">exec_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Timer</span><span class="o">&gt;</span> <span class="n">timer_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">CanController</span><span class="o">&gt;</span> <span class="n">ctrl_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">CanChannel</span><span class="o">&gt;</span> <span class="n">chan_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">SignalSet</span><span class="o">&gt;</span> <span class="n">sigset_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">spinner_</span><span class="p">;</span>
+
+        <span class="n">rclcpp</span><span class="o">::</span><span class="n">Service</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COReadID</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">sdo_read_service</span><span class="p">;</span>
+        <span class="n">rclcpp</span><span class="o">::</span><span class="n">Service</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COWriteID</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">sdo_write_service</span><span class="p">;</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">MasterNode</span><span class="p">(</span>
+            <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">,</span>
+            <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_txt</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_bin</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">can_interface_name</span><span class="p">,</span>
+            <span class="kt">uint8_t</span> <span class="n">nodeid</span><span class="p">)</span> <span class="o">:</span> <span class="n">MasterInterface</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">,</span> <span class="n">dcf_txt</span><span class="p">,</span> <span class="n">dcf_bin</span><span class="p">,</span> <span class="n">can_interface_name</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">io_guard_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">IoGuard</span><span class="o">&gt;</span><span class="p">();</span>
+            <span class="n">ctx_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Context</span><span class="o">&gt;</span><span class="p">();</span>
+            <span class="n">poll_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Poll</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">ctx_</span><span class="p">);</span>
+            <span class="n">loop_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">ev</span><span class="o">::</span><span class="n">Loop</span><span class="o">&gt;</span><span class="p">(</span><span class="n">poll_</span><span class="o">-&gt;</span><span class="n">get_poll</span><span class="p">());</span>
+
+            <span class="n">exec_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span><span class="p">(</span><span class="n">loop_</span><span class="o">-&gt;</span><span class="n">get_executor</span><span class="p">());</span>
+            <span class="n">timer_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Timer</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">poll_</span><span class="p">,</span> <span class="o">*</span><span class="n">exec_</span><span class="p">,</span> <span class="n">CLOCK_MONOTONIC</span><span class="p">);</span>
+            <span class="n">ctrl_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">io</span><span class="o">::</span><span class="n">CanController</span><span class="o">&gt;</span><span class="p">(</span><span class="n">can_interface_name</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+            <span class="n">chan_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">io</span><span class="o">::</span><span class="n">CanChannel</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">poll_</span><span class="p">,</span> <span class="o">*</span><span class="n">exec_</span><span class="p">);</span>
+            <span class="n">chan_</span><span class="o">-&gt;</span><span class="n">open</span><span class="p">(</span><span class="o">*</span><span class="n">ctrl_</span><span class="p">);</span>
+
+            <span class="n">sigset_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">io</span><span class="o">::</span><span class="n">SignalSet</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">poll_</span><span class="p">,</span> <span class="o">*</span><span class="n">exec_</span><span class="p">);</span>
+            <span class="c1">// Watch for Ctrl+C or process termination.</span>
+            <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">insert</span><span class="p">(</span><span class="n">SIGHUP</span><span class="p">);</span>
+            <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">insert</span><span class="p">(</span><span class="n">SIGINT</span><span class="p">);</span>
+            <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">insert</span><span class="p">(</span><span class="n">SIGTERM</span><span class="p">);</span>
+
+            <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">submit_wait</span><span class="p">(</span>
+                <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">int</span> <span class="cm">/*signo*/</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="c1">// If the signal is raised again, terminate immediately.</span>
+                    <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+
+                    <span class="c1">// Perform a clean shutdown.</span>
+                    <span class="n">ctx_</span><span class="o">-&gt;</span><span class="n">shutdown</span><span class="p">();</span>
+                <span class="p">});</span>
+
+            <span class="n">master_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">LelyMasterBridge</span><span class="o">&gt;</span><span class="p">(</span>
+                <span class="o">*</span><span class="n">exec_</span><span class="p">,</span> <span class="o">*</span><span class="n">timer_</span><span class="p">,</span> <span class="o">*</span><span class="n">chan_</span><span class="p">,</span>
+                <span class="n">dcf_txt</span><span class="p">,</span> <span class="n">dcf_bin</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">);</span>
+            <span class="n">master_</span><span class="o">-&gt;</span><span class="n">Reset</span><span class="p">();</span>
+
+            <span class="n">spinner_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span>
+                <span class="p">[</span><span class="k">this</span><span class="p">]()</span>
+                <span class="p">{</span>
+                    <span class="n">loop_</span><span class="o">-&gt;</span><span class="n">run</span><span class="p">();</span>
+                <span class="p">});</span>
+
+            <span class="n">sdo_read_service</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">create_service</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COReadID</span><span class="o">&gt;</span><span class="p">(</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_name</span><span class="p">()).</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;/sdo_read&quot;</span><span class="p">).</span><span class="n">c_str</span><span class="p">(),</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span>
+                    <span class="o">&amp;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">MasterNode</span><span class="o">::</span><span class="n">on_sdo_read</span><span class="p">,</span>
+                    <span class="k">this</span><span class="p">,</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_1</span><span class="p">,</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_2</span><span class="p">));</span>
+
+            <span class="n">sdo_write_service</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">create_service</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COWriteID</span><span class="o">&gt;</span><span class="p">(</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_name</span><span class="p">()).</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;/sdo_write&quot;</span><span class="p">).</span><span class="n">c_str</span><span class="p">(),</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span>
+                    <span class="o">&amp;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">MasterNode</span><span class="o">::</span><span class="n">on_sdo_write</span><span class="p">,</span>
+                    <span class="k">this</span><span class="p">,</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_1</span><span class="p">,</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_2</span><span class="p">));</span>
+        <span class="p">}</span>
+
+        <span class="kt">void</span> <span class="n">add_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span> <span class="n">node_instance</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">override</span>
+        <span class="p">{</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span> <span class="n">prom</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+            <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">prom</span><span class="o">-&gt;</span><span class="n">get_future</span><span class="p">();</span>
+            <span class="n">exec_</span><span class="o">-&gt;</span><span class="n">post</span><span class="p">([</span><span class="k">this</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_instance</span><span class="p">,</span> <span class="n">prom</span><span class="p">]()</span>
+                        <span class="p">{</span>
+                            <span class="n">node_instance</span><span class="o">-&gt;</span><span class="n">init</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">exec_</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span><span class="p">),</span> <span class="n">node_id</span><span class="p">);</span>
+                            <span class="n">prom</span><span class="o">-&gt;</span><span class="n">set_value</span><span class="p">();</span> <span class="p">});</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="kt">void</span> <span class="n">remove_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span> <span class="n">node_instance</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">override</span>
+        <span class="p">{</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span> <span class="n">prom</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+            <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">prom</span><span class="o">-&gt;</span><span class="n">get_future</span><span class="p">();</span>
+            <span class="n">exec_</span><span class="o">-&gt;</span><span class="n">post</span><span class="p">([</span><span class="k">this</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_instance</span><span class="p">,</span> <span class="n">prom</span><span class="p">]()</span>
+                        <span class="p">{</span>
+                            <span class="n">node_instance</span><span class="o">-&gt;</span><span class="n">remove</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">exec_</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span><span class="p">),</span> <span class="n">node_id</span><span class="p">);</span>
+                            <span class="n">prom</span><span class="o">-&gt;</span><span class="n">set_value</span><span class="p">();</span> <span class="p">});</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="kt">void</span> <span class="n">on_sdo_read</span><span class="p">(</span>
+            <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COReadID</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COReadID</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">ros2_canopen</span><span class="o">::</span><span class="n">CODataTypes</span> <span class="n">datatype</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">CODataTypes</span><span class="o">&gt;</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">);</span>
+            <span class="n">ros2_canopen</span><span class="o">::</span><span class="n">COData</span> <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">,</span> <span class="n">request</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">datatype</span><span class="p">};</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;</span> <span class="n">f</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span><span class="o">-&gt;</span><span class="n">async_read_sdo</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">nodeid</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
+            <span class="k">try</span>
+            <span class="p">{</span>
+                <span class="n">response</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">data_</span><span class="p">;</span>
+                <span class="n">response</span><span class="o">-&gt;</span><span class="n">success</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">RCLCPP_ERROR</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">());</span>
+                <span class="n">response</span><span class="o">-&gt;</span><span class="n">success</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="kt">void</span> <span class="n">on_sdo_write</span><span class="p">(</span>
+            <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COWriteID</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COWriteID</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">ros2_canopen</span><span class="o">::</span><span class="n">CODataTypes</span> <span class="n">datatype</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">CODataTypes</span><span class="o">&gt;</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">);</span>
+            <span class="n">ros2_canopen</span><span class="o">::</span><span class="n">COData</span> <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">,</span> <span class="n">request</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">,</span> <span class="n">request</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="n">datatype</span><span class="p">};</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">f</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span><span class="o">-&gt;</span><span class="n">async_write_sdo</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">nodeid</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
+            <span class="k">try</span>
+            <span class="p">{</span>
+                <span class="n">response</span><span class="o">-&gt;</span><span class="n">success</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">RCLCPP_ERROR</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">());</span>
+                <span class="n">response</span><span class="o">-&gt;</span><span class="n">success</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

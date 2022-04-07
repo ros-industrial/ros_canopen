@@ -1,0 +1,17 @@
+.. _exhale_class_classcanopen__402_1_1State402:
+
+Class State402
+==============
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: canopen_402::State402
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

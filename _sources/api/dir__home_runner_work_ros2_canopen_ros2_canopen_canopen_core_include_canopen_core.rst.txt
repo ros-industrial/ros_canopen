@@ -1,0 +1,15 @@
+.. _dir__home_runner_work_ros2_canopen_ros2_canopen_canopen_core_include_canopen_core:
+
+
+Directory canopen_core
+======================
+
+
+|exhale_lsh| :ref:`Parent directory <dir__home_runner_work_ros2_canopen_ros2_canopen_canopen_core_include>` (``/home/runner/work/ros2_canopen/ros2_canopen/canopen_core/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``/home/runner/work/ros2_canopen/ros2_canopen/canopen_core/include/canopen_core``
+
+
+

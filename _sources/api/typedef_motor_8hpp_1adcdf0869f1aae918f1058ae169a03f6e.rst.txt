@@ -1,0 +1,14 @@
+.. _exhale_typedef_motor_8hpp_1adcdf0869f1aae918f1058ae169a03f6e:
+
+Typedef canopen_402::VelocityMode
+=================================
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: canopen_402::VelocityMode
+   :project: ros2_canopen

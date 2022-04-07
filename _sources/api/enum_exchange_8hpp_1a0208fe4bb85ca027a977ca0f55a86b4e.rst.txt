@@ -1,0 +1,14 @@
+.. _exhale_enum_exchange_8hpp_1a0208fe4bb85ca027a977ca0f55a86b4e:
+
+Enum CODataTypes
+================
+
+- Defined in :ref:`file_.._canopen_core_include_canopen_core_exchange.hpp`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: ros2_canopen::CODataTypes
+   :project: ros2_canopen

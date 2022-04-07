@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File motor.hpp &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ros2_canopen
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ros1-ros2.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Device Manager Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ros-control.html">ROS2 Control Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration-package.html">Creating a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Extension</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sil-tests.html">Software in the loop Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tested-hardware.html">Tested Hardware</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Program Listing for File motor.hpp</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/program_listing_file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-motor-hpp">
+<span id="program-listing-file-canopen-402-driver-include-canopen-402-driver-motor-hpp"></span><h1>Program Listing for File motor.hpp<a class="headerlink" href="#program-listing-for-file-motor-hpp" title="Permalink to this headline"></a></h1>
+<p>↰ <a class="reference internal" href="file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp.html#file-canopen-402-driver-include-canopen-402-driver-motor-hpp"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">../canopen_402_driver/include/canopen_402_driver/motor.hpp</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef MOTOR_HPP</span>
+<span class="cp">#define MOTOR_HPP</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;mutex&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;condition_variable&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;thread&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;atomic&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;functional&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;limits&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;algorithm&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;bitset&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;rclcpp/rclcpp.hpp&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_402_driver/mc_device_driver.hpp&quot;</span><span class="cp"></span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">ros2_canopen</span><span class="p">;</span>
+<span class="k">namespace</span> <span class="n">canopen_402</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">State402</span>
+    <span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="k">enum</span> <span class="n">StatusWord</span>
+        <span class="p">{</span>
+            <span class="n">SW_Ready_To_Switch_On</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">SW_Switched_On</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">SW_Operation_enabled</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">SW_Fault</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="n">SW_Voltage_enabled</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="n">SW_Quick_stop</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="n">SW_Switch_on_disabled</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+            <span class="n">SW_Warning</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="n">SW_Manufacturer_specific0</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="n">SW_Remote</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span>
+            <span class="n">SW_Target_reached</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">SW_Internal_limit</span> <span class="o">=</span> <span class="mi">11</span><span class="p">,</span>
+            <span class="n">SW_Operation_mode_specific0</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+            <span class="n">SW_Operation_mode_specific1</span> <span class="o">=</span> <span class="mi">13</span><span class="p">,</span>
+            <span class="n">SW_Manufacturer_specific1</span> <span class="o">=</span> <span class="mi">14</span><span class="p">,</span>
+            <span class="n">SW_Manufacturer_specific2</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="p">};</span>
+        <span class="k">enum</span> <span class="n">InternalState</span>
+        <span class="p">{</span>
+            <span class="n">Unknown</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">Start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">Not_Ready_To_Switch_On</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">Switch_On_Disabled</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">Ready_To_Switch_On</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="n">Switched_On</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="n">Operation_Enable</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="n">Quick_Stop_Active</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+            <span class="n">Fault_Reaction_Active</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="n">Fault</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="p">};</span>
+        <span class="n">InternalState</span> <span class="nf">getState</span><span class="p">();</span>
+        <span class="n">InternalState</span> <span class="nf">read</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">sw</span><span class="p">);</span>
+        <span class="kt">bool</span> <span class="nf">waitForNewState</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">steady_clock</span><span class="o">::</span><span class="n">time_point</span> <span class="o">&amp;</span><span class="n">abstime</span><span class="p">,</span> <span class="n">InternalState</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">);</span>
+        <span class="n">State402</span><span class="p">()</span> <span class="o">:</span> <span class="n">state_</span><span class="p">(</span><span class="n">Unknown</span><span class="p">)</span> <span class="p">{}</span>
+
+    <span class="k">private</span><span class="o">:</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">condition_variable</span> <span class="n">cond_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">mutex_</span><span class="p">;</span>
+        <span class="n">InternalState</span> <span class="n">state_</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="k">class</span> <span class="nc">Command402</span>
+    <span class="p">{</span>
+        <span class="k">struct</span> <span class="n">Op</span>
+        <span class="p">{</span>
+            <span class="kt">uint16_t</span> <span class="n">to_set_</span><span class="p">;</span>
+            <span class="kt">uint16_t</span> <span class="n">to_reset_</span><span class="p">;</span>
+            <span class="n">Op</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">to_set</span><span class="p">,</span> <span class="kt">uint16_t</span> <span class="n">to_reset</span><span class="p">)</span> <span class="o">:</span> <span class="n">to_set_</span><span class="p">(</span><span class="n">to_set</span><span class="p">),</span> <span class="n">to_reset_</span><span class="p">(</span><span class="n">to_reset</span><span class="p">)</span> <span class="p">{}</span>
+            <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span><span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">val</span><span class="p">)</span> <span class="k">const</span>
+            <span class="p">{</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">val</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">to_reset_</span><span class="p">)</span> <span class="o">|</span> <span class="n">to_set_</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+        <span class="k">class</span> <span class="nc">TransitionTable</span>
+        <span class="p">{</span>
+            <span class="n">boost</span><span class="o">::</span><span class="n">container</span><span class="o">::</span><span class="n">flat_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span><span class="p">,</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">Op</span><span class="o">&gt;</span> <span class="n">transitions_</span><span class="p">;</span>
+            <span class="kt">void</span> <span class="nf">add</span><span class="p">(</span><span class="k">const</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="o">&amp;</span><span class="n">from</span><span class="p">,</span> <span class="k">const</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="o">&amp;</span><span class="n">to</span><span class="p">,</span> <span class="n">Op</span> <span class="n">op</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">transitions_</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">),</span> <span class="n">op</span><span class="p">));</span>
+            <span class="p">}</span>
+
+        <span class="k">public</span><span class="o">:</span>
+            <span class="n">TransitionTable</span><span class="p">();</span>
+            <span class="k">const</span> <span class="n">Op</span> <span class="o">&amp;</span><span class="n">get</span><span class="p">(</span><span class="k">const</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="o">&amp;</span><span class="n">from</span><span class="p">,</span> <span class="k">const</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="o">&amp;</span><span class="n">to</span><span class="p">)</span> <span class="k">const</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="n">transitions_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">));</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+        <span class="k">static</span> <span class="k">const</span> <span class="n">TransitionTable</span> <span class="n">transitions_</span><span class="p">;</span>
+        <span class="k">static</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="n">nextStateForEnabling</span><span class="p">(</span><span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="n">state</span><span class="p">);</span>
+        <span class="n">Command402</span><span class="p">();</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="k">enum</span> <span class="n">ControlWord</span>
+        <span class="p">{</span>
+            <span class="n">CW_Switch_On</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">CW_Enable_Voltage</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">CW_Quick_Stop</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">CW_Enable_Operation</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="n">CW_Operation_mode_specific0</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="n">CW_Operation_mode_specific1</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="n">CW_Operation_mode_specific2</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+            <span class="n">CW_Fault_Reset</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="n">CW_Halt</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="n">CW_Operation_mode_specific3</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span>
+            <span class="c1">// CW_Reserved1=10,</span>
+            <span class="n">CW_Manufacturer_specific0</span> <span class="o">=</span> <span class="mi">11</span><span class="p">,</span>
+            <span class="n">CW_Manufacturer_specific1</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+            <span class="n">CW_Manufacturer_specific2</span> <span class="o">=</span> <span class="mi">13</span><span class="p">,</span>
+            <span class="n">CW_Manufacturer_specific3</span> <span class="o">=</span> <span class="mi">14</span><span class="p">,</span>
+            <span class="n">CW_Manufacturer_specific4</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="p">};</span>
+        <span class="k">static</span> <span class="kt">bool</span> <span class="nf">setTransition</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">cw</span><span class="p">,</span> <span class="k">const</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="o">&amp;</span><span class="n">from</span><span class="p">,</span> <span class="k">const</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="o">&amp;</span><span class="n">to</span><span class="p">,</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="o">*</span><span class="n">next</span><span class="p">);</span>
+    <span class="p">};</span>
+
+    <span class="k">template</span> <span class="o">&lt;</span><span class="kt">uint16_t</span> <span class="n">MASK</span><span class="o">&gt;</span>
+    <span class="k">class</span> <span class="nc">WordAccessor</span>
+    <span class="p">{</span>
+        <span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">word_</span><span class="p">;</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">WordAccessor</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">word</span><span class="p">)</span> <span class="o">:</span> <span class="n">word_</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="p">{}</span>
+        <span class="kt">bool</span> <span class="n">set</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">bit</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">uint16_t</span> <span class="n">val</span> <span class="o">=</span> <span class="n">MASK</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit</span><span class="p">);</span>
+            <span class="n">word_</span> <span class="o">|=</span> <span class="n">val</span><span class="p">;</span>
+            <span class="k">return</span> <span class="n">val</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="kt">bool</span> <span class="n">reset</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">bit</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">uint16_t</span> <span class="n">val</span> <span class="o">=</span> <span class="n">MASK</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit</span><span class="p">);</span>
+            <span class="n">word_</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">val</span><span class="p">;</span>
+            <span class="k">return</span> <span class="n">val</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="kt">bool</span> <span class="n">get</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">bit</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">word_</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit</span><span class="p">);</span> <span class="p">}</span>
+        <span class="kt">uint16_t</span> <span class="n">get</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">word_</span> <span class="o">&amp;</span> <span class="n">MASK</span><span class="p">;</span> <span class="p">}</span>
+        <span class="n">WordAccessor</span> <span class="o">&amp;</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">val</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">uint16_t</span> <span class="n">was</span> <span class="o">=</span> <span class="n">word_</span><span class="p">;</span>
+            <span class="n">word_</span> <span class="o">=</span> <span class="p">(</span><span class="n">word_</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">MASK</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">val</span> <span class="o">&amp;</span> <span class="n">MASK</span><span class="p">);</span>
+            <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+
+    <span class="k">class</span> <span class="nc">Mode</span>
+    <span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">mode_id_</span><span class="p">;</span>
+        <span class="n">Mode</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">id</span><span class="p">)</span> <span class="o">:</span> <span class="n">mode_id_</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="p">{}</span>
+        <span class="k">typedef</span> <span class="n">WordAccessor</span><span class="o">&lt;</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific2</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific3</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">OpModeAccesser</span><span class="p">;</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">start</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">read</span><span class="p">(</span><span class="k">const</span> <span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">sw</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">write</span><span class="p">(</span><span class="n">OpModeAccesser</span> <span class="o">&amp;</span><span class="n">cw</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">setTarget</span><span class="p">(</span><span class="k">const</span> <span class="kt">double</span> <span class="o">&amp;</span><span class="n">val</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span> <span class="p">}</span>
+        <span class="k">virtual</span> <span class="o">~</span><span class="n">Mode</span><span class="p">()</span> <span class="p">{}</span>
+    <span class="p">};</span>
+    <span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mode</span><span class="o">&gt;</span> <span class="n">ModeSharedPtr</span><span class="p">;</span>
+
+    <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+    <span class="k">class</span> <span class="nc">ModeTargetHelper</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Mode</span>
+    <span class="p">{</span>
+        <span class="n">T</span> <span class="n">target_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">has_target_</span><span class="p">;</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">ModeTargetHelper</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">mode</span><span class="p">)</span> <span class="o">:</span> <span class="n">Mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span> <span class="p">{}</span>
+        <span class="kt">bool</span> <span class="n">hasTarget</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">has_target_</span><span class="p">;</span> <span class="p">}</span>
+        <span class="n">T</span> <span class="n">getTarget</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">target_</span><span class="p">;</span> <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">setTarget</span><span class="p">(</span><span class="k">const</span> <span class="kt">double</span> <span class="o">&amp;</span><span class="n">val</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;canopen_402 target command is not a number&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+                <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="k">using</span> <span class="n">boost</span><span class="o">::</span><span class="n">numeric_cast</span><span class="p">;</span>
+            <span class="k">using</span> <span class="n">boost</span><span class="o">::</span><span class="n">numeric</span><span class="o">::</span><span class="n">negative_overflow</span><span class="p">;</span>
+            <span class="k">using</span> <span class="n">boost</span><span class="o">::</span><span class="n">numeric</span><span class="o">::</span><span class="n">positive_overflow</span><span class="p">;</span>
+
+            <span class="k">try</span>
+            <span class="p">{</span>
+                <span class="n">target_</span> <span class="o">=</span> <span class="n">numeric_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">val</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(</span><span class="n">negative_overflow</span> <span class="o">&amp;</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;canopen_402 Command &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">val</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; does not fit into target, clamping to min limit&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+                <span class="n">target_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">min</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(</span><span class="n">positive_overflow</span> <span class="o">&amp;</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;canopen_402 Command &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">val</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; does not fit into target, clamping to max limit&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+                <span class="n">target_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(...)</span>
+            <span class="p">{</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;canopen_402 Was not able to cast command &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">val</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+                <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="n">has_target_</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+            <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">start</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">has_target_</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+            <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+
+    <span class="k">template</span> <span class="o">&lt;</span><span class="kt">uint16_t</span> <span class="n">ID</span><span class="p">,</span> <span class="k">typename</span> <span class="n">TYPE</span><span class="p">,</span> <span class="n">CODataTypes</span> <span class="n">TPY</span><span class="p">,</span> <span class="kt">uint16_t</span> <span class="n">OBJ</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">SUB</span><span class="p">,</span> <span class="kt">uint16_t</span> <span class="n">CW_MASK</span><span class="o">&gt;</span>
+    <span class="k">class</span> <span class="nc">ModeForwardHelper</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ModeTargetHelper</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span><span class="p">;</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">ModeForwardHelper</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">)</span> <span class="o">:</span> <span class="n">ModeTargetHelper</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">obj</span> <span class="o">=</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">create_remote_obj</span><span class="p">(</span><span class="n">OBJ</span><span class="p">,</span> <span class="n">SUB</span><span class="p">,</span> <span class="n">TPY</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">read</span><span class="p">(</span><span class="k">const</span> <span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">sw</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">write</span><span class="p">(</span><span class="n">Mode</span><span class="o">::</span><span class="n">OpModeAccesser</span> <span class="o">&amp;</span><span class="n">cw</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">hasTarget</span><span class="p">())</span>
+            <span class="p">{</span>
+                <span class="n">cw</span> <span class="o">=</span> <span class="n">cw</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="o">|</span> <span class="n">CW_MASK</span><span class="p">;</span>
+
+                <span class="n">driver</span><span class="o">-&gt;</span><span class="n">set_remote_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">getTarget</span><span class="p">());</span>
+                <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="n">cw</span> <span class="o">=</span> <span class="n">cw</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">CW_MASK</span><span class="p">;</span>
+                <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+
+    <span class="k">typedef</span> <span class="n">ModeForwardHelper</span><span class="o">&lt;</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Profiled_Velocity</span><span class="p">,</span> <span class="kt">int32_t</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">,</span> <span class="mh">0x60FF</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">&gt;</span> <span class="n">ProfiledVelocityMode</span><span class="p">;</span>
+    <span class="k">typedef</span> <span class="n">ModeForwardHelper</span><span class="o">&lt;</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Profiled_Torque</span><span class="p">,</span> <span class="kt">int16_t</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData16</span><span class="p">,</span> <span class="mh">0x6071</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">&gt;</span> <span class="n">ProfiledTorqueMode</span><span class="p">;</span>
+    <span class="k">typedef</span> <span class="n">ModeForwardHelper</span><span class="o">&lt;</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Cyclic_Synchronous_Position</span><span class="p">,</span> <span class="kt">int32_t</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">,</span> <span class="mh">0x607A</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">&gt;</span> <span class="n">CyclicSynchronousPositionMode</span><span class="p">;</span>
+    <span class="k">typedef</span> <span class="n">ModeForwardHelper</span><span class="o">&lt;</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Cyclic_Synchronous_Velocity</span><span class="p">,</span> <span class="kt">int32_t</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">,</span> <span class="mh">0x60FF</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">&gt;</span> <span class="n">CyclicSynchronousVelocityMode</span><span class="p">;</span>
+    <span class="k">typedef</span> <span class="n">ModeForwardHelper</span><span class="o">&lt;</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Cyclic_Synchronous_Torque</span><span class="p">,</span> <span class="kt">int16_t</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData16</span><span class="p">,</span> <span class="mh">0x6071</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">&gt;</span> <span class="n">CyclicSynchronousTorqueMode</span><span class="p">;</span>
+    <span class="k">typedef</span> <span class="n">ModeForwardHelper</span><span class="o">&lt;</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Velocity</span><span class="p">,</span> <span class="kt">int16_t</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData16</span><span class="p">,</span> <span class="mh">0x6042</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific2</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">VelocityMode</span><span class="p">;</span>
+    <span class="k">typedef</span> <span class="n">ModeForwardHelper</span><span class="o">&lt;</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Interpolated_Position</span><span class="p">,</span> <span class="kt">int32_t</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">,</span> <span class="mh">0x60C1</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific0</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">InterpolatedPositionMode</span><span class="p">;</span>
+
+    <span class="k">class</span> <span class="nc">ProfiledPositionMode</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ModeTargetHelper</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span>
+    <span class="p">{</span>
+        <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">index</span> <span class="o">=</span> <span class="mh">0x607A</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span><span class="p">;</span>
+
+        <span class="kt">double</span> <span class="n">last_target_</span><span class="p">;</span>
+        <span class="kt">uint16_t</span> <span class="n">sw_</span><span class="p">;</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="k">enum</span> <span class="n">SW_masks</span>
+        <span class="p">{</span>
+            <span class="n">MASK_Reached</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">State402</span><span class="o">::</span><span class="n">SW_Target_reached</span><span class="p">),</span>
+            <span class="n">MASK_Acknowledged</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">State402</span><span class="o">::</span><span class="n">SW_Operation_mode_specific0</span><span class="p">),</span>
+            <span class="n">MASK_Error</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">State402</span><span class="o">::</span><span class="n">SW_Operation_mode_specific1</span><span class="p">),</span>
+        <span class="p">};</span>
+        <span class="k">enum</span> <span class="n">CW_bits</span>
+        <span class="p">{</span>
+            <span class="n">CW_NewPoint</span> <span class="o">=</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific0</span><span class="p">,</span>
+            <span class="n">CW_Immediate</span> <span class="o">=</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific1</span><span class="p">,</span>
+            <span class="n">CW_Blending</span> <span class="o">=</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific3</span><span class="p">,</span>
+        <span class="p">};</span>
+        <span class="n">ProfiledPositionMode</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">)</span>
+            <span class="o">:</span> <span class="n">ModeTargetHelper</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Profiled_Position</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">driver</span>  <span class="o">=</span> <span class="n">driver</span><span class="p">;</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">create_remote_obj</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">start</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">sw_</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="n">last_target_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;::</span><span class="n">quiet_NaN</span><span class="p">();</span>
+            <span class="k">return</span> <span class="n">ModeTargetHelper</span><span class="o">::</span><span class="n">start</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">read</span><span class="p">(</span><span class="k">const</span> <span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">sw</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">sw_</span> <span class="o">=</span> <span class="n">sw</span><span class="p">;</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">sw</span> <span class="o">&amp;</span> <span class="n">MASK_Error</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">write</span><span class="p">(</span><span class="n">OpModeAccesser</span> <span class="o">&amp;</span><span class="n">cw</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">cw</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">CW_Immediate</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">hasTarget</span><span class="p">())</span>
+            <span class="p">{</span>
+                <span class="kt">int32_t</span> <span class="n">target</span> <span class="o">=</span> <span class="n">getTarget</span><span class="p">();</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">sw_</span> <span class="o">&amp;</span> <span class="n">MASK_Acknowledged</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">target</span> <span class="o">!=</span> <span class="n">last_target_</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">cw</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">CW_NewPoint</span><span class="p">))</span>
+                    <span class="p">{</span>
+                        <span class="n">cw</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="n">CW_NewPoint</span><span class="p">);</span> <span class="c1">// reset if needed</span>
+                    <span class="p">}</span>
+                    <span class="k">else</span>
+                    <span class="p">{</span>
+                        <span class="n">driver</span><span class="o">-&gt;</span><span class="n">set_remote_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">target</span><span class="p">);</span>
+                        <span class="n">cw</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">CW_NewPoint</span><span class="p">);</span>
+                        <span class="n">last_target_</span> <span class="o">=</span> <span class="n">target</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">sw_</span> <span class="o">&amp;</span> <span class="n">MASK_Acknowledged</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">cw</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="n">CW_NewPoint</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+
+    <span class="k">class</span> <span class="nc">HomingMode</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Mode</span>
+    <span class="p">{</span>
+    <span class="k">protected</span><span class="o">:</span>
+        <span class="k">enum</span> <span class="n">SW_bits</span>
+        <span class="p">{</span>
+            <span class="n">SW_Attained</span> <span class="o">=</span> <span class="n">State402</span><span class="o">::</span><span class="n">SW_Operation_mode_specific0</span><span class="p">,</span>
+            <span class="n">SW_Error</span> <span class="o">=</span> <span class="n">State402</span><span class="o">::</span><span class="n">SW_Operation_mode_specific1</span><span class="p">,</span>
+        <span class="p">};</span>
+        <span class="k">enum</span> <span class="n">CW_bits</span>
+        <span class="p">{</span>
+            <span class="n">CW_StartHoming</span> <span class="o">=</span> <span class="n">Command402</span><span class="o">::</span><span class="n">CW_Operation_mode_specific0</span><span class="p">,</span>
+        <span class="p">};</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">HomingMode</span><span class="p">()</span> <span class="o">:</span> <span class="n">Mode</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Homing</span><span class="p">)</span> <span class="p">{}</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">executeHoming</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="k">class</span> <span class="nc">DefaultHomingMode</span> <span class="o">:</span> <span class="k">public</span> <span class="n">HomingMode</span>
+    <span class="p">{</span>
+        <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">index</span> <span class="o">=</span> <span class="mh">0x6098</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">execute_</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">mutex_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">condition_variable</span> <span class="n">cond_</span><span class="p">;</span>
+        <span class="kt">uint16_t</span> <span class="n">status_</span><span class="p">;</span>
+
+        <span class="k">enum</span> <span class="n">SW_masks</span>
+        <span class="p">{</span>
+            <span class="n">MASK_Reached</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">State402</span><span class="o">::</span><span class="n">SW_Target_reached</span><span class="p">),</span>
+            <span class="n">MASK_Attained</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">SW_Attained</span><span class="p">),</span>
+            <span class="n">MASK_Error</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">SW_Error</span><span class="p">),</span>
+        <span class="p">};</span>
+        <span class="kt">bool</span> <span class="nf">error</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">msg</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">execute_</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+            <span class="c1">// status.error(msg);</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">DefaultHomingMode</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span><span class="p">;</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">create_remote_obj</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">start</span><span class="p">();</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">read</span><span class="p">(</span><span class="k">const</span> <span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">sw</span><span class="p">);</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">write</span><span class="p">(</span><span class="n">OpModeAccesser</span> <span class="o">&amp;</span><span class="n">cw</span><span class="p">);</span>
+
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">executeHoming</span><span class="p">();</span>
+    <span class="p">};</span>
+
+    <span class="k">class</span> <span class="nc">Motor402</span> <span class="o">:</span> <span class="k">public</span> <span class="n">MotorBase</span>
+    <span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">Motor402</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">)</span> <span class="o">:</span> <span class="n">MotorBase</span><span class="p">(</span><span class="n">name</span><span class="p">),</span>
+                                                                                    <span class="n">switching_state_</span><span class="p">(</span><span class="n">State402</span><span class="o">::</span><span class="n">Operation_Enable</span><span class="p">),</span>
+                                                                                    <span class="n">monitor_mode_</span><span class="p">(</span><span class="nb">true</span><span class="p">),</span>
+                                                                                    <span class="n">state_switch_timeout_</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span><span class="p">;</span>
+            <span class="n">status_word_entry_</span> <span class="o">=</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">create_remote_obj</span><span class="p">(</span><span class="n">status_word_entry_index</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData16</span><span class="p">);</span>
+            <span class="n">control_word_entry_</span> <span class="o">=</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">create_remote_obj</span><span class="p">(</span><span class="n">control_word_entry_index</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData16</span><span class="p">);</span>
+            <span class="n">op_mode_display_</span> <span class="o">=</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">create_remote_obj</span><span class="p">(</span><span class="n">op_mode_display_index</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData8</span><span class="p">);</span>
+            <span class="n">op_mode_</span> <span class="o">=</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">create_remote_obj</span><span class="p">(</span><span class="n">op_mode_index</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData8</span><span class="p">);</span>
+            <span class="n">supported_drive_modes_</span> <span class="o">=</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">create_remote_obj</span><span class="p">(</span><span class="n">supported_drive_modes_index</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">setTarget</span><span class="p">(</span><span class="kt">double</span> <span class="n">val</span><span class="p">);</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">enterModeAndWait</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">mode</span><span class="p">);</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">isModeSupported</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">mode</span><span class="p">);</span>
+        <span class="k">virtual</span> <span class="kt">uint16_t</span> <span class="nf">getMode</span><span class="p">();</span>
+        <span class="kt">bool</span> <span class="nf">readState</span><span class="p">();</span>
+        <span class="kt">void</span> <span class="nf">handleDiag</span><span class="p">();</span>
+        <span class="kt">void</span> <span class="nf">handleInit</span><span class="p">();</span>
+        <span class="kt">void</span> <span class="nf">handleRead</span><span class="p">();</span>
+        <span class="kt">void</span> <span class="nf">handleWrite</span><span class="p">();</span>
+        <span class="kt">void</span> <span class="nf">handleShutdown</span><span class="p">();</span>
+        <span class="kt">void</span> <span class="nf">handleHalt</span><span class="p">();</span>
+        <span class="kt">void</span> <span class="nf">handleRecover</span><span class="p">();</span>
+        <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
+        <span class="kt">bool</span> <span class="n">registerMode</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">mode</span><span class="p">,</span> <span class="n">Args</span> <span class="o">&amp;&amp;</span><span class="p">...</span><span class="n">args</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">mode_allocators_</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="p">[</span><span class="n">args</span><span class="p">...,</span> <span class="n">mode</span><span class="p">,</span> <span class="k">this</span><span class="p">]()</span>
+                                                          <span class="p">{</span>
+             <span class="k">if</span><span class="p">(</span><span class="n">isModeSupportedByDevice</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="n">registerMode</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">ModeSharedPtr</span><span class="p">(</span><span class="k">new</span> <span class="n">T</span><span class="p">(</span><span class="n">args</span><span class="p">...)));</span> <span class="p">}))</span>
+                <span class="p">.</span><span class="n">second</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="n">registerDefaultModes</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">registerMode</span><span class="o">&lt;</span><span class="n">ProfiledPositionMode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Profiled_Position</span><span class="p">,</span> <span class="n">driver</span><span class="p">);</span>
+            <span class="n">registerMode</span><span class="o">&lt;</span><span class="n">VelocityMode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Velocity</span><span class="p">,</span> <span class="n">driver</span><span class="p">);</span>
+            <span class="n">registerMode</span><span class="o">&lt;</span><span class="n">ProfiledVelocityMode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Profiled_Velocity</span><span class="p">,</span> <span class="n">driver</span><span class="p">);</span>
+            <span class="n">registerMode</span><span class="o">&lt;</span><span class="n">ProfiledTorqueMode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Profiled_Torque</span><span class="p">,</span> <span class="n">driver</span><span class="p">);</span>
+            <span class="n">registerMode</span><span class="o">&lt;</span><span class="n">DefaultHomingMode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Homing</span><span class="p">,</span> <span class="n">driver</span><span class="p">);</span>
+            <span class="n">registerMode</span><span class="o">&lt;</span><span class="n">InterpolatedPositionMode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Interpolated_Position</span><span class="p">,</span> <span class="n">driver</span><span class="p">);</span>
+            <span class="n">registerMode</span><span class="o">&lt;</span><span class="n">CyclicSynchronousPositionMode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Cyclic_Synchronous_Position</span><span class="p">,</span> <span class="n">driver</span><span class="p">);</span>
+            <span class="n">registerMode</span><span class="o">&lt;</span><span class="n">CyclicSynchronousVelocityMode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Cyclic_Synchronous_Velocity</span><span class="p">,</span> <span class="n">driver</span><span class="p">);</span>
+            <span class="n">registerMode</span><span class="o">&lt;</span><span class="n">CyclicSynchronousTorqueMode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MotorBase</span><span class="o">::</span><span class="n">Cyclic_Synchronous_Torque</span><span class="p">,</span> <span class="n">driver</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="k">private</span><span class="o">:</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">isModeSupportedByDevice</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">mode</span><span class="p">);</span>
+        <span class="kt">void</span> <span class="nf">registerMode</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">id</span><span class="p">,</span> <span class="k">const</span> <span class="n">ModeSharedPtr</span> <span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+
+        <span class="n">ModeSharedPtr</span> <span class="nf">allocMode</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">mode</span><span class="p">);</span>
+
+        <span class="kt">bool</span> <span class="nf">switchMode</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">mode</span><span class="p">);</span>
+        <span class="kt">bool</span> <span class="nf">switchState</span><span class="p">(</span><span class="k">const</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="o">&amp;</span><span class="n">target</span><span class="p">);</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span> <span class="n">status_word_</span><span class="p">;</span>
+        <span class="kt">uint16_t</span> <span class="n">control_word_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">cw_mutex_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">start_fault_reset_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span><span class="o">&gt;</span> <span class="n">target_state_</span><span class="p">;</span>
+
+        <span class="n">State402</span> <span class="n">state_handler_</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">map_mutex_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="p">,</span> <span class="n">ModeSharedPtr</span><span class="o">&gt;</span> <span class="n">modes_</span><span class="p">;</span>
+        <span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">()</span><span class="o">&gt;</span> <span class="n">AllocFuncType</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="p">,</span> <span class="n">AllocFuncType</span><span class="o">&gt;</span> <span class="n">mode_allocators_</span><span class="p">;</span>
+
+        <span class="n">ModeSharedPtr</span> <span class="n">selected_mode_</span><span class="p">;</span>
+        <span class="kt">uint16_t</span> <span class="n">mode_id_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">condition_variable</span> <span class="n">mode_cond_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">mode_mutex_</span><span class="p">;</span>
+        <span class="k">const</span> <span class="n">State402</span><span class="o">::</span><span class="n">InternalState</span> <span class="n">switching_state_</span><span class="p">;</span>
+        <span class="k">const</span> <span class="kt">bool</span> <span class="n">monitor_mode_</span><span class="p">;</span>
+        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span> <span class="n">state_switch_timeout_</span><span class="p">;</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">status_word_entry_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">control_word_entry_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">op_mode_display_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">op_mode_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">supported_drive_modes_</span><span class="p">;</span>
+        <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">status_word_entry_index</span> <span class="o">=</span> <span class="mh">0x6041</span><span class="p">;</span>
+        <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">control_word_entry_index</span> <span class="o">=</span> <span class="mh">0x6040</span><span class="p">;</span>
+        <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">op_mode_display_index</span> <span class="o">=</span> <span class="mh">0x6061</span><span class="p">;</span>
+        <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">op_mode_index</span> <span class="o">=</span> <span class="mh">0x6060</span><span class="p">;</span>
+        <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">supported_drive_modes_index</span> <span class="o">=</span> <span class="mh">0x6502</span><span class="p">;</span>
+    <span class="p">};</span>
+
+<span class="p">}</span>
+
+
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

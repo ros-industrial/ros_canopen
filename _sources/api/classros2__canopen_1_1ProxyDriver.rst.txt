@@ -1,0 +1,32 @@
+.. _exhale_class_classros2__canopen_1_1ProxyDriver:
+
+Class ProxyDriver
+=================
+
+- Defined in :ref:`file_.._canopen_proxy_driver_include_canopen_proxy_driver_canopen_proxy_driver.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public ros2_canopen::BaseDriver`` (:ref:`exhale_class_classros2__canopen_1_1BaseDriver`)
+
+
+Derived Type
+************
+
+- ``public ros2_canopen::MotionControllerDriver`` (:ref:`exhale_class_classros2__canopen_1_1MotionControllerDriver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: ros2_canopen::ProxyDriver
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

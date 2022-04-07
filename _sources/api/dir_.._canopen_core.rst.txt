@@ -1,0 +1,16 @@
+.. _dir_.._canopen_core:
+
+
+Directory canopen_core
+======================
+
+
+*Directory path:* ``../canopen_core``
+
+Subdirectories
+--------------
+
+- :ref:`dir__home_runner_work_ros2_canopen_ros2_canopen_canopen_core_include`
+
+
+

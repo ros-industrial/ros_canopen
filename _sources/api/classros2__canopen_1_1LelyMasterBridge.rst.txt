@@ -1,0 +1,26 @@
+.. _exhale_class_classros2__canopen_1_1LelyMasterBridge:
+
+Class LelyMasterBridge
+======================
+
+- Defined in :ref:`file_.._canopen_core_include_canopen_core_lely_master_bridge.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public AsyncMaster``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: ros2_canopen::LelyMasterBridge
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

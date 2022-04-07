@@ -1,0 +1,17 @@
+.. _exhale_struct_structros2__canopen_1_1COData:
+
+Struct COData
+=============
+
+- Defined in :ref:`file_.._canopen_core_include_canopen_core_exchange.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: ros2_canopen::COData
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

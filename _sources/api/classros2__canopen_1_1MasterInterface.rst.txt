@@ -1,0 +1,32 @@
+.. _exhale_class_classros2__canopen_1_1MasterInterface:
+
+Class MasterInterface
+=====================
+
+- Defined in :ref:`file_.._canopen_core_include_canopen_core_device.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public Node``
+
+
+Derived Type
+************
+
+- ``public ros2_canopen::MasterNode`` (:ref:`exhale_class_classros2__canopen_1_1MasterNode`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: ros2_canopen::MasterInterface
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,14 @@
+.. _exhale_define_canopen__402__driver_2include_2canopen__402__driver_2visibility__control_8h_1a13320092e69155643990b841a3333603:
+
+Define CANOPEN_402_DRIVER_EXPORT
+================================
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_visibility_control.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: CANOPEN_402_DRIVER_EXPORT
+   :project: ros2_canopen

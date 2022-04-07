@@ -1,0 +1,14 @@
+.. _exhale_typedef_motor_8hpp_1afdc44616e4a974d0a1d97291de4dd62c:
+
+Typedef canopen_402::ModeSharedPtr
+==================================
+
+- Defined in :ref:`file_.._canopen_402_driver_include_canopen_402_driver_motor.hpp`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: canopen_402::ModeSharedPtr
+   :project: ros2_canopen

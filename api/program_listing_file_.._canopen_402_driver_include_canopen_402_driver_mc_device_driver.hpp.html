@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File mc_device_driver.hpp &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ros2_canopen
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ros1-ros2.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Device Manager Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ros-control.html">ROS2 Control Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration-package.html">Creating a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Extension</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sil-tests.html">Software in the loop Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tested-hardware.html">Tested Hardware</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Program Listing for File mc_device_driver.hpp</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/program_listing_file_.._canopen_402_driver_include_canopen_402_driver_mc_device_driver.hpp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-mc-device-driver-hpp">
+<span id="program-listing-file-canopen-402-driver-include-canopen-402-driver-mc-device-driver-hpp"></span><h1>Program Listing for File mc_device_driver.hpp<a class="headerlink" href="#program-listing-for-file-mc-device-driver-hpp" title="Permalink to this headline"></a></h1>
+<p>↰ <a class="reference internal" href="file_.._canopen_402_driver_include_canopen_402_driver_mc_device_driver.hpp.html#file-canopen-402-driver-include-canopen-402-driver-mc-device-driver-hpp"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">../canopen_402_driver/include/canopen_402_driver/mc_device_driver.hpp</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef MC_DEVICE_DRIVER_HPP</span>
+<span class="cp">#define MC_DEVICE_DRIVER_HPP</span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;boost/container/flat_map.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;boost/numeric/conversion/cast.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;cstring&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_402_driver/base.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_base_driver/lely_bridge.hpp&quot;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">ros2_canopen</span><span class="p">;</span>
+<span class="k">namespace</span> <span class="n">ros2_canopen</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">RemoteObject</span>
+    <span class="p">{</span>
+        <span class="kt">uint16_t</span> <span class="n">index</span><span class="p">;</span>
+        <span class="kt">uint8_t</span> <span class="n">subindex</span><span class="p">;</span>
+        <span class="kt">uint32_t</span> <span class="n">data</span><span class="p">;</span>
+        <span class="n">CODataTypes</span> <span class="n">type</span><span class="p">;</span>
+        <span class="kt">bool</span> <span class="n">tpdo_mapped</span><span class="p">;</span>
+        <span class="kt">bool</span> <span class="n">rpdo_mapped</span><span class="p">;</span>
+        <span class="kt">bool</span> <span class="n">valid</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="k">class</span> <span class="nc">MCDeviceDriver</span> <span class="o">:</span> <span class="k">public</span> <span class="n">LelyBridge</span>
+    <span class="p">{</span>
+    <span class="k">private</span><span class="o">:</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;&gt;</span> <span class="n">objs</span><span class="p">;</span>
+        <span class="kt">bool</span> <span class="n">sync</span><span class="p">;</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">create_remote_obj</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">index</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">subindex</span><span class="p">,</span> <span class="n">CODataTypes</span> <span class="n">type</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">RemoteObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="p">{</span><span class="n">index</span><span class="p">,</span> <span class="n">subindex</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="nb">true</span><span class="p">};</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">objp</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+            <span class="n">objs</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">objp</span><span class="p">);</span>
+            <span class="k">return</span> <span class="n">objp</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kt">void</span> <span class="n">OnRpdoWrite</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">idx</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">subidx</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span>
+        <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">objs</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">objs</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="o">*</span><span class="n">it</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">idx</span> <span class="o">&amp;&amp;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span> <span class="o">==</span> <span class="n">subidx</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData8</span><span class="p">)</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">();</span>
+                    <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData16</span><span class="p">)</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">();</span>
+                    <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">)</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+        <span class="kt">void</span> <span class="n">set_remote_obj</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">T</span> <span class="n">data</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">T</span> <span class="n">data_</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">data_</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">T</span><span class="p">));</span>
+
+            <span class="n">COData</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">,</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">,</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">};</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">)</span>
+            <span class="p">{</span>
+
+                <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">async_sdo_write</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+                <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">WriteEvent</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+        <span class="n">T</span> <span class="n">get_remote_obj</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">COData</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">,</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">};</span>
+                <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">async_sdo_read</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
+                <span class="k">try</span>
+                <span class="p">{</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">data_</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">catch</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">valid</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="n">T</span> <span class="n">data</span><span class="p">;</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">T</span><span class="p">));</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+        <span class="n">T</span> <span class="n">get_remote_obj_cached</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">T</span> <span class="n">data</span><span class="p">;</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">T</span><span class="p">));</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+        <span class="kt">void</span> <span class="n">set_remote_obj_cached</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span> <span class="n">data</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">T</span> <span class="n">data_</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">data_</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">T</span><span class="p">));</span>
+        <span class="p">}</span>
+
+        <span class="kt">void</span> <span class="n">validate_objs</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">objs</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">objs</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="o">*</span><span class="n">it</span><span class="p">;</span>
+
+                <span class="k">try</span>
+                <span class="p">{</span>
+                    <span class="k">switch</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">)</span>
+                    <span class="p">{</span>
+                    <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData8</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">();</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData16</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">();</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">catch</span> <span class="p">(</span><span class="n">lely</span><span class="o">::</span><span class="n">canopen</span><span class="o">::</span><span class="n">SdoError</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+                <span class="p">}</span>
+
+                <span class="k">try</span>
+                <span class="p">{</span>
+                    <span class="k">switch</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">)</span>
+                    <span class="p">{</span>
+                    <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData8</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">();</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData16</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">();</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">catch</span> <span class="p">(</span><span class="n">lely</span><span class="o">::</span><span class="n">canopen</span><span class="o">::</span><span class="n">SdoError</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+                <span class="p">}</span>
+
+                <span class="k">switch</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">)</span>
+                <span class="p">{</span>
+                <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData8</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData16</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Initialised object :&quot;</span>
+                    <span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_id</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                    <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">hex</span> <span class="o">&lt;&lt;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                    <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">dec</span> <span class="o">&lt;&lt;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                    <span class="o">&lt;&lt;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                    <span class="o">&lt;&lt;</span> <span class="s">&quot;RPDO: &quot;</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">?</span> <span class="s">&quot;yes&quot;</span> <span class="o">:</span> <span class="s">&quot;no&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                    <span class="o">&lt;&lt;</span> <span class="s">&quot;TPDO: &quot;</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span> <span class="o">?</span> <span class="s">&quot;yes&quot;</span> <span class="o">:</span> <span class="s">&quot;no&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                    <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">MCDeviceDriver</span><span class="p">(</span><span class="n">ev_exec_t</span> <span class="o">*</span><span class="n">exec</span><span class="p">,</span> <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span><span class="n">master</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">id</span><span class="p">)</span>
+            <span class="o">:</span> <span class="n">LelyBridge</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span> <span class="n">master</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">sync</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+
+<span class="p">}</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

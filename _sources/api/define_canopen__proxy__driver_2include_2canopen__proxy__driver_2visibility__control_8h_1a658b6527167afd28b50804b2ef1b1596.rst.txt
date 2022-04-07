@@ -1,0 +1,14 @@
+.. _exhale_define_canopen__proxy__driver_2include_2canopen__proxy__driver_2visibility__control_8h_1a658b6527167afd28b50804b2ef1b1596:
+
+Define CANOPEN_PROXY_DRIVER_PUBLIC_TYPE
+=======================================
+
+- Defined in :ref:`file_.._canopen_proxy_driver_include_canopen_proxy_driver_visibility_control.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: CANOPEN_PROXY_DRIVER_PUBLIC_TYPE
+   :project: ros2_canopen

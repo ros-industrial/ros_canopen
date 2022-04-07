@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class DeviceManager &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ros2_canopen
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ros1-ros2.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Device Manager Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ros-control.html">ROS2 Control Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration-package.html">Creating a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Extension</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sil-tests.html">Software in the loop Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tested-hardware.html">Tested Hardware</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Class DeviceManager</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classDeviceManager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-devicemanager">
+<span id="exhale-class-classdevicemanager"></span><h1>Class DeviceManager<a class="headerlink" href="#class-devicemanager" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_.._canopen_core_include_canopen_core_device_manager.hpp.html#file-canopen-core-include-canopen-core-device-manager-hpp"><span class="std std-ref">File device_manager.hpp</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this headline"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">ComponentManager</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv413DeviceManager">
+<span id="_CPPv313DeviceManager"></span><span id="_CPPv213DeviceManager"></span><span id="DeviceManager"></span><span class="target" id="classDeviceManager"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceManager</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">ComponentManager</span></span><a class="headerlink" href="#_CPPv413DeviceManager" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N13DeviceManager13DeviceManagerENSt8weak_ptrIN6rclcpp8ExecutorEEENSt6stringERKN6rclcpp11NodeOptionsE">
+<span id="_CPPv3N13DeviceManager13DeviceManagerENSt8weak_ptrIN6rclcpp8ExecutorEEENSt6stringERKN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N13DeviceManager13DeviceManagerENSt8weak_ptrIN6rclcpp8ExecutorEEENSt6stringERKN6rclcpp11NodeOptionsE"></span><span id="DeviceManager::DeviceManager__std::weak_ptr:rclcpp::Executor:.ss.rclcpp::NodeOptionsCR"></span><span class="target" id="classDeviceManager_1a59c22fecf06aac08d92fa655faf77c70"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">weak_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Executor</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">executor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">weak_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">executors</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">MultiThreadedExecutor</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node_name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;device_manager&quot;</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node_options</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">start_parameter_services</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">start_parameter_event_publisher</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13DeviceManager13DeviceManagerENSt8weak_ptrIN6rclcpp8ExecutorEEENSt6stringERKN6rclcpp11NodeOptionsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N13DeviceManager4initEv">
+<span id="_CPPv3N13DeviceManager4initEv"></span><span id="_CPPv2N13DeviceManager4initEv"></span><span id="DeviceManager::init"></span><span class="target" id="classDeviceManager_1aed18de55080800d7a75f5920ebfcffdd"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13DeviceManager4initEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classDeviceManager_1a5baeb0da7ec683cc1dbbae5592d5b484"></span><span class="sig-name descname"><span class="pre">virtual</span> <span class="pre">RCLCPP_COMPONENTS_PUBLIC</span> <span class="pre">void</span> <span class="pre">on_load_node</span> <span class="pre">(const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">rmw_request_id_t</span> <span class="pre">&gt;</span> <span class="pre">request_header,</span> <span class="pre">const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">LoadNode::Request</span> <span class="pre">&gt;</span> <span class="pre">request,</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">LoadNode::Response</span> <span class="pre">&gt;</span> <span class="pre">response)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classDeviceManager_1abec2030f0890928846f959a0d2f8836a"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">virtual</span> <span class="pre">RCLCPP_COMPONENTS_PUBLIC</span> <span class="pre">void</span> <span class="pre">OnLoadNode</span> <span class="pre">(const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">rmw_request_id_t</span> <span class="pre">&gt;</span> <span class="pre">request_header,</span> <span class="pre">const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">LoadNode::Request</span> <span class="pre">&gt;</span> <span class="pre">request,</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">LoadNode::Response</span> <span class="pre">&gt;</span> <span class="pre">response)</span> <span class="pre">override</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classDeviceManager_1a314202a6ec369af70b8bc1b122e24ee3"></span><span class="sig-name descname"><span class="pre">virtual</span> <span class="pre">RCLCPP_COMPONENTS_PUBLIC</span> <span class="pre">void</span> <span class="pre">on_unload_node</span> <span class="pre">(const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">rmw_request_id_t</span> <span class="pre">&gt;</span> <span class="pre">request_header,</span> <span class="pre">const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">UnloadNode::Request</span> <span class="pre">&gt;</span> <span class="pre">request,</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">UnloadNode::Response</span> <span class="pre">&gt;</span> <span class="pre">response)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classDeviceManager_1af524bcdadff0bbfb5f19da7878a6d2ce"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">virtual</span> <span class="pre">RCLCPP_COMPONENTS_PUBLIC</span> <span class="pre">void</span> <span class="pre">OnUnloadNode</span> <span class="pre">(const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">rmw_request_id_t</span> <span class="pre">&gt;</span> <span class="pre">request_header,</span> <span class="pre">const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">UnloadNode::Request</span> <span class="pre">&gt;</span> <span class="pre">request,</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">UnloadNode::Response</span> <span class="pre">&gt;</span> <span class="pre">response)</span> <span class="pre">override</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classDeviceManager_1acfd43a5558a531cd9a209605c84b72e9"></span><span class="sig-name descname"><span class="pre">virtual</span> <span class="pre">RCLCPP_COMPONENTS_PUBLIC</span> <span class="pre">void</span> <span class="pre">on_list_nodes</span> <span class="pre">(const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">rmw_request_id_t</span> <span class="pre">&gt;</span> <span class="pre">request_header,</span> <span class="pre">const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">ListNodes::Request</span> <span class="pre">&gt;</span> <span class="pre">request,</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">ListNodes::Response</span> <span class="pre">&gt;</span> <span class="pre">response)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classDeviceManager_1a22d9ff7c41e09c1fd48b5088d1997ae7"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">virtual</span> <span class="pre">RCLCPP_COMPONENTS_PUBLIC</span> <span class="pre">void</span> <span class="pre">OnListNodes</span> <span class="pre">(const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">rmw_request_id_t</span> <span class="pre">&gt;</span> <span class="pre">request_header,</span> <span class="pre">const</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">ListNodes::Request</span> <span class="pre">&gt;</span> <span class="pre">request,</span> <span class="pre">std::shared_ptr&lt;</span> <span class="pre">ListNodes::Response</span> <span class="pre">&gt;</span> <span class="pre">response)</span> <span class="pre">override</span></span></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
