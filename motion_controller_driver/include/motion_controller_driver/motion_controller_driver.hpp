@@ -35,7 +35,6 @@ namespace ros2_canopen
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_velocity_service;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_position_service;
         rclcpp::Service<ros2_canopen_interfaces::srv::COTargetDouble>::SharedPtr handle_set_target_service;
-        rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr target_subscription;
         rclcpp::CallbackGroup::SharedPtr timer_group;
         bool intialised;
         void register_services();
@@ -202,17 +201,6 @@ namespace ros2_canopen
         void handle_set_target(
             const ros2_canopen_interfaces::srv::COTargetDouble::Request::SharedPtr request,
             ros2_canopen_interfaces::srv::COTargetDouble::Response::SharedPtr response);
-
-        /**
-         * @brief Subscription Callback to set target
-         *
-         * Calls Motor402::setTarget and sets the requested target value. Note
-         * that the resulting movement is dependent on the Operation Mode and the
-         * drives state.
-         * 
-         * @param [in] msg 
-         */
-        void target_callback(const std_msgs::msg::Float64 msg) const;
     };
 
 }

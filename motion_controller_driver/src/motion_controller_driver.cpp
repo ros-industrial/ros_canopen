@@ -121,11 +121,6 @@ void MotionControllerDriver::handle_set_target(
     }
 }
 
-void MotionControllerDriver::target_callback(const std_msgs::msg::Float64 msg) const
-{
-    motor_->setTarget(msg.data);
-}
-
 
 void MotionControllerDriver::register_services()
 {
@@ -164,12 +159,8 @@ void MotionControllerDriver::register_services()
     handle_set_target_service = this->create_service<ros2_canopen_interfaces::srv::COTargetDouble>(
         std::string(this->get_name()).append("/target").c_str(),
         std::bind(&MotionControllerDriver::handle_set_target, this, _1, _2));
-
-    target_subscription = this->create_subscription<ros2_canopen_interfaces::srv::COTargetDouble>(
-        "~/target",
-        10,
-        std::bind(&MotionControllerDriver::target_callback, this, _1));
 }
+
 void MotionControllerDriver::init(ev::Executor &exec,
                                   canopen::AsyncMaster &master,
                                   uint8_t node_id) noexcept
