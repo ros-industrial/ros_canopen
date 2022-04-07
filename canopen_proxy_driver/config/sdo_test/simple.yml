@@ -1,7 +1,0 @@
-master:
-  node_id: 1
-
-motioncontroller_1:
-  node_id: 2
-  dcf: "simple.eds"
-  driver: "BasicDevice"

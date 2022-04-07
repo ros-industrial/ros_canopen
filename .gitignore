@@ -1,6 +1,0 @@
-.vscode/
-**/doc_output/
-**/__pycache__/
-**/_build
-**/api
-**/master.dcf

@@ -1,7 +1,0 @@
-uint16 index
-uint8 subindex
-# 8 = uint8_t, 16 = uint16_t, 32 = uint32_t
-uint8 type 
----
-bool success
-uint32 data
