@@ -1,4 +1,4 @@
-name: CI
+name: Documentation
 
 # Controls when the workflow will run
 on:
@@ -29,17 +29,27 @@ jobs:
             pip install sphinx-mdinclude
             pip install breathe
             pip install exhale
-
-      
+            
       - name: Build documentation
-        uses: sphinx-notes/pages@2.0
-        with:
-          # Relative path under $repository_path to documentation source files
-          documentation_path: ./canopen/sphinx/
-
-      - name: Push documentation to gh-pages
+        run: |
+            cd ./canopen/sphinx/
+            make html
+            cd ../..
+            
+      - name: Create commit
+        run: |
+            git clone https://github.com/ros-industrial/ros2_canopen.git --branch gh-pages --single-branch gh-pages
+            cp -r ./canopen/sphinx/_build/html/* gh-pages/
+            cd gh-pages
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -m "Update documentation" -a || true
+      
+      - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
+          directory: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       
