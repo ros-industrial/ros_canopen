@@ -47,7 +47,7 @@ target_compile_definitions(canopen_proxy_driver PRIVATE "CANOPEN_PROXY_DRIVER_BU
 rclcpp_components_register_nodes(canopen_proxy_driver "ros2_canopen::ProxyDriver")
 set(node_plugins "${node_plugins}ros2_canopen::ProxyDriver;$<TARGET_FILE:canopen_proxy_driver>\n")
 
-dcfgen(${CMAKE_CURRENT_SOURCE_DIR}/config/ simple.yml ${CMAKE_BINARY_DIR}/config/)
+dcfgen(${CMAKE_CURRENT_SOURCE_DIR}/config/ proxy.yml ${CMAKE_BINARY_DIR}/config/)
 
 install(
   DIRECTORY include/
