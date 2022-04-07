@@ -28,7 +28,18 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/ DESTINATION bin
         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
         GROUP_EXECUTE GROUP_READ)
 
+set(lely_core_cmake_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include("cmake/lely_core_libraries-extras.cmake" NO_POLICY_SCOPE)
+
+
+install(
+  DIRECTORY cmake
+  DESTINATION share/${PROJECT_NAME}
+)
 
 ament_export_include_directories(include)
 ament_export_libraries(lely-can lely-co lely-coapp lely-ev lely-io2 lely-io lely-libc lely-tap lely-util)
-ament_package()
+ament_package(
+  CONFIG_EXTRAS
+  "cmake/lely_core_libraries-extras.cmake"
+)
