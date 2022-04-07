@@ -10,10 +10,10 @@ doxygen:
     - apt-get update -qq
     - apt-get install -y -qq doxygen graphviz
   script:
-    - cd ros2_canopen/doxygen && doxygen
+    - cd canopen/doxygen && doxygen
   artifacts:
     paths:
-    - ros2_canopen/doxygen/doc_output/
+    - canopen/doxygen/doc_output/
   tags:
    - asprunner
 
@@ -28,12 +28,12 @@ sphinx:
     - pip install breathe
     - pip install exhale
   script:
-    - cd ros2_canopen/sphinx/
+    - cd canopen/sphinx/
     - make html
   artifacts:
     name: documentation
     paths:
-    - ros2_canopen/sphinx/_build
+    - canopen/sphinx/_build
   tags:
     - asprunner 
 
