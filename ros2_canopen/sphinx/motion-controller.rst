@@ -25,25 +25,37 @@ Services
   * - ~/sdo_write
     - COWrite
     - Writes data to an SDO object on the specified index, subindex and datatype of the remote device.
-
+  * - ~/init
+    - Trigger
+    - Initialises motion controller including referencing
+  * - ~/recover
+    - Trigger
+    - Recovers motion controller
+  * - ~/halt
+    - Trigger
+    - Stops motion controller
+  * - ~/position_mode
+    - Trigger
+    - Switches to profiled position mode
+  * - ~/velocity_mode
+    - Trigger
+    - Switches to profiled velocity mode
+  * - ~/torque_mode
+    - Trigger
+    - Switches to profiled torque mode
+  * - ~/cyclic_position_mode
+    - Trigger
+    - Switches to cyclic position mode
+  * - ~/cyclic_velocity_mode
+    - Trigger
+    - Switches to cyclic velocity mode
+  * - ~/target
+    - CODouble
+    - Sets the target value. Only accepted when an operation mode is set.
 
 Publishers
 ----------
 
-.. list-table:: 
-  :widths: 30 20 50
-  :header-rows: 1
-  :align: left
-
-  * - Topic
-    - Type
-    - Description
-  * - ~/nmt_state  
-    - String
-    - Publishes NMT state on change
-  * - ~/rpdo 
-    - COData
-    - Publishes received PDO objects on reception 
 
 Subscribers
 -----------
@@ -55,7 +67,7 @@ Subscribers
   * - Topic
     - Type
     - Description
-  * - ~/tpdo  
-    - COData
-    - Writes received data to remote device if the specified object is RPDO mapped on remote device.
+  * - ~/target
+    - COTargetDouble
+    - Sets target value.
 

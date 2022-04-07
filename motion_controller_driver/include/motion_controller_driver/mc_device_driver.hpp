@@ -23,6 +23,12 @@ namespace ros2_canopen
         bool valid;
     };
 
+    /**
+     * @brief Specialised LelyBridge for MotionControllers
+     * 
+     * This class provides funtionalities necessary for interacting
+     * with the canopen_402 stack from ros_canopen. 
+     */
     class MCDeviceDriver : public LelyBridge
     {
     private:
@@ -30,6 +36,17 @@ namespace ros2_canopen
         bool sync;
 
     public:
+        /**
+         * @brief Create a remote obj object
+         * 
+         * This function registers an object on the remote that is frequently used
+         * to control the device. A pointer to the object is stored.
+         * 
+         * @param [in] index            Index of remote object
+         * @param [in] subindex         Subindex of remote object
+         * @param [in] type             Type of remote object
+         * @return std::shared_ptr<RemoteObject> 
+         */
         std::shared_ptr<RemoteObject> create_remote_obj(uint16_t index, uint8_t subindex, CODataTypes type)
         {
             RemoteObject obj = {index, subindex, 0, type, false, false, true};
@@ -38,6 +55,16 @@ namespace ros2_canopen
             return objp;
         }
 
+        /**
+         * @brief Update registered objectsa on RPDO write
+         * 
+         * This function is called when an RPDO write request is received
+         * from the remote device. The funciton updates the registered objects
+         * in its remote dictionary.
+         * 
+         * @param [in] idx              Index of written object
+         * @param [in] subidx           Subindex of written object
+         */
         void OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override
         {
             for (auto it = objs.begin(); it != objs.end(); ++it)
@@ -56,6 +83,16 @@ namespace ros2_canopen
             }
         }
 
+        /**
+         * @brief Set the remote obj
+         * 
+         * Set the data of the remote object. This function will write the
+         * data passed to it to the local cache and the remote dictionary.
+         * 
+         * @tparam T                Datatype of the object
+         * @param [in] obj          Shared pointer to the object
+         * @param [in] data         Data to be written
+         */
         template <typename T>
         void set_remote_obj(std::shared_ptr<RemoteObject> obj, T data)
         {
@@ -75,7 +112,17 @@ namespace ros2_canopen
                 this->tpdo_mapped[obj->index][obj->subindex].WriteEvent();
             }
         }
-
+        /**
+         * @brief Get the remote obj
+         * 
+         * Gets the data stored in the remote object. If the object is
+         * PDO mapped, the cached data is returned, else the data is fetched
+         * via SDO request.
+         * 
+         * @tparam T                Datatype of the object
+         * @param [in] obj          Pointer to object
+         * @return T                Data that was read
+         */
         template <typename T>
         T get_remote_obj(std::shared_ptr<RemoteObject> obj)
         {
@@ -113,6 +160,12 @@ namespace ros2_canopen
             std::memcpy(&(obj->data), &data_, sizeof(T));
         }
 
+        /**
+         * @brief Validate objects in dictionary
+         * 
+         * Validates whether objects exist and whether they are pdo mapped.
+         * 
+         */
         void validate_objs()
         {
             for (auto it = objs.begin(); it != objs.end(); ++it)

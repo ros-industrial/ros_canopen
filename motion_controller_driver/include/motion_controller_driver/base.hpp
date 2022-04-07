@@ -8,6 +8,10 @@
 namespace canopen_402
 {
 
+/**
+ * @brief Motor Base Class
+ * 
+ */
 class MotorBase {
 protected:
     MotorBase(const std::string &name) {}
@@ -26,10 +30,45 @@ public:
         Cyclic_Synchronous_Velocity = 9,
         Cyclic_Synchronous_Torque = 10,
     };
+
+    /**
+     * @brief Set target
+     * 
+     * @param [in] val      Target value
+     * @return true 
+     * @return false 
+     */
     virtual bool setTarget(double val) = 0;
+
+    /**
+     * @brief Enter Operation Mode
+     * 
+     * @param [in] mode     Target Mode 
+     * @return true 
+     * @return false 
+     */
     virtual bool enterModeAndWait(uint16_t mode) = 0;
+
+    /**
+     * @brief Check if Operation Mode is supported
+     * 
+     * @param [in] mode     Operation Mode to be checked 
+     * @return true 
+     * @return false 
+     */
     virtual bool isModeSupported(uint16_t mode) = 0;
+
+    /**
+     * @brief Get current Mode
+     * 
+     * @return uint16_t 
+     */
     virtual uint16_t getMode() = 0;
+
+    /**
+     * @brief Register default Operation Modes
+     * 
+     */
     virtual void registerDefaultModes() {}
 
     typedef std::shared_ptr<MotorBase> MotorBaseSharedPtr;

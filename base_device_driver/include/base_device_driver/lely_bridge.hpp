@@ -37,17 +37,20 @@ namespace ros2_canopen
 {
 
 /**
- * @brief Basic CANopen Device Driver
+ * @brief Lely Driver Bridge
  *
- * This class provides a basic CANopen Device Driver that
- * can communicate with ROS2 via asynchronous functions.
+ * This class provides functionalities for bridging between
+ * Lelycore drivers and standard C++ functions. This means
+ * it provides async and sync functions for interacting with
+ * CANopen devices using synchronisation functionalities from C++ standard 
+ * library.
  *
  */
 class LelyBridge : public canopen::FiberDriver
 {
   class TPDOWriteTask : public ev::CoTask
   {
-public:
+  public:
     COData data;
     LelyBridge * driver;
     std::mutex mtx;
@@ -100,21 +103,42 @@ private:
   std::atomic<bool> rpdo_is_set;
   std::mutex pdo_mtex;
 
-
   std::vector<std::shared_ptr<TPDOWriteTask>> tpdo_tasks;
-
-
   uint8_t nodeid;
 
-
+  /**
+   * @brief OnState Callback
+   * 
+   * This callback function is called when an Nmt state
+   * change is detected on the connected device.
+   * 
+   * @param [in] state    NMT State
+   */
   void
   OnState(canopen::NmtState state) noexcept override;
 
+  /**
+   * @brief OnRpdoWrite Callback
+   * 
+   * This callback function is called when an RPDO
+   * write request is received from the connected device. 
+   * 
+   * @param [in] idx      Object Index 
+   * @param [in] subidx   Object Subindex
+   */
   void
   OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override;
 
 public:
   using FiberDriver::FiberDriver;
+
+  /**
+   * @brief Construct a new Lely Bridge object
+   * 
+   * @param [in] exec     Executor to use
+   * @param [in] master   Master to use
+   * @param [in] id       NodeId to connect to
+   */
   LelyBridge(ev_exec_t * exec, canopen::AsyncMaster & master, uint8_t id)
   : FiberDriver(exec, master, id)
   {
@@ -124,21 +148,39 @@ public:
 
   /**
    * @brief Asynchronous SDO Write
+   * 
+   * Writes the data passed to the function via SDO to
+   * the connected device.
    *
-   * @param data
+   * @param [in] data     Data to written.
+   * 
    * @return std::future<bool>
+   * Returns an std::future<bool> that is fulfilled
+   * when the write request was done. An error is
+   * stored when the write request was unsuccesful.
    */
   std::future<bool> async_sdo_write(COData data);
+
   /**
    * @brief Aynchronous SDO Read
+   * 
+   * Reads the indicated SDO object from the connected
+   * device. 
    *
-   * @param data
+   * @param [in] data       Data to be read, the data entry is not used.
    * @return std::future<COData>
+   * Returns an std::future<COData> that is fulfilled
+   * when the read request was done. The result of the request
+   * is stored in the future. An error is stored when the read
+   * request was unsuccesful.
    */
   std::future<COData> async_sdo_read(COData data);
 
   /**
    * @brief Asynchronous request for NMT
+   * 
+   * Waits for an NMT state change to occur. The new
+   * state is stored in the future returned by the function.
    *
    * @return std::future<canopen::NmtState>
    * The returned future is set when NMT State changes.
@@ -148,6 +190,10 @@ public:
   /**
    * @brief Asynchronous request for RPDO
    *
+   * Waits for an RPDO write request to be received from
+   * the slave. The content of the request are stored in
+   * the returned future.
+   *
    * @return std::future<COData>
    * The returned future is set when an RPDO event is detected.
    */
@@ -156,14 +202,21 @@ public:
   /**
    * @brief Executes a TPDO transmission
    *
-   * @param data
+   * This funciton executes a TPDO transmission. The
+   * object specified in the input data is sent if it
+   * is registered as a TPDO with the master.
+   *
+   * @param [in] data       Object and data to be written
    */
   void tpdo_transmit(COData data);
 
   /**
    * @brief Executes a NMT Command
    *
-   * @param command
+   * This function sends the NMT command specified as
+   * parameter.
+   *
+   * @param [in] command    NMT Command to execute 
    */
   void nmt_command(canopen::NmtCommand command);
 
