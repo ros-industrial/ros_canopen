@@ -12,8 +12,10 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+#ifndef MASTER_NODE_HPP
+#define MASTER_NODE_HPP
 
-include <memory>
+#include <memory>
 #include <thread>
 
 #include "canopen_core/exchange.hpp"
@@ -180,3 +182,5 @@ namespace ros2_canopen
         }
     };
 }
+
+#endif
