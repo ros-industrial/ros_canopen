@@ -36,7 +36,6 @@ jobs:
         with:
           # Relative path under $repository_path to documentation source files
           documentation_path: ./canopen/sphinx/
-          target_branch: gh-pages
 
       - name: Push documentation to gh-pages
         uses: ad-m/github-push-action@master
