@@ -32,6 +32,7 @@ namespace ros2_canopen
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_torque_service;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_velocity_service;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_velocity_service;
+        rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_position_service;
         rclcpp::Service<canopen_interfaces::srv::COTargetDouble>::SharedPtr handle_set_target_service;
         rclcpp::CallbackGroup::SharedPtr timer_group;
         bool intialised;
