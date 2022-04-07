@@ -3,7 +3,7 @@
 <package format="3">
   <name>canopen_interfaces</name>
   <version>0.0.1</version>
-  <description>Services and Messages for ros2_canopen_master</description>
+  <description>Services and Messages for ros2_canopen stack</description>
   <maintainer email="christoph.hellmann.santos@ipa.fraunhofer.de">Christoph Hellmann Santos</maintainer>
   <license>Apache2.0</license>
 
