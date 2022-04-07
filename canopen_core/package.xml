@@ -3,9 +3,9 @@
 <package format="3">
   <name>canopen_core</name>
   <version>0.0.1</version>
-  <description>TODO: Package description</description>
+  <description>Core ros2_canopen functionalities such as devicemanager and master</description>
   <maintainer email="christoph.hellmann.santos@ipa.fraunhofer.de">christoph</maintainer>
-  <license>TODO: License declaration</license>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
