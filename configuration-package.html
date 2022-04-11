@@ -9,6 +9,7 @@
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
       <link rel="stylesheet" href="_static/collapsible-lists/css/tree_view.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -23,7 +24,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Creating a new device driver" href="new-driver.html" />
-    <link rel="prev" title="ROS2 Control Integration" href="ros-control.html" /> 
+    <link rel="prev" title="Motion Controller Driver" href="motion-controller.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,20 +49,21 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="ros1-ros2.html">Requirements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="configuration.html">Device Manager Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device-manager.html">Device Manger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design-objectives.html">Development Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Bus Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device-manager.html">Device Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="master.html">Master Node</a></li>
 <li class="toctree-l1"><a class="reference internal" href="proxy-device.html">Proxy Device Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="motion-controller.html">Motion Controller Driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ros-control.html">ROS2 Control Integration</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Creating a Configuration Package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#ros2-package-creation">ROS2 package creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#package-creation">Package creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#canopen-configuration-creation">CANopen configuration creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#launch-configuration-creation">Launch configuration creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adjust-cmakelists-txt-file">Adjust CMAKELists.txt file</a></li>
 </ul>
 </li>
 </ul>
@@ -72,6 +74,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="alpha-test-description.html">Alpha Tester Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sil-tests.html">Software in the loop Tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tested-hardware.html">Tested Hardware</a></li>
 </ul>
@@ -102,72 +105,32 @@
              
   <section id="creating-a-configuration-package">
 <h1>Creating a Configuration Package<a class="headerlink" href="#creating-a-configuration-package" title="Permalink to this headline"></a></h1>
-<section id="ros2-package-creation">
-<h2>ROS2 package creation<a class="headerlink" href="#ros2-package-creation" title="Permalink to this headline"></a></h2>
-<ol class="arabic">
-<li><dl>
-<dt><strong>Create a configuration package</strong></dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ros2 pkg create --dependencies ros2_canopen --build-type ament_cmake &lt;package_name&gt;
+<p>In order to use the ros2_canopen stack for your robot, you need to
+create a configuration package, that holds the configuration of the
+bus as well as you launch script. The following sections detail the
+steps to create such a package.</p>
+<section id="package-creation">
+<h2>Package creation<a class="headerlink" href="#package-creation" title="Permalink to this headline"></a></h2>
+<p>We need to create a package with dependencies for ros2_canopen and lely_core_libraries.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ros2 pkg create --dependencies ros2_canopen lely_core_libraries --build-type ament_cmake &lt;package_name&gt;
 <span class="gp">$</span> <span class="nb">cd</span> &lt;package_name&gt;
 <span class="gp">$</span> rm -rf inlcude src
 <span class="gp">$</span> mkdir config
 <span class="gp">$</span> mkdir launch
 </pre></div>
 </div>
-</dd>
-</dl>
-</li>
-<li><p><strong>Adjust your CMAKELists.txt file</strong>
-We want colcon to install launch and configuration files that are stored
-in launch and config folder.</p>
-<blockquote>
-<div><div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">3.8</span><span class="p">)</span>
-<span class="nb">project</span><span class="p">(</span><span class="s">trinamic_pd42_can</span><span class="p">)</span>
-
-<span class="nb">if</span><span class="p">(</span><span class="s">CMAKE_COMPILER_IS_GNUCXX</span> <span class="s">OR</span> <span class="s">CMAKE_CXX_COMPILER_ID</span> <span class="s">MATCHES</span> <span class="s2">&quot;Clang&quot;</span><span class="p">)</span>
-  <span class="nb">add_compile_options</span><span class="p">(</span><span class="s">-Wall</span> <span class="s">-Wextra</span> <span class="s">-Wpedantic</span><span class="p">)</span>
-<span class="nb">endif</span><span class="p">()</span>
-
-<span class="c"># find dependencies</span>
-<span class="nb">find_package</span><span class="p">(</span><span class="s">ament_cmake</span> <span class="s">REQUIRED</span><span class="p">)</span>
-<span class="nb">find_package</span><span class="p">(</span><span class="s">ros2_canopen</span> <span class="s">REQUIRED</span><span class="p">)</span>
-
-
-<span class="c"># install launch file</span>
-<span class="nb">install</span><span class="p">(</span><span class="s">DIRECTORY</span>
-  <span class="s">launch</span>
-  <span class="s">DESTINATION</span> <span class="s">share/</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="s">/</span>
-<span class="p">)</span>
-
-<span class="c"># install configuration file</span>
-<span class="nb">install</span><span class="p">(</span><span class="s">DIRECTORY</span>
-  <span class="s">config</span>
-  <span class="s">DESTINATION</span> <span class="s">share/</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="s">/</span>
-<span class="p">)</span>
-
-
-<span class="nb">if</span><span class="p">(</span><span class="s">BUILD_TESTING</span><span class="p">)</span>
-  <span class="nb">find_package</span><span class="p">(</span><span class="s">ament_lint_auto</span> <span class="s">REQUIRED</span><span class="p">)</span>
-<span class="nb">endif</span><span class="p">()</span>
-
-<span class="nb">ament_package</span><span class="p">()</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p><strong>Adjust your package.xml as needed</strong></p></li>
-</ol>
 </section>
 <section id="canopen-configuration-creation">
 <h2>CANopen configuration creation<a class="headerlink" href="#canopen-configuration-creation" title="Permalink to this headline"></a></h2>
 <ol class="arabic">
 <li><dl class="simple">
 <dt><strong>Gather required information</strong></dt><dd><p>Gather all EDS files of the devices connected to the bus and store them
-in your configuration package.</p>
+in your configuration package in the conf/ directory.</p>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt><strong>Writing your bus.yml file</strong></dt><dd><p>First create the configuration yml file.
+<dt><strong>Writing your bus.yml file</strong></dt><dd><p>First create the configuration yml file in the conf folder.
 .. code-block:: console</p>
 <blockquote>
 <div><p>$ touch bus.yml</p>
@@ -179,27 +142,17 @@ in your configuration package.</p>
 </pre></div>
 </div>
 <p>And add other configuration data as necessary. A documentation of configuration options
-available can be found here <a class="reference external" href="https://opensource.lely.com/canopen/docs/dcf-tools/">here</a>.</p>
+available can be found in the <a class="reference internal" href="configuration.html"><span class="doc">Bus Configuration</span></a> documentation.</p>
 <p>Once you have defined the configuration of your master, add your slaves. The following
-describes the mandatory data per slave. Further configuration options can be found <a class="reference external" href="https://opensource.lely.com/canopen/docs/dcf-tools/">here</a>.</p>
+describes the mandatory data per slave. Further configuration options can be found in the <a class="reference internal" href="configuration.html"><span class="doc">Bus Configuration</span></a> documentation.
+The slave name is the node name that will be assigned to the driver.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">unique</span> <span class="n">slave</span> <span class="n">name</span><span class="p">]</span><span class="o">:</span>
   <span class="nl">node_id</span><span class="p">:</span> <span class="p">[</span><span class="n">node</span> <span class="n">id</span><span class="p">]</span>
   <span class="nl">package</span><span class="p">:</span> <span class="p">[</span><span class="n">ros2</span> <span class="n">package</span> <span class="n">where</span> <span class="n">to</span> <span class="n">find</span> <span class="n">the</span> <span class="n">driver</span><span class="p">]</span>
   <span class="nl">driver</span><span class="p">:</span> <span class="p">[</span><span class="n">qualified</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">driver</span><span class="p">]</span>
+  <span class="nl">enable_lazy_load</span><span class="p">:</span> <span class="nb">false</span>
 </pre></div>
 </div>
-</dd>
-</dl>
-</li>
-</ol>
-<ol class="arabic" start="3">
-<li><dl>
-<dt><strong>Generating your master.dcf file</strong></dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> dcfgen -r -S bus.yml
-</pre></div>
-</div>
-<p>This will create your master.dcf as well as a number of .bin files depending on
-your bus.yml. The .bin files are concise dcf files that are used by the can master
-to configure itself and the devices on the bus.</p>
 </dd>
 </dl>
 </li>
@@ -212,39 +165,78 @@ to configure itself and the devices on the bus.</p>
 <span class="go">touch bring_up.launch.py</span>
 </pre></div>
 </div>
-<p><strong>Option1: Lazy load device drivers using Components</strong>:</p>
-<p>The device manager extends the component_manager and can be used as a ComposableNodeContainer in your Launchfile.
-In your Launchfile you can the choose, which of the slaves you defined in your bus description you want to actually
-run.</p>
+<p>Add the following code and adjust to your needs:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_launch_description</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Generate launch description with multiple components.&quot;&quot;&quot;</span>
-    <span class="n">container</span> <span class="o">=</span> <span class="n">ComposableNodeContainer</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;[container node name]&#39;</span><span class="p">,</span>
-            <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="n">package</span><span class="o">=</span><span class="s1">&#39;canopen_core&#39;</span><span class="p">,</span>
-            <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;device_manager&#39;</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span> <span class="p">[{</span>
-                        <span class="s2">&quot;yaml_path&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_test</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span> <span class="p">,</span>  <span class="s2">&quot;resources&quot;</span> <span class="p">,</span> <span class="s2">&quot;bus.yml&quot;</span><span class="p">),</span>
-                        <span class="s2">&quot;dcf_path&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_test</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span> <span class="p">,</span> <span class="s2">&quot;resources&quot;</span> <span class="p">,</span> <span class="s2">&quot;master.dcf&quot;</span><span class="p">),</span>
-                    <span class="p">}</span>
-            <span class="p">],</span>
-            <span class="n">composable_node_descriptions</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">ComposableNode</span><span class="p">(</span>
-                    <span class="n">package</span><span class="o">=</span><span class="s1">&#39;proxy_driver&#39;</span><span class="p">,</span>
-                    <span class="n">plugin</span><span class="o">=</span><span class="s1">&#39;ros2_canopen::ProxyDriver&#39;</span><span class="p">,</span>
-                    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;talker&#39;</span><span class="p">),</span>
-                <span class="n">ComposableNode</span><span class="p">(</span>
-                    <span class="n">package</span><span class="o">=</span><span class="s1">&#39;composition&#39;</span><span class="p">,</span>
-                    <span class="n">plugin</span><span class="o">=</span><span class="s1">&#39;composition::Listener&#39;</span><span class="p">,</span>
-                    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;listener&#39;</span><span class="p">)</span>
-            <span class="p">],</span>
-            <span class="n">output</span><span class="o">=</span><span class="s1">&#39;screen&#39;</span><span class="p">,</span>
-    <span class="p">)</span>
+      <span class="sd">&quot;&quot;&quot;Generate launch description with multiple components.&quot;&quot;&quot;</span>
+      <span class="n">path_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+      <span class="n">ld</span> <span class="o">=</span> <span class="n">launch</span><span class="o">.</span><span class="n">LaunchDescription</span><span class="p">()</span>
+
+      <span class="n">master_node</span> <span class="o">=</span> <span class="n">launch_ros</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span>
+          <span class="n">name</span><span class="o">=</span><span class="s2">&quot;device_manager_node&quot;</span><span class="p">,</span>
+          <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+          <span class="n">package</span><span class="o">=</span><span class="s2">&quot;canopen_core&quot;</span><span class="p">,</span>
+          <span class="n">output</span><span class="o">=</span><span class="s2">&quot;screen&quot;</span><span class="p">,</span>
+          <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;device_manager_node&quot;</span><span class="p">,</span>
+          <span class="n">parameters</span><span class="o">=</span> <span class="p">[{</span>
+              <span class="s2">&quot;bus_config&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_file</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span> <span class="p">,</span>  <span class="s2">&quot;config&quot;</span> <span class="p">,</span> <span class="s2">&quot;bus.yml&quot;</span><span class="p">),</span>
+              <span class="s2">&quot;master_config&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_file</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span> <span class="p">,</span> <span class="s2">&quot;config&quot;</span> <span class="p">,</span> <span class="s2">&quot;master.dcf&quot;</span><span class="p">),</span>
+              <span class="s2">&quot;master_bin&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_file</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span> <span class="p">,</span> <span class="s2">&quot;config&quot;</span> <span class="p">,</span> <span class="s2">&quot;master.bin&quot;</span><span class="p">),</span>
+              <span class="s2">&quot;can_interface_name&quot;</span><span class="p">:</span> <span class="s2">&quot;can0&quot;</span>
+              <span class="p">}</span>
+          <span class="p">],</span>
+      <span class="p">)</span>
+
+      <span class="n">ld</span><span class="o">.</span><span class="n">add_action</span><span class="p">(</span><span class="n">master_node</span><span class="p">)</span>
+
+      <span class="k">return</span> <span class="n">ld</span>
 </pre></div>
 </div>
-<p><strong>Option2: Load all drivers on start-up</strong>:</p>
-<p>By setting parameter lazy_load_enabled to false, all drivers will be loaded on start-up.
-The Device Manager can be started as normal node instead of ComposableNodeContainer.</p>
+<p>By setting parameter enable_lazy_load to false, all drivers will be loaded on start-up.</p>
+</section>
+<section id="adjust-cmakelists-txt-file">
+<h2>Adjust CMAKELists.txt file<a class="headerlink" href="#adjust-cmakelists-txt-file" title="Permalink to this headline"></a></h2>
+<p>We want colcon to install launch and configuration files that are stored
+in launch and config folder.</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">3.8</span><span class="p">)</span>
+<span class="nb">project</span><span class="p">(</span><span class="s">trinamic_pd42_can</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="p">(</span><span class="s">CMAKE_COMPILER_IS_GNUCXX</span> <span class="s">OR</span> <span class="s">CMAKE_CXX_COMPILER_ID</span> <span class="s">MATCHES</span> <span class="s2">&quot;Clang&quot;</span><span class="p">)</span>
+  <span class="nb">add_compile_options</span><span class="p">(</span><span class="s">-Wall</span> <span class="s">-Wextra</span> <span class="s">-Wpedantic</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="c"># find dependencies</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">ament_cmake</span> <span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">ros2_canopen</span> <span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">lely_core_libraries</span> <span class="s">REQUIRED</span><span class="p">)</span>
+
+<span class="c"># generate master dcf</span>
+<span class="nb">dcfgen</span><span class="p">(</span><span class="o">${</span><span class="nv">CMAKE_CURRENT_SOURCE_DIR</span><span class="o">}</span><span class="s">/config/</span> <span class="s">bus.yml</span> <span class="o">${</span><span class="nv">CMAKE_BINARY_DIR</span><span class="o">}</span><span class="s">/config/</span><span class="p">)</span>
+
+<span class="c"># install launch file</span>
+<span class="nb">install</span><span class="p">(</span><span class="s">DIRECTORY</span>
+  <span class="s">launch</span>
+  <span class="s">DESTINATION</span> <span class="s">share/</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="s">/</span>
+<span class="p">)</span>
+
+<span class="c"># install configuration files</span>
+<span class="nb">install</span><span class="p">(</span><span class="s">DIRECTORY</span>
+  <span class="s">config/</span>
+  <span class="s">DESTINATION</span> <span class="s">share/</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="s">/config/</span>
+<span class="p">)</span>
+<span class="nb">install</span><span class="p">(</span>
+  <span class="s">DIRECTORY</span> <span class="o">${</span><span class="nv">CMAKE_BINARY_DIR</span><span class="o">}</span><span class="s">/config/</span>
+  <span class="s">DESTINATION</span> <span class="s">share/</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="s">/config/</span>
+<span class="p">)</span>
+
+
+<span class="nb">if</span><span class="p">(</span><span class="s">BUILD_TESTING</span><span class="p">)</span>
+  <span class="nb">find_package</span><span class="p">(</span><span class="s">ament_lint_auto</span> <span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="nb">ament_package</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -252,7 +244,7 @@ The Device Manager can be started as normal node instead of ComposableNodeContai
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ros-control.html" class="btn btn-neutral float-left" title="ROS2 Control Integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="motion-controller.html" class="btn btn-neutral float-left" title="Motion Controller Driver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="new-driver.html" class="btn btn-neutral float-right" title="Creating a new device driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

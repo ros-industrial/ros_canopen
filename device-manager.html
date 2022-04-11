@@ -4,11 +4,12 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device Manger &mdash; ros2_canopen 0.0.1 documentation</title>
+  <title>Device Manager &mdash; ros2_canopen 0.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
       <link rel="stylesheet" href="_static/collapsible-lists/css/tree_view.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -22,8 +23,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Master Node" href="master.html" />
-    <link rel="prev" title="Device Manager Configuration" href="configuration.html" /> 
+    <link rel="next" title="System Interface Manager" href="system-interface.html" />
+    <link rel="prev" title="Bus Configuration" href="configuration.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,16 +49,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="ros1-ros2.html">Requirements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="configuration.html">Device Manager Configuration</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Device Manger</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="design-objectives.html">Development Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Bus Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Device Manager</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="master.html">Master Node</a></li>
 <li class="toctree-l1"><a class="reference internal" href="proxy-device.html">Proxy Device Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="motion-controller.html">Motion Controller Driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ros-control.html">ROS2 Control Integration</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
 <ul>
@@ -70,6 +71,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="alpha-test-description.html">Alpha Tester Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sil-tests.html">Software in the loop Tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tested-hardware.html">Tested Hardware</a></li>
 </ul>
@@ -88,7 +90,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Device Manger</li>
+      <li>Device Manager</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/device-manager.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -98,21 +100,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="device-manger">
-<h1>Device Manger<a class="headerlink" href="#device-manger" title="Permalink to this headline"></a></h1>
+  <section id="device-manager">
+<h1>Device Manager<a class="headerlink" href="#device-manager" title="Permalink to this headline"></a></h1>
 <p>The device manager implements ROS2 component manager interface and can therefore be handled similar to a
 container node. This enables flexibly loading and unloading the driver nodes necessary for commanding
 each device on the bus. The user can decide when the device should be activated.</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="_images/device-manager-dynamic-driver-loading.png"><img alt="Dynamic driver loading procedure" src="_images/device-manager-dynamic-driver-loading.png" style="width: 600px;" /></a>
+<img alt="Device Manager Concept" src="_images/device-manager.png" />
 <figcaption>
-<p><span class="caption-text">ros2_canopen’s driver loading procedure</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+<p><span class="caption-text">device manager concept</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>The device manager will uses the bus description file to identify the correct drivers for each devices.
+On startup it will load the CANopen master node and pass the generated DCF files to configure the CANopen master
+correctly for you bus configuration. Once a CANopen Node comes online (i.e. sends the boot indication) the CANopen master
+will configure the node with the parameters and commands specified in the bus configuration for that device.</p>
+<p>The device manager will then go on loading the drivers specified in the bus configuration file if they are not
+marked as lazy loaded. If the driver is marked as lazy loaded it is not loaded on startup of the device manager but when the user call the component load service
+for that specific driver.</p>
+<p>All loaded nodes are added to the device manager’s executor.</p>
+<figure class="align-default" id="id2">
+<img alt="Device Manager Usage" src="_images/device-manager-usage.png" />
+<figcaption>
+<p><span class="caption-text">device manager usage</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline"></a></h2>
-<table class="docutils align-default" id="id2" style="width: 400px">
-<caption><span class="caption-text">Parameters</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<p>The device manager has the following configuration parameters.</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Parameters</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -125,17 +142,21 @@ each device on the bus. The user can decide when the device should be activated.
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>enable_lazy_loading</p></td>
-<td><p>bool</p></td>
-<td><p>Enables or disables lazy loading.</p></td>
-</tr>
-<tr class="row-odd"><td><p>bus_conf</p></td>
+<tr class="row-even"><td><p>bus_conf</p></td>
 <td><p>string</p></td>
-<td><p>path to the bus configuration YAML-file</p></td>
+<td><p>(Mandatory) Path to the bus configuration YAML-file</p></td>
 </tr>
-<tr class="row-even"><td><p>master_dcf</p></td>
+<tr class="row-odd"><td><p>master_dcf</p></td>
 <td><p>string</p></td>
-<td><p>path to the DCF file to be used by the master node</p></td>
+<td><p>(Mandatory) Path to the DCF file to be used by the master node. Usually generated by dcfgen as master.dcf.</p></td>
+</tr>
+<tr class="row-even"><td><p>master_bin</p></td>
+<td><p>string</p></td>
+<td><p>(Optional) Path to the concise DCF (.bin) file to be used to configure the master. Usually generated by dcfgen as master.bin. (default: “”)</p></td>
+</tr>
+<tr class="row-odd"><td><p>can_interface</p></td>
+<td><p>string</p></td>
+<td><p>(Mandatory) Name of the CAN interface to be used. (default: vcan0)</p></td>
 </tr>
 </tbody>
 </table>
@@ -146,8 +167,8 @@ each device on the bus. The user can decide when the device should be activated.
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="configuration.html" class="btn btn-neutral float-left" title="Device Manager Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="master.html" class="btn btn-neutral float-right" title="Master Node" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="configuration.html" class="btn btn-neutral float-left" title="Bus Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="system-interface.html" class="btn btn-neutral float-right" title="System Interface Manager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
