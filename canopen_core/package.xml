@@ -14,7 +14,8 @@
   <depend>rclcpp_components</depend>
   <depend>yaml_cpp_vendor</depend>
   <depend>canopen_interfaces</depend>
-  
+  <depend>rclcpp_lifecycle</depend>
+  <depend>lifecycle_msgs</depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
