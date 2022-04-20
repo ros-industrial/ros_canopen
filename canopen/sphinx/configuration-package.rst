@@ -18,7 +18,7 @@ We need to create a package with dependencies for ros2_canopen and lely_core_lib
   $ mkdir config
   $ mkdir launch
 
-CANopen configuration creation
+Bus configuration creation
 ------------------------------
 
 1. **Gather required information**
@@ -95,8 +95,8 @@ Add the following code and adjust to your needs:
 By setting parameter enable_lazy_load to false, all drivers will be loaded on start-up.
 
 
-Adjust CMAKELists.txt file
---------------------------
+CMAKE Configuration creation
+-----------------------------
 We want colcon to install launch and configuration files that are stored
 in launch and config folder.
 
