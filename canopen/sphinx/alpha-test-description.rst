@@ -15,6 +15,7 @@ Tests
 -----
 The following table describes the tests that you could execute with your device
 to help us check the functionalities of the package.
+Currently, we recommend running the tests as super user.
 
 .. csv-table:: Tests
     :header: "Name", "Description"
@@ -23,6 +24,22 @@ to help us check the functionalities of the package.
     Launching device manager (no lazy load); Run your launch script, that you created as described in the Setup section. Once the setup is done, check with ros2 node list, that device_manager, master and all devices you specified in your bus configuration are present.
     Initialise devices; For each driver node call the init service. The driver node should now have brought the device into operational state and have executed the standard home method. Homing method needs to be set correctly, potentially set it in bus configuration file via SDO call.
     Operational modes; For each driver check that the operation modes of the device can be activated using the operation mode services exposed. Also Check if you can set a target using the target service. Set necessary parameters for movements in bus configuration via SDO.
+
+Profiled Velocity Mode Test
+++++++++++++++++++++++++++++
+.. code_block:: 
+
+    $ ros2 service call /trinamic_pd42/init std_srvs/srv/Trigger
+    $ ros2 service call /trinamic_pd42/velocity_mode std_srvs/srv/Trigger
+    $ ros2 service call /trinamic_pd42/target canopen_interfaces/srv/COTargetDouble "{target: [speed]}"
+
+Profiled Position Mode Test
+++++++++++++++++++++++++++++
+.. code_block::
+
+    $ ros2 service call /trinamic_pd42/init std_srvs/srv/Trigger
+    $ ros2 service call /trinamic_pd42/position_mode std_srvs/srv/Trigger
+    $ ros2 service call /trinamic_pd42/target canopen_interfaces/srv/COTargetDouble "{target: [position]}"
 
 
 Documentation

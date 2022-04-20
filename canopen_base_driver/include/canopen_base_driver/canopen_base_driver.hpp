@@ -46,6 +46,7 @@ namespace ros2_canopen
 
   protected:
     std::shared_ptr<ros2_canopen::LelyBridge> driver;
+    std::shared_ptr<ros2_canopen::ConfigurationManager> config_;
 
     /**
      * @brief NMT State Change Callback
@@ -98,7 +99,8 @@ namespace ros2_canopen
     void init(
         ev::Executor &exec,
         canopen::AsyncMaster &master,
-        uint8_t node_id) noexcept override;
+        uint8_t node_id,
+        std::shared_ptr<ConfigurationManager> config) noexcept override;
     /**
      * @brief Removes the driver from master
      * 

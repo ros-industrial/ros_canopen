@@ -1,22 +1,27 @@
 master:
   node_id: 1
-  sync_period: 10000
+  sync_period: 20000
+  driver: "ros2_canopen::MasterNode"
+  package: "canopen_core"
 
-simple_mc:
+canopen_402_driver:
   node_id: 2
   dcf: "technosoft.eds"
   driver: "ros2_canopen::MotionControllerDriver"
   package: "canopen_402_driver"
-  enable_lazy_loading: false
+  enable_lazy_load: false
+  period: 20
   tpdo:
     1:
       enabled: true
+      transmission: 0x01
       mapping:
         - {index: 0x6041, sub_index: 0}
         - {index: 0x6061, sub_index: 0}
         - {index: 0x6064, sub_index: 0}
     2:
       enabled: true
+      transmission: 0x01
       mapping:
         - {index: 0x606b, sub_index: 0}
         - {index: 0x606c, sub_index: 0}

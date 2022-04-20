@@ -17,6 +17,8 @@
 #define LELY_MASTER_BRIDGE_HPP
 
 #include "lely/coapp/master.hpp"
+#include <lely/ev/loop.hpp>
+#include <lely/io2/posix/poll.hpp>
 
 #include <memory>
 #include <mutex>

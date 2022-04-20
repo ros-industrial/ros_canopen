@@ -4,6 +4,7 @@
 
 #include "canopen_402_driver/visibility_control.h"
 #include "std_srvs/srv/trigger.hpp"
+#include "std_msgs/msg/float64.hpp"
 #include "canopen_interfaces/srv/co_target_double.hpp"
 #include "canopen_proxy_driver/canopen_proxy_driver.hpp"
 #include "canopen_402_driver/motor.hpp"
@@ -34,7 +35,10 @@ namespace ros2_canopen
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_velocity_service;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_position_service;
         rclcpp::Service<canopen_interfaces::srv::COTargetDouble>::SharedPtr handle_set_target_service;
+        rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr publish_actual_position;
+        rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr publish_actual_speed;
         rclcpp::CallbackGroup::SharedPtr timer_group;
+        uint32_t period_ms_;
         bool intialised;
         void register_services();
 
@@ -49,23 +53,25 @@ namespace ros2_canopen
         {
             if(!intialised)
             {
-                RCLCPP_INFO(this->get_logger(), "Intitialise");
+                RCLCPP_INFO(this->get_logger(), "Intitialising Device and Objects");
                 timer_->cancel();
                 intialised = true;
                 motor_->registerDefaultModes();
                 mc_driver_->validate_objs();
                 timer_= this->create_wall_timer(
-                        100ms, std::bind(&MotionControllerDriver::run, this), timer_group);
+                        std::chrono::milliseconds(period_ms_), std::bind(&MotionControllerDriver::run, this), timer_group);
             }
-            
+
             motor_->handleRead();
             motor_->handleWrite();
-            motor_->handleDiag();
+            //motor_->handleDiag();
+            publish();
         }
 
         void init(ev::Executor &exec,
                   canopen::AsyncMaster &master,
-                  uint8_t node_id) noexcept override;
+                  uint8_t node_id,
+                  std::shared_ptr<ros2_canopen::ConfigurationManager>  config) noexcept override;
 
     protected:
         virtual void on_rpdo(COData data) override
@@ -200,6 +206,12 @@ namespace ros2_canopen
         void handle_set_target(
             const canopen_interfaces::srv::COTargetDouble::Request::SharedPtr request,
             canopen_interfaces::srv::COTargetDouble::Response::SharedPtr response);
+
+        /**
+         * @brief Publishes actual position and speed
+         * 
+         */
+        void publish();
     };
 
 }

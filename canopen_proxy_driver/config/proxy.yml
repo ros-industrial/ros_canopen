@@ -1,5 +1,7 @@
 master:
   node_id: 1
+  driver: "ros2_canopen::MasterNode"
+  package: "canopen_core"
 
 canopen_proxy_driver:
   node_id: 2

@@ -42,14 +42,50 @@ set (dependencies
   canopen_interfaces
 )
 
+message(STATUS "${yaml_cpp_vendor_INCLUDE_DIRS}")
+include_directories(${yaml_cpp_vendor_INCLUDE_DIRS})
+add_library(configuration_manager
+  src/configuration_manager.cpp
+)
+target_compile_features(configuration_manager  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_include_directories(configuration_manager PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${yaml_cpp_vendor_INCLUDE_DIRS}
+  )
+ament_target_dependencies(configuration_manager 
+  rclcpp
+  yaml_cpp_vendor
+)
 
+add_library(master_node
+  SHARED
+  src/master_node.cpp
+  src/lely_master_bridge.cpp
+  )
+
+target_compile_features(master_node  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_include_directories(master_node  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(
+  master_node
+  "rclcpp"
+  "rclcpp_components"
+  "canopen_interfaces"
+  "lely_core_libraries"
+)
+rclcpp_components_register_nodes(master_node  "ros2_canopen::MasterNode")
+set(node_plugins "${node_plugins}ros2_canopen::MasterNode;$<TARGET_FILE:master_node >\n")
 
 # device manager node
 add_executable(device_manager_node 
   src/device_manager.cpp
   src/lely_master_bridge.cpp
   )
-
+target_link_libraries(device_manager_node
+  configuration_manager
+)
 ament_target_dependencies(device_manager_node 
   ${dependencies}
 )
@@ -79,6 +115,22 @@ install(
   DESTINATION include
 )
 
+install(
+  TARGETS configuration_manager
+  EXPORT export_configuration_manager
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(
+  TARGETS master_node
+  EXPORT export_master_node
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
 install(TARGETS device_manager_node
   DESTINATION lib/${PROJECT_NAME})
 
@@ -104,6 +156,21 @@ endif()
 
 ament_export_include_directories(
   include
+)
+
+ament_export_libraries(
+  configuration_manager
+  master_node
+)
+ament_export_targets(
+  export_configuration_manager
+  export_master_node
+)
+
+ament_export_dependencies(
+  canopen_interfaces
+  lely_core_libraries
+  yaml_cpp_vendor
 )
 
 ament_package()

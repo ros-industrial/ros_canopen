@@ -34,6 +34,8 @@ namespace ros2_canopen
     private:
         std::vector<std::shared_ptr<RemoteObject>> objs;
         bool sync;
+        double speed;
+        double position;
 
     public:
         /**
@@ -80,6 +82,16 @@ namespace ros2_canopen
                         obj->data = rpdo_mapped[idx][subidx].Read<uint32_t>();
                     break;
                 }
+            }
+
+            if(idx == 0x606C && subidx == 0x0)
+            {
+                speed = rpdo_mapped[idx][subidx].Read<int32_t>();
+            }
+
+            if(idx == 0x6064 && subidx == 0x0)
+            {
+                position = rpdo_mapped[idx][subidx].Read<int32_t>();
             }
         }
 
@@ -235,6 +247,26 @@ namespace ros2_canopen
                     << "TPDO: " << (obj->tpdo_mapped ? "yes" : "no") << " "
                     << std::endl;
             }
+        }
+
+        /**
+         * @brief Get the speed object
+         * 
+         * @return double 
+         */
+        double get_speed()
+        {
+            return speed;
+        }
+
+        /**
+         * @brief Get the position object
+         * 
+         * @return double 
+         */
+        double get_position()
+        {
+            return position;
         }
 
         MCDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)

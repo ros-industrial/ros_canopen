@@ -22,83 +22,63 @@ import std_msgs.msg
 import std_srvs.srv
 
 
+import rclpy
+from rclpy.node import Node
+
+
 @pytest.mark.rostest
 def generate_test_description():
-    path_to_test = os.path.dirname(__file__)
-
-    master_node = launch_ros.actions.LifecycleNode(
-        name="canopen_master",
+    test_dir_path = os.path.dirname(__file__)
+    master_node = launch_ros.actions.Node(
+        name="device_manager_node",
         namespace="", 
         package="canopen_core", 
         output="screen", 
-        executable="canopen_master_node",
-        parameters=[{
-                    "yaml_path": os.path.join(path_to_test, "pdo.yml"),
-                    "dcf_path": os.path.join(path_to_test, "pdo.dcf"),
-                }
+        executable="device_manager_node",
+        parameters= [{
+            "bus_config": os.path.join(test_dir_path, ".." ,  "config/pdo_test" , "pdo.yml"),
+            "master_config": os.path.join(test_dir_path, ".." , "config/pdo_test" , "master.dcf"),
+            "can_interface_name": "vcan0"}
         ],
     )
 
 
-    slave_node_2 = launch_ros.actions.LifecycleNode(
-        name="slave_node_2", 
+    slave_node = launch_ros.actions.LifecycleNode(
+        name="slave_node", 
         namespace="", 
         package="canopen_core", 
         output="screen", 
-        executable="test_slave",
-        parameters=[
-            {
-                "eds": os.path.join(path_to_test, "pdo.eds"),
+        executable="slave_node",
+        parameters=[{
+                "eds": os.path.join(test_dir_path, ".." , "config/pdo_test" , "pdo.eds"),
                 "slave_id": 2,
-                "test": "pdo_counter"
-            }
+                "test": "pdo_counter"}
             ],
     )
-
-    master_node_inactive_state_handler = launch.actions.RegisterEventHandler(
+    slave_inactive_state_handler = launch.actions.RegisterEventHandler(
         launch_ros.event_handlers.OnStateTransition(
-            target_lifecycle_node=master_node, goal_state='inactive',
+            target_lifecycle_node=slave_node, goal_state='inactive',
             entities=[
                 launch.actions.LogInfo(
-                    msg="node 'master_node' reached the 'inactive' state, 'activating'."),
+                    msg="node 'slave_node_{}' reached the 'inactive' state, 'activating'.".format(2)),
                 launch.actions.EmitEvent(event=launch_ros.events.lifecycle.ChangeState(
-                    lifecycle_node_matcher=launch.events.matches_action(master_node),
+                    lifecycle_node_matcher=launch.events.matches_action(
+                        slave_node),
                     transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
                 )),
             ],
         )
     )
-
-    slave_2_inactive_state_handler = launch.actions.RegisterEventHandler(
-        launch_ros.event_handlers.OnStateTransition(
-            target_lifecycle_node=slave_node_2, goal_state='inactive',
-            entities=[
-                launch.actions.LogInfo(
-                    msg="node 'slave_node_2' reached the 'inactive' state, 'activating'."),
-                launch.actions.EmitEvent(event=launch_ros.events.lifecycle.ChangeState(
-                    lifecycle_node_matcher=launch.events.matches_action(slave_node_2),
-                    transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
-                )),
-            ],
-        )
-    )
-
-    slave_2_configure = launch.actions.EmitEvent(
+    slave_configure = launch.actions.EmitEvent(
         event=launch_ros.events.lifecycle.ChangeState(
-            lifecycle_node_matcher=launch.events.matches_action(slave_node_2),
-            transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
-        )
-    )
-
-    master_node_configure = launch.actions.EmitEvent(
-        event=launch_ros.events.lifecycle.ChangeState(
-            lifecycle_node_matcher=launch.events.matches_action(master_node),
+            lifecycle_node_matcher=launch.events.matches_action(
+                slave_node),
             transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
         )
     )
 
     ready_to_test = launch.actions.TimerAction(
-        period=2.0,
+        period=10.0,
         actions=[
             launch_testing.actions.ReadyToTest()
         ],
@@ -107,12 +87,10 @@ def generate_test_description():
     ld = launch.LaunchDescription()
 
     # Bring up node and slave 
-    ld.add_action(slave_2_inactive_state_handler)
-    ld.add_action(slave_node_2)
-    ld.add_action(slave_2_configure)
-    ld.add_action(master_node_inactive_state_handler)
+    ld.add_action(slave_inactive_state_handler)
+    ld.add_action(slave_node)
+    ld.add_action(slave_configure)
     ld.add_action(master_node)
-    ld.add_action(master_node_configure)
     ld.add_action(ready_to_test)
 
     return (ld, {})
@@ -140,7 +118,7 @@ class TestBasicDevice(unittest.TestCase):
         msgs_rx = []
         subscription = self.node.create_subscription(
             canopen_interfaces.msg.COData,
-            "/basic_device_2/rpdo",
+            "/motioncontroller_1/rpdo",
             lambda msg: msgs_rx.append(msg),
             10
             )

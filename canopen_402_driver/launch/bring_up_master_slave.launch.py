@@ -7,6 +7,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'launch')
 import launch
 import launch.actions
 import launch.events
+from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch.actions import DeclareLaunchArgument
 
 import launch_ros
 import launch_ros.events  
@@ -16,19 +18,27 @@ import lifecycle_msgs.msg
 
 
 def generate_launch_description():
-    path_to_test = os.path.dirname(__file__)
-    print(os.path.join(path_to_test, ".." ,  "config" , "simple_mc.yml"))
+    launch_path = os.path.dirname(__file__)
+    config_path = os.path.join(launch_path, ".." ,  "config")
+    os.chdir(config_path)
     ld = launch.LaunchDescription()
 
+    master_launch = LaunchConfiguration('master_launch')
+    arg1 = DeclareLaunchArgument(
+            'master_launch',
+            default_value='false',
+            description='Defines if master is launched')
+
     master_node = launch_ros.actions.Node(
+        condition=launch.conditions.IfCondition(master_launch),
         name="device_manager",
         namespace="", 
         package="canopen_core", 
         output="screen", 
         executable="device_manager_node",
         parameters= [{
-                    "bus_config": os.path.join(path_to_test, ".." ,  "config" , "simple_mc.yml"),
-                    "master_config": os.path.join(path_to_test, ".." , "config" , "master.dcf"),
+                    "bus_config": os.path.join(config_path, "simple_mc.yml"),
+                    "master_config": os.path.join(config_path, "master.dcf"),
                     "can_interface_name": "vcan0"
                 }
         ],
@@ -40,7 +50,7 @@ def generate_launch_description():
         output="screen", 
         executable="slave_node",
         parameters=[{
-                "eds": os.path.join(path_to_test, ".." , "config" , "technosoft.eds"),
+                "eds": os.path.join(config_path, ".." , "config" , "technosoft.eds"),
                 "slave_id": 2}
             ],
     )
@@ -65,9 +75,11 @@ def generate_launch_description():
             transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
         )
     )
+    ld.add_action(arg1)
+    ld.add_action(master_node)
     ld.add_action(slave_inactive_state_handler)
     ld.add_action(slave_node)
     ld.add_action(slave_configure)
-    ld.add_action(master_node)
+    
 
     return ld

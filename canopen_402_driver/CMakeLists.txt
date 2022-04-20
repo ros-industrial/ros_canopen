@@ -10,13 +10,9 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(canopen_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
-find_package(lely_core_libraries REQUIRED)
-find_package(canopen_core REQUIRED)
 find_package(canopen_proxy_driver REQUIRED)
-find_package(canopen_base_driver REQUIRED)
 find_package(Boost REQUIRED COMPONENTS container)
 
 add_library(${PROJECT_NAME} 

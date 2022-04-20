@@ -1,5 +1,7 @@
 master:
   node_id: 1
+  driver: "ros2_canopen::MasterNode"
+  package: "canopen_core"
 
 motioncontroller_2:
   node_id: 2

@@ -24,6 +24,7 @@
 #include <lely/io2/sys/sigset.hpp>
 #include <lely/io2/sys/timer.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include "canopen_core/configuration_manager.hpp"
 
 using namespace lely;
 
@@ -52,7 +53,9 @@ namespace ros2_canopen
          */
         virtual void init(ev::Executor &exec,
                           canopen::AsyncMaster &master,
-                          uint8_t node_id) noexcept = 0;
+                          uint8_t node_id,
+                          std::shared_ptr<ros2_canopen::ConfigurationManager> config
+                          ) noexcept = 0;
 
         /**
          * @brief Remove driver from Master
@@ -73,6 +76,7 @@ namespace ros2_canopen
         std::string dcf_bin_;
         std::string can_interface_name_;
         uint8_t node_id_;
+        std::shared_ptr<ros2_canopen::ConfigurationManager> config_;
 
     public:
         /**
@@ -87,17 +91,25 @@ namespace ros2_canopen
          */
         MasterInterface(
             const std::string &node_name,
-            const rclcpp::NodeOptions &node_options,
+            const rclcpp::NodeOptions &node_options) : rclcpp::Node(node_name, node_options)
+        {
+
+        }
+        virtual void init(
             std::string dcf_txt,
             std::string dcf_bin,
             std::string can_interface_name,
-            uint8_t nodeid) : rclcpp::Node(node_name, node_options)
+            uint8_t nodeid,
+            std::shared_ptr<ros2_canopen::ConfigurationManager> config
+        )
         {
             dcf_txt_ = dcf_txt;
             dcf_bin_ = dcf_bin;
             can_interface_name_ = can_interface_name;
             node_id_ = nodeid;
+            config_ = config;
         }
+
         /**
          * @brief Adds a driver
          * 

@@ -38,8 +38,10 @@ void BaseDriver::rdpo_listener()
 void BaseDriver::init(
   ev::Executor & exec,
   canopen::AsyncMaster & master,
-  uint8_t node_id) noexcept
+  uint8_t node_id,
+  std::shared_ptr<ConfigurationManager> config) noexcept
 {
+  config_ = config;
   driver =
     std::make_shared<ros2_canopen::LelyBridge>(exec, master, node_id);
   nmt_state_publisher_future =

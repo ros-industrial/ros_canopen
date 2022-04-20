@@ -11,10 +11,8 @@
 
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
-  <depend>canopen_interfaces</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
-  <depend>lely_core_libraries</depend>
   <depend>canopen_core</depend>
 
   <test_depend>ament_lint_auto</test_depend>
