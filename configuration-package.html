@@ -33,6 +33,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> ros2_canopen
+            <img src="_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,16 +55,16 @@
 <li class="toctree-l1"><a class="reference internal" href="device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Creating a Configuration Package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#package-creation">Package creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#canopen-configuration-creation">CANopen configuration creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bus-configuration-creation">Bus configuration creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#launch-configuration-creation">Launch configuration creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#adjust-cmakelists-txt-file">Adjust CMAKELists.txt file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cmake-configuration-creation">CMAKE Configuration creation</a></li>
 </ul>
 </li>
 </ul>
@@ -120,8 +121,8 @@ steps to create such a package.</p>
 </pre></div>
 </div>
 </section>
-<section id="canopen-configuration-creation">
-<h2>CANopen configuration creation<a class="headerlink" href="#canopen-configuration-creation" title="Permalink to this headline"></a></h2>
+<section id="bus-configuration-creation">
+<h2>Bus configuration creation<a class="headerlink" href="#bus-configuration-creation" title="Permalink to this headline"></a></h2>
 <ol class="arabic">
 <li><dl class="simple">
 <dt><strong>Gather required information</strong></dt><dd><p>Gather all EDS files of the devices connected to the bus and store them
@@ -194,8 +195,8 @@ The slave name is the node name that will be assigned to the driver.</p>
 </div>
 <p>By setting parameter enable_lazy_load to false, all drivers will be loaded on start-up.</p>
 </section>
-<section id="adjust-cmakelists-txt-file">
-<h2>Adjust CMAKELists.txt file<a class="headerlink" href="#adjust-cmakelists-txt-file" title="Permalink to this headline"></a></h2>
+<section id="cmake-configuration-creation">
+<h2>CMAKE Configuration creation<a class="headerlink" href="#cmake-configuration-creation" title="Permalink to this headline"></a></h2>
 <p>We want colcon to install launch and configuration files that are stored
 in launch and config folder.</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">3.8</span><span class="p">)</span>

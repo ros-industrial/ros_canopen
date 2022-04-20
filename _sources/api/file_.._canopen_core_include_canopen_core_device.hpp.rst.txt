@@ -25,6 +25,8 @@ Includes
 --------
 
 
+- ``canopen_core/configuration_manager.hpp`` (:ref:`file_.._canopen_core_include_canopen_core_configuration_manager.hpp`)
+
 - ``lely/coapp/fiber_driver.hpp``
 
 - ``lely/coapp/master.hpp``

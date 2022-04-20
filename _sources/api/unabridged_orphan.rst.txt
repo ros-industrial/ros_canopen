@@ -95,6 +95,11 @@ Files
 .. toctree::
    :maxdepth: 5
 
+   file_.._canopen_core_include_canopen_core_configuration_manager.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
    file_.._canopen_core_include_canopen_core_device.hpp.rst
 
 .. toctree::

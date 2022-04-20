@@ -33,6 +33,8 @@ Includes
 
 - ``canopen_proxy_driver/canopen_proxy_driver.hpp`` (:ref:`file_.._canopen_proxy_driver_include_canopen_proxy_driver_canopen_proxy_driver.hpp`)
 
+- ``std_msgs/msg/float64.hpp``
+
 - ``std_srvs/srv/trigger.hpp``
 
 

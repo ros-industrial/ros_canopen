@@ -31,6 +31,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
@@ -118,6 +119,7 @@
 <span class="cp">#include</span> <span class="cpf">&lt;memory&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;thread&gt;</span><span class="cp"></span>
 
+
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_core/exchange.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_core/device.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_core/lely_master_bridge.hpp&quot;</span><span class="cp"></span>
@@ -145,130 +147,28 @@
 
     <span class="k">public</span><span class="o">:</span>
         <span class="n">MasterNode</span><span class="p">(</span>
-            <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">,</span>
-            <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span><span class="p">,</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_txt</span><span class="p">,</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_bin</span><span class="p">,</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">can_interface_name</span><span class="p">,</span>
-            <span class="kt">uint8_t</span> <span class="n">nodeid</span><span class="p">)</span> <span class="o">:</span> <span class="n">MasterInterface</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">,</span> <span class="n">dcf_txt</span><span class="p">,</span> <span class="n">dcf_bin</span><span class="p">,</span> <span class="n">can_interface_name</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">)</span>
+            <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span>
+            <span class="p">)</span> <span class="o">:</span> <span class="n">MasterInterface</span><span class="p">(</span><span class="s">&quot;master&quot;</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span>
         <span class="p">{</span>
-            <span class="n">io_guard_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">IoGuard</span><span class="o">&gt;</span><span class="p">();</span>
-            <span class="n">ctx_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Context</span><span class="o">&gt;</span><span class="p">();</span>
-            <span class="n">poll_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Poll</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">ctx_</span><span class="p">);</span>
-            <span class="n">loop_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">ev</span><span class="o">::</span><span class="n">Loop</span><span class="o">&gt;</span><span class="p">(</span><span class="n">poll_</span><span class="o">-&gt;</span><span class="n">get_poll</span><span class="p">());</span>
-
-            <span class="n">exec_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span><span class="p">(</span><span class="n">loop_</span><span class="o">-&gt;</span><span class="n">get_executor</span><span class="p">());</span>
-            <span class="n">timer_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Timer</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">poll_</span><span class="p">,</span> <span class="o">*</span><span class="n">exec_</span><span class="p">,</span> <span class="n">CLOCK_MONOTONIC</span><span class="p">);</span>
-            <span class="n">ctrl_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">io</span><span class="o">::</span><span class="n">CanController</span><span class="o">&gt;</span><span class="p">(</span><span class="n">can_interface_name</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
-            <span class="n">chan_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">io</span><span class="o">::</span><span class="n">CanChannel</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">poll_</span><span class="p">,</span> <span class="o">*</span><span class="n">exec_</span><span class="p">);</span>
-            <span class="n">chan_</span><span class="o">-&gt;</span><span class="n">open</span><span class="p">(</span><span class="o">*</span><span class="n">ctrl_</span><span class="p">);</span>
-
-            <span class="n">sigset_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">io</span><span class="o">::</span><span class="n">SignalSet</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">poll_</span><span class="p">,</span> <span class="o">*</span><span class="n">exec_</span><span class="p">);</span>
-            <span class="c1">// Watch for Ctrl+C or process termination.</span>
-            <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">insert</span><span class="p">(</span><span class="n">SIGHUP</span><span class="p">);</span>
-            <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">insert</span><span class="p">(</span><span class="n">SIGINT</span><span class="p">);</span>
-            <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">insert</span><span class="p">(</span><span class="n">SIGTERM</span><span class="p">);</span>
-
-            <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">submit_wait</span><span class="p">(</span>
-                <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">int</span> <span class="cm">/*signo*/</span><span class="p">)</span>
-                <span class="p">{</span>
-                    <span class="c1">// If the signal is raised again, terminate immediately.</span>
-                    <span class="n">sigset_</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
-
-                    <span class="c1">// Perform a clean shutdown.</span>
-                    <span class="n">ctx_</span><span class="o">-&gt;</span><span class="n">shutdown</span><span class="p">();</span>
-                <span class="p">});</span>
-
-            <span class="n">master_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">LelyMasterBridge</span><span class="o">&gt;</span><span class="p">(</span>
-                <span class="o">*</span><span class="n">exec_</span><span class="p">,</span> <span class="o">*</span><span class="n">timer_</span><span class="p">,</span> <span class="o">*</span><span class="n">chan_</span><span class="p">,</span>
-                <span class="n">dcf_txt</span><span class="p">,</span> <span class="n">dcf_bin</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">);</span>
-            <span class="n">master_</span><span class="o">-&gt;</span><span class="n">Reset</span><span class="p">();</span>
-
-            <span class="n">spinner_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span>
-                <span class="p">[</span><span class="k">this</span><span class="p">]()</span>
-                <span class="p">{</span>
-                    <span class="n">loop_</span><span class="o">-&gt;</span><span class="n">run</span><span class="p">();</span>
-                <span class="p">});</span>
-
-            <span class="n">sdo_read_service</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">create_service</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COReadID</span><span class="o">&gt;</span><span class="p">(</span>
-                <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_name</span><span class="p">()).</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;/sdo_read&quot;</span><span class="p">).</span><span class="n">c_str</span><span class="p">(),</span>
-                <span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span>
-                    <span class="o">&amp;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">MasterNode</span><span class="o">::</span><span class="n">on_sdo_read</span><span class="p">,</span>
-                    <span class="k">this</span><span class="p">,</span>
-                    <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_1</span><span class="p">,</span>
-                    <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_2</span><span class="p">));</span>
-
-            <span class="n">sdo_write_service</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">create_service</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COWriteID</span><span class="o">&gt;</span><span class="p">(</span>
-                <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_name</span><span class="p">()).</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;/sdo_write&quot;</span><span class="p">).</span><span class="n">c_str</span><span class="p">(),</span>
-                <span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span>
-                    <span class="o">&amp;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">MasterNode</span><span class="o">::</span><span class="n">on_sdo_write</span><span class="p">,</span>
-                    <span class="k">this</span><span class="p">,</span>
-                    <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_1</span><span class="p">,</span>
-                    <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_2</span><span class="p">));</span>
         <span class="p">}</span>
 
-        <span class="kt">void</span> <span class="n">add_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span> <span class="n">node_instance</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">override</span>
-        <span class="p">{</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span> <span class="n">prom</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span><span class="p">();</span>
-            <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">prom</span><span class="o">-&gt;</span><span class="n">get_future</span><span class="p">();</span>
-            <span class="n">exec_</span><span class="o">-&gt;</span><span class="n">post</span><span class="p">([</span><span class="k">this</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_instance</span><span class="p">,</span> <span class="n">prom</span><span class="p">]()</span>
-                        <span class="p">{</span>
-                            <span class="n">node_instance</span><span class="o">-&gt;</span><span class="n">init</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">exec_</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span><span class="p">),</span> <span class="n">node_id</span><span class="p">);</span>
-                            <span class="n">prom</span><span class="o">-&gt;</span><span class="n">set_value</span><span class="p">();</span> <span class="p">});</span>
-            <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
-        <span class="p">}</span>
+        <span class="kt">void</span> <span class="n">init</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_txt</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_bin</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">can_interface_name</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">nodeid</span><span class="p">,</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
 
-        <span class="kt">void</span> <span class="n">remove_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span> <span class="n">node_instance</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">override</span>
-        <span class="p">{</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span> <span class="n">prom</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;&gt;</span><span class="p">();</span>
-            <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">prom</span><span class="o">-&gt;</span><span class="n">get_future</span><span class="p">();</span>
-            <span class="n">exec_</span><span class="o">-&gt;</span><span class="n">post</span><span class="p">([</span><span class="k">this</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_instance</span><span class="p">,</span> <span class="n">prom</span><span class="p">]()</span>
-                        <span class="p">{</span>
-                            <span class="n">node_instance</span><span class="o">-&gt;</span><span class="n">remove</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">exec_</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span><span class="p">),</span> <span class="n">node_id</span><span class="p">);</span>
-                            <span class="n">prom</span><span class="o">-&gt;</span><span class="n">set_value</span><span class="p">();</span> <span class="p">});</span>
-            <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
-        <span class="p">}</span>
+        <span class="kt">void</span> <span class="nf">add_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span> <span class="n">node_instance</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
 
-        <span class="kt">void</span> <span class="n">on_sdo_read</span><span class="p">(</span>
+        <span class="kt">void</span> <span class="nf">remove_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span> <span class="n">node_instance</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
+
+        <span class="kt">void</span> <span class="nf">on_sdo_read</span><span class="p">(</span>
             <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COReadID</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COReadID</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="n">ros2_canopen</span><span class="o">::</span><span class="n">CODataTypes</span> <span class="n">datatype</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">CODataTypes</span><span class="o">&gt;</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">);</span>
-            <span class="n">ros2_canopen</span><span class="o">::</span><span class="n">COData</span> <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">,</span> <span class="n">request</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">datatype</span><span class="p">};</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;</span> <span class="n">f</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span><span class="o">-&gt;</span><span class="n">async_read_sdo</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">nodeid</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
-            <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
-            <span class="k">try</span>
-            <span class="p">{</span>
-                <span class="n">response</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">data_</span><span class="p">;</span>
-                <span class="n">response</span><span class="o">-&gt;</span><span class="n">success</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-            <span class="p">}</span>
-            <span class="k">catch</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
-            <span class="p">{</span>
-                <span class="n">RCLCPP_ERROR</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">());</span>
-                <span class="n">response</span><span class="o">-&gt;</span><span class="n">success</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COReadID</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
 
-        <span class="kt">void</span> <span class="n">on_sdo_write</span><span class="p">(</span>
+        <span class="kt">void</span> <span class="nf">on_sdo_write</span><span class="p">(</span>
             <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COWriteID</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COWriteID</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="n">ros2_canopen</span><span class="o">::</span><span class="n">CODataTypes</span> <span class="n">datatype</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">CODataTypes</span><span class="o">&gt;</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">);</span>
-            <span class="n">ros2_canopen</span><span class="o">::</span><span class="n">COData</span> <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">,</span> <span class="n">request</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">,</span> <span class="n">request</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="n">datatype</span><span class="p">};</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">f</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span><span class="o">-&gt;</span><span class="n">async_write_sdo</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">nodeid</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
-            <span class="n">f</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span>
-            <span class="k">try</span>
-            <span class="p">{</span>
-                <span class="n">response</span><span class="o">-&gt;</span><span class="n">success</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-            <span class="p">}</span>
-            <span class="k">catch</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
-            <span class="p">{</span>
-                <span class="n">RCLCPP_ERROR</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">());</span>
-                <span class="n">response</span><span class="o">-&gt;</span><span class="n">success</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COWriteID</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
     <span class="p">};</span>
 <span class="p">}</span>
+
 
 <span class="cp">#endif</span>
 </pre></div>

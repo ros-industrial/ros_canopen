@@ -31,6 +31,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
@@ -129,16 +130,15 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t">
-<span id="_CPPv3N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t"></span><span id="ros2_canopen::ProxyDriver::init__ev::ExecutorR.canopen::AsyncMasterR.uint8_t"></span><span class="target" id="classros2__canopen_1_1ProxyDriver_1a8cdbd8d7dad14062434d22984f873d72"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ev</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Executor</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">exec</span></span>, <span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">AsyncMaster</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">master</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Initializer for the driver. </p>
-<p>Initializes the driver, adds it to the CANopen Master. This function needs to be executed inside the masters event loop or the masters thread!</p>
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE"></span><span id="ros2_canopen::ProxyDriver::init__ev::ExecutorR.canopen::AsyncMasterR.uint8_t.std::shared_ptr:ros2_canopen::ConfigurationManager:"></span><span class="target" id="classros2__canopen_1_1ProxyDriver_1a439db380cb9fb95c5e125642146f1375"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ev</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Executor</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">exec</span></span>, <span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">AsyncMaster</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">master</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node_id</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">ros2_canopen</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classros2__canopen_1_1ConfigurationManager.html#_CPPv4N12ros2_canopen20ConfigurationManagerE" title="ros2_canopen::ConfigurationManager"><span class="n"><span class="pre">ConfigurationManager</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Init driver with Master. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>exec</strong> – <strong>[in]</strong> The executor to be used for the driver </p></li>
-<li><p><strong>master</strong> – <strong>[in]</strong> The master the driver should be added to </p></li>
-<li><p><strong>node_id</strong> – <strong>[in]</strong> The nodeid of the device the driver commands </p></li>
+<li><p><strong>exec</strong> – <strong>[in]</strong> Executor that the driver will be added to </p></li>
+<li><p><strong>master</strong> – <strong>[in]</strong> Master that controls the driver </p></li>
+<li><p><strong>node_id</strong> – <strong>[in]</strong> Node ID of the driver </p></li>
 </ul>
 </dd>
 </dl>

@@ -23,6 +23,8 @@ Classes
 
 - :ref:`exhale_class_classros2__canopen_1_1BaseDriver`
 
+- :ref:`exhale_class_classros2__canopen_1_1ConfigurationManager`
+
 - :ref:`exhale_class_classros2__canopen_1_1DriverInterface`
 
 - :ref:`exhale_class_classros2__canopen_1_1LelyBridge`

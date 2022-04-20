@@ -30,6 +30,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> ros2_canopen
+            <img src="_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -51,7 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
@@ -467,11 +468,23 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/classDeviceManager.html#_CPPv413DeviceManager">DeviceManager (C++ class)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/classDeviceManager.html#_CPPv4N13DeviceManager13DeviceManagerENSt8weak_ptrIN6rclcpp8ExecutorEEENSt6stringERKN6rclcpp11NodeOptionsE">DeviceManager::DeviceManager (C++ function)</a>
 </li>
       <li><a href="api/classDeviceManager.html#_CPPv4N13DeviceManager4initEv">DeviceManager::init (C++ function)</a>
+</li>
+      <li><a href="api/classDeviceManager.html#_CPPv4N13DeviceManager13on_list_nodesEKNSt10shared_ptrI16rmw_request_id_tEEKNSt10shared_ptrIN9ListNodes7RequestEEENSt10shared_ptrIN9ListNodes8ResponseEEE">DeviceManager::on_list_nodes (C++ function)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/classDeviceManager.html#_CPPv4N13DeviceManager12on_load_nodeEKNSt10shared_ptrI16rmw_request_id_tEEKNSt10shared_ptrIN8LoadNode7RequestEEENSt10shared_ptrIN8LoadNode8ResponseEEE">DeviceManager::on_load_node (C++ function)</a>
+</li>
+      <li><a href="api/classDeviceManager.html#_CPPv4N13DeviceManager14on_unload_nodeEKNSt10shared_ptrI16rmw_request_id_tEEKNSt10shared_ptrIN10UnloadNode7RequestEEENSt10shared_ptrIN10UnloadNode8ResponseEEE">DeviceManager::on_unload_node (C++ function)</a>
+</li>
+      <li><a href="api/classDeviceManager.html#_CPPv4N13DeviceManager11OnListNodesEKNSt10shared_ptrI16rmw_request_id_tEEKNSt10shared_ptrIN9ListNodes7RequestEEENSt10shared_ptrIN9ListNodes8ResponseEEE">DeviceManager::OnListNodes (C++ function)</a>
+</li>
+      <li><a href="api/classDeviceManager.html#_CPPv4N13DeviceManager10OnLoadNodeEKNSt10shared_ptrI16rmw_request_id_tEEKNSt10shared_ptrIN8LoadNode7RequestEEENSt10shared_ptrIN8LoadNode8ResponseEEE">DeviceManager::OnLoadNode (C++ function)</a>
+</li>
+      <li><a href="api/classDeviceManager.html#_CPPv4N13DeviceManager12OnUnloadNodeEKNSt10shared_ptrI16rmw_request_id_tEEKNSt10shared_ptrIN10UnloadNode7RequestEEENSt10shared_ptrIN10UnloadNode8ResponseEEE">DeviceManager::OnUnloadNode (C++ function)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -483,9 +496,11 @@
 </li>
       <li><a href="api/classros2__canopen_1_1BaseDriver.html#_CPPv4N12ros2_canopen10BaseDriver10BaseDriverERKN6rclcpp11NodeOptionsE">ros2_canopen::BaseDriver::BaseDriver (C++ function)</a>
 </li>
+      <li><a href="api/classros2__canopen_1_1BaseDriver.html#_CPPv4N12ros2_canopen10BaseDriver7config_E">ros2_canopen::BaseDriver::config_ (C++ member)</a>
+</li>
       <li><a href="api/classros2__canopen_1_1BaseDriver.html#_CPPv4N12ros2_canopen10BaseDriver6driverE">ros2_canopen::BaseDriver::driver (C++ member)</a>
 </li>
-      <li><a href="api/classros2__canopen_1_1BaseDriver.html#_CPPv4N12ros2_canopen10BaseDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t">ros2_canopen::BaseDriver::init (C++ function)</a>
+      <li><a href="api/classros2__canopen_1_1BaseDriver.html#_CPPv4N12ros2_canopen10BaseDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrI20ConfigurationManagerEE">ros2_canopen::BaseDriver::init (C++ function)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1BaseDriver.html#_CPPv4N12ros2_canopen10BaseDriver6on_nmtEN7canopen8NmtStateE">ros2_canopen::BaseDriver::on_nmt (C++ function)</a>, <a href="new-driver.html#_CPPv4N12ros2_canopen10BaseDriver6on_nmtEN7canopen8NmtStateE">[1]</a>
 </li>
@@ -513,11 +528,21 @@
 </li>
       <li><a href="api/enum_exchange_8hpp_1a0208fe4bb85ca027a977ca0f55a86b4e.html#_CPPv4N12ros2_canopen11CODataTypes12CODataUnkownE">ros2_canopen::CODataTypes::CODataUnkown (C++ enumerator)</a>
 </li>
+      <li><a href="api/classros2__canopen_1_1ConfigurationManager.html#_CPPv4N12ros2_canopen20ConfigurationManagerE">ros2_canopen::ConfigurationManager (C++ class)</a>
+</li>
+      <li><a href="api/classros2__canopen_1_1ConfigurationManager.html#_CPPv4N12ros2_canopen20ConfigurationManager20ConfigurationManagerERNSt6stringE">ros2_canopen::ConfigurationManager::ConfigurationManager (C++ function)</a>
+</li>
+      <li><a href="api/classros2__canopen_1_1ConfigurationManager.html#_CPPv4N12ros2_canopen20ConfigurationManager15get_all_devicesERNSt6vectorINSt6stringEEE">ros2_canopen::ConfigurationManager::get_all_devices (C++ function)</a>
+</li>
+      <li><a href="api/classros2__canopen_1_1ConfigurationManager.html#_CPPv4I0EN12ros2_canopen20ConfigurationManager9get_entryENSt8optionalI1TEENSt6stringENSt6stringE">ros2_canopen::ConfigurationManager::get_entry (C++ function)</a>
+</li>
+      <li><a href="api/classros2__canopen_1_1ConfigurationManager.html#_CPPv4N12ros2_canopen20ConfigurationManager11init_configEv">ros2_canopen::ConfigurationManager::init_config (C++ function)</a>
+</li>
       <li><a href="api/classros2__canopen_1_1DriverInterface.html#_CPPv4N12ros2_canopen15DriverInterfaceE">ros2_canopen::DriverInterface (C++ class)</a>, <a href="new-driver.html#_CPPv4N12ros2_canopen15DriverInterfaceE">[1]</a>
 </li>
       <li><a href="api/classros2__canopen_1_1DriverInterface.html#_CPPv4N12ros2_canopen15DriverInterface15DriverInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE">ros2_canopen::DriverInterface::DriverInterface (C++ function)</a>, <a href="new-driver.html#_CPPv4N12ros2_canopen15DriverInterface15DriverInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE">[1]</a>
 </li>
-      <li><a href="api/classros2__canopen_1_1DriverInterface.html#_CPPv4N12ros2_canopen15DriverInterface4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t">ros2_canopen::DriverInterface::init (C++ function)</a>, <a href="new-driver.html#_CPPv4N12ros2_canopen15DriverInterface4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t">[1]</a>
+      <li><a href="api/classros2__canopen_1_1DriverInterface.html#_CPPv4N12ros2_canopen15DriverInterface4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE">ros2_canopen::DriverInterface::init (C++ function)</a>, <a href="new-driver.html#_CPPv4N12ros2_canopen15DriverInterface4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE">[1]</a>
 </li>
       <li><a href="api/classros2__canopen_1_1DriverInterface.html#_CPPv4N12ros2_canopen15DriverInterface6removeERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t">ros2_canopen::DriverInterface::remove (C++ function)</a>, <a href="new-driver.html#_CPPv4N12ros2_canopen15DriverInterface6removeERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t">[1]</a>
 </li>
@@ -567,22 +592,26 @@
 </li>
       <li><a href="api/classros2__canopen_1_1MasterInterface.html#_CPPv4N12ros2_canopen15MasterInterface19can_interface_name_E">ros2_canopen::MasterInterface::can_interface_name_ (C++ member)</a>
 </li>
+      <li><a href="api/classros2__canopen_1_1MasterInterface.html#_CPPv4N12ros2_canopen15MasterInterface7config_E">ros2_canopen::MasterInterface::config_ (C++ member)</a>
+</li>
       <li><a href="api/classros2__canopen_1_1MasterInterface.html#_CPPv4N12ros2_canopen15MasterInterface8dcf_bin_E">ros2_canopen::MasterInterface::dcf_bin_ (C++ member)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MasterInterface.html#_CPPv4N12ros2_canopen15MasterInterface8dcf_txt_E">ros2_canopen::MasterInterface::dcf_txt_ (C++ member)</a>
 </li>
-      <li><a href="api/classros2__canopen_1_1MasterInterface.html#_CPPv4N12ros2_canopen15MasterInterface15MasterInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsENSt6stringENSt6stringENSt6stringE7uint8_t">ros2_canopen::MasterInterface::MasterInterface (C++ function)</a>, <a href="new-master.html#_CPPv4N12ros2_canopen15MasterInterface15MasterInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsENSt6stringENSt6stringENSt6stringE7uint8_t">[1]</a>
+      <li><a href="api/classros2__canopen_1_1MasterInterface.html#_CPPv4N12ros2_canopen15MasterInterface4initENSt6stringENSt6stringENSt6stringE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE">ros2_canopen::MasterInterface::init (C++ function)</a>
+</li>
+      <li><a href="api/classros2__canopen_1_1MasterInterface.html#_CPPv4N12ros2_canopen15MasterInterface15MasterInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE">ros2_canopen::MasterInterface::MasterInterface (C++ function)</a>, <a href="new-master.html#_CPPv4N12ros2_canopen15MasterInterface15MasterInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE">[1]</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MasterInterface.html#_CPPv4N12ros2_canopen15MasterInterface8node_id_E">ros2_canopen::MasterInterface::node_id_ (C++ member)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/classros2__canopen_1_1MasterInterface.html#_CPPv4N12ros2_canopen15MasterInterface13remove_driverENSt10shared_ptrIN12ros2_canopen15DriverInterfaceEEE7uint8_t">ros2_canopen::MasterInterface::remove_driver (C++ function)</a>, <a href="new-master.html#_CPPv4N12ros2_canopen15MasterInterface13remove_driverENSt10shared_ptrIN12ros2_canopen15DriverInterfaceEEE7uint8_t">[1]</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNodeE">ros2_canopen::MasterNode (C++ class)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode10add_driverENSt10shared_ptrIN12ros2_canopen15DriverInterfaceEEE7uint8_t">ros2_canopen::MasterNode::add_driver (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode5chan_E">ros2_canopen::MasterNode::chan_ (C++ member)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode5ctrl_E">ros2_canopen::MasterNode::ctrl_ (C++ member)</a>
@@ -591,13 +620,15 @@
 </li>
       <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode5exec_E">ros2_canopen::MasterNode::exec_ (C++ member)</a>
 </li>
+      <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode4initENSt6stringENSt6stringENSt6stringE7uint8_tNSt10shared_ptrI20ConfigurationManagerEE">ros2_canopen::MasterNode::init (C++ function)</a>
+</li>
       <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode9io_guard_E">ros2_canopen::MasterNode::io_guard_ (C++ member)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode5loop_E">ros2_canopen::MasterNode::loop_ (C++ member)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode7master_E">ros2_canopen::MasterNode::master_ (C++ member)</a>
 </li>
-      <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode10MasterNodeERKNSt6stringERKN6rclcpp11NodeOptionsENSt6stringENSt6stringENSt6stringE7uint8_t">ros2_canopen::MasterNode::MasterNode (C++ function)</a>
+      <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode10MasterNodeERKN6rclcpp11NodeOptionsE">ros2_canopen::MasterNode::MasterNode (C++ function)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MasterNode.html#_CPPv4N12ros2_canopen10MasterNode11on_sdo_readEKNSt10shared_ptrIN18canopen_interfaces3srv8COReadID7RequestEEENSt10shared_ptrIN18canopen_interfaces3srv8COReadID8ResponseEEE">ros2_canopen::MasterNode::on_sdo_read (C++ function)</a>
 </li>
@@ -621,9 +652,13 @@
 </li>
       <li><a href="api/classros2__canopen_1_1MCDeviceDriver.html#_CPPv4N12ros2_canopen14MCDeviceDriver17create_remote_objE8uint16_t7uint8_t11CODataTypes">ros2_canopen::MCDeviceDriver::create_remote_obj (C++ function)</a>
 </li>
+      <li><a href="api/classros2__canopen_1_1MCDeviceDriver.html#_CPPv4N12ros2_canopen14MCDeviceDriver12get_positionEv">ros2_canopen::MCDeviceDriver::get_position (C++ function)</a>
+</li>
       <li><a href="api/classros2__canopen_1_1MCDeviceDriver.html#_CPPv4I0EN12ros2_canopen14MCDeviceDriver14get_remote_objE1TNSt10shared_ptrI12RemoteObjectEE">ros2_canopen::MCDeviceDriver::get_remote_obj (C++ function)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MCDeviceDriver.html#_CPPv4I0EN12ros2_canopen14MCDeviceDriver21get_remote_obj_cachedE1TNSt10shared_ptrI12RemoteObjectEE">ros2_canopen::MCDeviceDriver::get_remote_obj_cached (C++ function)</a>
+</li>
+      <li><a href="api/classros2__canopen_1_1MCDeviceDriver.html#_CPPv4N12ros2_canopen14MCDeviceDriver9get_speedEv">ros2_canopen::MCDeviceDriver::get_speed (C++ function)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MCDeviceDriver.html#_CPPv4N12ros2_canopen14MCDeviceDriver14MCDeviceDriverEP9ev_exec_tRN7canopen11AsyncMasterE7uint8_t">ros2_canopen::MCDeviceDriver::MCDeviceDriver (C++ function)</a>
 </li>
@@ -637,7 +672,7 @@
 </li>
       <li><a href="api/classros2__canopen_1_1MotionControllerDriver.html#_CPPv4N12ros2_canopen22MotionControllerDriverE">ros2_canopen::MotionControllerDriver (C++ class)</a>
 </li>
-      <li><a href="api/classros2__canopen_1_1MotionControllerDriver.html#_CPPv4N12ros2_canopen22MotionControllerDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t">ros2_canopen::MotionControllerDriver::init (C++ function)</a>
+      <li><a href="api/classros2__canopen_1_1MotionControllerDriver.html#_CPPv4N12ros2_canopen22MotionControllerDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE">ros2_canopen::MotionControllerDriver::init (C++ function)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1MotionControllerDriver.html#_CPPv4N12ros2_canopen22MotionControllerDriver22MotionControllerDriverERKN6rclcpp11NodeOptionsE">ros2_canopen::MotionControllerDriver::MotionControllerDriver (C++ function)</a>
 </li>
@@ -647,7 +682,7 @@
 </li>
       <li><a href="api/classros2__canopen_1_1ProxyDriver.html#_CPPv4N12ros2_canopen11ProxyDriverE">ros2_canopen::ProxyDriver (C++ class)</a>, <a href="new-driver.html#_CPPv4N12ros2_canopen11ProxyDriverE">[1]</a>
 </li>
-      <li><a href="api/classros2__canopen_1_1ProxyDriver.html#_CPPv4N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_t">ros2_canopen::ProxyDriver::init (C++ function)</a>
+      <li><a href="api/classros2__canopen_1_1ProxyDriver.html#_CPPv4N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE">ros2_canopen::ProxyDriver::init (C++ function)</a>
 </li>
       <li><a href="api/classros2__canopen_1_1ProxyDriver.html#_CPPv4N12ros2_canopen11ProxyDriver6on_nmtEN7canopen8NmtStateE">ros2_canopen::ProxyDriver::on_nmt (C++ function)</a>, <a href="new-driver.html#_CPPv4N12ros2_canopen11ProxyDriver6on_nmtEN7canopen8NmtStateE">[1]</a>
 </li>

@@ -31,6 +31,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
@@ -163,10 +164,10 @@
   <span class="kt">void</span> <span class="n">init</span><span class="p">(</span>
     <span class="n">ev</span><span class="o">::</span><span class="n">Executor</span> <span class="o">&amp;</span> <span class="n">exec</span><span class="p">,</span>
     <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span> <span class="n">master</span><span class="p">,</span>
-    <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span>
+    <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">,</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span>
   <span class="p">{</span>
-    <span class="n">RCLCPP_INFO</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;Intitialising ProxyDriver&quot;</span><span class="p">);</span>
-    <span class="n">BaseDriver</span><span class="o">::</span><span class="n">init</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span> <span class="n">master</span><span class="p">,</span> <span class="n">node_id</span><span class="p">);</span>
+    <span class="n">BaseDriver</span><span class="o">::</span><span class="n">init</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span> <span class="n">master</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">config</span><span class="p">);</span>
     <span class="n">nmt_state_publisher</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">create_publisher</span><span class="o">&lt;</span><span class="n">std_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">String</span><span class="o">&gt;</span><span class="p">(</span>
       <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span>
         <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_name</span><span class="p">()).</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;/nmt_state&quot;</span><span class="p">).</span><span class="n">c_str</span><span class="p">(),</span> <span class="mi">10</span><span class="p">);</span>

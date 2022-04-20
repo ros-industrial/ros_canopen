@@ -31,6 +31,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
@@ -128,6 +129,8 @@
     <span class="k">private</span><span class="o">:</span>
         <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;&gt;</span> <span class="n">objs</span><span class="p">;</span>
         <span class="kt">bool</span> <span class="n">sync</span><span class="p">;</span>
+        <span class="kt">double</span> <span class="n">speed</span><span class="p">;</span>
+        <span class="kt">double</span> <span class="n">position</span><span class="p">;</span>
 
     <span class="k">public</span><span class="o">:</span>
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">create_remote_obj</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">index</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">subindex</span><span class="p">,</span> <span class="n">CODataTypes</span> <span class="n">type</span><span class="p">)</span>
@@ -153,6 +156,16 @@
                         <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
                     <span class="k">break</span><span class="p">;</span>
                 <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="mh">0x606C</span> <span class="o">&amp;&amp;</span> <span class="n">subidx</span> <span class="o">==</span> <span class="mh">0x0</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">speed</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">();</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="mh">0x6064</span> <span class="o">&amp;&amp;</span> <span class="n">subidx</span> <span class="o">==</span> <span class="mh">0x0</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">();</span>
             <span class="p">}</span>
         <span class="p">}</span>
 
@@ -281,6 +294,16 @@
                     <span class="o">&lt;&lt;</span> <span class="s">&quot;TPDO: &quot;</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span> <span class="o">?</span> <span class="s">&quot;yes&quot;</span> <span class="o">:</span> <span class="s">&quot;no&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
                     <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
             <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="kt">double</span> <span class="n">get_speed</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">speed</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kt">double</span> <span class="n">get_position</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">position</span><span class="p">;</span>
         <span class="p">}</span>
 
         <span class="n">MCDeviceDriver</span><span class="p">(</span><span class="n">ev_exec_t</span> <span class="o">*</span><span class="n">exec</span><span class="p">,</span> <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span><span class="n">master</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">id</span><span class="p">)</span>

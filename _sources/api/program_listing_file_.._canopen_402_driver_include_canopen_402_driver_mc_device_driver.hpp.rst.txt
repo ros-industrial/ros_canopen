@@ -40,6 +40,8 @@ Program Listing for File mc_device_driver.hpp
        private:
            std::vector<std::shared_ptr<RemoteObject>> objs;
            bool sync;
+           double speed;
+           double position;
    
        public:
            std::shared_ptr<RemoteObject> create_remote_obj(uint16_t index, uint8_t subindex, CODataTypes type)
@@ -65,6 +67,16 @@ Program Listing for File mc_device_driver.hpp
                            obj->data = rpdo_mapped[idx][subidx].Read<uint32_t>();
                        break;
                    }
+               }
+   
+               if(idx == 0x606C && subidx == 0x0)
+               {
+                   speed = rpdo_mapped[idx][subidx].Read<int32_t>();
+               }
+   
+               if(idx == 0x6064 && subidx == 0x0)
+               {
+                   position = rpdo_mapped[idx][subidx].Read<int32_t>();
                }
            }
    
@@ -193,6 +205,16 @@ Program Listing for File mc_device_driver.hpp
                        << "TPDO: " << (obj->tpdo_mapped ? "yes" : "no") << " "
                        << std::endl;
                }
+           }
+   
+           double get_speed()
+           {
+               return speed;
+           }
+   
+           double get_position()
+           {
+               return position;
            }
    
            MCDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)

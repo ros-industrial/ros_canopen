@@ -52,6 +52,7 @@ Program Listing for File canopen_base_driver.hpp
    
      protected:
        std::shared_ptr<ros2_canopen::LelyBridge> driver;
+       std::shared_ptr<ros2_canopen::ConfigurationManager> config_;
    
        virtual void on_nmt(canopen::NmtState nmt_state)
        {
@@ -76,7 +77,8 @@ Program Listing for File canopen_base_driver.hpp
        void init(
            ev::Executor &exec,
            canopen::AsyncMaster &master,
-           uint8_t node_id) noexcept override;
+           uint8_t node_id,
+           std::shared_ptr<ConfigurationManager> config) noexcept override;
        void remove(
          ev::Executor &exec,
          canopen::AsyncMaster &master,

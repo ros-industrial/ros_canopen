@@ -31,6 +31,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
@@ -118,6 +119,7 @@
 <span class="cp">#include</span> <span class="cpf">&lt;rclcpp/executors.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;rclcpp_components/component_manager.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_core/master_node.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_core/configuration_manager.hpp&quot;</span><span class="cp"></span>
 
 <span class="cp">#include</span> <span class="cpf">&quot;device.hpp&quot;</span><span class="cp"></span>
 
@@ -137,22 +139,18 @@
         <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;master_config&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
         <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;bus_config&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
         <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;master_bin&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
-        <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;enable_lazy_loading&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kt">bool</span> <span class="n">init</span><span class="p">();</span>
 
-    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
     <span class="k">virtual</span> <span class="kt">void</span>
     <span class="nf">on_load_node</span><span class="p">(</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
 
-    <span class="p">[[</span><span class="n">deprecated</span><span class="p">(</span><span class="s">&quot;Use on_load_node() instead&quot;</span><span class="p">)]]</span>
-    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
     <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="n">OnLoadNode</span><span class="p">(</span>
+    <span class="nf">OnLoadNode</span><span class="p">(</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
@@ -160,17 +158,14 @@
         <span class="n">on_load_node</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
     <span class="p">}</span>
 
-    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
     <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="n">on_unload_node</span><span class="p">(</span>
+    <span class="nf">on_unload_node</span><span class="p">(</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
 
-    <span class="p">[[</span><span class="n">deprecated</span><span class="p">(</span><span class="s">&quot;Use on_unload_node() instead&quot;</span><span class="p">)]]</span>
-    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
     <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="n">OnUnloadNode</span><span class="p">(</span>
+    <span class="nf">OnUnloadNode</span><span class="p">(</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
@@ -178,17 +173,14 @@
         <span class="n">on_unload_node</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
     <span class="p">}</span>
 
-    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
     <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="n">on_list_nodes</span><span class="p">(</span>
+    <span class="nf">on_list_nodes</span><span class="p">(</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
 
-    <span class="p">[[</span><span class="n">deprecated</span><span class="p">(</span><span class="s">&quot;Use on_list_nodes() instead&quot;</span><span class="p">)]]</span>
-    <span class="n">RCLCPP_COMPONENTS_PUBLIC</span>
     <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="n">OnListNodes</span><span class="p">(</span>
+    <span class="nf">OnListNodes</span><span class="p">(</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
@@ -198,22 +190,31 @@
 
 
 <span class="k">private</span><span class="o">:</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;&gt;</span> <span class="n">drivers_</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span> <span class="n">registered_drivers_</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span> <span class="n">active_drivers_</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">MasterNode</span><span class="o">&gt;</span> <span class="n">can_master_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span> <span class="n">registered_drivers_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span> <span class="n">active_drivers_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">MasterInterface</span><span class="o">&gt;</span> <span class="n">can_master_</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">exec_</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">executor_</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">rclcpp_components</span><span class="o">::</span><span class="n">NodeInstanceWrapper</span><span class="o">&gt;</span> <span class="n">node_wrappers_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="p">,</span> <span class="n">rclcpp_components</span><span class="o">::</span><span class="n">NodeInstanceWrapper</span><span class="o">&gt;</span> <span class="n">node_wrappers_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_txt_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">bus_config_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_bin_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">can_interface_name_</span><span class="p">;</span>
 
     <span class="kt">void</span> <span class="nf">set_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">executor</span><span class="p">);</span>
-    <span class="kt">void</span> <span class="nf">add_node_to_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">plugin_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">);</span>
-    <span class="kt">void</span> <span class="nf">remove_node_from_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">plugin_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">add_node_to_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">driver_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">remove_node_from_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">driver_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">);</span>
 
-    <span class="kt">bool</span> <span class="nf">load_component</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">pkg_name</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">node_name</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">add_driver_to_master</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">driver_name</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">);</span>
+
+    <span class="kt">void</span> <span class="nf">remove_driver_from_master</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">);</span>
+
+    <span class="kt">bool</span> <span class="nf">load_component</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">package_name</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">driver_name</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">node_name</span><span class="p">);</span>
     <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">list_components</span><span class="p">();</span>
 
-    <span class="kt">bool</span> <span class="nf">init_devices_from_config</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">dcf_txt</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">bus_config</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">dcf_bin</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">can_interface_name</span><span class="p">);</span>
+    <span class="kt">bool</span> <span class="nf">init_devices_from_config</span><span class="p">();</span>
+    <span class="kt">bool</span> <span class="nf">add_master</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">);</span>
 <span class="p">};</span>
 </pre></div>
 </div>

@@ -31,6 +31,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
@@ -103,6 +104,7 @@
 
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_402_driver/visibility_control.h&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;std_srvs/srv/trigger.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;std_msgs/msg/float64.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_interfaces/srv/co_target_double.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_proxy_driver/canopen_proxy_driver.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_402_driver/motor.hpp&quot;</span><span class="cp"></span>
@@ -127,7 +129,10 @@
         <span class="n">rclcpp</span><span class="o">::</span><span class="n">Service</span><span class="o">&lt;</span><span class="n">std_srvs</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">Trigger</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">handle_set_mode_cyclic_velocity_service</span><span class="p">;</span>
         <span class="n">rclcpp</span><span class="o">::</span><span class="n">Service</span><span class="o">&lt;</span><span class="n">std_srvs</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">Trigger</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">handle_set_mode_cyclic_position_service</span><span class="p">;</span>
         <span class="n">rclcpp</span><span class="o">::</span><span class="n">Service</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COTargetDouble</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">handle_set_target_service</span><span class="p">;</span>
+        <span class="n">rclcpp</span><span class="o">::</span><span class="n">Publisher</span><span class="o">&lt;</span><span class="n">std_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Float64</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">publish_actual_position</span><span class="p">;</span>
+        <span class="n">rclcpp</span><span class="o">::</span><span class="n">Publisher</span><span class="o">&lt;</span><span class="n">std_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Float64</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">publish_actual_speed</span><span class="p">;</span>
         <span class="n">rclcpp</span><span class="o">::</span><span class="n">CallbackGroup</span><span class="o">::</span><span class="n">SharedPtr</span> <span class="n">timer_group</span><span class="p">;</span>
+        <span class="kt">uint32_t</span> <span class="n">period_ms_</span><span class="p">;</span>
         <span class="kt">bool</span> <span class="n">intialised</span><span class="p">;</span>
         <span class="kt">void</span> <span class="nf">register_services</span><span class="p">();</span>
 
@@ -142,23 +147,25 @@
         <span class="p">{</span>
             <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">intialised</span><span class="p">)</span>
             <span class="p">{</span>
-                <span class="n">RCLCPP_INFO</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;Intitialise&quot;</span><span class="p">);</span>
+                <span class="n">RCLCPP_INFO</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;Intitialising Device and Objects&quot;</span><span class="p">);</span>
                 <span class="n">timer_</span><span class="o">-&gt;</span><span class="n">cancel</span><span class="p">();</span>
                 <span class="n">intialised</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
                 <span class="n">motor_</span><span class="o">-&gt;</span><span class="n">registerDefaultModes</span><span class="p">();</span>
                 <span class="n">mc_driver_</span><span class="o">-&gt;</span><span class="n">validate_objs</span><span class="p">();</span>
                 <span class="n">timer_</span><span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">create_wall_timer</span><span class="p">(</span>
-                        <span class="mi">100</span><span class="n">ms</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">MotionControllerDriver</span><span class="o">::</span><span class="n">run</span><span class="p">,</span> <span class="k">this</span><span class="p">),</span> <span class="n">timer_group</span><span class="p">);</span>
+                        <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="n">period_ms_</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">MotionControllerDriver</span><span class="o">::</span><span class="n">run</span><span class="p">,</span> <span class="k">this</span><span class="p">),</span> <span class="n">timer_group</span><span class="p">);</span>
             <span class="p">}</span>
 
             <span class="n">motor_</span><span class="o">-&gt;</span><span class="n">handleRead</span><span class="p">();</span>
             <span class="n">motor_</span><span class="o">-&gt;</span><span class="n">handleWrite</span><span class="p">();</span>
-            <span class="n">motor_</span><span class="o">-&gt;</span><span class="n">handleDiag</span><span class="p">();</span>
+            <span class="c1">//motor_-&gt;handleDiag();</span>
+            <span class="n">publish</span><span class="p">();</span>
         <span class="p">}</span>
 
         <span class="kt">void</span> <span class="n">init</span><span class="p">(</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span> <span class="o">&amp;</span><span class="n">exec</span><span class="p">,</span>
                   <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span><span class="n">master</span><span class="p">,</span>
-                  <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span><span class="p">;</span>
+                  <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">,</span>
+                  <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span>  <span class="n">config</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span><span class="p">;</span>
 
     <span class="k">protected</span><span class="o">:</span>
         <span class="k">virtual</span> <span class="kt">void</span> <span class="n">on_rpdo</span><span class="p">(</span><span class="n">COData</span> <span class="n">data</span><span class="p">)</span> <span class="k">override</span>
@@ -205,6 +212,8 @@
         <span class="kt">void</span> <span class="nf">handle_set_target</span><span class="p">(</span>
             <span class="k">const</span> <span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COTargetDouble</span><span class="o">::</span><span class="n">Request</span><span class="o">::</span><span class="n">SharedPtr</span> <span class="n">request</span><span class="p">,</span>
             <span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">COTargetDouble</span><span class="o">::</span><span class="n">Response</span><span class="o">::</span><span class="n">SharedPtr</span> <span class="n">response</span><span class="p">);</span>
+
+        <span class="kt">void</span> <span class="nf">publish</span><span class="p">();</span>
     <span class="p">};</span>
 
 <span class="p">}</span>

@@ -33,6 +33,10 @@ Includes
 
 - ``lely/coapp/master.hpp``
 
+- ``lely/ev/loop.hpp``
+
+- ``lely/io2/posix/poll.hpp``
+
 - ``memory``
 
 - ``mutex``

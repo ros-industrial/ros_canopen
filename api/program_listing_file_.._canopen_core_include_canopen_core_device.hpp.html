@@ -31,6 +31,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
@@ -124,6 +125,7 @@
 <span class="cp">#include</span> <span class="cpf">&lt;lely/io2/sys/sigset.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;lely/io2/sys/timer.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;rclcpp/rclcpp.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_core/configuration_manager.hpp&quot;</span><span class="cp"></span>
 
 <span class="k">using</span> <span class="k">namespace</span> <span class="n">lely</span><span class="p">;</span>
 
@@ -139,7 +141,9 @@
 
         <span class="k">virtual</span> <span class="kt">void</span> <span class="n">init</span><span class="p">(</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span> <span class="o">&amp;</span><span class="n">exec</span><span class="p">,</span>
                           <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span><span class="n">master</span><span class="p">,</span>
-                          <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">noexcept</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+                          <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">,</span>
+                          <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config</span>
+                          <span class="p">)</span> <span class="k">noexcept</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
         <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span> <span class="o">&amp;</span><span class="n">exec</span><span class="p">,</span>
                             <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span><span class="n">master</span><span class="p">,</span>
@@ -153,21 +157,30 @@
         <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_bin_</span><span class="p">;</span>
         <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">can_interface_name_</span><span class="p">;</span>
         <span class="kt">uint8_t</span> <span class="n">node_id_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config_</span><span class="p">;</span>
 
     <span class="k">public</span><span class="o">:</span>
         <span class="n">MasterInterface</span><span class="p">(</span>
             <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">,</span>
-            <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span><span class="p">,</span>
+            <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span><span class="p">)</span> <span class="o">:</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span>
+        <span class="p">{</span>
+
+        <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="n">init</span><span class="p">(</span>
             <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_txt</span><span class="p">,</span>
             <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_bin</span><span class="p">,</span>
             <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">can_interface_name</span><span class="p">,</span>
-            <span class="kt">uint8_t</span> <span class="n">nodeid</span><span class="p">)</span> <span class="o">:</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span>
+            <span class="kt">uint8_t</span> <span class="n">nodeid</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config</span>
+        <span class="p">)</span>
         <span class="p">{</span>
             <span class="n">dcf_txt_</span> <span class="o">=</span> <span class="n">dcf_txt</span><span class="p">;</span>
             <span class="n">dcf_bin_</span> <span class="o">=</span> <span class="n">dcf_bin</span><span class="p">;</span>
             <span class="n">can_interface_name_</span> <span class="o">=</span> <span class="n">can_interface_name</span><span class="p">;</span>
             <span class="n">node_id_</span> <span class="o">=</span> <span class="n">nodeid</span><span class="p">;</span>
+            <span class="n">config_</span> <span class="o">=</span> <span class="n">config</span><span class="p">;</span>
         <span class="p">}</span>
+
         <span class="k">virtual</span> <span class="kt">void</span> <span class="n">add_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
         <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">remove_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>

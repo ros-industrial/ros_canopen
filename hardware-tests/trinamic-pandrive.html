@@ -32,6 +32,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -53,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../system-interface.html">System Interface Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Device Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
@@ -108,84 +109,70 @@
 <h1>Trinamic PANdrive PD42-1-1270<a class="headerlink" href="#trinamic-pandrive-pd42-1-1270" title="Permalink to this headline"></a></h1>
 <section id="test-setup">
 <h2>Test setup<a class="headerlink" href="#test-setup" title="Permalink to this headline"></a></h2>
-<table class="colwidths-given docutils align-left">
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Tests</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Equipment</p></th>
-<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>PC</p></td>
-<td><p>Lenovo ThinkPad T490</p></td>
+<tr class="row-even"><td><p>Test systen</p></td>
+<td><p>Lenovo ThinkPad</p></td>
 </tr>
 <tr class="row-odd"><td><p>Operating System</p></td>
-<td><p>Ubuntu 20.04</p></td>
+<td><p>Ubuntu 20.04 on VirtualBox</p></td>
 </tr>
 <tr class="row-even"><td><p>ROS2 Distro</p></td>
-<td><p>Galactic</p></td>
+<td><p>ROS2 Galactic</p></td>
 </tr>
 <tr class="row-odd"><td><p>CANopen Interface</p></td>
-<td><p>PeakCan</p></td>
+<td><p>PeakCAN</p></td>
 </tr>
-<tr class="row-even"><td><p>Motor</p></td>
-<td><p>Trinamic PD42-1-1270</p></td>
+<tr class="row-even"><td><p>CANopen Devices</p></td>
+<td><p>Single Trinamic PD42 Drive</p></td>
 </tr>
-<tr class="row-odd"><td><p>ros2_canopen version</p></td>
-<td><p>devel</p></td>
+<tr class="row-odd"><td><p>Stack Version</p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="tested-service-calls">
 <h2>Tested service calls<a class="headerlink" href="#tested-service-calls" title="Permalink to this headline"></a></h2>
-<table class="colwidths-given docutils align-left">
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Tests</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 20%" />
-<col style="width: 50%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Tested Service Call</p></th>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>Status</p></th>
 <th class="head"><p>Comment</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>~/nmt_reset_node</p></td>
+<tr class="row-even"><td><p>Launching device manager (no lazy load)</p></td>
 <td><p>OK</p></td>
-<td><p>None</p></td>
+<td><p>No problems, everything works fine.</p></td>
 </tr>
-<tr class="row-odd"><td><p>~/sdo_read</p></td>
+<tr class="row-odd"><td><p>Initialise devices</p></td>
 <td><p>OK</p></td>
-<td><p>None</p></td>
+<td><p>Trinamic PD42 is initialised and configuration from YAML is correctly loaded</p></td>
 </tr>
-<tr class="row-even"><td><p>~/sdo_write</p></td>
+<tr class="row-even"><td><p>Profiled Velocity</p></td>
 <td><p>OK</p></td>
-<td><p>None</p></td>
+<td><p>Works fine. Velocity can be set via target service call.</p></td>
 </tr>
-<tr class="row-odd"><td><p>~/init</p></td>
+<tr class="row-odd"><td><p>Profiled Position</p></td>
 <td><p>OK</p></td>
-<td><p>No comments</p></td>
-</tr>
-<tr class="row-even"><td><p>~/halt</p></td>
-<td><p>OK</p></td>
-<td><p>No comments</p></td>
-</tr>
-<tr class="row-odd"><td><p>~/position_mode</p></td>
-<td><p>OK</p></td>
-<td><p>No comments</p></td>
-</tr>
-<tr class="row-even"><td><p>~/velocity_mode</p></td>
-<td><p>OK</p></td>
-<td><p>No comments</p></td>
-</tr>
-<tr class="row-odd"><td><p>~/target</p></td>
-<td><p>OK</p></td>
-<td><p>Tested for profiled velocity and position mode.</p></td>
+<td><p>Works fine. Position can be set via target service call.</p></td>
 </tr>
 </tbody>
 </table>
