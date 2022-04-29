@@ -42,8 +42,6 @@ set (dependencies
   canopen_interfaces
 )
 
-message(STATUS "${yaml_cpp_vendor_INCLUDE_DIRS}")
-include_directories(${yaml_cpp_vendor_INCLUDE_DIRS})
 add_library(configuration_manager
   src/configuration_manager.cpp
 )
@@ -51,7 +49,6 @@ target_compile_features(configuration_manager  PUBLIC c_std_99 cxx_std_17)  # Re
 target_include_directories(configuration_manager PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
-  ${yaml_cpp_vendor_INCLUDE_DIRS}
   )
 ament_target_dependencies(configuration_manager 
   rclcpp
@@ -74,6 +71,7 @@ ament_target_dependencies(
   "rclcpp_components"
   "canopen_interfaces"
   "lely_core_libraries"
+  "yaml_cpp_vendor"
 )
 rclcpp_components_register_nodes(master_node  "ros2_canopen::MasterNode")
 set(node_plugins "${node_plugins}ros2_canopen::MasterNode;$<TARGET_FILE:master_node >\n")
