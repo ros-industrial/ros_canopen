@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ROS_DISTRO: [foxy, galactic]
+        ROS_DISTRO: [foxy, galactic, rolling]
         ROS_REPO: [testing]
     env:
       CCACHE_DIR: "${{ github.workspace }}/.ccache"
@@ -31,5 +31,6 @@ jobs:
             ccache-${{ matrix.ROS_DISTRO }}-${{ matrix.ROS_REPO }}-
       - uses: 'ros-industrial/industrial_ci@master'
         env:
+          BEFORE_INSTALL_TARGET_DEPENDENCIES: 'sudo apt-get update'
           ROS_DISTRO: ${{ matrix.ROS_DISTRO }}
           ROS_REPO: ${{ matrix.ROS_REPO }}
