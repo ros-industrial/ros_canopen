@@ -1,6 +1,9 @@
 # ROS2 CANopen
 
-[![Build Status](https://github.com/ros-industrial/ros2_canopen/workflows/Industrial%20CI/badge.svg?branch=master)](https://github.com/ros-industrial/ros2_canopen/actions)
+[![Build Status](https://github.com/ros-industrial/ros2_canopen/workflows/foxy/badge.svg?branch=master)](https://github.com/ros-industrial/ros2_canopen/actions)
+[![Build Status](https://github.com/ros-industrial/ros2_canopen/workflows/galactic/badge.svg?branch=master)](https://github.com/ros-industrial/ros2_canopen/actions)
+[![Build Status](https://github.com/ros-industrial/ros2_canopen/workflows/humble/badge.svg?branch=master)](https://github.com/ros-industrial/ros2_canopen/actions)
+[![Build Status](https://github.com/ros-industrial/ros2_canopen/workflows/rolling/badge.svg?branch=master)](https://github.com/ros-industrial/ros2_canopen/actions)
 [![Documentation Status](https://github.com/ros-industrial/ros2_canopen/workflows/Documentation/badge.svg?branch=master)](https://github.com/ros-industrial/ros2_canopen/actions)
 
 
