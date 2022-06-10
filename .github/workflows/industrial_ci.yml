@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ROS_DISTRO: [foxy, galactic, rolling]
+        ROS_DISTRO: [foxy, galactic, rolling, humble]
         ROS_REPO: [testing]
     env:
       CCACHE_DIR: "${{ github.workspace }}/.ccache"
