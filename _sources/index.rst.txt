@@ -28,6 +28,7 @@ This is the documentation of the ROS2 CANopen stack.
   :caption: Usage
   
   configuration-package
+  running-configuration-package
   
 
 .. toctree::
