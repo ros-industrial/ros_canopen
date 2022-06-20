@@ -40,6 +40,8 @@ but come from the lely core library. Below you find a list of possible configura
 
   configuration item; description
   node_id; The node-ID (default: 255)
+  driver; The fully qualified class name of the master to use.
+  package; The ros2 package name in which the master class can be found.
   baudrate; The baudrate in kbit/s (default: 1000)
   vendor_id;The vendor-ID (default: 0x00000000)
   product_code;The product code (default: 0x00000000)

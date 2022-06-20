@@ -27,15 +27,19 @@ Bus configuration creation
 
 2. **Writing your bus.yml file** 
     First create the configuration yml file in the conf folder.
+    
     .. code-block:: console
 
       $ touch bus.yml
 
     Open the file in the editor of your choice and create the master description.
-    .. code-block:: 
+    
+    .. code-block:: yaml
 
       master:
         node_id: [node id]
+        package: [ros2 package where to find the master driver] 
+        driver: [qualified name of the master driver]
     
     And add other configuration data as necessary. A documentation of configuration options
     available can be found in the :doc:`configuration` documentation.
@@ -44,7 +48,7 @@ Bus configuration creation
     describes the mandatory data per slave. Further configuration options can be found in the :doc:`configuration` documentation.
     The slave name is the node name that will be assigned to the driver.
 
-    .. code-block:: 
+    .. code-block:: yaml
 
       [unique slave name]:
         node_id: [node id]

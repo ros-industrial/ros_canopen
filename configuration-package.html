@@ -131,15 +131,15 @@ in your configuration package in the conf/ directory.</p>
 </dl>
 </li>
 <li><dl>
-<dt><strong>Writing your bus.yml file</strong></dt><dd><p>First create the configuration yml file in the conf folder.
-.. code-block:: console</p>
-<blockquote>
-<div><p>$ touch bus.yml</p>
-</div></blockquote>
-<p>Open the file in the editor of your choice and create the master description.
-.. code-block:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="nl">master</span><span class="p">:</span>
-  <span class="nl">node_id</span><span class="p">:</span> <span class="p">[</span><span class="n">node</span> <span class="n">id</span><span class="p">]</span>
+<dt><strong>Writing your bus.yml file</strong></dt><dd><p>First create the configuration yml file in the conf folder.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> touch bus.yml
+</pre></div>
+</div>
+<p>Open the file in the editor of your choice and create the master description.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">master</span><span class="p">:</span>
+  <span class="nt">node_id</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">node id</span><span class="p p-Indicator">]</span>
+  <span class="nt">package</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">ros2 package where to find the master driver</span><span class="p p-Indicator">]</span>
+  <span class="nt">driver</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">qualified name of the master driver</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>And add other configuration data as necessary. A documentation of configuration options
@@ -147,11 +147,11 @@ available can be found in the <a class="reference internal" href="configuration.
 <p>Once you have defined the configuration of your master, add your slaves. The following
 describes the mandatory data per slave. Further configuration options can be found in the <a class="reference internal" href="configuration.html"><span class="doc">Bus Configuration</span></a> documentation.
 The slave name is the node name that will be assigned to the driver.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">unique</span> <span class="n">slave</span> <span class="n">name</span><span class="p">]</span><span class="o">:</span>
-  <span class="nl">node_id</span><span class="p">:</span> <span class="p">[</span><span class="n">node</span> <span class="n">id</span><span class="p">]</span>
-  <span class="nl">package</span><span class="p">:</span> <span class="p">[</span><span class="n">ros2</span> <span class="n">package</span> <span class="n">where</span> <span class="n">to</span> <span class="n">find</span> <span class="n">the</span> <span class="n">driver</span><span class="p">]</span>
-  <span class="nl">driver</span><span class="p">:</span> <span class="p">[</span><span class="n">qualified</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">driver</span><span class="p">]</span>
-  <span class="nl">enable_lazy_load</span><span class="p">:</span> <span class="nb">false</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">unique slave name</span><span class="p p-Indicator">]:</span>
+  <span class="nt">node_id</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">node id</span><span class="p p-Indicator">]</span>
+  <span class="nt">package</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">ros2 package where to find the driver</span><span class="p p-Indicator">]</span>
+  <span class="nt">driver</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">qualified name of the driver</span><span class="p p-Indicator">]</span>
+  <span class="nt">enable_lazy_load</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
 </pre></div>
 </div>
 </dd>
