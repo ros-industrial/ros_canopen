@@ -55,6 +55,20 @@ Services
 
 Publishers
 ----------
+.. list-table:: 
+  :widths: 30 20 50
+  :header-rows: 1
+  :align: left
+
+  * - Publishers
+    - Type
+    - Description
+  * - ~/actual_position 
+    - Float64
+    - Actual position received from motion controller. Units are the units defined on the device.
+  * - ~/actual_speed
+    - Float64
+    - Actual speed received from motion controller. Units are the units defined on the device.
 
 
 Subscribers
@@ -71,3 +85,16 @@ Subscribers
     - COTargetDouble
     - Sets target value.
 
+Bus Configuration Parameters
+----------------------------
+
+.. list-table:: 
+  :widths: 30 20 50
+  :header-rows: 1
+
+  * - Parameter
+    - Type
+    - Description
+  * - period
+    - Milliseconds
+    - Refresh period for 402 state machine. Should be similar to sync period of master.
