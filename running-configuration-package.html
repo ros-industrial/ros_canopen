@@ -122,7 +122,15 @@
 </pre></div>
 </div>
 <p>Bitrate depends on your bus and devices capabilities.</p>
-<p><strong>Option 3</strong>: Adapt these steps to other socketcan devices</p>
+<p><strong>Option 3</strong>: candleLight USB-CAN Adapter</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo modprobe gs_usb
+<span class="gp">$</span> sudo ip link <span class="nb">set</span> can0 up <span class="nb">type</span> can bitrate <span class="m">500000</span>
+<span class="gp">$</span> sudo ip link <span class="nb">set</span> can0 txqueuelen <span class="m">1000</span>
+<span class="gp">$</span> sudo ip link <span class="nb">set</span> up can0
+</pre></div>
+</div>
+<p>Bitrate depends on your bus and devices capabilities.</p>
+<p><strong>Option 4</strong>: Adapt these steps to other socketcan devices</p>
 </section>
 <section id="launch-configuration">
 <h2>Launch configuration<a class="headerlink" href="#launch-configuration" title="Permalink to this headline"></a></h2>
