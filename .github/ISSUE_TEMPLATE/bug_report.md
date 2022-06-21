@@ -21,7 +21,7 @@ A clear and concise description of what you expected to happen.
 **Setup:**
  - Device: 
  - OS: 
- - Distro: [e.g. stock browser, safari]
+ - ROS-Distro: 
  - Branch/Commit:
 
 **Additional context**
