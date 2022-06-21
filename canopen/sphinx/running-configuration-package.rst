@@ -24,7 +24,18 @@ Setup CAN Controller
 
 Bitrate depends on your bus and devices capabilities.
 
-**Option 3**: Adapt these steps to other socketcan devices
+**Option 3**: candleLight USB-CAN Adapter
+
+.. code-block:: console
+
+  $ sudo modprobe gs_usb
+  $ sudo ip link set can0 up type can bitrate 500000
+  $ sudo ip link set can0 txqueuelen 1000
+  $ sudo ip link set up can0
+
+Bitrate depends on your bus and devices capabilities.
+
+**Option 4**: Adapt these steps to other socketcan devices
 
 Launch configuration
 --------------------
