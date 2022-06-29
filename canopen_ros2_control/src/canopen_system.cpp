@@ -29,6 +29,10 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
+namespace {
+    auto const kLogger = rclcpp::get_logger("CanopenSystem");
+}
+
 namespace canopen_ros2_control
 {
 hardware_interface::CallbackReturn CanopenSystem::on_init(
@@ -41,6 +45,10 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
   // TODO(anyone): read parameters and initialize the hardware
   hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
   hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+
+  RCLCPP_INFO(kLogger, "bus_config: '%s'", info_.hardware_parameters["bus_config"].c_str());
+  RCLCPP_INFO(kLogger, "master_config: '%s'", info_.hardware_parameters["master_config"].c_str());
+  RCLCPP_INFO(kLogger, "can_interface_name: '%s'", info_.hardware_parameters["can_interface_name"].c_str());
 
   return CallbackReturn::SUCCESS;
 }
@@ -89,6 +97,8 @@ hardware_interface::return_type CanopenSystem::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   // TODO(anyone): read robot states
+
+//  RCLCPP_INFO(kLogger, "read...");
 
   return hardware_interface::return_type::OK;
 }

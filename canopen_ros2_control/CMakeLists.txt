@@ -45,6 +45,10 @@ install(
   DESTINATION include
 )
 
+install(
+  DIRECTORY launch urdf config
+  DESTINATION share/${PROJECT_NAME}
+)
 
 ament_add_gmock(test_canopen_system test/test_canopen_system.cpp)
 target_include_directories(test_canopen_system PRIVATE include)
@@ -67,3 +71,5 @@ ament_export_dependencies(
   rclcpp
   rclcpp_lifecycle
 )
+
+ament_package()
