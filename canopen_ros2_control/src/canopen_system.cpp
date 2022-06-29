@@ -50,7 +50,25 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
   RCLCPP_INFO(kLogger, "master_config: '%s'", info_.hardware_parameters["master_config"].c_str());
   RCLCPP_INFO(kLogger, "can_interface_name: '%s'", info_.hardware_parameters["can_interface_name"].c_str());
 
-  return CallbackReturn::SUCCESS;
+  executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+  device_manager_ = std::make_shared<DeviceManager>(executor_);
+
+  std::thread spinThread([&]()
+                         {
+                             if(device_manager_->init())
+                             {
+                                 RCLCPP_INFO(device_manager_->get_logger(), "Initialisation successful.");
+                             }
+                             else
+                             {
+                                 RCLCPP_INFO(device_manager_->get_logger(), "Initialisation failed.");
+                             }
+                         });
+
+ executor_->add_node(device_manager_);
+
+
+ return CallbackReturn::SUCCESS;
 }
 
 std::vector<hardware_interface::StateInterface> CanopenSystem::export_state_interfaces()

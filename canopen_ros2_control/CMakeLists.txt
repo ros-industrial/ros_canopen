@@ -8,6 +8,8 @@ find_package(hardware_interface)
 find_package(pluginlib)
 find_package(ros2_control_test_assets)
 find_package(ament_cmake_gmock REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(canopen_core REQUIRED)
 
 
 add_library(
@@ -25,6 +27,7 @@ ament_target_dependencies(
   hardware_interface
   rclcpp
   rclcpp_lifecycle
+  canopen_core
 )
 # prevent pluginlib from using boost
 target_compile_definitions(canopen_ros2_control PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
