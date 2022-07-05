@@ -17,6 +17,8 @@
   <depend>pluginlib</depend>
   <depend>ros2_control_test_assets</depend>
   <depend>ament_cmake_gmock</depend>
+  <depend>canopen_core</depend>
+  <depend>rclcpp_components</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

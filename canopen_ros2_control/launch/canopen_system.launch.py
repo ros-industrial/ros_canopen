@@ -36,6 +36,10 @@ from launch.substitutions import Command, FindExecutable, LaunchConfiguration, P
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
+import launch
+import launch_ros
+import lifecycle_msgs.msg
+
 
 def launch_setup(context, *args, **kwargs):
 
@@ -121,10 +125,53 @@ def launch_setup(context, *args, **kwargs):
         parameters=[robot_description],
     )
 
+    # hardcoded slave
+    slave_config = PathJoinSubstitution(
+        [FindPackageShare(master_config_package), master_config_directory, "pdo.eds"]
+    )
+    slave_node = launch_ros.actions.LifecycleNode(
+        name="slave_node",
+        namespace="",
+        package="canopen_core",
+        output="screen",
+        executable="slave_node",
+        parameters=[{
+            "eds": slave_config,
+            "slave_id": 2,
+            "test": "pdo_counter"}
+        ],
+    )
+    slave_inactive_state_handler = launch.actions.RegisterEventHandler(
+        launch_ros.event_handlers.OnStateTransition(
+            target_lifecycle_node=slave_node, goal_state='inactive',
+            entities=[
+                launch.actions.LogInfo(
+                    msg="node 'slave_node_{}' reached the 'inactive' state, 'activating'.".format(2)),
+                launch.actions.EmitEvent(event=launch_ros.events.lifecycle.ChangeState(
+                    lifecycle_node_matcher=launch.events.matches_action(
+                        slave_node),
+                    transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
+                )),
+            ],
+        )
+    )
+    slave_configure = launch.actions.EmitEvent(
+        event=launch_ros.events.lifecycle.ChangeState(
+            lifecycle_node_matcher=launch.events.matches_action(
+                slave_node),
+            transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
+        )
+    )
+
+
     nodes_to_start = [
         control_node,
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
+        slave_node,
+        slave_inactive_state_handler,
+        slave_configure,
+
     ]
 
     return nodes_to_start

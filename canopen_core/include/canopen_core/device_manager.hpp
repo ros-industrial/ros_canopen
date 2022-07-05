@@ -42,6 +42,11 @@ public:
 
     bool init();
 
+    bool init(const std::string& can_interface_name,
+              const std::string& master_config,
+              const std::string& bus_config,
+              const std::string& master_bin="");
+
     virtual void
     on_load_node(
         const std::shared_ptr<rmw_request_id_t> request_header,

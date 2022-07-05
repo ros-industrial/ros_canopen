@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(canopen_ros2_control)
 
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
@@ -17,6 +21,8 @@ add_library(
   SHARED
   src/canopen_system.cpp
 )
+target_compile_features(canopen_ros2_control PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_options(canopen_ros2_control PUBLIC -fPIC -Wl,--no-undefined)
 target_include_directories(
   canopen_ros2_control
   PUBLIC
@@ -28,6 +34,7 @@ ament_target_dependencies(
   rclcpp
   rclcpp_lifecycle
   canopen_core
+  rclcpp_components
 )
 # prevent pluginlib from using boost
 target_compile_definitions(canopen_ros2_control PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
@@ -73,6 +80,7 @@ ament_export_dependencies(
   pluginlib
   rclcpp
   rclcpp_lifecycle
+  canopen_core
 )
 
 ament_package()

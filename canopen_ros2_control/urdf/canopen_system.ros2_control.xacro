@@ -6,7 +6,8 @@
       prefix
       bus_config
       master_config
-      can_interface_name">
+      can_interface_name
+      master_bin">
 
         <ros2_control name="${name}" type="system">
             <hardware>
@@ -14,6 +15,7 @@
               <param name="bus_config">${bus_config}</param>
               <param name="master_config">${master_config}</param>
               <param name="can_interface_name">${can_interface_name}</param>
+              <param name="master_bin">"${master_bin}"</param>
             </hardware>
             <joint name="${prefix}node_1">
                 <command_interface name="position">

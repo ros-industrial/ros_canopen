@@ -35,6 +35,26 @@ namespace {
 
 namespace canopen_ros2_control
 {
+
+CanopenSystem::~CanopenSystem() {
+
+    executor_->cancel();
+    printf("Joining...");
+    spin_thread_->join();
+    printf("Joined!");
+
+
+    device_manager_.reset();
+    executor_.reset();
+
+    init_thread_->join();
+    init_thread_.reset();
+
+
+    executor_.reset();
+    spin_thread_.reset();
+}
+
 hardware_interface::CallbackReturn CanopenSystem::on_init(
   const hardware_interface::HardwareInfo & info)
 {
@@ -49,26 +69,45 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
   RCLCPP_INFO(kLogger, "bus_config: '%s'", info_.hardware_parameters["bus_config"].c_str());
   RCLCPP_INFO(kLogger, "master_config: '%s'", info_.hardware_parameters["master_config"].c_str());
   RCLCPP_INFO(kLogger, "can_interface_name: '%s'", info_.hardware_parameters["can_interface_name"].c_str());
+  RCLCPP_INFO(kLogger, "master_bin: '%s'", info_.hardware_parameters["master_bin"].c_str());
 
   executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   device_manager_ = std::make_shared<DeviceManager>(executor_);
+  executor_->add_node(device_manager_);
 
-  std::thread spinThread([&]()
-                         {
-                             if(device_manager_->init())
-                             {
-                                 RCLCPP_INFO(device_manager_->get_logger(), "Initialisation successful.");
-                             }
-                             else
-                             {
-                                 RCLCPP_INFO(device_manager_->get_logger(), "Initialisation failed.");
-                             }
-                         });
-
- executor_->add_node(device_manager_);
+  // threads
+  init_thread_ = std::make_unique<std::thread>(&CanopenSystem::initDeviceManager, this);
+  spin_thread_ = std::make_unique<std::thread>(&CanopenSystem::spin, this);
 
 
- return CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
+}
+
+void CanopenSystem::spin() {
+
+    executor_->spin();
+    executor_->remove_node(device_manager_);
+
+    RCLCPP_INFO(kLogger, "Exiting spin thread...");
+}
+
+void CanopenSystem::initDeviceManager() {
+
+    std::string tmp_master_bin  = (info_.hardware_parameters["master_bin"] == "\"\"" ) ? "" : info_.hardware_parameters["master_bin"];
+
+
+    if(device_manager_->init(info_.hardware_parameters["can_interface_name"],
+                             info_.hardware_parameters["master_config"],
+                             info_.hardware_parameters["bus_config"],
+                             tmp_master_bin))
+    {
+        RCLCPP_INFO(device_manager_->get_logger(), "Initialisation successful.");
+    }
+    else
+    {
+        RCLCPP_INFO(device_manager_->get_logger(), "Initialisation failed.");
+    }
+
 }
 
 std::vector<hardware_interface::StateInterface> CanopenSystem::export_state_interfaces()
@@ -100,6 +139,7 @@ hardware_interface::CallbackReturn CanopenSystem::on_activate(
 {
   // TODO(anyone): prepare the robot to receive commands
 
+
   return CallbackReturn::SUCCESS;
 }
 
@@ -115,6 +155,7 @@ hardware_interface::return_type CanopenSystem::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   // TODO(anyone): read robot states
+  device_manager_->get_m
 
 //  RCLCPP_INFO(kLogger, "read...");
 
