@@ -1,5 +1,4 @@
-// Copyright (c) 2022, StoglRobotics
-// Copyright (c) 2022, Stogl Robotics Consulting UG (haftungsbeschränkt) (template)
+// Copyright (c) 2022, Stogl Robotics Consulting UG (haftungsbeschränkt)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,25 +28,26 @@
 #include <string>
 #include <vector>
 
+#include "canopen_core/device_container_node.hpp"
 #include "canopen_ros2_control/visibility_control.h"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
+#include "rclcpp/executors.hpp"
 #include "rclcpp/macros.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include <rclcpp/executors.hpp> // for MultiThreadedExecutor
-#include <canopen_core/device_manager.hpp> // for DeviceManager
 
 
 
 namespace canopen_ros2_control
 {
-    using namespace ros2_canopen;
 class CanopenSystem : public hardware_interface::SystemInterface
 {
 public:
+    TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+    ~CanopenSystem();
   TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
   hardware_interface::CallbackReturn on_init(
     const hardware_interface::HardwareInfo & info) override;
@@ -78,9 +78,15 @@ private:
   std::vector<double> hw_commands_;
   std::vector<double> hw_states_;
 
-  std::shared_ptr<DeviceManager> device_manager_;
+  std::shared_ptr<DeviceContainerNode> device_manager_;
   std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
+  std::shared_ptr<rclcpp_components::ComponentManager> component_manager_;
   std::shared_ptr<rclcpp::Node> node_;
+
+  std::unique_ptr<std::thread> spin_thread_;
+  std::unique_ptr<std::thread> init_thread_;
+  void spin();
+  void initDeviceManager();
 };
 
 }  // namespace canopen_ros2_control
