@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(canopen_ros2_control)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wall -Wextra -Wpedantic)
+    # add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 find_package(ament_cmake REQUIRED)
@@ -14,6 +14,8 @@ find_package(ros2_control_test_assets)
 find_package(ament_cmake_gmock REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(canopen_core REQUIRED)
+find_package(canopen_proxy_driver REQUIRED)
+find_package(std_srvs REQUIRED)
 
 
 add_library(
@@ -35,6 +37,8 @@ ament_target_dependencies(
   rclcpp_lifecycle
   canopen_core
   rclcpp_components
+  canopen_proxy_driver
+  std_srvs
 )
 # prevent pluginlib from using boost
 target_compile_definitions(canopen_ros2_control PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
@@ -81,6 +85,8 @@ ament_export_dependencies(
   rclcpp
   rclcpp_lifecycle
   canopen_core
+  canopen_proxy_driver
+  std_srvs
 )
 
 ament_package()

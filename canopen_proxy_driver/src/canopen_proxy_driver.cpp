@@ -53,6 +53,11 @@ void ProxyDriver::on_nmt(canopen::NmtState nmt_state)
     message.data.c_str());
 
   nmt_state_publisher->publish(message);
+
+  // callback
+  if(nmt_state_cb_){
+    nmt_state_cb_(nmt_state);
+  }
 }
 
 void ProxyDriver::on_tpdo(const canopen_interfaces::msg::COData::SharedPtr msg)
@@ -76,6 +81,12 @@ void ProxyDriver::on_rpdo(COData d)
   message.data = d.data_;
   message.type = static_cast<uint8_t>(d.type_);
   rpdo_publisher->publish(message);
+
+  // callback
+  if(rpdo_cb_) {
+    rpdo_cb_(d);
+  }
+
 }
 
 void ProxyDriver::on_nmt_state_reset(

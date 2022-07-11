@@ -29,6 +29,8 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
+#include "canopen_proxy_driver/canopen_proxy_driver.hpp"
+
 namespace {
     auto const kLogger = rclcpp::get_logger("CanopenSystem");
 }
@@ -101,7 +103,46 @@ void CanopenSystem::initDeviceManager() {
                              info_.hardware_parameters["bus_config"],
                              tmp_master_bin))
     {
+        auto node_map = device_manager_->get_node_instance_wrapper_map();
+        RCLCPP_INFO(kLogger, "Number of nodes: '%zu'", node_map.size());
+
+        auto reg_dr = device_manager_->get_registered_drivers();
+        RCLCPP_INFO(kLogger, "Number of registered drivers: '%zu'", reg_dr.size());
+        for(auto it = reg_dr.begin(); it != reg_dr.end(); it++){
+            auto proxy_driver =  std::static_pointer_cast<ros2_canopen::ProxyDriver>(device_manager_->get_node(it->second.first));
+
+            uint node_id = it->second.first;
+
+            auto nmt_state_cb = [&](canopen::NmtState nmt_state){
+                RCLCPP_INFO(
+                        kLogger,
+                        "Slave %u: Switched NMT state to %u",
+                        node_id,
+                        nmt_state);
+            };
+            // register callback
+            proxy_driver->register_nmt_state_cb(nmt_state_cb);
+
+            auto rpdo_cb = [&](ros2_canopen::COData data){
+                RCLCPP_INFO(kLogger, "data: '%u', index: '%u', subindex: '%u', type: '%u',", data.data_, data.index_, data.subindex_, data.type_);
+            };
+            // register callback
+            proxy_driver->register_rpdo_cb(rpdo_cb);
+
+            RCLCPP_INFO(kLogger, "\nRegistered driver:\n    name: '%s'\n    node_id: '%u'\n    driver: '%s'", it->first.c_str(), it->second.first, it->second.second.c_str());
+
+
+        }
+
+        auto act_dr = device_manager_->get_active_drivers();
+        RCLCPP_INFO(kLogger, "Number of active drivers: '%zu'", act_dr.size());
+        for(auto it = act_dr.begin(); it != act_dr.end(); it++){
+            RCLCPP_INFO(kLogger, "\nActive driver:\n    name: '%s'\n    node_id: '%u'\n    driver: '%s'", it->first.c_str(), it->second.first, it->second.second.c_str());
+        }
+
+
         RCLCPP_INFO(device_manager_->get_logger(), "Initialisation successful.");
+
     }
     else
     {
@@ -155,7 +196,7 @@ hardware_interface::return_type CanopenSystem::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   // TODO(anyone): read robot states
-  device_manager_->get_m
+//   auto proxy_driver =  std::static_pointer_cast<ros2_canopen::ProxyDriver>(device_manager_->read_ros2_ctrl());
 
 //  RCLCPP_INFO(kLogger, "read...");
 
