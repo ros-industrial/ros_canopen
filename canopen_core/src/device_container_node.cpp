@@ -138,6 +138,7 @@ bool DeviceContainerNode::init_devices_from_config()
     RCLCPP_INFO(this->get_logger(), "Found %u devices", count);
     bool master_found = false;
 
+
     for (auto it = devices.begin(); it != devices.end(); it++)
     {
         if (it->find("master") != std::string::npos && !master_found)

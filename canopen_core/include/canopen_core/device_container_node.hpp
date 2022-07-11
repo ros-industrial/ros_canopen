@@ -43,12 +43,29 @@ public:
         this->declare_parameter<std::string>("master_bin", "");
     }
 
+    const std::shared_ptr<void> get_node(size_t node_id){
+        return node_wrappers_[node_id].get_node_instance();
+
+    }
+
     bool init();
 
     bool init(const std::string& can_interface_name,
               const std::string& master_config,
               const std::string& bus_config,
               const std::string& master_bin="");
+
+    std::map<uint8_t, rclcpp_components::NodeInstanceWrapper> get_node_instance_wrapper_map(){
+        return node_wrappers_;
+    }
+
+    std::map<std::string, std::pair<uint8_t, std::string>> get_active_drivers(){
+        return active_drivers_;
+    }
+    std::map<std::string, std::pair<uint8_t, std::string>> get_registered_drivers(){
+        return registered_drivers_;
+    }
+
 
     virtual void
     on_load_node(
