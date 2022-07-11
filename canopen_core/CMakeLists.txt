@@ -30,8 +30,6 @@ find_package(lifecycle_msgs REQUIRED)
 find_package(lely_core_libraries REQUIRED)
 find_package(canopen_interfaces REQUIRED)
 
-
-
 set (dependencies 
   lely_core_libraries
   rclcpp
