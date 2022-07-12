@@ -56,7 +56,7 @@ void ProxyDriver::on_nmt(canopen::NmtState nmt_state)
 
   // callback
   if(nmt_state_cb_){
-    nmt_state_cb_(nmt_state);
+    nmt_state_cb_(nmt_state, this->driver->get_id());
   }
 }
 
@@ -84,7 +84,7 @@ void ProxyDriver::on_rpdo(COData d)
 
   // callback
   if(rpdo_cb_) {
-    rpdo_cb_(d);
+    rpdo_cb_(d, this->driver->get_id());
   }
 
 }

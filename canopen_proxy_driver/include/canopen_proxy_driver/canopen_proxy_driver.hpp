@@ -22,21 +22,6 @@
 namespace ros2_canopen
 {
 
-    struct ProxyDriverInterface{
-
-        canopen::NmtState  nmt_state;
-
-        // rpdo data received via internal callback
-        COData rpdo_data;
-
-        // tpdo data to transmit
-        COData tpdo_data;
-
-
-
-
-
-    };
 class ProxyDriver : public BaseDriver
 {
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr nmt_state_publisher;
@@ -52,49 +37,34 @@ class ProxyDriver : public BaseDriver
   // expose for ros2 control purposes
 public:
 
-    void set_internal_interface(std::shared_ptr<ProxyDriverInterface> interface){
-        // store ptr
-        internal_interface_ = interface;
-    }
-    canopen::NmtState get_nmt_state(){
-        return internal_interface_->nmt_state;
-
-    }
-    bool reset_nmt(){
+    bool reset_node_nmt_command(){
         driver->nmt_command(canopen::NmtCommand::RESET_NODE);
         return true;
 
     }
-    bool start_nmt(){
+    bool start_nmt_command(){
         driver->nmt_command(canopen::NmtCommand::START);
         return true;
-
     }
     void tpdo_transmit(COData &data){
-        if(internal_interface_){
-            internal_interface_->tpdo_data = data;
-            driver->tpdo_transmit(internal_interface_->tpdo_data);
-        }else{
             driver->tpdo_transmit(data);
-        }
     }
 
-    void register_nmt_state_cb( std::function<void(canopen::NmtState)> nmt_state_cb){
+    void register_nmt_state_cb( std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb){
         nmt_state_cb_ = std::move(nmt_state_cb);
     }
 
-    void register_rpdo_cb( std::function<void(COData)> rpdo_cb){
+    void register_rpdo_cb( std::function<void(COData, uint8_t)> rpdo_cb){
         rpdo_cb_ = std::move(rpdo_cb);
     }
 
     // nmt state callback
-    std::function<void(canopen::NmtState)> nmt_state_cb_;
+    std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb_;
     // rpdo callback
-    std::function<void(COData)> rpdo_cb_;
+    std::function<void(COData, uint8_t)> rpdo_cb_;
 
 protected:
 
-    std::shared_ptr<ProxyDriverInterface> internal_interface_;
   void on_nmt(canopen::NmtState nmt_state);
 
   void on_tpdo(const canopen_interfaces::msg::COData::SharedPtr msg);
@@ -119,7 +89,7 @@ protected:
 
 public:
   explicit ProxyDriver(const rclcpp::NodeOptions & options)
-  : BaseDriver(options), internal_interface_(nullptr), nmt_state_cb_(nullptr), rpdo_cb_(nullptr) {}
+  : BaseDriver(options), nmt_state_cb_(nullptr), rpdo_cb_(nullptr) {}
 
   void init(
     ev::Executor & exec,
