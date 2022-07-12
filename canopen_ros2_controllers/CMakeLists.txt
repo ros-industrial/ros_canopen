@@ -15,6 +15,8 @@ find_package(ament_cmake_gmock REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(canopen_core REQUIRED)
 find_package(canopen_proxy_driver REQUIRED)
+find_package(canopen_interfaces REQUIRED)
+
 find_package(std_srvs REQUIRED)
 
 add_library(
@@ -36,6 +38,7 @@ ament_target_dependencies(
   rclcpp
   rclcpp_lifecycle
   realtime_tools
+  canopen_interfaces
   std_srvs
 )
 

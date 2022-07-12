@@ -35,9 +35,9 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 
 // TODO(anyone): replace the state and command message types
-using ControllerStateMsg = canopen_ros2_controllers::CanopenProxyController::ControllerStateMsg;
+using ControllerStateMsg = canopen_ros2_controllers::CanopenProxyController::ControllerNMTStateMsg ;
 using ControllerCommandMsg = canopen_ros2_controllers::CanopenProxyController::ControllerCommandMsg;
-using ControllerModeSrvType = canopen_ros2_controllers::CanopenProxyController::ControllerModeSrvType;
+using ControllerModeSrvType = canopen_ros2_controllers::CanopenProxyController::ControllerStartResetSrvType ;
 
 namespace
 {
@@ -65,7 +65,7 @@ public:
     auto ret = canopen_ros2_controllers::CanopenProxyController::on_configure(previous_state);
     // Only if on_configure is successful create subscription
     if (ret == CallbackReturn::SUCCESS) {
-      cmd_subscriber_wait_set_.add_subscription(cmd_subscriber_);
+      cmd_subscriber_wait_set_.add_subscription(tpdo_subscriber_);
     }
     return ret;
   }
@@ -217,31 +217,31 @@ protected:
     wait_for_topic(command_publisher_->get_topic_name());
 
     ControllerCommandMsg msg;
-    msg.joint_names = joint_names_;
-    msg.displacements = displacements;
-    msg.velocities = velocities;
-    msg.duration = duration;
+    msg.index = 0u;
+    msg.subindex = 0u;
+    msg.type = 0u;
+    msg.data = 0u;
 
     command_publisher_->publish(msg);
   }
 
-  std::shared_ptr<ControllerModeSrvType::Response> call_service(
-    const bool slow_control, rclcpp::Executor & executor)
-  {
-    auto request = std::make_shared<ControllerModeSrvType::Request>();
-    request->data = slow_control;
-
-    bool wait_for_service_ret =
-      slow_control_service_client_->wait_for_service(std::chrono::milliseconds(500));
-    EXPECT_TRUE(wait_for_service_ret);
-    if (!wait_for_service_ret) {
-      throw std::runtime_error("Services is not available!");
-    }
-    auto result = slow_control_service_client_->async_send_request(request);
-    EXPECT_EQ(executor.spin_until_future_complete(result), rclcpp::FutureReturnCode::SUCCESS);
-
-    return result.get();
-  }
+//  std::shared_ptr<ControllerModeSrvType::Response> call_service(
+//    const bool slow_control, rclcpp::Executor & executor)
+//  {
+//    auto request = std::make_shared<ControllerModeSrvType::Request>();
+//    request->data = slow_control;
+//
+//    bool wait_for_service_ret =
+//      slow_control_service_client_->wait_for_service(std::chrono::milliseconds(500));
+//    EXPECT_TRUE(wait_for_service_ret);
+//    if (!wait_for_service_ret) {
+//      throw std::runtime_error("Services is not available!");
+//    }
+//    auto result = slow_control_service_client_->async_send_request(request);
+//    EXPECT_EQ(executor.spin_until_future_complete(result), rclcpp::FutureReturnCode::SUCCESS);
+//
+//    return result.get();
+//  }
 
 protected:
   // TODO(anyone): adjust the members as needed

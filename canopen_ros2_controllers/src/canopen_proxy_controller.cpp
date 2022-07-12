@@ -44,10 +44,10 @@ using ControllerCommandMsg = canopen_ros2_controllers::CanopenProxyController::C
 void reset_controller_command_msg(
   std::shared_ptr<ControllerCommandMsg> & msg, const std::vector<std::string> & joint_names)
 {
-  msg->joint_names = joint_names;
-  msg->displacements.resize(joint_names.size(), std::numeric_limits<double>::quiet_NaN());
-  msg->velocities.resize(joint_names.size(), std::numeric_limits<double>::quiet_NaN());
-  msg->duration = std::numeric_limits<double>::quiet_NaN();
+  msg->index = 0u;
+  msg->subindex = 0u;
+  msg->type = 0u;
+  msg->data = 0u;
 }
 
 }  // namespace
@@ -58,13 +58,10 @@ CanopenProxyController::CanopenProxyController() : controller_interface::Control
 
 controller_interface::CallbackReturn CanopenProxyController::on_init()
 {
-  control_mode_.initRT(control_mode_type::FAST);
 
   try {
-    get_node()->declare_parameter<std::vector<std::string>>("joints", std::vector<std::string>({}));
-    get_node()->declare_parameter<std::vector<std::string>>(
-      "state_joints", std::vector<std::string>({}));
-    get_node()->declare_parameter<std::string>("interface_name", "");
+    // use auto declare
+    auto_declare<std::vector<std::string>>("joints", joint_names_);
   } catch (const std::exception & e) {
     fprintf(stderr, "Exception thrown during init stage with message: %s \n", e.what());
     return controller_interface::CallbackReturn::ERROR;
@@ -97,51 +94,33 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
     };
 
   if (
-    get_string_array_param_and_error_if_empty(joint_names_, "joints") ||
-    get_string_array_param_and_error_if_empty(state_joint_names_, "state_joints") ||
-    get_string_param_and_error_if_empty(interface_name_, "interface_name")) {
+    get_string_array_param_and_error_if_empty(joint_names_, "joints")) {
     return controller_interface::CallbackReturn::ERROR;
   }
 
   // Command Subscriber and callbacks
   auto callback_cmd = [&](const std::shared_ptr<ControllerCommandMsg> msg) -> void {
-    if (msg->joint_names.size() == joint_names_.size()) {
       input_cmd_.writeFromNonRT(msg);
-    } else {
-      RCLCPP_ERROR(
-        get_node()->get_logger(),
-        "Received %zu , but expected %zu joints in command. Ignoring message.",
-        msg->joint_names.size(), joint_names_.size());
-    }
+
   };
-  cmd_subscriber_ = get_node()->create_subscription<ControllerCommandMsg>(
-    "~/commands", rclcpp::SystemDefaultsQoS(), callback_cmd);
+  tpdo_subscriber_ = get_node()->create_subscription<ControllerCommandMsg>(
+    "~/tpdo", rclcpp::SystemDefaultsQoS(), callback_cmd);
 
   std::shared_ptr<ControllerCommandMsg> msg = std::make_shared<ControllerCommandMsg>();
   reset_controller_command_msg(msg, joint_names_);
   input_cmd_.writeFromNonRT(msg);
 
-  auto set_slow_mode_service_callback =
-    [&](
-      const std::shared_ptr<ControllerModeSrvType::Request> request,
-      std::shared_ptr<ControllerModeSrvType::Response> response) {
-      if (request->data) {
-        control_mode_.writeFromNonRT(control_mode_type::SLOW);
-      } else {
-        control_mode_.writeFromNonRT(control_mode_type::FAST);
-      }
-      response->success = true;
-    };
-
-  set_slow_control_mode_service_ = get_node()->create_service<ControllerModeSrvType>(
-    "~/set_slow_control_mode", set_slow_mode_service_callback,
-    rmw_qos_profile_services_hist_keep_all);
-
   try {
-    // State publisher
-    s_publisher_ =
-      get_node()->create_publisher<ControllerStateMsg>("~/state", rclcpp::SystemDefaultsQoS());
-    state_publisher_ = std::make_unique<ControllerStatePublisher>(s_publisher_);
+    // nmt state publisher
+    nmt_state_pub_ =
+      get_node()->create_publisher<ControllerNMTStateMsg>("~/nmt_state", rclcpp::SystemDefaultsQoS());
+    nmt_state_rt_publisher_ = std::make_unique<ControllerNmtStateRTPublisher>(nmt_state_pub_);
+
+    // rpdo publisher
+    rpdo_pub_ =
+            get_node()->create_publisher<ControllerCommandMsg>("~/rpdo", rclcpp::SystemDefaultsQoS());
+    rpdo_rt_publisher_ = std::make_unique<ControllerRPDOPRTublisher>(rpdo_pub_);
+
   } catch (const std::exception & e) {
     fprintf(
       stderr, "Exception thrown during publisher creation at configure stage with message : %s \n",
@@ -149,10 +128,56 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  // TODO(anyone): Reserve memory in state publisher depending on the message type
-  state_publisher_->lock();
-  state_publisher_->msg_.header.frame_id = joint_names_[0];
-  state_publisher_->unlock();
+  nmt_state_rt_publisher_->lock();
+  nmt_state_rt_publisher_->msg_.data = std::string();
+  nmt_state_rt_publisher_->unlock();
+
+  rpdo_rt_publisher_->lock();
+  rpdo_rt_publisher_->msg_.index = 0u;
+  rpdo_rt_publisher_->msg_.subindex = 0u;
+  rpdo_rt_publisher_->msg_.type = 0u;
+  rpdo_rt_publisher_->msg_.data = 0u;
+  rpdo_rt_publisher_->unlock();
+
+  // init services
+
+  // NMT reset
+  auto on_nmt_state_reset = [&](const std_srvs::srv::Trigger::Request::SharedPtr request,
+                                std_srvs::srv::Trigger::Response::SharedPtr response){
+
+  };
+  nmt_state_reset_service_ = get_node()->create_service<ControllerStartResetSrvType>(
+          "~/nmt_reset_node", on_nmt_state_reset,
+          rmw_qos_profile_services_hist_keep_all);
+
+  // NMT start
+  auto on_nmt_state_start = [&](const std_srvs::srv::Trigger::Request::SharedPtr request,
+                                std_srvs::srv::Trigger::Response::SharedPtr response){
+
+  };
+  nmt_state_start_service_ = get_node()->create_service<ControllerStartResetSrvType>(
+          "~/nmt_start_node", on_nmt_state_start,
+          rmw_qos_profile_services_hist_keep_all);
+
+  // SDO read
+  auto on_sdo_read = [&](
+          const canopen_interfaces::srv::CORead::Request::SharedPtr request,
+          canopen_interfaces::srv::CORead::Response::SharedPtr response){};
+
+  sdo_read_service_ = get_node()->create_service<ControllerSDOReadSrvType>(
+          "~/sdo_read", on_sdo_read,
+          rmw_qos_profile_services_hist_keep_all);
+
+  // SDO write
+  auto on_sdo_write = [&](
+          const canopen_interfaces::srv::COWrite::Request::SharedPtr request,
+          canopen_interfaces::srv::COWrite::Response::SharedPtr response){
+
+  };
+
+  sdo_write_service_ = get_node()->create_service<ControllerSDOWriteSrvType>(
+          "~/sdo_write", on_sdo_write,
+          rmw_qos_profile_services_hist_keep_all);
 
   RCLCPP_INFO(get_node()->get_logger(), "configure successful");
   return controller_interface::CallbackReturn::SUCCESS;
@@ -163,9 +188,13 @@ controller_interface::InterfaceConfiguration CanopenProxyController::command_int
   controller_interface::InterfaceConfiguration command_interfaces_config;
   command_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-  command_interfaces_config.names.reserve(joint_names_.size());
+  command_interfaces_config.names.reserve(joint_names_.size()*5);
   for (const auto & joint : joint_names_) {
-    command_interfaces_config.names.push_back(joint + "/" + interface_name_);
+    command_interfaces_config.names.push_back(joint + "/" + "rpdo/index");
+    command_interfaces_config.names.push_back(joint + "/" + "rpdo/subindex");
+    command_interfaces_config.names.push_back(joint + "/" + "rpdo/type");
+    command_interfaces_config.names.push_back(joint + "/" + "rpdo/data");
+    command_interfaces_config.names.push_back(joint + "/" + "nmt/state");
   }
 
   return command_interfaces_config;
@@ -176,9 +205,15 @@ controller_interface::InterfaceConfiguration CanopenProxyController::state_inter
   controller_interface::InterfaceConfiguration state_interfaces_config;
   state_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-  state_interfaces_config.names.reserve(state_joint_names_.size());
-  for (const auto & joint : state_joint_names_) {
-    state_interfaces_config.names.push_back(joint + "/" + interface_name_);
+  state_interfaces_config.names.reserve(joint_names_.size()*7);
+  for (const auto & joint : joint_names_) {
+    state_interfaces_config.names.push_back(joint + "/" + "tpdo/index");
+    state_interfaces_config.names.push_back(joint + "/" + "tpdo/subindex");
+    state_interfaces_config.names.push_back(joint + "/" + "tpdo/type");
+    state_interfaces_config.names.push_back(joint + "/" + "tpdo/data");
+    state_interfaces_config.names.push_back(joint + "/" + "tpdo/ons");
+    state_interfaces_config.names.push_back(joint + "/" + "nmt/reset");
+    state_interfaces_config.names.push_back(joint + "/" + "nmt/start");
   }
 
   return state_interfaces_config;
@@ -196,7 +231,7 @@ controller_interface::CallbackReturn CanopenProxyController::on_activate(
 controller_interface::CallbackReturn CanopenProxyController::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  // TODO(anyone): depending on number of interfaces, use definitions, e.g., `CMD_MY_ITFS`,
+
   // instead of a loop
   for (size_t i = 0; i < command_interfaces_.size(); ++i) {
     command_interfaces_[i].set_value(std::numeric_limits<double>::quiet_NaN());
@@ -209,24 +244,22 @@ controller_interface::return_type CanopenProxyController::update(
 {
   auto current_cmd = input_cmd_.readFromRT();
 
-  // TODO(anyone): depending on number of interfaces, use definitions, e.g., `CMD_MY_ITFS`,
   // instead of a loop
-  for (size_t i = 0; i < command_interfaces_.size(); ++i) {
-    if (!std::isnan((*current_cmd)->displacements[i])) {
-      if (*(control_mode_.readFromRT()) == control_mode_type::SLOW) {
-        (*current_cmd)->displacements[i] /= 2;
-      }
-      command_interfaces_[i].set_value((*current_cmd)->displacements[i]);
+//  for (size_t i = 0; i < command_interfaces_.size(); ++i) {
+//    if (!std::isnan((*current_cmd)->displacements[i])) {
+//      if (*(control_mode_.readFromRT()) == control_mode_type::SLOW) {
+//        (*current_cmd)->displacements[i] /= 2;
+//      }
+//      command_interfaces_[i].set_value((*current_cmd)->displacements[i]);
+//
+//      (*current_cmd)->displacements[i] = std::numeric_limits<double>::quiet_NaN();
+//    }
+//  }
 
-      (*current_cmd)->displacements[i] = std::numeric_limits<double>::quiet_NaN();
-    }
-  }
+  if (nmt_state_rt_publisher_ && nmt_state_rt_publisher_->trylock()) {
+    nmt_state_rt_publisher_->msg_.data = std::to_string(state_interfaces_[0].get_value());
 
-  if (state_publisher_ && state_publisher_->trylock()) {
-    state_publisher_->msg_.header.stamp = time;
-    state_publisher_->msg_.set_point = command_interfaces_[CMD_MY_ITFS].get_value();
-
-    state_publisher_->unlockAndPublish();
+    nmt_state_rt_publisher_->unlockAndPublish();
   }
 
   return controller_interface::return_type::OK;

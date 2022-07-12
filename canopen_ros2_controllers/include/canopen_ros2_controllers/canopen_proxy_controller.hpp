@@ -28,9 +28,11 @@
 #include "realtime_tools/realtime_publisher.h"
 #include "std_srvs/srv/set_bool.hpp"
 
-// TODO(anyone): Replace with controller specific messages
-#include "control_msgs/msg/joint_controller_state.hpp"
-#include "control_msgs/msg/joint_jog.hpp"
+#include "canopen_interfaces/msg/co_data.hpp"
+#include "canopen_interfaces/srv/co_write.hpp"
+#include "canopen_interfaces/srv/co_read.hpp"
+#include "std_msgs/msg/string.hpp"
+#include "std_srvs/srv/trigger.hpp"
 
 namespace canopen_ros2_controllers
 {
@@ -40,11 +42,6 @@ static constexpr size_t STATE_MY_ITFS = 0;
 // name constants for command interfaces
 static constexpr size_t CMD_MY_ITFS = 0;
 
-// TODO(anyone: xample setup for control mode (usually you will use some enums defined in messages)
-enum class control_mode_type : std::uint8_t {
-  FAST = 0,
-  SLOW = 1,
-};
 
 class CanopenProxyController : public controller_interface::ControllerInterface
 {
@@ -78,26 +75,41 @@ public:
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
   // TODO(anyone): replace the state and command message types
-  using ControllerCommandMsg = control_msgs::msg::JointJog;
-  using ControllerModeSrvType = std_srvs::srv::SetBool;
-  using ControllerStateMsg = control_msgs::msg::JointControllerState;
+  using ControllerCommandMsg = canopen_interfaces::msg::COData;
+  using ControllerStartResetSrvType = std_srvs::srv::Trigger;
+  using ControllerSDOReadSrvType = canopen_interfaces::srv::CORead;
+  using ControllerSDOWriteSrvType = canopen_interfaces::srv::COWrite;
+  using ControllerNMTStateMsg = std_msgs::msg::String;
 
 protected:
   std::vector<std::string> joint_names_;
-  std::vector<std::string> state_joint_names_;
-  std::string interface_name_;
 
-  // Command subscribers and Controller State publisher
-  rclcpp::Subscription<ControllerCommandMsg>::SharedPtr cmd_subscriber_ = nullptr;
+  // Command subscribers
+  // TPDO subscription
+  rclcpp::Subscription<ControllerCommandMsg>::SharedPtr tpdo_subscriber_ = nullptr;
   realtime_tools::RealtimeBuffer<std::shared_ptr<ControllerCommandMsg>> input_cmd_;
 
-  rclcpp::Service<ControllerModeSrvType>::SharedPtr set_slow_control_mode_service_;
-  realtime_tools::RealtimeBuffer<control_mode_type> control_mode_;
+  // NMT state publisher
+  using ControllerNmtStateRTPublisher = realtime_tools::RealtimePublisher<ControllerNMTStateMsg>;
+  rclcpp::Publisher<ControllerNMTStateMsg>::SharedPtr nmt_state_pub_;
+  std::unique_ptr<ControllerNmtStateRTPublisher> nmt_state_rt_publisher_;
 
-  using ControllerStatePublisher = realtime_tools::RealtimePublisher<ControllerStateMsg>;
+  // RPDO publisher
+  using ControllerRPDOPRTublisher = realtime_tools::RealtimePublisher<ControllerCommandMsg>;
+  rclcpp::Publisher<ControllerCommandMsg>::SharedPtr rpdo_pub_;
+  std::unique_ptr<ControllerRPDOPRTublisher> rpdo_rt_publisher_;
 
-  rclcpp::Publisher<ControllerStateMsg>::SharedPtr s_publisher_;
-  std::unique_ptr<ControllerStatePublisher> state_publisher_;
+  // NMT reset service
+  rclcpp::Service<ControllerStartResetSrvType>::SharedPtr nmt_state_reset_service_;
+  // NMT start service
+  rclcpp::Service<ControllerStartResetSrvType>::SharedPtr nmt_state_start_service_;
+  // SDO read service
+  rclcpp::Service<ControllerSDOReadSrvType>::SharedPtr sdo_read_service_;
+  // SDO write service
+  rclcpp::Service<ControllerSDOWriteSrvType>::SharedPtr sdo_write_service_;
+
+
+
 };
 
 }  // namespace canopen_ros2_controllers

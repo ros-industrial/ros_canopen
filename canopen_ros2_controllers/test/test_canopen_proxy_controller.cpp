@@ -22,7 +22,6 @@
 #include <vector>
 
 using canopen_ros2_controllers::CMD_MY_ITFS;
-using canopen_ros2_controllers::control_mode_type;
 using canopen_ros2_controllers::STATE_MY_ITFS;
 
 class CanopenProxyControllerTest : public CanopenProxyControllerFixture<TestableCanopenProxyController>
@@ -52,17 +51,11 @@ TEST_F(CanopenProxyControllerTest, joint_names_parameter_not_set)
   SetUpController(false);
 
   ASSERT_TRUE(controller_->joint_names_.empty());
-  ASSERT_TRUE(controller_->state_joint_names_.empty());
-  ASSERT_TRUE(controller_->interface_name_.empty());
 
-  controller_->get_node()->set_parameter({"state_joints", state_joint_names_});
-  controller_->get_node()->set_parameter({"interface_name", interface_name_});
 
   ASSERT_EQ(controller_->on_configure(rclcpp_lifecycle::State()), NODE_ERROR);
 
   ASSERT_TRUE(controller_->joint_names_.empty());
-  ASSERT_TRUE(controller_->state_joint_names_.empty());
-  ASSERT_TRUE(controller_->interface_name_.empty());
 }
 
 TEST_F(CanopenProxyControllerTest, state_joint_names_parameter_not_set)
@@ -70,17 +63,14 @@ TEST_F(CanopenProxyControllerTest, state_joint_names_parameter_not_set)
   SetUpController(false);
 
   ASSERT_TRUE(controller_->joint_names_.empty());
-  ASSERT_TRUE(controller_->state_joint_names_.empty());
-  ASSERT_TRUE(controller_->interface_name_.empty());
+
 
   controller_->get_node()->set_parameter({"joints", joint_names_});
-  controller_->get_node()->set_parameter({"interface_name", interface_name_});
 
   ASSERT_EQ(controller_->on_configure(rclcpp_lifecycle::State()), NODE_ERROR);
 
   ASSERT_THAT(controller_->joint_names_, testing::ElementsAreArray(joint_names_));
-  ASSERT_TRUE(controller_->state_joint_names_.empty());
-  ASSERT_TRUE(controller_->interface_name_.empty());
+
 }
 
 TEST_F(CanopenProxyControllerTest, interface_parameter_not_set)
@@ -88,17 +78,14 @@ TEST_F(CanopenProxyControllerTest, interface_parameter_not_set)
   SetUpController(false);
 
   ASSERT_TRUE(controller_->joint_names_.empty());
-  ASSERT_TRUE(controller_->state_joint_names_.empty());
-  ASSERT_TRUE(controller_->interface_name_.empty());
+
 
   controller_->get_node()->set_parameter({"joints", joint_names_});
-  controller_->get_node()->set_parameter({"state_joints", state_joint_names_});
 
   ASSERT_EQ(controller_->on_configure(rclcpp_lifecycle::State()), NODE_ERROR);
 
   ASSERT_THAT(controller_->joint_names_, testing::ElementsAreArray(joint_names_));
-  ASSERT_THAT(controller_->state_joint_names_, testing::ElementsAreArray(state_joint_names_));
-  ASSERT_TRUE(controller_->interface_name_.empty());
+
 }
 
 TEST_F(CanopenProxyControllerTest, all_parameters_set_configure_success)
@@ -106,14 +93,10 @@ TEST_F(CanopenProxyControllerTest, all_parameters_set_configure_success)
   SetUpController();
 
   ASSERT_TRUE(controller_->joint_names_.empty());
-  ASSERT_TRUE(controller_->state_joint_names_.empty());
-  ASSERT_TRUE(controller_->interface_name_.empty());
 
   ASSERT_EQ(controller_->on_configure(rclcpp_lifecycle::State()), NODE_SUCCESS);
 
   ASSERT_THAT(controller_->joint_names_, testing::ElementsAreArray(joint_names_));
-  ASSERT_THAT(controller_->state_joint_names_, testing::ElementsAreArray(state_joint_names_));
-  ASSERT_EQ(controller_->interface_name_, interface_name_);
 }
 
 TEST_F(CanopenProxyControllerTest, check_exported_intefaces)
@@ -144,16 +127,11 @@ TEST_F(CanopenProxyControllerTest, activate_success)
 
   // check that the message is reset
   auto msg = controller_->input_cmd_.readFromNonRT();
-  EXPECT_EQ((*msg)->displacements.size(), joint_names_.size());
-  for (const auto & cmd : (*msg)->displacements) {
-    EXPECT_TRUE(std::isnan(cmd));
-  }
-  EXPECT_EQ((*msg)->velocities.size(), joint_names_.size());
-  for (const auto & cmd : (*msg)->velocities) {
-    EXPECT_TRUE(std::isnan(cmd));
-  }
+  EXPECT_EQ((*msg)->index, 0u);
+  EXPECT_EQ((*msg)->subindex, 0u);
+  EXPECT_EQ((*msg)->type, 0u);
+  EXPECT_EQ((*msg)->data, 0u);
 
-  ASSERT_TRUE(std::isnan((*msg)->duration));
 }
 
 TEST_F(CanopenProxyControllerTest, update_success)
@@ -202,22 +180,18 @@ TEST_F(CanopenProxyControllerTest, test_setting_slow_mode_service)
   executor.add_node(controller_->get_node()->get_node_base_interface());
   executor.add_node(service_caller_node_->get_node_base_interface());
 
-  // initially set to false
-  ASSERT_EQ(*(controller_->control_mode_.readFromRT()), control_mode_type::FAST);
 
   ASSERT_EQ(controller_->on_configure(rclcpp_lifecycle::State()), NODE_SUCCESS);
   ASSERT_EQ(controller_->on_activate(rclcpp_lifecycle::State()), NODE_SUCCESS);
 
-  // should stay false
-  ASSERT_EQ(*(controller_->control_mode_.readFromRT()), control_mode_type::FAST);
 
   // set to true
-  ASSERT_NO_THROW(call_service(true, executor));
-  ASSERT_EQ(*(controller_->control_mode_.readFromRT()), control_mode_type::SLOW);
-
-  // set back to false
-  ASSERT_NO_THROW(call_service(false, executor));
-  ASSERT_EQ(*(controller_->control_mode_.readFromRT()), control_mode_type::FAST);
+//  ASSERT_NO_THROW(call_service(true, executor));
+//  ASSERT_EQ(*(controller_->control_mode_.readFromRT()), control_mode_type::SLOW);
+//
+//  // set back to false
+//  ASSERT_NO_THROW(call_service(false, executor));
+//  ASSERT_EQ(*(controller_->control_mode_.readFromRT()), control_mode_type::FAST);
 }
 
 TEST_F(CanopenProxyControllerTest, test_update_logic_fast)
@@ -233,22 +207,21 @@ TEST_F(CanopenProxyControllerTest, test_update_logic_fast)
   // set command statically
   static constexpr double TEST_DISPLACEMENT = 23.24;
   std::shared_ptr<ControllerCommandMsg> msg = std::make_shared<ControllerCommandMsg>();
-  msg->joint_names = joint_names_;
-  msg->displacements.resize(joint_names_.size(), TEST_DISPLACEMENT);
-  msg->velocities.resize(joint_names_.size(), std::numeric_limits<double>::quiet_NaN());
-  msg->duration = std::numeric_limits<double>::quiet_NaN();
+  msg->index = 0u;
+  msg->subindex = 0u;
+  msg->type = 0u;
+  msg->data = 0u;
+
   controller_->input_cmd_.writeFromNonRT(msg);
 
   ASSERT_EQ(
     controller_->update(rclcpp::Time(0), rclcpp::Duration::from_seconds(0.01)),
     controller_interface::return_type::OK);
 
-  EXPECT_EQ(*(controller_->control_mode_.readFromRT()), control_mode_type::FAST);
   EXPECT_EQ(joint_command_values_[STATE_MY_ITFS], TEST_DISPLACEMENT);
-  EXPECT_TRUE(std::isnan((*(controller_->input_cmd_.readFromRT()))->displacements[0]));
-  EXPECT_EQ(*(controller_->control_mode_.readFromRT()), control_mode_type::FAST);
 }
 
+/*
 TEST_F(CanopenProxyControllerTest, test_update_logic_slow)
 {
   SetUpController();
@@ -328,3 +301,5 @@ TEST_F(CanopenProxyControllerTest, receive_message_and_publish_updated_status)
 
   ASSERT_EQ(msg.set_point, 0.45);
 }
+
+ */
