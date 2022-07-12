@@ -18,6 +18,7 @@
               <param name="master_bin">"${master_bin}"</param>
             </hardware>
             <joint name="${prefix}node_1">
+                <param name="node_id">2</param>
                 <command_interface name="position">
                   <param name="min">{-2*pi}</param>
                   <param name="max">{2*pi}</param>
