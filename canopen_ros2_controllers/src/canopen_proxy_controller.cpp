@@ -257,6 +257,13 @@ controller_interface::return_type CanopenProxyController::update(
   const rclcpp::Time & time, const rclcpp::Duration & /*period*/)
 {
   auto current_cmd = input_cmd_.readFromRT();
+  if (!current_cmd || !(*current_cmd)){
+      command_interfaces_[CommandInterfaces::TPDO_INDEX].set_value((*current_cmd)->index);
+      command_interfaces_[CommandInterfaces::TPDO_SUBINDEX].set_value((*current_cmd)->subindex);
+      command_interfaces_[CommandInterfaces::TPDO_TYPE].set_value((*current_cmd)->type);
+      command_interfaces_[CommandInterfaces::TPDO_DATA].set_value((*current_cmd)->data);
+      command_interfaces_[CommandInterfaces::TPDO_ONS].set_value(1.0);
+  }
 
   // instead of a loop
 //  for (size_t i = 0; i < command_interfaces_.size(); ++i) {
@@ -274,6 +281,15 @@ controller_interface::return_type CanopenProxyController::update(
     nmt_state_rt_publisher_->msg_.data = std::to_string(state_interfaces_[StateInterfaces::NMT_STATE].get_value());
 
     nmt_state_rt_publisher_->unlockAndPublish();
+  }
+
+  if (rpdo_rt_publisher_ && rpdo_rt_publisher_->trylock()) {
+    rpdo_rt_publisher_->msg_.index = static_cast<uint16_t>(state_interfaces_[StateInterfaces::RPDO_INDEX].get_value());
+    rpdo_rt_publisher_->msg_.subindex = static_cast<uint8_t>(state_interfaces_[StateInterfaces::RPDO_SUBINDEX].get_value());
+    rpdo_rt_publisher_->msg_.type = static_cast<uint8_t>(state_interfaces_[StateInterfaces::RPDO_TYPE].get_value());
+    rpdo_rt_publisher_->msg_.data = static_cast<uint32_t>(state_interfaces_[StateInterfaces::RPDO_DATA].get_value());
+
+    rpdo_rt_publisher_->unlockAndPublish();
   }
 
   return controller_interface::return_type::OK;
