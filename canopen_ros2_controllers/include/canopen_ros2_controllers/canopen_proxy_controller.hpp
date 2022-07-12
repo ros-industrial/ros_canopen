@@ -82,7 +82,7 @@ public:
   using ControllerNMTStateMsg = std_msgs::msg::String;
 
 protected:
-  std::vector<std::string> joint_names_;
+  std::string joint_name_;
 
   // Command subscribers
   // TPDO subscription

@@ -118,6 +118,12 @@ def launch_setup(context, *args, **kwargs):
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
+    canopen_proxy_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["node_1_controller", "--controller-manager", "/controller_manager"],
+    )
+
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -167,6 +173,7 @@ def launch_setup(context, *args, **kwargs):
         joint_state_broadcaster_spawner,
         slave_node_1,
         slave_node_2,
+        canopen_proxy_controller_spawner,
     ]
 
     return nodes_to_start

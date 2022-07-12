@@ -18,19 +18,20 @@ find_package(canopen_proxy_driver REQUIRED)
 find_package(canopen_interfaces REQUIRED)
 
 find_package(std_srvs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 add_library(
-  canopen_proxy_controller
+  ${PROJECT_NAME}
   SHARED
   src/canopen_proxy_controller.cpp
 )
 target_include_directories(
-  canopen_proxy_controller
+  ${PROJECT_NAME}
   PRIVATE
   include
 )
 ament_target_dependencies(
-  canopen_proxy_controller
+  ${PROJECT_NAME}
   control_msgs
   controller_interface
   hardware_interface
@@ -40,14 +41,15 @@ ament_target_dependencies(
   realtime_tools
   canopen_interfaces
   std_srvs
+  std_msgs
 )
 
-pluginlib_export_plugin_description_file(
-  controller_interface canopen_ros2_controllers.xml)
+target_compile_definitions(${PROJECT_NAME} PRIVATE "CANOPEN_PROXY_CONTROLLER_BUILDING_DLL" "_USE_MATH_DEFINES")
+pluginlib_export_plugin_description_file(controller_interface canopen_ros2_controllers.xml)
 
 install(
   TARGETS
-  canopen_proxy_controller
+    ${PROJECT_NAME}
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -58,30 +60,31 @@ install(
   DESTINATION include
 )
 
-
-  ament_add_gmock(test_load_canopen_proxy_controller test/test_load_canopen_proxy_controller.cpp)
-  target_include_directories(test_load_canopen_proxy_controller PRIVATE include)
-  ament_target_dependencies(
-    test_load_canopen_proxy_controller
-    controller_manager
-    hardware_interface
-    ros2_control_test_assets
-  )
-
-  ament_add_gmock(test_canopen_proxy_controller test/test_canopen_proxy_controller.cpp)
-  target_include_directories(test_canopen_proxy_controller PRIVATE include)
-  target_link_libraries(test_canopen_proxy_controller canopen_proxy_controller)
-  ament_target_dependencies(
-    test_canopen_proxy_controller
-    controller_interface
-    hardware_interface
-  )
+#  ament_add_gmock(test_load_canopen_proxy_controller test/test_load_canopen_proxy_controller.cpp)
+#  target_include_directories(test_load_canopen_proxy_controller PRIVATE include)
+#  ament_target_dependencies(
+#    test_load_canopen_proxy_controller
+#    controller_manager
+#    hardware_interface
+#    ros2_control_test_assets
+#    canopen_interfaces
+#  )
+#
+#  ament_add_gmock(test_canopen_proxy_controller test/test_canopen_proxy_controller.cpp)
+#  target_include_directories(test_canopen_proxy_controller PRIVATE include)
+#  target_link_libraries(test_canopen_proxy_controller ${PROJECT_NAME})
+#  ament_target_dependencies(
+#    test_canopen_proxy_controller
+#    controller_interface
+#    hardware_interface
+#    canopen_interfaces
+#  )
 
 ament_export_include_directories(
   include
 )
 ament_export_libraries(
-  canopen_proxy_controller
+  ${PROJECT_NAME}
 )
 ament_export_dependencies(
   control_msgs
@@ -92,4 +95,8 @@ ament_export_dependencies(
   rclcpp_lifecycle
   realtime_tools
   std_srvs
+  std_msgs
+  canopen_interfaces
 )
+
+ament_package()

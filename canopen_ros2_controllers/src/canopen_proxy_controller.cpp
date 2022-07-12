@@ -42,13 +42,31 @@ using ControllerCommandMsg = canopen_ros2_controllers::CanopenProxyController::C
 
 // called from RT control loop
 void reset_controller_command_msg(
-  std::shared_ptr<ControllerCommandMsg> & msg, const std::vector<std::string> & joint_names)
+  std::shared_ptr<ControllerCommandMsg> & msg, const std::string & joint_name)
 {
   msg->index = 0u;
   msg->subindex = 0u;
   msg->type = 0u;
   msg->data = 0u;
 }
+
+enum CommandInterfaces{
+    TPDO_INDEX,
+    TPDO_SUBINDEX,
+    TPDO_TYPE,
+    TPDO_DATA,
+    TPDO_ONS,
+    NMT_RESET,
+    NMT_START,
+};
+
+enum StateInterfaces{
+    RPDO_INDEX,
+    RPDO_SUBINDEX,
+    RPDO_TYPE,
+    RPDO_DATA,
+    NMT_STATE,
+};
 
 }  // namespace
 
@@ -61,7 +79,7 @@ controller_interface::CallbackReturn CanopenProxyController::on_init()
 
   try {
     // use auto declare
-    auto_declare<std::vector<std::string>>("joints", joint_names_);
+    auto_declare<std::string>("joint", joint_name_);
   } catch (const std::exception & e) {
     fprintf(stderr, "Exception thrown during init stage with message: %s \n", e.what());
     return controller_interface::CallbackReturn::ERROR;
@@ -94,7 +112,7 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
     };
 
   if (
-    get_string_array_param_and_error_if_empty(joint_names_, "joints")) {
+          get_string_param_and_error_if_empty(joint_name_, "joint")) {
     return controller_interface::CallbackReturn::ERROR;
   }
 
@@ -107,7 +125,7 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
     "~/tpdo", rclcpp::SystemDefaultsQoS(), callback_cmd);
 
   std::shared_ptr<ControllerCommandMsg> msg = std::make_shared<ControllerCommandMsg>();
-  reset_controller_command_msg(msg, joint_names_);
+  reset_controller_command_msg(msg, joint_name_);
   input_cmd_.writeFromNonRT(msg);
 
   try {
@@ -188,14 +206,14 @@ controller_interface::InterfaceConfiguration CanopenProxyController::command_int
   controller_interface::InterfaceConfiguration command_interfaces_config;
   command_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-  command_interfaces_config.names.reserve(joint_names_.size()*5);
-  for (const auto & joint : joint_names_) {
-    command_interfaces_config.names.push_back(joint + "/" + "rpdo/index");
-    command_interfaces_config.names.push_back(joint + "/" + "rpdo/subindex");
-    command_interfaces_config.names.push_back(joint + "/" + "rpdo/type");
-    command_interfaces_config.names.push_back(joint + "/" + "rpdo/data");
-    command_interfaces_config.names.push_back(joint + "/" + "nmt/state");
-  }
+  command_interfaces_config.names.reserve(7);
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/index");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/subindex");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/type");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/data");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/ons");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "nmt/reset");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "nmt/start");
 
   return command_interfaces_config;
 }
@@ -205,16 +223,12 @@ controller_interface::InterfaceConfiguration CanopenProxyController::state_inter
   controller_interface::InterfaceConfiguration state_interfaces_config;
   state_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-  state_interfaces_config.names.reserve(joint_names_.size()*7);
-  for (const auto & joint : joint_names_) {
-    state_interfaces_config.names.push_back(joint + "/" + "tpdo/index");
-    state_interfaces_config.names.push_back(joint + "/" + "tpdo/subindex");
-    state_interfaces_config.names.push_back(joint + "/" + "tpdo/type");
-    state_interfaces_config.names.push_back(joint + "/" + "tpdo/data");
-    state_interfaces_config.names.push_back(joint + "/" + "tpdo/ons");
-    state_interfaces_config.names.push_back(joint + "/" + "nmt/reset");
-    state_interfaces_config.names.push_back(joint + "/" + "nmt/start");
-  }
+  state_interfaces_config.names.reserve(5);
+  state_interfaces_config.names.push_back(joint_name_ + "/" + "rpdo/index");
+  state_interfaces_config.names.push_back(joint_name_ + "/" + "rpdo/subindex");
+  state_interfaces_config.names.push_back(joint_name_ + "/" + "rpdo/type");
+  state_interfaces_config.names.push_back(joint_name_ + "/" + "rpdo/data");
+  state_interfaces_config.names.push_back(joint_name_ + "/" + "nmt/state");
 
   return state_interfaces_config;
 }
@@ -223,7 +237,7 @@ controller_interface::CallbackReturn CanopenProxyController::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // Set default value in command
-  reset_controller_command_msg(*(input_cmd_.readFromRT)(), joint_names_);
+  reset_controller_command_msg(*(input_cmd_.readFromRT)(), joint_name_);
 
   return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -257,7 +271,7 @@ controller_interface::return_type CanopenProxyController::update(
 //  }
 
   if (nmt_state_rt_publisher_ && nmt_state_rt_publisher_->trylock()) {
-    nmt_state_rt_publisher_->msg_.data = std::to_string(state_interfaces_[0].get_value());
+    nmt_state_rt_publisher_->msg_.data = std::to_string(state_interfaces_[StateInterfaces::NMT_STATE].get_value());
 
     nmt_state_rt_publisher_->unlockAndPublish();
   }
