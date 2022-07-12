@@ -1,0 +1,8 @@
+<library path="canopen_ros2_controllers">
+  <class name="canopen_ros2_controllers/CanopenProxyController"
+         type="canopen_ros2_controllers::CanopenProxyController" base_class_type="controller_interface::ControllerInterface">
+  <description>
+    CanopenProxyController ros2_control controller.
+  </description>
+  </class>
+</library>
