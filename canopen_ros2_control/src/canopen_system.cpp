@@ -309,6 +309,7 @@ hardware_interface::return_type CanopenSystem::write(
           proxy_driver->start_nmt_command();
       }
 
+      // tpdo data one shot mechanism
       if(it->second.tpdo_data.write_command()){
           it->second.tpdo_data.prepare_data();
           proxy_driver->tpdo_transmit(it->second.tpdo_data.original_data);
