@@ -59,33 +59,20 @@ std::vector<hardware_interface::StateInterface> Cia402System::export_state_inter
   state_interfaces = CanopenSystem::export_state_interfaces();
 
   for (uint i = 0; i < info_.joints.size(); i++) {
-////    state_interfaces.emplace_back(hardware_interface::StateInterface(
-////      // TODO(anyone): insert correct interfaces
-////      info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
-////
+
       if(info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
       {
-          // skip adding canopen interfaces
+          // skip adding motor canopen interfaces
           continue;
       }
-////      const uint8_t node_id = static_cast<uint8_t >(std::stoi(info_.joints[i].parameters["node_id"]));
-//////      RCLCPP_INFO(kLogger, "node id on export state interface for joint: '%s' is '%s'", info_.joints[i].name.c_str(), info_.joints[i].parameters["node_id"].c_str());
-////
-////      // rpdo index
-////      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "rpdo/index",
-////              &canopen_data_[node_id].rpdo_data.index));
-////
-////      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "rpdo/subindex",
-////                                                                       &canopen_data_[node_id].rpdo_data.subindex));
-////
-////      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "rpdo/type",
-////                                                                       &canopen_data_[node_id].rpdo_data.type));
-////
-////      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "rpdo/data",
-////                                                                       &canopen_data_[node_id].rpdo_data.data));
-////
-////      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "nmt/state",
-////                                                                       &canopen_data_[node_id].nmt_state.state));
+      const uint8_t node_id = static_cast<uint8_t >(std::stoi(info_.joints[i].parameters["node_id"]));
+
+      // actual position
+      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "actual_position",
+                                                                       &motor_data_[node_id].actual_position));
+      // actual speed
+      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "actual_speed",
+              &motor_data_[node_id].actual_speed));
   }
 
   return state_interfaces;
@@ -94,40 +81,62 @@ std::vector<hardware_interface::StateInterface> Cia402System::export_state_inter
 std::vector<hardware_interface::CommandInterface> Cia402System::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
-//  for (uint i = 0; i < info_.joints.size(); i++) {
-//    command_interfaces.emplace_back(hardware_interface::CommandInterface(
-//      // TODO(anyone): insert correct interfaces
-//      info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
-//
-//      if(info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
-//      {
-//          // skip adding canopen interfaces
-//          continue;
-//      }
-//
-//      const uint8_t node_id = static_cast<uint8_t >(std::stoi(info_.joints[i].parameters["node_id"]));
-//
-//      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/index",
-//                                                                       &canopen_data_[node_id].tpdo_data.index));
-//
-//      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/subindex",
-//                                                                       &canopen_data_[node_id].tpdo_data.subindex));
-//
-//      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/type",
-//                                                                       &canopen_data_[node_id].tpdo_data.type));
-//
-//      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/data",
-//                                                                       &canopen_data_[node_id].tpdo_data.data));
-//
-//      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/ons",
-//                                                                           &canopen_data_[node_id].tpdo_data.one_shot));
-//
-//      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/reset",
-//                                                                         &canopen_data_[node_id].nmt_state.reset_ons));
-//      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/start",
-//                                                                         &canopen_data_[node_id].nmt_state.start_ons));
-//
-//  }
+
+  // underlying base class export first
+  command_interfaces = CanopenSystem::export_command_interfaces();
+
+  for (uint i = 0; i < info_.joints.size(); i++) {
+
+      if(info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
+      {
+          // skip adding canopen interfaces
+          continue;
+      }
+
+      const uint8_t node_id = static_cast<uint8_t >(std::stoi(info_.joints[i].parameters["node_id"]));
+
+      // init
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "init_cmd",
+                                                                       &motor_data_[node_id].init.ons_cmd));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "init_resp",
+                                                                           &motor_data_[node_id].init.resp));
+
+      // halt
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "halt_cmd",
+                                                                           &motor_data_[node_id].halt.ons_cmd));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "halt_resp",
+                                                                           &motor_data_[node_id].halt.resp));
+
+      // recover
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "recover_cmd",
+                                                                           &motor_data_[node_id].recover.ons_cmd));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "recover_resp",
+                                                                           &motor_data_[node_id].recover.resp));
+
+      // set position mode
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "position_mode_cmd",
+                                                                           &motor_data_[node_id].position_mode.ons_cmd));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "position_mode_resp",
+                                                                           &motor_data_[node_id].position_mode.resp));
+
+      // set velocity mode
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "velocity_mode_cmd",
+                                                                           &motor_data_[node_id].velocity_mode.ons_cmd));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "velocity_mode_resp",
+                                                                           &motor_data_[node_id].velocity_mode.resp));
+
+      // set cyclic velocity mode
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "cyclic_velocity_mode_cmd",
+                                                                           &motor_data_[node_id].cyclic_velocity_mode.ons_cmd));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "cyclic_velocity_mode_resp",
+                                                                           &motor_data_[node_id].cyclic_velocity_mode.resp));
+      // set cyclic position mode
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "cyclic_position_mode_cmd",
+                                                                           &motor_data_[node_id].cyclic_position_mode.ons_cmd));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "cyclic_position_mode_resp",
+                                                                           &motor_data_[node_id].cyclic_position_mode.resp));
+
+  }
 
   return command_interfaces;
 }
