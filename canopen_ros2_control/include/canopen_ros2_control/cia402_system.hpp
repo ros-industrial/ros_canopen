@@ -33,6 +33,37 @@
 namespace canopen_ros2_control
 {
 
+    struct MotorTriggerCommand{
+        double ons_cmd{std::numeric_limits<double>::quiet_NaN()};
+        double resp;
+    };
+
+    struct MotorTarget : public  MotorTriggerCommand{
+        double value;
+    };
+
+    struct MotorNodeData{
+
+        // feedback
+        double actual_position;
+        double actual_speed;
+
+        // basic control
+        MotorTriggerCommand init;
+        MotorTriggerCommand halt;
+        MotorTriggerCommand recover;
+
+        // mode control
+        MotorTriggerCommand position_mode;
+        MotorTriggerCommand velocity_mode;
+        MotorTriggerCommand cyclic_velocity_mode;
+        MotorTriggerCommand cyclic_position_mode;
+        MotorTriggerCommand torque_mode;
+
+        // setpoint
+        MotorTarget target;
+    };
+
 using namespace ros2_canopen;
 class Cia402System : public CanopenSystem
 {
@@ -65,6 +96,14 @@ public:
     TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
     hardware_interface::return_type write(
             const rclcpp::Time & time, const rclcpp::Duration & period);
+
+    // can stuff
+    std::map<uint, MotorNodeData> motor_data_;
+
+private:
+
+
+
 
 };
 

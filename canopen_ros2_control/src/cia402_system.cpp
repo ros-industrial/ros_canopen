@@ -24,7 +24,7 @@
 
 
 #include "canopen_ros2_control/cia402_system.hpp"
-
+#include "canopen_402_driver/canopen_402_driver.hpp" // for MotionControllerDriver
 
 namespace {
     auto const kLogger = rclcpp::get_logger("Cia402System");
@@ -54,16 +54,20 @@ std::vector<hardware_interface::StateInterface> Cia402System::export_state_inter
 {
 
   std::vector<hardware_interface::StateInterface> state_interfaces;
-////  for (uint i = 0; i < info_.joints.size(); i++) {
+
+  // underlying base class export first
+  state_interfaces = CanopenSystem::export_state_interfaces();
+
+  for (uint i = 0; i < info_.joints.size(); i++) {
 ////    state_interfaces.emplace_back(hardware_interface::StateInterface(
 ////      // TODO(anyone): insert correct interfaces
 ////      info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
 ////
-////      if(info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
-////      {
-////          // skip adding canopen interfaces
-////          continue;
-////      }
+      if(info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
+      {
+          // skip adding canopen interfaces
+          continue;
+      }
 ////      const uint8_t node_id = static_cast<uint8_t >(std::stoi(info_.joints[i].parameters["node_id"]));
 //////      RCLCPP_INFO(kLogger, "node id on export state interface for joint: '%s' is '%s'", info_.joints[i].name.c_str(), info_.joints[i].parameters["node_id"].c_str());
 ////
@@ -82,7 +86,7 @@ std::vector<hardware_interface::StateInterface> Cia402System::export_state_inter
 ////
 ////      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "nmt/state",
 ////                                                                       &canopen_data_[node_id].nmt_state.state));
-//  }
+  }
 
   return state_interfaces;
 }
@@ -151,7 +155,20 @@ hardware_interface::return_type Cia402System::read(
 
    auto ret_val = CanopenSystem::read(time, period);
 
-   return ret_val;
+   auto data = get_canopen_data();
+
+    for(auto it = data.begin(); it!=data.end(); ++it) {
+        auto motion_controller_driver = std::static_pointer_cast<ros2_canopen::MotionControllerDriver>(
+                get_device_manager()->get_node(it->first));
+
+        // get position
+        motor_data_[it->first].actual_position = motion_controller_driver->get_position();
+        // get speed
+        motor_data_[it->first].actual_speed = motion_controller_driver->get_speed();
+
+    }
+
+    return ret_val;
 }
 
 hardware_interface::return_type Cia402System::write(
