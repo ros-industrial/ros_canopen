@@ -22,7 +22,6 @@
 
 #include "device.hpp"
 
-
 class DeviceManager : public rclcpp_components::ComponentManager {
 public:
     DeviceManager(
@@ -63,7 +62,6 @@ public:
     std::map<std::string, std::pair<uint8_t, std::string>> get_registered_drivers(){
         return registered_drivers_;
     }
-
 
     virtual void
     on_load_node(

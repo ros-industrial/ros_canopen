@@ -4,8 +4,8 @@
   <name>canopen_ros2_control</name>
   <version>0.0.1</version>
   <description>ros2_control wrapper for ros2_canopen functionalities</description>
-  <maintainer email="denis@stoglrobotics.de">Denis Stogl</maintainer>
   <maintainer email="lovro.ivanov@gmail.com">Lovro Ivanov</maintainer>
+  <maintainer email="denis@stoglrobotics.de">Denis Stogl</maintainer>
 
   <license>Apache-2.0</license>
 

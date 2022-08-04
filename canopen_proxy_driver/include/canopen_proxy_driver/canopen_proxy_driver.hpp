@@ -21,7 +21,6 @@
 
 namespace ros2_canopen
 {
-
 class ProxyDriver : public BaseDriver
 {
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr nmt_state_publisher;
@@ -36,16 +35,16 @@ class ProxyDriver : public BaseDriver
 
   // expose for ros2 control purposes
 public:
-
     bool reset_node_nmt_command(){
         driver->nmt_command(canopen::NmtCommand::RESET_NODE);
         return true;
-
     }
+
     bool start_nmt_command(){
         driver->nmt_command(canopen::NmtCommand::START);
         return true;
     }
+
     void tpdo_transmit(COData &data){
             driver->tpdo_transmit(data);
     }
@@ -64,7 +63,6 @@ public:
     std::function<void(COData, uint8_t)> rpdo_cb_;
 
 protected:
-
   void on_nmt(canopen::NmtState nmt_state);
 
   void on_tpdo(const canopen_interfaces::msg::COData::SharedPtr msg);

@@ -1,5 +1,4 @@
-// Copyright (c) 2022, StoglRobotics
-// Copyright (c) 2022, Stogl Robotics Consulting UG (haftungsbeschränkt) (template)
+// Copyright (c) 2022, Stogl Robotics Consulting UG (haftungsbeschränkt)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,10 +36,8 @@
 #include "rclcpp/macros.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include <rclcpp/executors.hpp> // for MultiThreadedExecutor
-#include <canopen_core/device_manager.hpp> // for DeviceManager
-
-
+#include "rclcpp/executors.hpp"  // for MultiThreadedExecutor
+#include "canopen_core/device_manager.hpp" // for DeviceManager
 
 namespace canopen_ros2_control
 {
@@ -136,8 +133,7 @@ namespace canopen_ros2_control
 
         WORos2ControlCoData rsdo; // write-only
         WORos2ControlCoData wsdo; // write-only
-
-    };
+};
 
 using namespace ros2_canopen;
 class CanopenSystem : public hardware_interface::SystemInterface

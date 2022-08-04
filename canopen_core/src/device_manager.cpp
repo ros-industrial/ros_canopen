@@ -316,24 +316,3 @@ void DeviceManager::on_list_nodes(
     }
 }
 
-//int main(int argc, char const *argv[])
-//{
-//    rclcpp::init(argc, argv);
-//    auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
-//    auto device_manager = std::make_shared<DeviceManager>(exec);
-//    std::thread spinThread([&device_manager]()
-//                        {
-//                            if(device_manager->init())
-//                            {
-//                                RCLCPP_INFO(device_manager->get_logger(), "Initialisation successful.");
-//                            }
-//                            else
-//                            {
-//                                RCLCPP_INFO(device_manager->get_logger(), "Initialisation failed.");
-//                            }
-//                        });
-//    exec->add_node(device_manager);
-//    exec->spin();
-//    spinThread.join();
-//    return 0;
-//}
