@@ -9,8 +9,6 @@ endif()
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   canopen_core
   canopen_proxy_driver
-  control_msgs
-  controller_interface
   hardware_interface
   pluginlib
   rclcpp

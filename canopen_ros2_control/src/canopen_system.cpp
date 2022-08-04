@@ -90,7 +90,6 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
 
   spin_thread_ = std::make_unique<std::thread>(&CanopenSystem::spin, this);
 
-
   return CallbackReturn::SUCCESS;
 }
 
@@ -103,9 +102,7 @@ void CanopenSystem::spin() {
 }
 
 void CanopenSystem::initDeviceManager() {
-
     std::string tmp_master_bin  = (info_.hardware_parameters["master_bin"] == "\"\"" ) ? "" : info_.hardware_parameters["master_bin"];
-
 
     if(device_manager_->init(info_.hardware_parameters["can_interface_name"],
                              info_.hardware_parameters["master_config"],
@@ -155,10 +152,7 @@ void CanopenSystem::initDeviceManager() {
         for(auto it = act_dr.begin(); it != act_dr.end(); it++){
             RCLCPP_INFO(kLogger, "\nActive driver:\n    name: '%s'\n    node_id: '%u'\n    driver: '%s'", it->first.c_str(), it->second.first, it->second.second.c_str());
         }
-
-
         RCLCPP_INFO(device_manager_->get_logger(), "Initialisation successful.");
-
     }
     else
     {

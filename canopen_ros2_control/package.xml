@@ -4,15 +4,15 @@
   <name>canopen_ros2_control</name>
   <version>0.0.1</version>
   <description>ros2_control wrapper for ros2_canopen functionalities</description>
-  <maintainer email="denis.stogl@stoglrobotics.de">Denis Stogl</maintainer>
   <maintainer email="lovro.ivanov@gmail.com">Lovro Ivanov</maintainer>
+  <maintainer email="denis.stogl@stoglrobotics.de">Denis Stogl</maintainer>
 
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>canopen_core</depend>
-  <depend>controller_interface</depend>
+  <depend>canopen_proxy_driver</depend>
   <depend>hardware_interface</depend>
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>

@@ -66,7 +66,6 @@ public:
         return registered_drivers_;
     }
 
-
     virtual void
     on_load_node(
         const std::shared_ptr<rmw_request_id_t> request_header,

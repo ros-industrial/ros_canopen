@@ -38,9 +38,6 @@
 #include "rclcpp/macros.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-
-
-
 namespace canopen_ros2_control
 {
     // needed auxiliary struct for ros2 control double registration
@@ -135,8 +132,7 @@ namespace canopen_ros2_control
 
         WORos2ControlCoData rsdo; // write-only
         WORos2ControlCoData wsdo; // write-only
-
-    };
+};
 
 class CanopenSystem : public hardware_interface::SystemInterface
 {
