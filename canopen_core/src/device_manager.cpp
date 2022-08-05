@@ -138,6 +138,7 @@ bool DeviceManager::init_devices_from_config()
     RCLCPP_INFO(this->get_logger(), "Found %u devices", count);
     bool master_found = false;
 
+
     for (auto it = devices.begin(); it != devices.end(); it++)
     {
         if (it->find("master") != std::string::npos && !master_found)
@@ -222,6 +223,24 @@ bool DeviceManager::init()
     return true;
 }
 
+bool DeviceManager::init(const std::string& can_interface_name,
+                         const std::string& master_config,
+                         const std::string& bus_config,
+                         const std::string& master_bin){
+
+    can_interface_name_ = can_interface_name;
+    dcf_txt_ = master_config;
+    dcf_bin_ = master_bin;
+    bus_config_ = bus_config;
+
+    this->config_ = std::make_shared<ros2_canopen::ConfigurationManager>(bus_config_);
+    this->config_->init_config();
+    this->init_devices_from_config();
+    return true;
+
+
+}
+
 void DeviceManager::on_load_node(
     const std::shared_ptr<rmw_request_id_t> request_header,
     const std::shared_ptr<LoadNode::Request> request,
@@ -297,24 +316,3 @@ void DeviceManager::on_list_nodes(
     }
 }
 
-int main(int argc, char const *argv[])
-{
-    rclcpp::init(argc, argv);
-    auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
-    auto device_manager = std::make_shared<DeviceManager>(exec);
-    std::thread spinThread([&device_manager]()
-                        { 
-                            if(device_manager->init())
-                            {
-                                RCLCPP_INFO(device_manager->get_logger(), "Initialisation successful.");
-                            }
-                            else
-                            {
-                                RCLCPP_INFO(device_manager->get_logger(), "Initialisation failed.");
-                            }
-                        });
-    exec->add_node(device_manager);
-    exec->spin();
-    spinThread.join();
-    return 0;
-}

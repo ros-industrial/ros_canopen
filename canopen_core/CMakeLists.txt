@@ -30,8 +30,6 @@ find_package(lifecycle_msgs REQUIRED)
 find_package(lely_core_libraries REQUIRED)
 find_package(canopen_interfaces REQUIRED)
 
-
-
 set (dependencies 
   lely_core_libraries
   rclcpp
@@ -76,23 +74,30 @@ ament_target_dependencies(
 rclcpp_components_register_nodes(master_node  "ros2_canopen::MasterNode")
 set(node_plugins "${node_plugins}ros2_canopen::MasterNode;$<TARGET_FILE:master_node >\n")
 
-# device manager node
-add_executable(device_manager_node 
-  src/device_manager.cpp
-  src/lely_master_bridge.cpp
-  )
-target_link_libraries(device_manager_node
+# device manager
+add_library(device_manager src/device_manager.cpp src/lely_master_bridge.cpp)
+target_compile_features(device_manager PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_options(device_manager PUBLIC -fPIC -Wl,--no-undefined)
+
+target_link_libraries(device_manager
   configuration_manager
 )
-ament_target_dependencies(device_manager_node 
+ament_target_dependencies(device_manager
   ${dependencies}
 )
 
-target_include_directories(device_manager_node PUBLIC
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>"
-  ${rclcpp_INCLUDE_DIRS}
+target_include_directories(device_manager PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+        "$<INSTALL_INTERFACE:include>"
+        ${rclcpp_INCLUDE_DIRS}
+        )
+
+# device manager node
+add_executable(device_manager_node
+  src/device_manager_node.cpp
 )
+
+target_link_libraries(device_manager_node device_manager)
 
 # slave node
 add_executable(slave_node 
@@ -129,6 +134,14 @@ install(
   RUNTIME DESTINATION bin
 )
 
+install(
+  TARGETS device_manager
+  EXPORT export_device_manager
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
 install(TARGETS device_manager_node
   DESTINATION lib/${PROJECT_NAME})
 
@@ -159,16 +172,20 @@ ament_export_include_directories(
 ament_export_libraries(
   configuration_manager
   master_node
+  device_manager
 )
 ament_export_targets(
   export_configuration_manager
   export_master_node
+  export_device_manager
 )
 
 ament_export_dependencies(
   canopen_interfaces
   lely_core_libraries
   yaml_cpp_vendor
+  rclcpp_lifecycle
+  lifecycle_msgs
 )
 
 ament_package()
