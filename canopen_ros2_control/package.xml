@@ -15,7 +15,6 @@
   <depend>canopen_proxy_driver</depend>
   <depend>hardware_interface</depend>
   <depend>pluginlib</depend>
-  <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>rclcpp_lifecycle</depend>
   <depend>realtime_tools</depend>

@@ -11,7 +11,6 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   canopen_proxy_driver
   hardware_interface
   pluginlib
-  rclcpp
   rclcpp_components
   rclcpp_lifecycle
   realtime_tools
@@ -54,6 +53,7 @@ install(
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gmock REQUIRED)
+  find_package(launch_testing_ament_cmake REQUIRED)
 
   ament_add_gmock(test_canopen_system test/test_canopen_system.cpp)
   target_include_directories(test_canopen_system PRIVATE include)

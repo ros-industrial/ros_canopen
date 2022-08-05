@@ -230,9 +230,9 @@ std::vector<hardware_interface::CommandInterface> CanopenSystem::export_command_
 
       command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/reset",
                                                                          &canopen_data_[node_id].nmt_state.reset_ons));
+
       command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/start",
                                                                          &canopen_data_[node_id].nmt_state.start_ons));
-
   }
 
   return command_interfaces;
