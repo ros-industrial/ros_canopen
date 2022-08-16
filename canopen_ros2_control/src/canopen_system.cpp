@@ -23,6 +23,8 @@
 
 #include <limits>
 #include <vector>
+#include <canopen_ros2_control/canopen_system.hpp>
+
 
 #include "canopen_ros2_control/canopen_system.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
@@ -37,23 +39,24 @@ namespace {
 namespace canopen_ros2_control
 {
 
+void CanopenSystem::clean() {
+  executor_->cancel();
+  printf("Joining...");
+  spin_thread_->join();
+  printf("Joined!");
+
+  device_manager_.reset();
+  executor_.reset();
+
+  init_thread_->join();
+  init_thread_.reset();
+
+  executor_.reset();
+  spin_thread_.reset();
+}
+
 CanopenSystem::~CanopenSystem() {
-
-    executor_->cancel();
-    printf("Joining...");
-    spin_thread_->join();
-    printf("Joined!");
-
-
-    device_manager_.reset();
-    executor_.reset();
-
-    init_thread_->join();
-    init_thread_.reset();
-
-
-    executor_.reset();
-    spin_thread_.reset();
+  clean();
 }
 
 hardware_interface::CallbackReturn CanopenSystem::on_init(
@@ -63,7 +66,6 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
     return CallbackReturn::ERROR;
   }
 
-  // TODO(anyone): read parameters and initialize the hardware
   hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
   hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
@@ -72,6 +74,12 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
   RCLCPP_INFO(kLogger, "can_interface_name: '%s'", info_.hardware_parameters["can_interface_name"].c_str());
   RCLCPP_INFO(kLogger, "master_bin: '%s'", info_.hardware_parameters["master_bin"].c_str());
 
+  return CallbackReturn::SUCCESS;
+}
+
+hardware_interface::CallbackReturn CanopenSystem::on_configure(
+  const rclcpp_lifecycle::State &previous_state)
+{
   executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   device_manager_ = std::make_shared<DeviceManager>(executor_);
   executor_->add_node(device_manager_);
@@ -81,10 +89,10 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
 
   // actually wait for init phase to end
   if (init_thread_->joinable()){
-      init_thread_->join();
+    init_thread_->join();
   }else{
-      RCLCPP_ERROR(kLogger, "Could not join init thread!");
-      return CallbackReturn::ERROR;
+    RCLCPP_ERROR(kLogger, "Could not join init thread!");
+    return CallbackReturn::ERROR;
   }
 
   spin_thread_ = std::make_unique<std::thread>(&CanopenSystem::spin, this);
@@ -92,12 +100,26 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
   return CallbackReturn::SUCCESS;
 }
 
+hardware_interface::CallbackReturn CanopenSystem::on_cleanup(
+  const rclcpp_lifecycle::State &previous_state) {
+
+  clean();
+  return CallbackReturn::SUCCESS;
+
+}
+
+hardware_interface::CallbackReturn CanopenSystem::on_shutdown(
+  const rclcpp_lifecycle::State &previous_state) {
+  clean();
+  return CallbackReturn::SUCCESS;
+}
+
 void CanopenSystem::spin() {
 
-    executor_->spin();
-    executor_->remove_node(device_manager_);
+  executor_->spin();
+  executor_->remove_node(device_manager_);
 
-    RCLCPP_INFO(kLogger, "Exiting spin thread...");
+  RCLCPP_INFO(kLogger, "Exiting spin thread...");
 }
 
 void CanopenSystem::initDeviceManager() {

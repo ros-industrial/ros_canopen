@@ -152,6 +152,18 @@ public:
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
   TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::CallbackReturn on_configure(
+    const rclcpp_lifecycle::State & previous_state) override;
+
+  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::CallbackReturn on_cleanup(
+          const rclcpp_lifecycle::State & previous_state) override;
+
+  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::CallbackReturn on_shutdown(
+          const rclcpp_lifecycle::State & previous_state) override;
+
+  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
   hardware_interface::CallbackReturn on_activate(
     const rclcpp_lifecycle::State & previous_state) override;
 
@@ -183,6 +195,7 @@ private:
   std::unique_ptr<std::thread> init_thread_;
   void spin();
   void initDeviceManager();
+  void clean();
 };
 
 }  // namespace canopen_ros2_control
