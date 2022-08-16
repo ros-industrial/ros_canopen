@@ -11,14 +11,16 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rclcpp</depend>
-  <depend>rclcpp_lifecycle</depend>
-  <depend>hardware_interface</depend>
-  <depend>pluginlib</depend>
-  <depend>ros2_control_test_assets</depend>
   <depend>ament_cmake_gmock</depend>
   <depend>canopen_core</depend>
+  <depend>canopen_proxy_driver</depend>
+  <depend>hardware_interface</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
   <depend>rclcpp_components</depend>
+  <depend>ros2_control_test_assets</depend>
+  <depend>std_srvs</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
