@@ -22,7 +22,7 @@
 The documentation is generated using sphinx and doxygen. The current version for master can be found [here](https://ros-industrial.github.io/ros2_canopen/).
 
 ## Status
-Currently under development.
+Currently under development. Not for production use.
 
 **Available Features:**
 * Device Manager (using rclcpp::components)
