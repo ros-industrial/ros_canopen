@@ -52,6 +52,19 @@ namespace ros2_canopen
         std::shared_ptr<RemoteObject> create_remote_obj(uint16_t index, uint8_t subindex, CODataTypes type)
         {
             RemoteObject obj = {index, subindex, 0, type, false, false, true};
+            for(auto it = objs.begin(); it != objs.end(); ++it)
+            {
+                if(
+                    ((*it)->index == index)
+                    &&
+                    ((*it)->subindex == subindex)
+                    &&
+                    ((*it)->type == type)
+                )
+                {
+                    return *it;
+                }
+            }
             std::shared_ptr<RemoteObject> objp = std::make_shared<RemoteObject>(obj);
             objs.push_back(objp);
             return objp;
