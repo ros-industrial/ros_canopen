@@ -80,14 +80,7 @@ ament_export_libraries(
   canopen_ros2_control
 )
 ament_export_dependencies(
-  hardware_interface
-  pluginlib
-  rclcpp
-  rclcpp_lifecycle
-  canopen_core
-  canopen_proxy_driver
-  canopen_402_driver
-  std_srvs
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
 ament_package()
