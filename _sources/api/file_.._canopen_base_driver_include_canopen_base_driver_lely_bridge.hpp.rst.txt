@@ -57,6 +57,8 @@ Included By
 
 - :ref:`file_.._canopen_base_driver_include_canopen_base_driver_canopen_base_driver.hpp`
 
+- :ref:`file_.._canopen_base_driver_include_canopen_base_driver_lifecycle_canopen_base_driver.hpp`
+
 - :ref:`file_.._canopen_402_driver_include_canopen_402_driver_mc_device_driver.hpp`
 
 
@@ -67,8 +69,6 @@ Namespaces
 
 
 - :ref:`namespace_ros2_canopen`
-
-- :ref:`namespace_std__chrono_literals`
 
 
 Classes

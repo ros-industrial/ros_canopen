@@ -29,6 +29,8 @@ Included By
 
 - :ref:`file_.._canopen_base_driver_include_canopen_base_driver_canopen_base_driver.hpp`
 
+- :ref:`file_.._canopen_base_driver_include_canopen_base_driver_lifecycle_canopen_base_driver.hpp`
+
 
 
 

@@ -47,6 +47,8 @@ Included By
 -----------
 
 
+- :ref:`file_.._canopen_core_include_canopen_core_lifecycle_master_node.hpp`
+
 - :ref:`file_.._canopen_core_include_canopen_core_master_node.hpp`
 
 

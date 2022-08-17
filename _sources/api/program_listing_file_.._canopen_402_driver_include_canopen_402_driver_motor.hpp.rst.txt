@@ -151,7 +151,6 @@ Program Listing for File motor.hpp
            uint16_t get() const { return word_ & MASK; }
            WordAccessor &operator=(const uint16_t &val)
            {
-               uint16_t was = word_;
                word_ = (word_ & ~MASK) | (val & MASK);
                return *this;
            }
@@ -369,7 +368,7 @@ Program Listing for File motor.hpp
            bool error(const std::string &msg)
            {
                execute_ = false;
-               // status.error(msg);
+               std::cout << msg << std::endl;
                return false;
            }
    
@@ -389,10 +388,11 @@ Program Listing for File motor.hpp
        class Motor402 : public MotorBase
        {
        public:
-           Motor402(const std::string &name, std::shared_ptr<MCDeviceDriver> driver) : MotorBase(name),
-                                                                                       switching_state_(State402::Operation_Enable),
-                                                                                       monitor_mode_(true),
-                                                                                       state_switch_timeout_(5)
+           Motor402(std::shared_ptr<MCDeviceDriver> driver) : 
+               MotorBase(),
+               switching_state_(State402::Operation_Enable),
+               monitor_mode_(true),
+               state_switch_timeout_(5)
            {
                this->driver = driver;
                status_word_entry_ = driver->create_remote_obj(status_word_entry_index, 0U, CODataTypes::COData16);
@@ -413,6 +413,7 @@ Program Listing for File motor.hpp
            void handleWrite();
            void handleShutdown();
            void handleHalt();
+   
            void handleRecover();
            template <typename T, typename... Args>
            bool registerMode(uint16_t mode, Args &&...args)

@@ -33,6 +33,20 @@ Classes
 
 - :ref:`exhale_class_classros2__canopen_1_1LelyMasterBridge`
 
+- :ref:`exhale_class_classros2__canopen_1_1LifecycleBaseDriver`
+
+- :ref:`exhale_class_classros2__canopen_1_1LifecycleDeviceManagerNode`
+
+- :ref:`exhale_class_classros2__canopen_1_1LifecycleDriverInterface`
+
+- :ref:`exhale_class_classros2__canopen_1_1LifecycleMasterInterface`
+
+- :ref:`exhale_class_classros2__canopen_1_1LifecycleMasterNode`
+
+- :ref:`exhale_class_classros2__canopen_1_1LifecycleMotionControllerDriver`
+
+- :ref:`exhale_class_classros2__canopen_1_1LifecycleProxyDriver`
+
 - :ref:`exhale_class_classros2__canopen_1_1MasterInterface`
 
 - :ref:`exhale_class_classros2__canopen_1_1MasterNode`
@@ -42,8 +56,6 @@ Classes
 - :ref:`exhale_class_classros2__canopen_1_1MotionControllerDriver`
 
 - :ref:`exhale_class_classros2__canopen_1_1ProxyDriver`
-
-- :ref:`exhale_class_classros2__canopen_1_1SlaveDevice`
 
 
 Enums

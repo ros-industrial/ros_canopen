@@ -241,7 +241,6 @@
         <span class="kt">uint16_t</span> <span class="n">get</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">word_</span> <span class="o">&amp;</span> <span class="n">MASK</span><span class="p">;</span> <span class="p">}</span>
         <span class="n">WordAccessor</span> <span class="o">&amp;</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="kt">uint16_t</span> <span class="o">&amp;</span><span class="n">val</span><span class="p">)</span>
         <span class="p">{</span>
-            <span class="kt">uint16_t</span> <span class="n">was</span> <span class="o">=</span> <span class="n">word_</span><span class="p">;</span>
             <span class="n">word_</span> <span class="o">=</span> <span class="p">(</span><span class="n">word_</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">MASK</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">val</span> <span class="o">&amp;</span> <span class="n">MASK</span><span class="p">);</span>
             <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
         <span class="p">}</span>
@@ -459,7 +458,7 @@
         <span class="kt">bool</span> <span class="nf">error</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">msg</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="n">execute_</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-            <span class="c1">// status.error(msg);</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">msg</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
             <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
         <span class="p">}</span>
 
@@ -479,10 +478,11 @@
     <span class="k">class</span> <span class="nc">Motor402</span> <span class="o">:</span> <span class="k">public</span> <span class="n">MotorBase</span>
     <span class="p">{</span>
     <span class="k">public</span><span class="o">:</span>
-        <span class="n">Motor402</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">)</span> <span class="o">:</span> <span class="n">MotorBase</span><span class="p">(</span><span class="n">name</span><span class="p">),</span>
-                                                                                    <span class="n">switching_state_</span><span class="p">(</span><span class="n">State402</span><span class="o">::</span><span class="n">Operation_Enable</span><span class="p">),</span>
-                                                                                    <span class="n">monitor_mode_</span><span class="p">(</span><span class="nb">true</span><span class="p">),</span>
-                                                                                    <span class="n">state_switch_timeout_</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">Motor402</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MCDeviceDriver</span><span class="o">&gt;</span> <span class="n">driver</span><span class="p">)</span> <span class="o">:</span>
+            <span class="n">MotorBase</span><span class="p">(),</span>
+            <span class="n">switching_state_</span><span class="p">(</span><span class="n">State402</span><span class="o">::</span><span class="n">Operation_Enable</span><span class="p">),</span>
+            <span class="n">monitor_mode_</span><span class="p">(</span><span class="nb">true</span><span class="p">),</span>
+            <span class="n">state_switch_timeout_</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span><span class="p">;</span>
             <span class="n">status_word_entry_</span> <span class="o">=</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">create_remote_obj</span><span class="p">(</span><span class="n">status_word_entry_index</span><span class="p">,</span> <span class="mi">0U</span><span class="p">,</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData16</span><span class="p">);</span>
@@ -503,6 +503,7 @@
         <span class="kt">void</span> <span class="nf">handleWrite</span><span class="p">();</span>
         <span class="kt">void</span> <span class="nf">handleShutdown</span><span class="p">();</span>
         <span class="kt">void</span> <span class="nf">handleHalt</span><span class="p">();</span>
+
         <span class="kt">void</span> <span class="nf">handleRecover</span><span class="p">();</span>
         <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
         <span class="kt">bool</span> <span class="n">registerMode</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">mode</span><span class="p">,</span> <span class="n">Args</span> <span class="o">&amp;&amp;</span><span class="p">...</span><span class="n">args</span><span class="p">)</span>

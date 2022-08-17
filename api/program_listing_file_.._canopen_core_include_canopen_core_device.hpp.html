@@ -118,6 +118,7 @@
 <span class="cp">#ifndef DEVICE_HPP_</span>
 <span class="cp">#define DEVICE_HPP_</span>
 
+<span class="cp">#include</span> <span class="cpf">&lt;atomic&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;lely/coapp/fiber_driver.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;lely/coapp/master.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;lely/coapp/slave.hpp&gt;</span><span class="cp"></span>
@@ -126,29 +127,223 @@
 <span class="cp">#include</span> <span class="cpf">&lt;lely/io2/sys/sigset.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;lely/io2/sys/timer.hpp&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;rclcpp/rclcpp.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;rclcpp_lifecycle/lifecycle_node.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;canopen_interfaces/srv/co_node.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_core/configuration_manager.hpp&quot;</span><span class="cp"></span>
 
 <span class="k">using</span> <span class="k">namespace</span> <span class="n">lely</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="n">ros2_canopen</span>
 <span class="p">{</span>
-    <span class="c1">// Base class for driver plugin</span>
-    <span class="c1">// Pluginlib API does allows only default constructors</span>
+
     <span class="k">class</span> <span class="nc">DriverInterface</span> <span class="o">:</span> <span class="k">public</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span>
     <span class="p">{</span>
     <span class="k">public</span><span class="o">:</span>
         <span class="n">DriverInterface</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">,</span>
-                             <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span> <span class="o">=</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span><span class="p">())</span> <span class="o">:</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span> <span class="p">{}</span>
+                        <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span> <span class="o">=</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span><span class="p">())</span> <span class="o">:</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span> <span class="p">{}</span>
 
         <span class="k">virtual</span> <span class="kt">void</span> <span class="n">init</span><span class="p">(</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span> <span class="o">&amp;</span><span class="n">exec</span><span class="p">,</span>
                           <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span><span class="n">master</span><span class="p">,</span>
                           <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">,</span>
-                          <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config</span>
-                          <span class="p">)</span> <span class="k">noexcept</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+                          <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config</span><span class="p">)</span> <span class="k">noexcept</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
         <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span> <span class="o">&amp;</span><span class="n">exec</span><span class="p">,</span>
                             <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span><span class="n">master</span><span class="p">,</span>
                             <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="k">noexcept</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="c1">// Base class for driver plugin</span>
+    <span class="c1">// Pluginlib API does allows only default constructors</span>
+    <span class="k">class</span> <span class="nc">LifecycleDriverInterface</span> <span class="o">:</span> <span class="k">public</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">LifecycleNode</span>
+    <span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">LifecycleDriverInterface</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">,</span>
+                                 <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span> <span class="o">=</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span><span class="p">())</span>
+            <span class="o">:</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">LifecycleNode</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span> <span class="p">{}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="n">init_from_master</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">exec</span><span class="p">,</span>
+                                      <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span><span class="o">&gt;</span> <span class="n">master</span><span class="p">,</span>
+                                      <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;init_from_master_start&quot;</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">exec_</span> <span class="o">=</span> <span class="n">exec</span><span class="p">;</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span> <span class="o">=</span> <span class="n">master</span><span class="p">;</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">config_</span> <span class="o">=</span> <span class="n">config</span><span class="p">;</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">initialised_</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;init_from_master_end&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="n">init</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;init_start&quot;</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">activated_</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+            <span class="n">register_ros_interface</span><span class="p">();</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;init_end&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">add</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">remove</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">start_threads</span><span class="p">()</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">join_threads</span><span class="p">()</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">update_parameters</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;update_parameters_start&quot;</span><span class="p">);</span>
+            <span class="kt">int</span> <span class="n">millis</span><span class="p">;</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_parameter</span><span class="p">(</span><span class="s">&quot;container_name&quot;</span><span class="p">,</span> <span class="n">container_name_</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_parameter</span><span class="p">(</span><span class="s">&quot;non_transmit_timeout&quot;</span><span class="p">,</span> <span class="n">millis</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_parameter</span><span class="p">(</span><span class="s">&quot;node_id&quot;</span><span class="p">,</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">node_id_</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">non_transmit_timeout_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="n">millis</span><span class="p">);</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;update_parameters_start&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">read_config</span><span class="p">()</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">register_ros_interface</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;register_ros_interface_start&quot;</span><span class="p">);</span>
+            <span class="n">client_cbg_</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">create_callback_group</span><span class="p">(</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">CallbackGroupType</span><span class="o">::</span><span class="n">MutuallyExclusive</span><span class="p">);</span>
+            <span class="n">timer_cbg_</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">create_callback_group</span><span class="p">(</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">CallbackGroupType</span><span class="o">::</span><span class="n">MutuallyExclusive</span><span class="p">);</span>
+
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s">&quot;container_name&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s">&quot;node_id&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s">&quot;non_transmit_timeout&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;register_ros_interface_end&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span>
+        <span class="nf">start_timers</span><span class="p">()</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">stop_timers</span><span class="p">()</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="kt">bool</span> <span class="nf">demand_init_from_master</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;demand_init_from_master_start&quot;</span><span class="p">);</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">init_service_name</span> <span class="o">=</span> <span class="n">container_name_</span> <span class="o">+</span> <span class="s">&quot;/init_driver&quot;</span><span class="p">;</span>
+            <span class="k">auto</span> <span class="n">demand_init_from_master_client</span> <span class="o">=</span>
+                <span class="k">this</span><span class="o">-&gt;</span><span class="n">create_client</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">CONode</span><span class="o">&gt;</span><span class="p">(</span>
+                    <span class="n">init_service_name</span><span class="p">,</span>
+                    <span class="n">rmw_qos_profile_services_default</span><span class="p">,</span>
+                    <span class="n">client_cbg_</span><span class="p">);</span>
+
+            <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">demand_init_from_master_client</span><span class="o">-&gt;</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">non_transmit_timeout_</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">ok</span><span class="p">())</span>
+                <span class="p">{</span>
+                    <span class="n">RCLCPP_ERROR</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;Interrupted while waiting for init_driver service. Exiting.&quot;</span><span class="p">);</span>
+                    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">RCLCPP_INFO</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;init_driver service not available, waiting again...&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">auto</span> <span class="n">request</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">CONode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span><span class="p">();</span>
+            <span class="n">request</span><span class="o">-&gt;</span><span class="n">nodeid</span> <span class="o">=</span> <span class="n">node_id_</span><span class="p">;</span>
+
+            <span class="k">auto</span> <span class="n">future_result</span> <span class="o">=</span> <span class="n">demand_init_from_master_client</span><span class="o">-&gt;</span><span class="n">async_send_request</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+
+            <span class="k">auto</span> <span class="n">future_status</span> <span class="o">=</span> <span class="n">future_result</span><span class="p">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">non_transmit_timeout_</span><span class="p">);</span>
+            <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;demand_init_from_master_end&quot;</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">future_status</span> <span class="o">==</span> <span class="n">std</span><span class="o">::</span><span class="n">future_status</span><span class="o">::</span><span class="n">ready</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">try</span>
+                <span class="p">{</span>
+                    <span class="k">return</span> <span class="n">future_result</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">success</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">catch</span> <span class="p">(...)</span>
+                <span class="p">{</span>
+                    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span>
+        <span class="n">on_configure</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">State</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">activated_</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">update_parameters</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">demand_init_from_master</span><span class="p">())</span>
+            <span class="p">{</span>
+                <span class="n">RCLCPP_ERROR</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;Demand init from master service call failed.&quot;</span><span class="p">);</span>
+                <span class="k">return</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span><span class="o">::</span><span class="n">FAILURE</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">initialised_</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span><span class="o">::</span><span class="n">FAILURE</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="n">read_config</span><span class="p">();</span>
+            <span class="k">return</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span>
+        <span class="n">on_activate</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">State</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">activated_</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">add</span><span class="p">())</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span><span class="o">::</span><span class="n">FAILURE</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">start_threads</span><span class="p">();</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">start_timers</span><span class="p">();</span>
+            <span class="k">return</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span>
+        <span class="n">on_deactivate</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">State</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">activated_</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">stop_timers</span><span class="p">();</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">join_threads</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">remove</span><span class="p">())</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span><span class="o">::</span><span class="n">FAILURE</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span>
+        <span class="n">on_cleanup</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">State</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">activated_</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+            <span class="k">return</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span>
+        <span class="n">on_shutdown</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">State</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">activated_</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+            <span class="k">return</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="k">protected</span><span class="o">:</span>
+        <span class="c1">// Storing ros2 canopen objects</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">exec_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span><span class="o">&gt;</span> <span class="n">master_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config_</span><span class="p">;</span>
+        <span class="n">rclcpp</span><span class="o">::</span><span class="n">Client</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">CONode</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">demand_init_from_master_client_</span><span class="p">;</span>
+
+        <span class="c1">// Storing parameter values</span>
+        <span class="kt">uint8_t</span> <span class="n">node_id_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span> <span class="n">non_transmit_timeout_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">container_name_</span><span class="p">;</span>
+
+        <span class="c1">// Callback groups</span>
+        <span class="n">rclcpp</span><span class="o">::</span><span class="n">CallbackGroup</span><span class="o">::</span><span class="n">SharedPtr</span> <span class="n">client_cbg_</span><span class="p">;</span>
+        <span class="n">rclcpp</span><span class="o">::</span><span class="n">CallbackGroup</span><span class="o">::</span><span class="n">SharedPtr</span> <span class="n">timer_cbg_</span><span class="p">;</span>
+
+        <span class="c1">// Synchronisation</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">activated_</span><span class="p">;</span>
+        <span class="kt">bool</span> <span class="n">initialised_</span><span class="p">;</span>
     <span class="p">};</span>
 
     <span class="k">class</span> <span class="nc">MasterInterface</span> <span class="o">:</span> <span class="k">public</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span>
@@ -165,15 +360,13 @@
             <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">,</span>
             <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span><span class="p">)</span> <span class="o">:</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span>
         <span class="p">{</span>
-
         <span class="p">}</span>
         <span class="k">virtual</span> <span class="kt">void</span> <span class="n">init</span><span class="p">(</span>
             <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_txt</span><span class="p">,</span>
             <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_bin</span><span class="p">,</span>
             <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">can_interface_name</span><span class="p">,</span>
             <span class="kt">uint8_t</span> <span class="n">nodeid</span><span class="p">,</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config</span>
-        <span class="p">)</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="n">dcf_txt_</span> <span class="o">=</span> <span class="n">dcf_txt</span><span class="p">;</span>
             <span class="n">dcf_bin_</span> <span class="o">=</span> <span class="n">dcf_bin</span><span class="p">;</span>
@@ -181,25 +374,32 @@
             <span class="n">node_id_</span> <span class="o">=</span> <span class="n">nodeid</span><span class="p">;</span>
             <span class="n">config_</span> <span class="o">=</span> <span class="n">config</span><span class="p">;</span>
         <span class="p">}</span>
-
         <span class="k">virtual</span> <span class="kt">void</span> <span class="n">add_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-
         <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">remove_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">DriverInterface</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
     <span class="p">};</span>
 
-    <span class="k">class</span> <span class="nc">SlaveDevice</span> <span class="o">:</span> <span class="k">public</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="p">,</span> <span class="k">public</span> <span class="n">canopen</span><span class="o">::</span><span class="n">BasicSlave</span>
+    <span class="k">class</span> <span class="nc">LifecycleMasterInterface</span> <span class="o">:</span> <span class="k">public</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">LifecycleNode</span>
     <span class="p">{</span>
-    <span class="k">public</span><span class="o">:</span>
-        <span class="n">SlaveDevice</span><span class="p">(</span><span class="n">io</span><span class="o">::</span><span class="n">Timer</span> <span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span>
-                    <span class="n">io</span><span class="o">::</span><span class="n">CanChannel</span> <span class="o">&amp;</span><span class="n">chan</span><span class="p">,</span>
-                    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">dcf_txt</span><span class="p">,</span>
-                    <span class="n">u_int32_t</span> <span class="n">id</span><span class="p">,</span>
-                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">devName</span><span class="p">)</span>
-            <span class="o">:</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="p">(</span><span class="n">devName</span><span class="p">),</span>
-              <span class="n">canopen</span><span class="o">::</span><span class="n">BasicSlave</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">dcf_txt</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">protected</span><span class="o">:</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_txt_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_bin_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">can_interface_name_</span><span class="p">;</span>
+        <span class="kt">uint8_t</span> <span class="n">node_id_</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config_</span><span class="p">;</span>
 
-        <span class="c1">// ROS interfaces</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">LifecycleMasterInterface</span><span class="p">(</span>
+            <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">,</span>
+            <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span><span class="n">node_options</span><span class="p">)</span> <span class="o">:</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">LifecycleNode</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="n">init</span><span class="p">()</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="k">virtual</span> <span class="kt">void</span> <span class="n">init_driver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">LifecycleDriverInterface</span><span class="o">&gt;</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">node_id</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
     <span class="p">};</span>
+
 <span class="p">}</span> <span class="c1">// end ros2_canopen namespace</span>
 
 <span class="cp">#endif </span><span class="c1">// DEVICE_HPP_</span>

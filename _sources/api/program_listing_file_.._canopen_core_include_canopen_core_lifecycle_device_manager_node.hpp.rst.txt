@@ -1,0 +1,163 @@
+
+.. _program_listing_file_.._canopen_core_include_canopen_core_lifecycle_device_manager_node.hpp:
+
+Program Listing for File lifecycle_device_manager_node.hpp
+==========================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_.._canopen_core_include_canopen_core_lifecycle_device_manager_node.hpp>` (``../canopen_core/include/canopen_core/lifecycle_device_manager_node.hpp``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   //    Copyright 2022 Harshavadan Deshpande
+   //                   Christoph Hellmann Santos
+   //
+   //    Licensed under the Apache License, Version 2.0 (the "License");
+   //    you may not use this file except in compliance with the License.
+   //    You may obtain a copy of the License at
+   //
+   //        http://www.apache.org/licenses/LICENSE-2.0
+   //
+   //    Unless required by applicable law or agreed to in writing, software
+   //    distributed under the License is distributed on an "AS IS" BASIS,
+   //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   //    See the License for the specific language governing permissions and
+   //    limitations under the License.
+   #ifndef LIFECYCLE_DEVICE_MANAGER_NODE_HPP
+   #define LIFECYCLE_DEVICE_MANAGER_NODE_HPP
+   
+   
+   #include <chrono>
+   #include <memory>
+   #include <string>
+   #include <thread>
+   
+   #include "lifecycle_msgs/msg/state.hpp"
+   #include "lifecycle_msgs/msg/transition.hpp"
+   #include "lifecycle_msgs/srv/change_state.hpp"
+   #include "lifecycle_msgs/srv/get_state.hpp"
+   #include "std_srvs/srv/trigger.hpp"
+   
+   #include "rclcpp/rclcpp.hpp"
+   #include "rclcpp_lifecycle/lifecycle_node.hpp"
+   
+   #include "canopen_core/configuration_manager.hpp"
+   #include "canopen_interfaces/srv/co_node.hpp"
+   
+   using namespace std::chrono_literals;
+   /*
+   Start-up sequence
+   --------------------------------------------------------------------
+   master | unconfigured | x |
+          | inactive     |   | x |
+          | active       |       | x | x | x | x | x |...
+   --------------------------------------------------------------------
+   drv1   | unconfigured | x | x | x |
+          | inactive     |           | x |
+          | active       |               | x | x | x |...
+   --------------------------------------------------------------------
+   driv2  | unconfigured | x | x | x | x | x |
+          | inactive     |                   | x |
+          | active       |                       | x |...
+   --------------------------------------------------------------------
+   */
+   namespace ros2_canopen
+   {
+       class LifecycleDeviceManagerNode : public rclcpp_lifecycle::LifecycleNode
+       {
+       public:
+           LifecycleDeviceManagerNode(const rclcpp::NodeOptions &node_options)
+               : rclcpp_lifecycle::LifecycleNode("LifecycleDeviceManagerNode", node_options)
+           {
+               this->declare_parameter("container_name", "");
+               cbg_clients = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+           }
+   
+           void init(std::shared_ptr<ros2_canopen::ConfigurationManager> config);
+   
+       protected:
+           rclcpp::CallbackGroup::SharedPtr cbg_clients;
+           std::shared_ptr<ros2_canopen::ConfigurationManager> config_;
+   
+           rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+           on_configure(const rclcpp_lifecycle::State &state);
+   
+           rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+           on_activate(const rclcpp_lifecycle::State &state);
+   
+           rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+           on_deactivate(const rclcpp_lifecycle::State &state);
+   
+           rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+           on_cleanup(const rclcpp_lifecycle::State &state);
+   
+           rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+           on_shutdown(const rclcpp_lifecycle::State &state);
+   
+           // stores node_id and get_state client
+           std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::GetState>::SharedPtr> drivers_get_state_clients;
+           // stores node_id and change_state client
+           std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr> drivers_change_state_clients;
+           // stores device_name and node_id
+           std::map<std::string, uint8_t> device_names_to_ids;
+   
+           rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr add_driver_client_;
+           rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr remove_driver_client_;
+   
+           uint8_t master_id_;
+           std::string container_name_;
+   
+       private:
+           template <typename FutureT, typename WaitTimeT>
+           std::future_status
+           wait_for_result(
+               FutureT &future,
+               WaitTimeT time_to_wait)
+           {
+               auto end = std::chrono::steady_clock::now() + time_to_wait;
+               std::chrono::milliseconds wait_period(100);
+               std::future_status status = std::future_status::timeout;
+               do
+               {
+                   auto now = std::chrono::steady_clock::now();
+                   auto time_left = end - now;
+                   if (time_left <= std::chrono::seconds(0))
+                   {
+                       break;
+                   }
+                   status = future.wait_for((time_left < wait_period) ? time_left : wait_period);
+               } while (rclcpp::ok() && status != std::future_status::ready);
+               return status;
+           }
+   
+           unsigned int
+           get_state(uint8_t node_id, std::chrono::seconds time_out = 3s);
+   
+           bool
+           change_state(uint8_t node_id, uint8_t transition, std::chrono::seconds time_out = 3s);
+   
+           bool
+           bring_up_all();
+   
+           bool
+           bring_down_all();
+   
+           bool
+           bring_up_master();
+   
+           bool
+           bring_down_master();
+   
+           bool
+           bring_up_driver(std::string device_name);
+   
+           bool
+           bring_down_driver(std::string device_name);
+   
+           bool
+           load_from_config();
+       };
+   }
+   
+   #endif

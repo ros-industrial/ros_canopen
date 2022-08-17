@@ -109,49 +109,6 @@ implementation.</p>
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen15MasterInterfaceE">
 <span id="_CPPv3N12ros2_canopen15MasterInterfaceE"></span><span id="_CPPv2N12ros2_canopen15MasterInterfaceE"></span><span id="ros2_canopen::MasterInterface"></span><span class="target" id="classros2__canopen_1_1MasterInterface"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MasterInterface</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">Node</span></span><br /></dt>
 <dd><p>Subclassed by <a class="reference internal" href="api/classros2__canopen_1_1MasterNode.html#classros2__canopen_1_1MasterNode"><span class="std std-ref">ros2_canopen::MasterNode</span></a></p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen15MasterInterface15MasterInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE">
-<span id="_CPPv3N12ros2_canopen15MasterInterface15MasterInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N12ros2_canopen15MasterInterface15MasterInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE"></span><span id="ros2_canopen::MasterInterface::MasterInterface__ssCR.rclcpp::NodeOptionsCR"></span><span class="target" id="classros2__canopen_1_1MasterInterface_1a83a87ff95bd78ef3c673b6c37a789967"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MasterInterface</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node_name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node_options</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Construct a new Master Interface object. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>node_name</strong> – </p></li>
-<li><p><strong>node_options</strong> – </p></li>
-<li><p><strong>dcf_txt</strong> – </p></li>
-<li><p><strong>dcf_bin</strong> – </p></li>
-<li><p><strong>can_interface_name</strong> – </p></li>
-<li><p><strong>nodeid</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen15MasterInterface10add_driverENSt10shared_ptrIN12ros2_canopen15DriverInterfaceEEE7uint8_t">
-<span id="_CPPv3N12ros2_canopen15MasterInterface10add_driverENSt10shared_ptrIN12ros2_canopen15DriverInterfaceEEE7uint8_t"></span><span id="_CPPv2N12ros2_canopen15MasterInterface10add_driverENSt10shared_ptrIN12ros2_canopen15DriverInterfaceEEE7uint8_t"></span><span id="ros2_canopen::MasterInterface::add_driver__std::shared_ptr:ros2_canopen::DriverInterface:.uint8_t"></span><span class="target" id="classros2__canopen_1_1MasterInterface_1a4228ce48b65ed618f0f2fcecf764e6d9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_driver</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">ros2_canopen</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="api/classros2__canopen_1_1DriverInterface.html#_CPPv4N12ros2_canopen15DriverInterfaceE" title="ros2_canopen::DriverInterface"><span class="n"><span class="pre">DriverInterface</span></span></a><span class="p"><span class="pre">&gt;</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
-<dd><p>Adds a driver. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>node_id</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen15MasterInterface13remove_driverENSt10shared_ptrIN12ros2_canopen15DriverInterfaceEEE7uint8_t">
-<span id="_CPPv3N12ros2_canopen15MasterInterface13remove_driverENSt10shared_ptrIN12ros2_canopen15DriverInterfaceEEE7uint8_t"></span><span id="_CPPv2N12ros2_canopen15MasterInterface13remove_driverENSt10shared_ptrIN12ros2_canopen15DriverInterfaceEEE7uint8_t"></span><span id="ros2_canopen::MasterInterface::remove_driver__std::shared_ptr:ros2_canopen::DriverInterface:.uint8_t"></span><span class="target" id="classros2__canopen_1_1MasterInterface_1a98b6dd00b722346d94c7d3be64fce096"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_driver</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">ros2_canopen</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="api/classros2__canopen_1_1DriverInterface.html#_CPPv4N12ros2_canopen15DriverInterfaceE" title="ros2_canopen::DriverInterface"><span class="n"><span class="pre">DriverInterface</span></span></a><span class="p"><span class="pre">&gt;</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
-<dd><p>Removes a driver. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>node_id</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
 </dd></dl>
 
 </section>

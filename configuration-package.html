@@ -175,11 +175,11 @@ The slave name is the node name that will be assigned to the driver.</p>
       <span class="n">ld</span> <span class="o">=</span> <span class="n">launch</span><span class="o">.</span><span class="n">LaunchDescription</span><span class="p">()</span>
 
       <span class="n">master_node</span> <span class="o">=</span> <span class="n">launch_ros</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span>
-          <span class="n">name</span><span class="o">=</span><span class="s2">&quot;device_manager_node&quot;</span><span class="p">,</span>
+          <span class="n">name</span><span class="o">=</span><span class="s2">&quot;device_container_node_node&quot;</span><span class="p">,</span>
           <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
           <span class="n">package</span><span class="o">=</span><span class="s2">&quot;canopen_core&quot;</span><span class="p">,</span>
           <span class="n">output</span><span class="o">=</span><span class="s2">&quot;screen&quot;</span><span class="p">,</span>
-          <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;device_manager_node&quot;</span><span class="p">,</span>
+          <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;device_container_node&quot;</span><span class="p">,</span>
           <span class="n">parameters</span><span class="o">=</span> <span class="p">[{</span>
               <span class="s2">&quot;bus_config&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_file</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span> <span class="p">,</span>  <span class="s2">&quot;config&quot;</span> <span class="p">,</span> <span class="s2">&quot;bus.yml&quot;</span><span class="p">),</span>
               <span class="s2">&quot;master_config&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_file</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span> <span class="p">,</span> <span class="s2">&quot;config&quot;</span> <span class="p">,</span> <span class="s2">&quot;master.dcf&quot;</span><span class="p">),</span>

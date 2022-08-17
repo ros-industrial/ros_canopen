@@ -258,6 +258,14 @@
                     <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
                         <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
                         <span class="k">break</span><span class="p">;</span>
+                    <span class="k">default</span><span class="o">:</span>
+                        <span class="k">throw</span> <span class="n">lely</span><span class="o">::</span><span class="n">canopen</span><span class="o">::</span><span class="n">SdoError</span><span class="p">(</span>
+                            <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_id</span><span class="p">(),</span>
+                            <span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">,</span>
+                            <span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">,</span>
+                            <span class="n">std</span><span class="o">::</span><span class="n">make_error_code</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">errc</span><span class="o">::</span><span class="n">function_not_supported</span><span class="p">),</span>
+                            <span class="s">&quot;Unkown used, type must be 8, 16 or 32.&quot;</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
                     <span class="p">}</span>
                     <span class="n">obj</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
                 <span class="p">}</span>
@@ -279,6 +287,14 @@
                     <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
                         <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
                         <span class="k">break</span><span class="p">;</span>
+                    <span class="k">default</span><span class="o">:</span>
+                        <span class="k">throw</span> <span class="n">lely</span><span class="o">::</span><span class="n">canopen</span><span class="o">::</span><span class="n">SdoError</span><span class="p">(</span>
+                            <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_id</span><span class="p">(),</span>
+                            <span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">,</span>
+                            <span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">,</span>
+                            <span class="n">std</span><span class="o">::</span><span class="n">make_error_code</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">errc</span><span class="o">::</span><span class="n">function_not_supported</span><span class="p">),</span>
+                            <span class="s">&quot;Unkown used, type must be 8, 16 or 32.&quot;</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
                     <span class="p">}</span>
                     <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
                 <span class="p">}</span>
@@ -298,6 +314,8 @@
                 <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
                     <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
                     <span class="k">break</span><span class="p">;</span>
+                <span class="k">default</span><span class="o">:</span>
+                <span class="k">break</span><span class="p">;</span>
                 <span class="p">}</span>
                 <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Initialised object :&quot;</span>
                     <span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_id</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>

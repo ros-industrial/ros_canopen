@@ -29,6 +29,8 @@ Included By
 
 - :ref:`file_.._canopen_proxy_driver_include_canopen_proxy_driver_canopen_proxy_driver.hpp`
 
+- :ref:`file_.._canopen_proxy_driver_include_canopen_proxy_driver_lifecycle_canopen_proxy_driver.hpp`
+
 
 
 

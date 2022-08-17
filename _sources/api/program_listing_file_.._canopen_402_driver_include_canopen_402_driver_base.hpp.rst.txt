@@ -22,7 +22,7 @@ Program Listing for File base.hpp
    
    class MotorBase {
    protected:
-       MotorBase(const std::string &name) {}
+       MotorBase() {}
    public:
        enum OperationMode
        {

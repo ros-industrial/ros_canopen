@@ -1,0 +1,107 @@
+
+.. _program_listing_file_.._canopen_base_driver_include_canopen_base_driver_lifecycle_canopen_base_driver.hpp:
+
+Program Listing for File lifecycle_canopen_base_driver.hpp
+==========================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_.._canopen_base_driver_include_canopen_base_driver_lifecycle_canopen_base_driver.hpp>` (``../canopen_base_driver/include/canopen_base_driver/lifecycle_canopen_base_driver.hpp``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   //    Copyright 2022 Christoph Hellmann Santos
+   //
+   //    Licensed under the Apache License, Version 2.0 (the "License");
+   //    you may not use this file except in compliance with the License.
+   //    You may obtain a copy of the License at
+   //
+   //        http://www.apache.org/licenses/LICENSE-2.0
+   //
+   //    Unless required by applicable law or agreed to in writing, software
+   //    distributed under the License is distributed on an "AS IS" BASIS,
+   //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   //    See the License for the specific language governing permissions and
+   //    limitations under the License.
+   #ifndef CANOPEN_BASE_DRIVER__CANOPEN_BASE_DRIVER_HPP_
+   #define CANOPEN_BASE_DRIVER__CANOPEN_BASE_DRIVER_HPP_
+   #include <memory>
+   #include <mutex>
+   #include <atomic>
+   
+   #include "canopen_base_driver/visibility_control.h"
+   #include "rclcpp/rclcpp.hpp"
+   #include "rclcpp/publisher.hpp"
+   #include "std_msgs/msg/string.hpp"
+   #include "std_srvs/srv/trigger.hpp"
+   #include "lifecycle_msgs/msg/state.hpp"
+   
+   #include "canopen_base_driver/lely_bridge.hpp"
+   #include "canopen_core/device.hpp"
+   #include "canopen_interfaces/msg/co_data.hpp"
+   #include "canopen_interfaces/srv/co_read.hpp"
+   #include "canopen_interfaces/srv/co_write.hpp"
+   #include "canopen_interfaces/srv/co_node.hpp"
+   
+   namespace ros2_canopen
+   {
+     class LifecycleBaseDriver : public LifecycleDriverInterface
+     {
+     protected:
+       std::thread nmt_state_publisher_thread_;
+       std::thread rpdo_publisher_thread_;
+       
+   
+       void nmt_listener();
+       void rdpo_listener();
+   
+       std::mutex driver_mutex_;
+       std::shared_ptr<ros2_canopen::LelyBridge> driver_;
+   
+       virtual void start_threads() override
+       {
+         nmt_state_publisher_thread_ =
+             std::thread(std::bind(&ros2_canopen::LifecycleBaseDriver::nmt_listener, this));
+   
+         rpdo_publisher_thread_ =
+             std::thread(std::bind(&ros2_canopen::LifecycleBaseDriver::rdpo_listener, this));
+       }
+   
+       virtual void join_threads() override
+       {
+         nmt_state_publisher_thread_.join();
+         rpdo_publisher_thread_.join();
+       }
+   
+       rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+       on_configure(const rclcpp_lifecycle::State &state);
+   
+       rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+       on_activate(const rclcpp_lifecycle::State &state);
+   
+       rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+       on_deactivate(const rclcpp_lifecycle::State &state);
+   
+       rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+       on_cleanup(const rclcpp_lifecycle::State &state);
+   
+       rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+       on_shutdown(const rclcpp_lifecycle::State &state);
+   
+       virtual void on_nmt(canopen::NmtState nmt_state) = 0;
+   
+       virtual void on_rpdo(COData data) = 0;
+   
+       explicit LifecycleBaseDriver(
+           const rclcpp::NodeOptions &options)
+           : LifecycleDriverInterface("base_driver", options)
+       {
+       }
+   
+     public:
+       virtual bool add() override;
+       virtual bool remove() override;
+     };
+   } // namespace ros2_canopen
+   
+   #endif // CANOPEN_BASE_DRIVER__CANOPEN_BASE_DRIVER_HPP_

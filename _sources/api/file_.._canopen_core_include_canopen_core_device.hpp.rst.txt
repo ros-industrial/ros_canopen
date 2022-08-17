@@ -25,7 +25,11 @@ Includes
 --------
 
 
+- ``atomic``
+
 - ``canopen_core/configuration_manager.hpp`` (:ref:`file_.._canopen_core_include_canopen_core_configuration_manager.hpp`)
+
+- ``canopen_interfaces/srv/co_node.hpp``
 
 - ``lely/coapp/fiber_driver.hpp``
 
@@ -43,17 +47,25 @@ Includes
 
 - ``rclcpp/rclcpp.hpp``
 
+- ``rclcpp_lifecycle/lifecycle_node.hpp``
+
 
 
 Included By
 -----------
 
 
-- :ref:`file_.._canopen_core_include_canopen_core_device_manager.hpp`
+- :ref:`file_.._canopen_core_include_canopen_core_device_container_node.hpp`
+
+- :ref:`file_.._canopen_core_include_canopen_core_lifecycle_device_container_node.hpp`
+
+- :ref:`file_.._canopen_core_include_canopen_core_lifecycle_master_node.hpp`
 
 - :ref:`file_.._canopen_core_include_canopen_core_master_node.hpp`
 
 - :ref:`file_.._canopen_base_driver_include_canopen_base_driver_canopen_base_driver.hpp`
+
+- :ref:`file_.._canopen_base_driver_include_canopen_base_driver_lifecycle_canopen_base_driver.hpp`
 
 
 
@@ -73,7 +85,9 @@ Classes
 
 - :ref:`exhale_class_classros2__canopen_1_1DriverInterface`
 
-- :ref:`exhale_class_classros2__canopen_1_1MasterInterface`
+- :ref:`exhale_class_classros2__canopen_1_1LifecycleDriverInterface`
 
-- :ref:`exhale_class_classros2__canopen_1_1SlaveDevice`
+- :ref:`exhale_class_classros2__canopen_1_1LifecycleMasterInterface`
+
+- :ref:`exhale_class_classros2__canopen_1_1MasterInterface`
 

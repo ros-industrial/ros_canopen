@@ -55,6 +55,8 @@ Included By
 
 - :ref:`file_.._canopen_402_driver_include_canopen_402_driver_canopen_402_driver.hpp`
 
+- :ref:`file_.._canopen_402_driver_include_canopen_402_driver_lifecycle_canopen_402_driver.hpp`
+
 
 
 

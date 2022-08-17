@@ -1,0 +1,32 @@
+.. _exhale_class_classros2__canopen_1_1LifecycleBaseDriver:
+
+Class LifecycleBaseDriver
+=========================
+
+- Defined in :ref:`file_.._canopen_base_driver_include_canopen_base_driver_lifecycle_canopen_base_driver.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public ros2_canopen::LifecycleDriverInterface`` (:ref:`exhale_class_classros2__canopen_1_1LifecycleDriverInterface`)
+
+
+Derived Type
+************
+
+- ``public ros2_canopen::LifecycleProxyDriver`` (:ref:`exhale_class_classros2__canopen_1_1LifecycleProxyDriver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: ros2_canopen::LifecycleBaseDriver
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

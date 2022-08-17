@@ -1,0 +1,26 @@
+.. _exhale_class_classros2__canopen_1_1LifecycleMasterNode:
+
+Class LifecycleMasterNode
+=========================
+
+- Defined in :ref:`file_.._canopen_core_include_canopen_core_lifecycle_master_node.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public ros2_canopen::LifecycleMasterInterface`` (:ref:`exhale_class_classros2__canopen_1_1LifecycleMasterInterface`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: ros2_canopen::LifecycleMasterNode
+   :project: ros2_canopen
+   :members:
+   :protected-members:
+   :undoc-members:

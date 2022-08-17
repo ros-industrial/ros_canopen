@@ -105,7 +105,7 @@ Files
 .. toctree::
    :maxdepth: 5
 
-   file_.._canopen_core_include_canopen_core_device_manager.hpp.rst
+   file_.._canopen_core_include_canopen_core_device_container_node.hpp.rst
 
 .. toctree::
    :maxdepth: 5
@@ -121,6 +121,36 @@ Files
    :maxdepth: 5
 
    file_.._canopen_core_include_canopen_core_lely_master_bridge.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_.._canopen_402_driver_include_canopen_402_driver_lifecycle_canopen_402_driver.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_.._canopen_base_driver_include_canopen_base_driver_lifecycle_canopen_base_driver.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_.._canopen_proxy_driver_include_canopen_proxy_driver_lifecycle_canopen_proxy_driver.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_.._canopen_core_include_canopen_core_lifecycle_device_container_node.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_.._canopen_core_include_canopen_core_lifecycle_device_manager_node.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_.._canopen_core_include_canopen_core_lifecycle_master_node.hpp.rst
 
 .. toctree::
    :maxdepth: 5

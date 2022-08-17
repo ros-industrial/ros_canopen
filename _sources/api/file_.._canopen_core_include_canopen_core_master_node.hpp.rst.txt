@@ -45,7 +45,7 @@ Included By
 -----------
 
 
-- :ref:`file_.._canopen_core_include_canopen_core_device_manager.hpp`
+- :ref:`file_.._canopen_core_include_canopen_core_device_container_node.hpp`
 
 
 

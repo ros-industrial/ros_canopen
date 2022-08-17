@@ -21,7 +21,7 @@ Currently, we recommend running the tests as super user.
     :header: "Name", "Description"
     :delim: ;
 
-    Launching device manager (no lazy load); Run your launch script, that you created as described in the Setup section. Once the setup is done, check with ros2 node list, that device_manager, master and all devices you specified in your bus configuration are present.
+    Launching device manager (no lazy load); Run your launch script, that you created as described in the Setup section. Once the setup is done, check with ros2 node list, that device_container_node, master and all devices you specified in your bus configuration are present.
     Initialise devices; For each driver node call the init service. The driver node should now have brought the device into operational state and have executed the standard home method. Homing method needs to be set correctly, potentially set it in bus configuration file via SDO call.
     Operational modes; For each driver check that the operation modes of the device can be activated using the operation mode services exposed. Also Check if you can set a target using the target service. Set necessary parameters for movements in bus configuration via SDO.
 

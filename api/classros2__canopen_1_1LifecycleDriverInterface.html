@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class LifecycleDriverInterface &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../design-objectives.html">Development Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Bus Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device-manager.html">Device Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../system-interface.html">System Interface Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-device.html">Proxy Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../motion-controller.html">Motion Controller Driver</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration-package.html">Creating a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running-configuration-package.html">Starting a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Extension</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../alpha-test-description.html">Alpha Tester Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sil-tests.html">Software in the loop Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tested-hardware.html">Tested Hardware</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Class LifecycleDriverInterface</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classros2__canopen_1_1LifecycleDriverInterface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-lifecycledriverinterface">
+<span id="exhale-class-classros2-canopen-1-1lifecycledriverinterface"></span><h1>Class LifecycleDriverInterface<a class="headerlink" href="#class-lifecycledriverinterface" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_.._canopen_core_include_canopen_core_device.hpp.html#file-canopen-core-include-canopen-core-device-hpp"><span class="std std-ref">File device.hpp</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this headline"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">LifecycleNode</span></code></p></li>
+</ul>
+</section>
+<section id="derived-type">
+<h3>Derived Type<a class="headerlink" href="#derived-type" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">ros2_canopen::LifecycleBaseDriver</span></code> (<a class="reference internal" href="classros2__canopen_1_1LifecycleBaseDriver.html#exhale-class-classros2-canopen-1-1lifecyclebasedriver"><span class="std std-ref">Class LifecycleBaseDriver</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterfaceE">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterfaceE"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterfaceE"></span><span id="ros2_canopen::LifecycleDriverInterface"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleDriverInterface</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LifecycleNode</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterfaceE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="classros2__canopen_1_1LifecycleBaseDriver.html#classros2__canopen_1_1LifecycleBaseDriver"><span class="std std-ref">ros2_canopen::LifecycleBaseDriver</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface24LifecycleDriverInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface24LifecycleDriverInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface24LifecycleDriverInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE"></span><span id="ros2_canopen::LifecycleDriverInterface::LifecycleDriverInterface__ssCR.rclcpp::NodeOptionsCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1ae333cea8c6f367e377faa9eaea08698d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleDriverInterface</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node_name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node_options</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface24LifecycleDriverInterfaceERKNSt6stringERKN6rclcpp11NodeOptionsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#classros2__canopen_1_1LifecycleDriverInterface"><span class="std std-ref">LifecycleDriverInterface</span></a> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_name</strong> – <strong>[in]</strong> </p></li>
+<li><p><strong>node_options</strong> – <strong>[in]</strong> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface16init_from_masterENSt10shared_ptrIN2ev8ExecutorEEENSt10shared_ptrIN7canopen11AsyncMasterEEENSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface16init_from_masterENSt10shared_ptrIN2ev8ExecutorEEENSt10shared_ptrIN7canopen11AsyncMasterEEENSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface16init_from_masterENSt10shared_ptrIN2ev8ExecutorEEENSt10shared_ptrIN7canopen11AsyncMasterEEENSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE"></span><span id="ros2_canopen::LifecycleDriverInterface::init_from_master__std::shared_ptr:ev::Executor:.std::shared_ptr:canopen::AsyncMaster:.std::shared_ptr:ros2_canopen::ConfigurationManager:"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1abe68c80f8fda4779b3a6dedff3ab50ee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_from_master</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">ev</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Executor</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">exec</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">AsyncMaster</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">master</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">ros2_canopen</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classros2__canopen_1_1ConfigurationManager.html#_CPPv4N12ros2_canopen20ConfigurationManagerE" title="ros2_canopen::ConfigurationManager"><span class="n"><span class="pre">ConfigurationManager</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface16init_from_masterENSt10shared_ptrIN2ev8ExecutorEEENSt10shared_ptrIN7canopen11AsyncMasterEEENSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Initializer for the driver. </p>
+<p>Initializes the driver, adds it to the CANopen Master. This function needs to be executed inside the masters event loop or the masters thread!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exec</strong> – <strong>[in]</strong> The executor to be used for the driver </p></li>
+<li><p><strong>master</strong> – <strong>[in]</strong> The master the driver should be added to </p></li>
+<li><p><strong>node_id</strong> – <strong>[in]</strong> The nodeid of the device the driver commands </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface4initEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface4initEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface4initEv"></span><span id="ros2_canopen::LifecycleDriverInterface::init"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a78eda440309ec1c74b809e844e5c3a05"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface4initEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface3addEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface3addEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface3addEv"></span><span id="ros2_canopen::LifecycleDriverInterface::add"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a0c1bb0fcee6e188ee958a1a658957420"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface3addEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface6removeEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface6removeEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface6removeEv"></span><span id="ros2_canopen::LifecycleDriverInterface::remove"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a4a3ddb3c1714f80d35388d30c2972d8d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface6removeEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface13start_threadsEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface13start_threadsEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface13start_threadsEv"></span><span id="ros2_canopen::LifecycleDriverInterface::start_threads"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a2dd15533b517307756305ef15f47e5e6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">start_threads</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface13start_threadsEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Start Threads. </p>
+<p>Used during activate transition to start threads that run tasks in active state. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface12join_threadsEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface12join_threadsEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface12join_threadsEv"></span><span id="ros2_canopen::LifecycleDriverInterface::join_threads"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a3826b520e89949fbb3a40ab68ff4fce5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">join_threads</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface12join_threadsEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Join Threads. </p>
+<p>Used during deactivate transition to join threads that run tasks in active state. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface17update_parametersEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface17update_parametersEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface17update_parametersEv"></span><span id="ros2_canopen::LifecycleDriverInterface::update_parameters"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1aa49841346022cf7c9cbbbf3cce7b0890"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_parameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface17update_parametersEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface11read_configEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface11read_configEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface11read_configEv"></span><span id="ros2_canopen::LifecycleDriverInterface::read_config"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a32eb3632a43139ee3746a3318dbb21e7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">read_config</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface11read_configEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface22register_ros_interfaceEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface22register_ros_interfaceEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface22register_ros_interfaceEv"></span><span id="ros2_canopen::LifecycleDriverInterface::register_ros_interface"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1ab5b439279e1247a6eba20d837b779bbb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_ros_interface</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface22register_ros_interfaceEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Registers ROS Interface. </p>
+<p>Registers the ros interface (services, topics) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface12start_timersEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface12start_timersEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface12start_timersEv"></span><span id="ros2_canopen::LifecycleDriverInterface::start_timers"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1abe71fd2d8ac7eaa2e55ad31dba4582ce"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">start_timers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface12start_timersEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Registers ROS Timers. </p>
+<p>Registers ROS timers that do things during active state. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface11stop_timersEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface11stop_timersEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface11stop_timersEv"></span><span id="ros2_canopen::LifecycleDriverInterface::stop_timers"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a0a68de5b0ee0905414b100fa9eff930f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stop_timers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface11stop_timersEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Registers ROS Timers. </p>
+<p>Registers ROS timers that do things during active state. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface23demand_init_from_masterEv">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface23demand_init_from_masterEv"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface23demand_init_from_masterEv"></span><span id="ros2_canopen::LifecycleDriverInterface::demand_init_from_master"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1aaf84fa310e538fbdc8d9d1b8258e898b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">demand_init_from_master</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface23demand_init_from_masterEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface12on_configureERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDriverInterface::on_configure__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1ae737d12d0f7f49c207ada20d5c38ba3b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_configure</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface12on_configureERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface11on_activateERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface11on_activateERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface11on_activateERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDriverInterface::on_activate__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a3968b3b4e6b76fb1211574cad898c0ac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_activate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface11on_activateERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface13on_deactivateERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface13on_deactivateERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface13on_deactivateERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDriverInterface::on_deactivate__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a374b0d327befefa162cb3173b359b55c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_deactivate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface13on_deactivateERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface10on_cleanupERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface10on_cleanupERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface10on_cleanupERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDriverInterface::on_cleanup__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a33fdbb6dd10962ed822d718ec2bda016"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_cleanup</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface10on_cleanupERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface11on_shutdownERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface11on_shutdownERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface11on_shutdownERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDriverInterface::on_shutdown__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a1fee7d86c39013b06ce519ccf78233a4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_shutdown</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface11on_shutdownERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface5exec_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface5exec_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface5exec_E"></span><span id="ros2_canopen::LifecycleDriverInterface::exec___std::shared_ptr:ev::Executor:"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a6d81c6cbc73ce2b793b535636249adcd"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">ev</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Executor</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">exec_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface5exec_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface7master_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface7master_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface7master_E"></span><span id="ros2_canopen::LifecycleDriverInterface::master___std::shared_ptr:canopen::AsyncMaster:"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a1d89b837dd634aa53468a386154a122e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">AsyncMaster</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">master_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface7master_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface7config_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface7config_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface7config_E"></span><span id="ros2_canopen::LifecycleDriverInterface::config___std::shared_ptr:ros2_canopen::ConfigurationManager:"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a8c825a7674ef3252013019414323219e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">ros2_canopen</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classros2__canopen_1_1ConfigurationManager.html#_CPPv4N12ros2_canopen20ConfigurationManagerE" title="ros2_canopen::ConfigurationManager"><span class="n"><span class="pre">ConfigurationManager</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">config_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface7config_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface31demand_init_from_master_client_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface31demand_init_from_master_client_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface31demand_init_from_master_client_E"></span><span id="ros2_canopen::LifecycleDriverInterface::demand_init_from_master_client___rclcpp::Client:canopen_interfaces::srv::CONode:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a97fdf629732267d12359ad4028cd32df"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Client</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CONode</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">demand_init_from_master_client_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface31demand_init_from_master_client_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface8node_id_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface8node_id_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface8node_id_E"></span><span id="ros2_canopen::LifecycleDriverInterface::node_id___uint8_t"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a267f4699a79a382019022a0cc72ac02f"></span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node_id_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface8node_id_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface21non_transmit_timeout_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface21non_transmit_timeout_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface21non_transmit_timeout_E"></span><span id="ros2_canopen::LifecycleDriverInterface::non_transmit_timeout___std::chrono::milliseconds"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a96bcbc4193e9feba2de7bb2f05833340"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">chrono</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">milliseconds</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">non_transmit_timeout_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface21non_transmit_timeout_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface15container_name_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface15container_name_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface15container_name_E"></span><span id="ros2_canopen::LifecycleDriverInterface::container_name___ss"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a9cd0d3c8d5c76ce094d8c2698a61322b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">container_name_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface15container_name_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface11client_cbg_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface11client_cbg_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface11client_cbg_E"></span><span id="ros2_canopen::LifecycleDriverInterface::client_cbg___rclcpp::CallbackGroup::SharedPtr"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a4f14a3545ee51c4f8e0f9b9dac51331e"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackGroup</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">client_cbg_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface11client_cbg_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface10timer_cbg_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface10timer_cbg_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface10timer_cbg_E"></span><span id="ros2_canopen::LifecycleDriverInterface::timer_cbg___rclcpp::CallbackGroup::SharedPtr"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a5fe32e91ba19015ef95d074e359db760"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackGroup</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">timer_cbg_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface10timer_cbg_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface10activated_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface10activated_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface10activated_E"></span><span id="ros2_canopen::LifecycleDriverInterface::activated___std::atomic:b:"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1a9e5bf6a5d8bc164d6e49a611968e9278"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">atomic</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">activated_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface10activated_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen24LifecycleDriverInterface12initialised_E">
+<span id="_CPPv3N12ros2_canopen24LifecycleDriverInterface12initialised_E"></span><span id="_CPPv2N12ros2_canopen24LifecycleDriverInterface12initialised_E"></span><span id="ros2_canopen::LifecycleDriverInterface::initialised___b"></span><span class="target" id="classros2__canopen_1_1LifecycleDriverInterface_1ad32ef3a9a35df19bcfe0cfed540fade2"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initialised_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen24LifecycleDriverInterface12initialised_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -78,11 +78,11 @@ Add the following code and adjust to your needs:
         ld = launch.LaunchDescription()
 
         master_node = launch_ros.actions.Node(
-            name="device_manager_node",
+            name="device_container_node_node",
             namespace="", 
             package="canopen_core", 
             output="screen", 
-            executable="device_manager_node",
+            executable="device_container_node",
             parameters= [{
                 "bus_config": os.path.join(path_file, ".." ,  "config" , "bus.yml"),
                 "master_config": os.path.join(path_file, ".." , "config" , "master.dcf"),
