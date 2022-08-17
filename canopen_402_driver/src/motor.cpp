@@ -27,15 +27,18 @@ namespace canopen_402
         //   ( d | q | f | o | s | r ):
         case (0 | 0 | 0 | 0 | 0 | 0):
         case (0 | q | 0 | 0 | 0 | 0):
+            //std::cout << "Not_Ready_To_Switch_On" << std::endl;
             new_state = Not_Ready_To_Switch_On;
             break;
 
         case (d | 0 | 0 | 0 | 0 | 0):
         case (d | q | 0 | 0 | 0 | 0):
+            //std::cout << "Switch_On_Disabled" << std::endl;
             new_state = Switch_On_Disabled;
             break;
 
         case (0 | q | 0 | 0 | 0 | r):
+            //std::cout << "Ready_To_Switch_On" << std::endl;
             new_state = Ready_To_Switch_On;
             break;
 
@@ -293,7 +296,7 @@ namespace canopen_402
     uint16_t Motor402::getMode()
     {
         std::scoped_lock lock(mode_mutex_);
-        return selected_mode_ ? selected_mode_->mode_id_ : MotorBase::No_Mode;
+        return selected_mode_ ? selected_mode_->mode_id_ : (uint16_t)MotorBase::No_Mode;
     }
 
     bool Motor402::isModeSupportedByDevice(uint16_t mode)
@@ -453,14 +456,8 @@ namespace canopen_402
 
         std::unique_lock lock(mode_mutex_);
         uint16_t new_mode;
-        if(monitor_mode_)
-        {
-            new_mode = driver->get_remote_obj<int8_t>(op_mode_display_);
-        }
-        else
-        {
-            new_mode = driver->get_remote_obj_cached<int8_t>(op_mode_display_);
-        }
+        new_mode = driver->get_remote_obj<int8_t>(op_mode_display_);
+        //RCLCPP_INFO(rclcpp::get_logger("canopen_402_driver"), "Mode %hhi",new_mode);
 
         if (selected_mode_ && selected_mode_->mode_id_ == new_mode)
         {

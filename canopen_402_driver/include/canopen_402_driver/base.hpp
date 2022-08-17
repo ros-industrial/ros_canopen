@@ -14,7 +14,7 @@ namespace canopen_402
  */
 class MotorBase {
 protected:
-    MotorBase(const std::string &name) {}
+    MotorBase() {}
 public:
     enum OperationMode
     {

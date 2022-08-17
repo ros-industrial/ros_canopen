@@ -188,7 +188,7 @@ void MotionControllerDriver::init(ev::Executor &exec,
     driver.reset();
     mc_driver_ = std::make_shared<MCDeviceDriver>(exec, master, node_id);
     driver = std::static_pointer_cast<LelyBridge>(mc_driver_);
-    motor_ = std::make_shared<Motor402>(std::string("motor"), mc_driver_);
+    motor_ = std::make_shared<Motor402>(mc_driver_);
     register_services();
 
     timer_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);

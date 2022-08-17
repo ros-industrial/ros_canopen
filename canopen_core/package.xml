@@ -3,7 +3,7 @@
 <package format="3">
   <name>canopen_core</name>
   <version>0.0.1</version>
-  <description>Core ros2_canopen functionalities such as devicemanager and master</description>
+  <description>Core ros2_canopen functionalities such as DeviceContainer and master</description>
   <maintainer email="christoph.hellmann.santos@ipa.fraunhofer.de">christoph</maintainer>
   <license>Apache-2.0</license>
 
@@ -17,7 +17,6 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>lifecycle_msgs</depend>
   <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

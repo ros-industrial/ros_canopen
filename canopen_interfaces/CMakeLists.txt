@@ -20,6 +20,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/COWrite.srv"
   "srv/COWriteID.srv"
   "srv/COTargetDouble.srv"
+  "srv/CONode.srv"
   "msg/COData.msg"
 )
 

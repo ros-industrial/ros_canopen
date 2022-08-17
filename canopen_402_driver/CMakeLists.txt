@@ -14,18 +14,21 @@ find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(canopen_proxy_driver REQUIRED)
 find_package(Boost REQUIRED COMPONENTS container)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 
 add_library(${PROJECT_NAME} 
   src/canopen_402_driver.cpp
   src/motor.cpp
   )
 
-target_compile_features(${PROJECT_NAME}  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_include_directories(${PROJECT_NAME}  PUBLIC
+target_compile_features(canopen_402_driver PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_options(canopen_402_driver PUBLIC -Wno-unused-parameter)
+target_include_directories(canopen_402_driver  PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 ament_target_dependencies(
-  ${PROJECT_NAME} 
+  canopen_402_driver
   "rclcpp"
   "rclcpp_components"
   "canopen_interfaces"
@@ -39,13 +42,44 @@ ament_target_dependencies(
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(${PROJECT_NAME}  PRIVATE "CANOPEN_402_DRIVER_BUILDING_LIBRARY")
+target_compile_definitions(canopen_402_driver  PRIVATE "CANOPEN_402_DRIVER_BUILDING_LIBRARY")
 
-rclcpp_components_register_nodes(${PROJECT_NAME}  "ros2_canopen::MotionControllerDriver")
-set(node_plugins "${node_plugins}ros2_canopen::MotionControllerDriver;$<TARGET_FILE:${PROJECT_NAME} >\n")
+rclcpp_components_register_nodes(canopen_402_driver  "ros2_canopen::MotionControllerDriver")
+set(node_plugins "${node_plugins}ros2_canopen::MotionControllerDriver;$<TARGET_FILE:canopen_402_driver >\n")
 
 
-dcfgen(${CMAKE_CURRENT_SOURCE_DIR}/config/ simple_mc.yml ${CMAKE_BINARY_DIR}/config/)
+add_library(lifecycle_canopen_402_driver 
+  src/lifecycle_canopen_402_driver.cpp
+  src/motor.cpp
+  )
+
+target_compile_features(lifecycle_canopen_402_driver PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_options(lifecycle_canopen_402_driver PUBLIC -Wno-unused-parameter)
+target_include_directories(lifecycle_canopen_402_driver PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(
+  lifecycle_canopen_402_driver
+  "rclcpp"
+  "rclcpp_components"
+  "canopen_interfaces"
+  "std_msgs"
+  "std_srvs"
+  "lely_core_libraries"
+  "canopen_core"
+  "canopen_proxy_driver"
+  "canopen_base_driver"
+  "rclcpp_lifecycle"
+  "lifecycle_msgs"
+)
+
+# Causes the visibility macros to use dllexport rather than dllimport,
+# which is appropriate when building the dll but not consuming it.
+target_compile_definitions(lifecycle_canopen_402_driver PRIVATE "CANOPEN_402_DRIVER_BUILDING_LIBRARY")
+
+rclcpp_components_register_nodes(lifecycle_canopen_402_driver "ros2_canopen::LifecycleMotionControllerDriver")
+set(node_plugins "${node_plugins}ros2_canopen::LifecycleMotionControllerDriver;$<TARGET_FILE:canopen_402_driver >\n")
+
 
 install(
   DIRECTORY include/
@@ -53,23 +87,16 @@ install(
 )
 
 install(
-  DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}/
+  TARGETS canopen_402_driver
+  EXPORT export_canopen_402_driver
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 install(
-  DIRECTORY ${CMAKE_BINARY_DIR}/config/
-  DESTINATION share/${PROJECT_NAME}/config
-)
-
-install(
-  DIRECTORY config/
-  DESTINATION share/${PROJECT_NAME}/config
-)
-
-install(
-  TARGETS ${PROJECT_NAME} 
-  EXPORT export_${PROJECT_NAME}
+  TARGETS lifecycle_canopen_402_driver
+  EXPORT export_lifecycle_canopen_402_driver
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -90,10 +117,12 @@ ament_export_include_directories(
   include
 )
 ament_export_libraries(
-  ${PROJECT_NAME} 
+  canopen_402_driver
+  export_canopen_402_driver
 )
 ament_export_targets(
-  export_${PROJECT_NAME}
+  export_canopen_402_driver
+  export_lifecycle_canopen_402_driver
 )
 
 ament_package()

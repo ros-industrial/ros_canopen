@@ -221,5 +221,6 @@ namespace ros2_canopen
         }
 
         nmt_promise.set_value(true);
+        return nmt_promise.get_future();
     }
 }

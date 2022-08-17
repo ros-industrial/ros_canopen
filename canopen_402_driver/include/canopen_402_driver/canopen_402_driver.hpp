@@ -1,4 +1,3 @@
-
 #ifndef MC_DEVICE_NODE_HPP
 #define MC_DEVICE_NODE_HPP
 

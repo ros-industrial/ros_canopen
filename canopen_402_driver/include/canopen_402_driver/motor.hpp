@@ -139,7 +139,6 @@ namespace canopen_402
         uint16_t get() const { return word_ & MASK; }
         WordAccessor &operator=(const uint16_t &val)
         {
-            uint16_t was = word_;
             word_ = (word_ & ~MASK) | (val & MASK);
             return *this;
         }
@@ -357,7 +356,7 @@ namespace canopen_402
         bool error(const std::string &msg)
         {
             execute_ = false;
-            // status.error(msg);
+            std::cout << msg << std::endl;
             return false;
         }
 
@@ -377,10 +376,11 @@ namespace canopen_402
     class Motor402 : public MotorBase
     {
     public:
-        Motor402(const std::string &name, std::shared_ptr<MCDeviceDriver> driver) : MotorBase(name),
-                                                                                    switching_state_(State402::Operation_Enable),
-                                                                                    monitor_mode_(true),
-                                                                                    state_switch_timeout_(5)
+        Motor402(std::shared_ptr<MCDeviceDriver> driver) : 
+            MotorBase(),
+            switching_state_(State402::Operation_Enable),
+            monitor_mode_(true),
+            state_switch_timeout_(5)
         {
             this->driver = driver;
             status_word_entry_ = driver->create_remote_obj(status_word_entry_index, 0U, CODataTypes::COData16);
@@ -396,11 +396,40 @@ namespace canopen_402
         virtual uint16_t getMode();
         bool readState();
         void handleDiag();
+        /**
+         * @brief Initialise the drive
+         * 
+         * This function intialises the drive. This means, it first
+         * attempts to bring the device to operational state (CIA402)
+         * and then executes the chosen homing method.
+         * 
+         */
         void handleInit();
         void handleRead();
         void handleWrite();
+        /**
+         * @brief Shutdowns the drive
+         * 
+         * This function shuts down the drive by bringing it into
+         * SwitchOn disbled state.
+         * 
+         */
         void handleShutdown();
+        /**
+         * @brief Executes a quickstop
+         * 
+         * The function executes a quickstop.
+         * 
+         */
         void handleHalt();
+
+        /**
+         * @brief Recovers the device from fault
+         * 
+         * This function tries to reset faults and
+         * put the device back to operational state.
+         * 
+         */
         void handleRecover();
         template <typename T, typename... Args>
         bool registerMode(uint16_t mode, Args &&...args)
