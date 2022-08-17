@@ -9,6 +9,7 @@ Directory canopen_402_driver
 
 .. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
 
+
 *Directory path:* ``/home/runner/work/ros2_canopen/ros2_canopen/canopen_402_driver/include/canopen_402_driver``
 
 

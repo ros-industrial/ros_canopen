@@ -137,6 +137,19 @@
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">create_remote_obj</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">index</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">subindex</span><span class="p">,</span> <span class="n">CODataTypes</span> <span class="n">type</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="n">RemoteObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="p">{</span><span class="n">index</span><span class="p">,</span> <span class="n">subindex</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="nb">true</span><span class="p">};</span>
+            <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">objs</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">objs</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span><span class="p">(</span>
+                    <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">index</span><span class="p">)</span>
+                    <span class="o">&amp;&amp;</span>
+                    <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">subindex</span> <span class="o">==</span> <span class="n">subindex</span><span class="p">)</span>
+                    <span class="o">&amp;&amp;</span>
+                    <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">type</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">return</span> <span class="o">*</span><span class="n">it</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
             <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">objp</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
             <span class="n">objs</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">objp</span><span class="p">);</span>
             <span class="k">return</span> <span class="n">objp</span><span class="p">;</span>
