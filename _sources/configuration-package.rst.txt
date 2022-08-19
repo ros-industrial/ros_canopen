@@ -78,7 +78,7 @@ Add the following code and adjust to your needs:
         ld = launch.LaunchDescription()
 
         master_node = launch_ros.actions.Node(
-            name="device_container_node_node",
+            name="device_container_node",
             namespace="", 
             package="canopen_core", 
             output="screen", 
