@@ -2,9 +2,6 @@
 VendorName=ROS-Industrial
 VendorNumber=0x555
 ProductName=CIA402VTD
-ProductNumber=0x001
-RevisionNumber=0x00000001
-OrderCode=CIA402VTD
 BaudRate_10=0
 BaudRate_20=1
 BaudRate_50=1
@@ -379,7 +376,7 @@ ParameterName=Product Code
 ObjectType=0x07
 DataType=0x0007
 AccessType=ro
-DefaultValue=0x1
+DefaultValue=0x0
 PDOMapping=0
 
 [1018sub3]
@@ -387,6 +384,7 @@ ParameterName=Revision number
 ObjectType=0x07
 DataType=0x0007
 AccessType=ro
+DefaultValue=0x0
 PDOMapping=0
 
 [1018sub4]

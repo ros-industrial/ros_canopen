@@ -16,6 +16,7 @@ find_package(lely_core_libraries REQUIRED)
 
 generate_dcf(simple)
 generate_dcf(cia402)
+generate_dcf(cia402_lifecycle)
 
 install(DIRECTORY
   launch/

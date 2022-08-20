@@ -33,27 +33,26 @@ def generate_launch_description():
                 "master.bin",
             )     
     if not os.path.exists(master_bin_path):
-        master_bin_path = ""
-
+        master_bin_path = ""            
     device_container = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
                 os.path.join(get_package_share_directory("canopen_core"), "launch"),
-                "/canopen_lifecycle.launch.py",
+                "/canopen.launch.py",
             ]
         ),
         launch_arguments={
             "master_config": os.path.join(
                 get_package_share_directory("canopen_tests"),
                 "config",
-                "cia402_lifecycle",
+                "cia402",
                 "master.dcf",
             ),
             "master_bin": master_bin_path,
             "bus_config": os.path.join(
                 get_package_share_directory("canopen_tests"),
                 "config",
-                "cia402_lifecycle",
+                "cia402",
                 "bus.yml",
             ),
             "can_interface_name": "vcan0",

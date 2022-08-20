@@ -376,7 +376,7 @@ ParameterName=Product Code
 ObjectType=0x07
 DataType=0x0007
 AccessType=ro
-DefaultValue=0x1
+DefaultValue=0x0
 PDOMapping=0
 
 [1018sub3]
