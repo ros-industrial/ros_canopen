@@ -13,6 +13,9 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+#ifndef DEVICE_CONTAINER_NODE_HPP
+#define DEVICE_CONTAINER_NODE_HPP
+
 #include <memory>
 #include <vector>
 #include <rclcpp/executors.hpp>
@@ -137,3 +140,5 @@ private:
     bool init_devices_from_config();
     bool add_master(uint8_t node_id);
 };
+
+#endif // DEVICE_CONTAINER_NODE_HPP

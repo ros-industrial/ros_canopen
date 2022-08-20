@@ -13,6 +13,9 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+#ifndef LIFECYCLE_DEVICE_CONTAINER_NODE_HPP
+#define LIFECYCLE_DEVICE_CONTAINER_NODE_HPP
+
 #include <memory>
 #include <vector>
 #include <rclcpp/executors.hpp>
@@ -155,3 +158,5 @@ private:
 
     bool init_master(uint16_t node_id);
 };
+
+#endif // LIFECYCLE_DEVICE_CONTAINER_NODE_HPP
