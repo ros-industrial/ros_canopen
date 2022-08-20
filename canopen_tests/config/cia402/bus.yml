@@ -17,12 +17,14 @@ cia402_device_1:
   tpdo: # TPDO needed statusword, actual velocity, actual position, mode of operation
     1:
       enabled: true
+      cob_id: "auto"
       transmission: 0x01
       mapping:
         - {index: 0x6041, sub_index: 0} # status word
         - {index: 0x6061, sub_index: 0} # mode of operaiton display
     2:
       enabled: true
+      cob_id: "auto"
       transmission: 0x01
       mapping:
         - {index: 0x6064, sub_index: 0} # position actual value
@@ -34,11 +36,13 @@ cia402_device_1:
   rpdo: # RPDO needed controlword, target position, target velocity, mode of operation
     1:
       enabled: true
+      cob_id: "auto"
       mapping:
       - {index: 0x6040, sub_index: 0} # controlword
       - {index: 0x6060, sub_index: 0} # mode of operation
     2:
       enabled: true
+      cob_id: "auto"
       mapping:
       - {index: 0x607A, sub_index: 0} # target position
       - {index: 0x60FF, sub_index: 0} # target velocity

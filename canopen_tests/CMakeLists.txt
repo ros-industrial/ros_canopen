@@ -13,8 +13,9 @@ find_package(canopen_base_driver REQUIRED)
 find_package(canopen_proxy_driver REQUIRED)
 find_package(lely_core_libraries REQUIRED)
 
-dcfgen(${CMAKE_CURRENT_SOURCE_DIR}/config/simple/ simple.yml ${CMAKE_BINARY_DIR}/config/simple/)
-dcfgen(${CMAKE_CURRENT_SOURCE_DIR}/config/cia402/ cia402.yml ${CMAKE_BINARY_DIR}/config/cia402/)
+
+generate_dcf(simple)
+generate_dcf(cia402)
 
 install(DIRECTORY
   launch/
@@ -26,15 +27,6 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}/launch_tests/
 )
 
-install(DIRECTORY
-  config/
-  DESTINATION share/${PROJECT_NAME}/config/
-)
-
-install(DIRECTORY
-  ${CMAKE_BINARY_DIR}/config/
-  DESTINATION share/${PROJECT_NAME}/config/
-)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

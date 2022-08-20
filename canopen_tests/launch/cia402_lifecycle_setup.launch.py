@@ -46,7 +46,7 @@ def generate_launch_description():
                 get_package_share_directory("canopen_tests"),
                 "config",
                 "cia402",
-                "cia402.yml",
+                "bus.yml",
             ),
             "can_interface_name": "vcan0",
         }.items(),

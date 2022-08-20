@@ -478,7 +478,7 @@ ParameterName=COB-ID
 ObjectType=0x07
 DataType=0x0007
 AccessType=rw
-DefaultValue=$NODEID+0x40000200
+DefaultValue=$NODEID+0x80000200
 PDOMapping=0
 
 [1400sub2]
@@ -507,7 +507,7 @@ ParameterName=COB-ID
 ObjectType=0x07
 DataType=0x0007
 AccessType=rw
-DefaultValue=$NODEID+0x40000300
+DefaultValue=$NODEID+0x80000300
 PDOMapping=0
 
 [1401sub2]
@@ -536,7 +536,7 @@ ParameterName=COB-ID
 ObjectType=0x07
 DataType=0x0007
 AccessType=rw
-DefaultValue=$NODEID+0x40000400
+DefaultValue=$NODEID+0x80000400
 PDOMapping=0
 
 [1402sub2]
@@ -565,7 +565,7 @@ ParameterName=COB-ID
 ObjectType=0x07
 DataType=0x0007
 AccessType=rw
-DefaultValue=$NODEID+0xC0000500
+DefaultValue=$NODEID+0x80000500
 PDOMapping=0
 
 [1403sub2]
@@ -742,7 +742,7 @@ ParameterName=COB-ID
 ObjectType=0x07
 DataType=0x0007
 AccessType=rw
-DefaultValue=$NODEID+0x40000180
+DefaultValue=$NODEID+0x80000180
 PDOMapping=0
 
 [1800sub2]
@@ -794,7 +794,7 @@ ParameterName=COB-ID
 ObjectType=0x07
 DataType=0x0007
 AccessType=rw
-DefaultValue=$NODEID+0x40000280
+DefaultValue=$NODEID+0x80000280
 PDOMapping=0
 
 [1801sub2]
@@ -846,7 +846,7 @@ ParameterName=COB-ID
 ObjectType=0x07
 DataType=0x0007
 AccessType=rw
-DefaultValue=$NODEID+0x40000380
+DefaultValue=$NODEID+0x80000380
 PDOMapping=0
 
 [1802sub2]
@@ -898,7 +898,7 @@ ParameterName=COB-ID
 ObjectType=0x07
 DataType=0x0007
 AccessType=rw
-DefaultValue=$NODEID+0xC0000480
+DefaultValue=$NODEID+0x80000480
 PDOMapping=0
 
 [1803sub2]

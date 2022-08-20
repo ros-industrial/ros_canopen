@@ -17,4 +17,4 @@ proxy_device_2:
   dcf_path: "install/canopen_tests/share/canopen_tests/config/simple"
   driver: "ros2_canopen::LifecycleProxyDriver"
   package: "canopen_proxy_driver"
-  enable_lazy_load: false
+  enable_lazy_load: true
