@@ -118,7 +118,7 @@ ament_export_include_directories(
 )
 ament_export_libraries(
   canopen_402_driver
-  export_canopen_402_driver
+  lifecycle_canopen_402_driver
 )
 ament_export_targets(
   export_canopen_402_driver
