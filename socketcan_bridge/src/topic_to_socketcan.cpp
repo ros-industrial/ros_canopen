@@ -37,6 +37,7 @@ namespace socketcan_bridge
       can_topic_ = nh->subscribe<can_msgs::Frame>("sent_messages", nh_param->param("sent_messages_queue_size", 10),
                     std::bind(&TopicToSocketCAN::msgCallback, this, std::placeholders::_1));
       driver_ = driver;
+      timer = nh->createTimer(ros::Duration(0.1), std::bind(&TopicToSocketCAN::timerCallback, this, std::placeholders::_1));
     };
 
   void TopicToSocketCAN::setup()
@@ -44,7 +45,13 @@ namespace socketcan_bridge
       state_listener_ = driver_->createStateListener(
               std::bind(&TopicToSocketCAN::stateCallback, this, std::placeholders::_1));
     };
-
+  void TopicToSocketCAN::timerCallback(const ros::TimerEvent& Event )
+  {
+    if(!driver_->getState().isReady())
+    {
+        driver_->recover();
+    }
+  }
   void TopicToSocketCAN::msgCallback(const can_msgs::Frame::ConstPtr& msg)
     {
       // ROS_DEBUG("Message came from sent_messages topic");
