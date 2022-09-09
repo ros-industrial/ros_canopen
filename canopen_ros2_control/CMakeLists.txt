@@ -50,13 +50,13 @@ install(
 )
 
 if(BUILD_TESTING)
-  #find_package(ament_cmake_gmock REQUIRED)
-  #find_package(ros2_control_test_assets REQUIRED)
+  find_package(ament_cmake_gmock REQUIRED)
+  find_package(ros2_control_test_assets REQUIRED)
 
-  #ament_add_gmock(test_canopen_system test/test_canopen_system.cpp)
-  #target_include_directories(test_canopen_system PRIVATE include)
-  #ament_target_dependencies(
-    #test_canopen_system ${THIS_PACKAGE_INCLUDE_DEPENDS} ros2_control_test_assets)
+  ament_add_gmock(test_canopen_system test/test_canopen_system.cpp)
+  target_include_directories(test_canopen_system PRIVATE include)
+  ament_target_dependencies(
+    test_canopen_system ${THIS_PACKAGE_INCLUDE_DEPENDS} ros2_control_test_assets)
 endif()
 
 ament_export_include_directories(
