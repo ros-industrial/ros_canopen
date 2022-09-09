@@ -52,7 +52,6 @@ CanopenSystem::~CanopenSystem() {
     init_thread_->join();
     init_thread_.reset();
 
-
     executor_.reset();
     spin_thread_.reset();
 }
@@ -158,7 +157,6 @@ void CanopenSystem::initDeviceContainer() {
     {
         RCLCPP_INFO(device_container_->get_logger(), "Initialisation failed.");
     }
-
 }
 
 std::vector<hardware_interface::StateInterface> CanopenSystem::export_state_interfaces()

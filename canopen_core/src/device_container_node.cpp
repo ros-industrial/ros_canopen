@@ -240,6 +240,26 @@ bool DeviceContainerNode::init(
     return true;
 }
 
+bool DeviceContainerNode::init(
+    const std::string& can_interface_name,
+    const std::string& master_config,
+    const std::string& bus_config,
+    const std::string& master_bin)
+{
+
+    can_interface_name_ = can_interface_name;
+    dcf_txt_ = master_config;
+    dcf_bin_ = master_bin;
+    bus_config_ = bus_config;
+
+    this->config_ = std::make_shared<ros2_canopen::ConfigurationManager>(bus_config_);
+    this->config_->init_config();
+    this->init_devices_from_config();
+    return true;
+
+
+}
+
 void DeviceContainerNode::on_load_node(
     const std::shared_ptr<rmw_request_id_t> request_header,
     const std::shared_ptr<LoadNode::Request> request,
