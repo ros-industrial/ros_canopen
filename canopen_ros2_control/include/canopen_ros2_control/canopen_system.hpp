@@ -169,7 +169,7 @@ private:
   std::vector<double> hw_commands_;
   std::vector<double> hw_states_;
 
-  std::shared_ptr<DeviceContainerNode> device_manager_;
+  std::shared_ptr<DeviceContainerNode> device_container_;
   std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
   std::shared_ptr<rclcpp_components::ComponentManager> component_manager_;
   std::shared_ptr<rclcpp::Node> node_;
@@ -180,7 +180,7 @@ private:
   std::unique_ptr<std::thread> spin_thread_;
   std::unique_ptr<std::thread> init_thread_;
   void spin();
-  void initDeviceManager();
+  void initDeviceContainer();
 };
 
 }  // namespace canopen_ros2_control

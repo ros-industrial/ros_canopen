@@ -46,7 +46,7 @@ CanopenSystem::~CanopenSystem() {
     printf("Joined!");
 
 
-    device_manager_.reset();
+    device_container_.reset();
     executor_.reset();
 
     init_thread_->join();
@@ -74,11 +74,11 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
   RCLCPP_INFO(kLogger, "master_bin: '%s'", info_.hardware_parameters["master_bin"].c_str());
 
   executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
-  device_manager_ = std::make_shared<DeviceContainerNode>(executor_);
-  executor_->add_node(device_manager_);
+  device_container_ = std::make_shared<DeviceContainerNode>(executor_);
+  executor_->add_node(device_container_);
 
   // threads
-  init_thread_ = std::make_unique<std::thread>(&CanopenSystem::initDeviceManager, this);
+  init_thread_ = std::make_unique<std::thread>(&CanopenSystem::initDeviceContainer, this);
 
   // actually wait for init phase to end
   if (init_thread_->joinable()){
@@ -96,26 +96,26 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
 void CanopenSystem::spin() {
 
     executor_->spin();
-    executor_->remove_node(device_manager_);
+    executor_->remove_node(device_container_);
 
     RCLCPP_INFO(kLogger, "Exiting spin thread...");
 }
 
-void CanopenSystem::initDeviceManager() {
+void CanopenSystem::initDeviceContainer() {
     std::string tmp_master_bin  = (info_.hardware_parameters["master_bin"] == "\"\"" ) ? "" : info_.hardware_parameters["master_bin"];
 
-    if(device_manager_->init(info_.hardware_parameters["can_interface_name"],
+    if(device_container_->init(info_.hardware_parameters["can_interface_name"],
                              info_.hardware_parameters["master_config"],
                              info_.hardware_parameters["bus_config"],
                              tmp_master_bin))
     {
-        auto node_map = device_manager_->get_node_instance_wrapper_map();
+        auto node_map = device_container_->get_node_instance_wrapper_map();
         RCLCPP_INFO(kLogger, "Number of nodes: '%zu'", node_map.size());
 
-        auto reg_dr = device_manager_->get_registered_drivers();
+        auto reg_dr = device_container_->get_registered_drivers();
         RCLCPP_INFO(kLogger, "Number of registered drivers: '%zu'", reg_dr.size());
         for(auto it = reg_dr.begin(); it != reg_dr.end(); it++){
-            auto proxy_driver =  std::static_pointer_cast<ros2_canopen::ProxyDriver>(device_manager_->get_node(it->second.first));
+            auto proxy_driver =  std::static_pointer_cast<ros2_canopen::ProxyDriver>(device_container_->get_node(it->second.first));
 
             auto nmt_state_cb = [&](canopen::NmtState nmt_state, uint8_t id){
 //                RCLCPP_INFO(
@@ -147,16 +147,16 @@ void CanopenSystem::initDeviceManager() {
 
         }
 
-        auto act_dr = device_manager_->get_active_drivers();
+        auto act_dr = device_container_->get_active_drivers();
         RCLCPP_INFO(kLogger, "Number of active drivers: '%zu'", act_dr.size());
         for(auto it = act_dr.begin(); it != act_dr.end(); it++){
             RCLCPP_INFO(kLogger, "\nActive driver:\n    name: '%s'\n    node_id: '%u'\n    driver: '%s'", it->first.c_str(), it->second.first, it->second.second.c_str());
         }
-        RCLCPP_INFO(device_manager_->get_logger(), "Initialisation successful.");
+        RCLCPP_INFO(device_container_->get_logger(), "Initialisation successful.");
     }
     else
     {
-        RCLCPP_INFO(device_manager_->get_logger(), "Initialisation failed.");
+        RCLCPP_INFO(device_container_->get_logger(), "Initialisation failed.");
     }
 
 }
@@ -274,7 +274,7 @@ hardware_interface::return_type CanopenSystem::write(
   // TODO(anyone): write robot's commands'
 
   for(auto it = canopen_data_.begin(); it!=canopen_data_.end(); ++it){
-      auto proxy_driver =  std::static_pointer_cast<ros2_canopen::ProxyDriver>(device_manager_->get_node(it->first));
+      auto proxy_driver =  std::static_pointer_cast<ros2_canopen::ProxyDriver>(device_container_->get_node(it->first));
 
       // reset node nmt
       if(it->second.nmt_state.reset_command()){

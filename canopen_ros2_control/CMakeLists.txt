@@ -52,11 +52,11 @@ install(
 )
 
 if(BUILD_TESTING)
-  find_package(ament_cmake_gmock REQUIRED)
+  #find_package(ament_cmake_gmock REQUIRED)
 
-  ament_add_gmock(test_canopen_system test/test_canopen_system.cpp)
-  target_include_directories(test_canopen_system PRIVATE include)
-  ament_target_dependencies(test_canopen_system ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  #ament_add_gmock(test_canopen_system test/test_canopen_system.cpp)
+  #target_include_directories(test_canopen_system PRIVATE include)
+  #ament_target_dependencies(test_canopen_system ${THIS_PACKAGE_INCLUDE_DEPENDS})
 endif()
 
 ament_export_include_directories(
