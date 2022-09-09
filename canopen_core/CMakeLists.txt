@@ -168,7 +168,7 @@ target_include_directories(device_container PUBLIC
 
 # device container node
 add_executable(device_container_node
-  src/device_manager_node.cpp
+  src/device_container_executable_node.cpp
   )
 target_link_libraries(device_container_node device_container)
 
