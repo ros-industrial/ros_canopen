@@ -252,7 +252,7 @@ ament_export_libraries(
   master_node
   lifecycle_master_node
   lifecycle_device_manager_node
-  device_manager
+  device_container
 )
 ament_export_targets(
   export_configuration_manager
