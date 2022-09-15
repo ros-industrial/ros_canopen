@@ -19,6 +19,9 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>std_srvs</depend>
 
+  <depend>xacro</depend>
+  <depend>joint_state_broadcaster</depend>
+
   <test_depend>ament_cmake_gmock</test_depend>
   <test_depend>ros2_control_test_assets</test_depend>
 
