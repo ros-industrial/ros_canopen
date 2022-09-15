@@ -39,6 +39,7 @@ Program Listing for File lely_bridge.hpp
    #include <thread>
    #include <vector>
    #include <condition_variable>
+   #include <system_error>
    
    #include "canopen_core/exchange.hpp"
    
@@ -48,98 +49,174 @@ Program Listing for File lely_bridge.hpp
    namespace ros2_canopen
    {
    
-   class LelyBridge : public canopen::FiberDriver
-   {
-     class TPDOWriteTask : public ev::CoTask
+     enum class LelyBridgeErrc
      {
-     public:
-       COData data;
-       LelyBridge * driver;
-       std::mutex mtx;
-       explicit TPDOWriteTask(ev_exec_t * exec)
-       : ev::CoTask(exec)
+       NotListedDevice = 'A',
+       NoResponseOnDeviceType = 'B',
+       DeviceTypeDifference = 'C',
+       VendorIdDifference = 'D',
+       HeartbeatIssue = 'E',
+       NodeGuardingIssue = 'F',
+       InconsistentProgramDownload = 'G',
+       SoftwareUpdateRequired = 'H',
+       SoftwareDownloadFailed = 'I',
+       ConfigurationDownloadFailed = 'J',
+       StartErrorControlFailed = 'K',
+       NmtSlaveInitiallyOperational = 'L',
+       ProductCodeDifference = 'M',
+       RevisionCodeDifference = 'N',
+       SerialNumberDifference = 'O'
+     };
+   
+     struct LelyBridgeErrCategory : std::error_category
+     {
+       const char *name() const noexcept override;
+       std::string message(int ev) const override;
+     };
+   }
+   
+   namespace std
+   {
+     template <>
+     struct is_error_code_enum<ros2_canopen::LelyBridgeErrc> : true_type
+     {
+     };
+     std::error_code make_error_code(ros2_canopen::LelyBridgeErrc);
+   }
+   
+   namespace ros2_canopen{
+     class LelyBridge : public canopen::FiberDriver
+     {
+       class TPDOWriteTask : public ev::CoTask
        {
-         // Lock and load
-         mtx.lock();
-       }
-       void operator()() noexcept
-       {
-         std::scoped_lock<util::BasicLockable> lk(driver->tpdo_event_mutex);
-         switch (data.type_) {
+       public:
+         COData data;
+         LelyBridge *driver;
+         std::mutex mtx;
+         explicit TPDOWriteTask(ev_exec_t *exec)
+             : ev::CoTask(exec)
+         {
+           // Lock and load
+           mtx.lock();
+         }
+         void operator()() noexcept
+         {
+           std::scoped_lock<util::BasicLockable> lk(driver->tpdo_event_mutex);
+           switch (data.type_)
+           {
            case CODataTypes::COData8:
              driver->tpdo_mapped[data.index_][data.subindex_] =
-               static_cast<uint8_t>(data.data_);
+                 static_cast<uint8_t>(data.data_);
              break;
            case CODataTypes::COData16:
              driver->tpdo_mapped[data.index_][data.subindex_] =
-               static_cast<uint16_t>(data.data_);
+                 static_cast<uint16_t>(data.data_);
              break;
            case CODataTypes::COData32:
              driver->tpdo_mapped[data.index_][data.subindex_] =
-               static_cast<uint32_t>(data.data_);
+                 static_cast<uint32_t>(data.data_);
              break;
            default:
              break;
+           }
+           driver->master.TpdoWriteEvent(driver->id(), data.index_, data.subindex_);
+           // Unlock when done
+           mtx.unlock();
          }
-         driver->master.TpdoWriteEvent(driver->id(), data.index_, data.subindex_);
-         // Unlock when done
-         mtx.unlock();
+       };
+   
+     private:
+       // SDO Read synchronisation items
+       std::shared_ptr<std::promise<COData>> sdo_read_data_promise;
+       std::shared_ptr<std::promise<bool>> sdo_write_data_promise;
+       std::mutex sdo_mutex;
+       bool running;
+       std::condition_variable sdo_cond;
+   
+       // NMT synchronisation items
+       std::promise<canopen::NmtState> nmt_state_promise;
+       std::atomic<bool> nmt_state_is_set;
+       std::mutex nmt_mtex;
+   
+       // RPDO synchronisation items
+       std::promise<COData> rpdo_promise;
+       std::atomic<bool> rpdo_is_set;
+       std::mutex pdo_mtex;
+   
+       // BOOT synchronisation items
+       std::atomic<bool> booted;
+       char boot_status;
+       std::string boot_what;
+       canopen::NmtState boot_state;
+       std::condition_variable boot_cond;
+       std::mutex boot_mtex;
+   
+       std::vector<std::shared_ptr<TPDOWriteTask>> tpdo_tasks;
+       uint8_t nodeid;
+   
+       void
+       OnState(canopen::NmtState state) noexcept override;
+   
+       virtual void
+       OnBoot(canopen::NmtState st, char es, const ::std::string &what) noexcept override;
+   
+       void
+       OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override;
+   
+     public:
+       using FiberDriver::FiberDriver;
+   
+       LelyBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
+           : FiberDriver(exec, master, id)
+       {
+         nodeid = id;
+         running = false;
+       }
+   
+       std::future<bool> async_sdo_write(COData data);
+   
+       std::future<COData> async_sdo_read(COData data);
+   
+       std::future<canopen::NmtState> async_request_nmt();
+   
+       std::future<COData> async_request_rpdo();
+   
+       void tpdo_transmit(COData data);
+   
+       void nmt_command(canopen::NmtCommand command);
+   
+       uint8_t get_id();
+   
+       bool wait_for_boot()
+       {
+         if (booted.load())
+         {
+           return true;
+         }
+         std::unique_lock<std::mutex> lck(boot_mtex);
+         boot_cond.wait(lck);
+         if ((boot_status != 0) && (boot_status != 'L'))
+         {
+           throw std::system_error(boot_status, LelyBridgeErrCategory(), "Boot Issue");
+         }
+         else
+         {
+           booted.store(true);
+         }
+       }
+   
+       void Boot()
+       {
+         booted.store(false);
+         FiberDriver::Boot();
+       }
+   
+       bool is_booted()
+       {
+         return booted.load();
        }
      };
    
-   private:
-     // SDO Read synchronisation items
-     std::shared_ptr<std::promise<COData>> sdo_read_data_promise;
-     std::shared_ptr<std::promise<bool>> sdo_write_data_promise;
-     std::mutex sdo_mutex;
-     bool running;
-     std::condition_variable sdo_cond;
+   } // namespace ros2_canopen
    
-     // NMT synchronisation items
-     std::promise<canopen::NmtState> nmt_state_promise;
-     std::atomic<bool> nmt_state_is_set;
-     std::mutex nmt_mtex;
-   
-     // RPDO synchronisation items
-     std::promise<COData> rpdo_promise;
-     std::atomic<bool> rpdo_is_set;
-     std::mutex pdo_mtex;
-   
-     std::vector<std::shared_ptr<TPDOWriteTask>> tpdo_tasks;
-     uint8_t nodeid;
-   
-     void
-     OnState(canopen::NmtState state) noexcept override;
-   
-     void
-     OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override;
-   
-   public:
-     using FiberDriver::FiberDriver;
-   
-     LelyBridge(ev_exec_t * exec, canopen::AsyncMaster & master, uint8_t id)
-     : FiberDriver(exec, master, id)
-     {
-       nodeid = id;
-       running = false;
-     }
-   
-     std::future<bool> async_sdo_write(COData data);
-   
-     std::future<COData> async_sdo_read(COData data);
-   
-     std::future<canopen::NmtState> async_request_nmt();
-   
-     std::future<COData> async_request_rpdo();
-   
-     void tpdo_transmit(COData data);
-   
-     void nmt_command(canopen::NmtCommand command);
-   
-     uint8_t get_id();
-   };
-   
-   }  // namespace ros2_canopen
-   
-   
-   #endif  // CANOPEN_BASE_DRIVER__LELY_BRIDGE_HPP_
+   #endif // CANOPEN_BASE_DRIVER__LELY_BRIDGE_HPP_

@@ -47,15 +47,12 @@ Program Listing for File mc_device_driver.hpp
            std::shared_ptr<RemoteObject> create_remote_obj(uint16_t index, uint8_t subindex, CODataTypes type)
            {
                RemoteObject obj = {index, subindex, 0, type, false, false, true};
-               for(auto it = objs.begin(); it != objs.end(); ++it)
+               for (auto it = objs.begin(); it != objs.end(); ++it)
                {
-                   if(
-                       ((*it)->index == index)
-                       &&
-                       ((*it)->subindex == subindex)
-                       &&
-                       ((*it)->type == type)
-                   )
+                   if (
+                       ((*it)->index == index) &&
+                       ((*it)->subindex == subindex) &&
+                       ((*it)->type == type))
                    {
                        return *it;
                    }
@@ -72,22 +69,22 @@ Program Listing for File mc_device_driver.hpp
                    std::shared_ptr<RemoteObject> obj = *it;
                    if (obj->index == idx && obj->subindex == subidx)
                    {
-                       if(obj->type == CODataTypes::COData8)
+                       if (obj->type == CODataTypes::COData8)
                            obj->data = rpdo_mapped[idx][subidx].Read<uint8_t>();
-                       else if(obj->type == CODataTypes::COData16)
+                       else if (obj->type == CODataTypes::COData16)
                            obj->data = rpdo_mapped[idx][subidx].Read<uint16_t>();
-                       else if(obj->type == CODataTypes::COData32)
+                       else if (obj->type == CODataTypes::COData32)
                            obj->data = rpdo_mapped[idx][subidx].Read<uint32_t>();
                        break;
                    }
                }
    
-               if(idx == 0x606C && subidx == 0x0)
+               if (idx == 0x606C && subidx == 0x0)
                {
                    speed = rpdo_mapped[idx][subidx].Read<int32_t>();
                }
    
-               if(idx == 0x6064 && subidx == 0x0)
+               if (idx == 0x6064 && subidx == 0x0)
                {
                    position = rpdo_mapped[idx][subidx].Read<int32_t>();
                }
@@ -108,7 +105,7 @@ Program Listing for File mc_device_driver.hpp
                }
                else
                {
-                   this->tpdo_mapped[obj->index][obj->subindex] = data; 
+                   this->tpdo_mapped[obj->index][obj->subindex] = data;
                    this->tpdo_mapped[obj->index][obj->subindex].WriteEvent();
                }
            }
@@ -126,6 +123,7 @@ Program Listing for File mc_device_driver.hpp
                    }
                    catch (std::exception &e)
                    {
+                       std::cout << e.what() << std::endl;
                        obj->valid = false;
                    }
                }
@@ -160,19 +158,19 @@ Program Listing for File mc_device_driver.hpp
                        switch (obj->type)
                        {
                        case CODataTypes::COData8:
-                           obj->rpdo_mapped = this->tpdo_mapped[obj->index][obj->subindex].Read<uint8_t>();
+                           this->tpdo_mapped[obj->index][obj->subindex].Read<uint8_t>();
                            break;
                        case CODataTypes::COData16:
-                           obj->rpdo_mapped = this->tpdo_mapped[obj->index][obj->subindex].Read<uint16_t>();
+                           this->tpdo_mapped[obj->index][obj->subindex].Read<uint16_t>();
                            break;
                        case CODataTypes::COData32:
-                           obj->rpdo_mapped = this->tpdo_mapped[obj->index][obj->subindex].Read<uint32_t>();
+                           this->tpdo_mapped[obj->index][obj->subindex].Read<uint32_t>();
                            break;
                        default:
                            throw lely::canopen::SdoError(
-                               this->get_id(), 
-                               obj->index, 
-                               obj->subindex, 
+                               this->get_id(),
+                               obj->index,
+                               obj->subindex,
                                std::make_error_code(std::errc::function_not_supported),
                                "Unkown used, type must be 8, 16 or 32.");
                            break;
@@ -199,9 +197,9 @@ Program Listing for File mc_device_driver.hpp
                            break;
                        default:
                            throw lely::canopen::SdoError(
-                               this->get_id(), 
-                               obj->index, 
-                               obj->subindex, 
+                               this->get_id(),
+                               obj->index,
+                               obj->subindex,
                                std::make_error_code(std::errc::function_not_supported),
                                "Unkown used, type must be 8, 16 or 32.");
                            break;
@@ -213,28 +211,35 @@ Program Listing for File mc_device_driver.hpp
                        obj->rpdo_mapped = false;
                    }
    
-                   switch (obj->type)
+                   try
                    {
-                   case CODataTypes::COData8:
-                       obj->data = get_remote_obj<uint8_t>(obj);
-                       break;
-                   case CODataTypes::COData16:
-                       obj->data = get_remote_obj<uint16_t>(obj);
-                       break;
-                   case CODataTypes::COData32:
-                       obj->data = get_remote_obj<uint32_t>(obj);
-                       break;
-                   default:
-                   break;
+                       switch (obj->type)
+                       {
+                       case CODataTypes::COData8:
+                           obj->data = get_remote_obj<uint8_t>(obj);
+                           break;
+                       case CODataTypes::COData16:
+                           obj->data = get_remote_obj<uint16_t>(obj);
+                           break;
+                       case CODataTypes::COData32:
+                           obj->data = get_remote_obj<uint32_t>(obj);
+                           break;
+                       default:
+                           break;
+                       }
                    }
-                   std::cout << "Initialised object :" 
-                       << this->get_id() << " " 
-                       << std::hex << obj->index << " " 
-                       << std::dec << obj->subindex << " " 
-                       << obj->data << " "
-                       << "RPDO: " << (obj->rpdo_mapped ? "yes" : "no") << " "
-                       << "TPDO: " << (obj->tpdo_mapped ? "yes" : "no") << " "
-                       << std::endl;
+                   catch (lely::canopen::SdoError &e)
+                   {
+                       std::cout << "Could not fetch data." << e.what() << std::endl;
+                   }
+                   std::cout << "Initialised object :"
+                             << this->get_id() << " "
+                             << std::hex << obj->index << " "
+                             << std::dec << obj->subindex << " "
+                             << obj->data << " "
+                             << "RPDO: " << (obj->rpdo_mapped ? "yes" : "no") << " "
+                             << "TPDO: " << (obj->tpdo_mapped ? "yes" : "no") << " "
+                             << std::endl;
                }
            }
    
@@ -254,6 +259,5 @@ Program Listing for File mc_device_driver.hpp
                sync = true;
            }
        };
-   
    }
    #endif

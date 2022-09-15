@@ -129,6 +129,7 @@
 <span class="cp">#include</span> <span class="cpf">&lt;thread&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;condition_variable&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;system_error&gt;</span><span class="cp"></span>
 
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_core/exchange.hpp&quot;</span><span class="cp"></span>
 
@@ -138,101 +139,177 @@
 <span class="k">namespace</span> <span class="n">ros2_canopen</span>
 <span class="p">{</span>
 
-<span class="k">class</span> <span class="nc">LelyBridge</span> <span class="o">:</span> <span class="k">public</span> <span class="n">canopen</span><span class="o">::</span><span class="n">FiberDriver</span>
-<span class="p">{</span>
-  <span class="k">class</span> <span class="nc">TPDOWriteTask</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ev</span><span class="o">::</span><span class="n">CoTask</span>
+  <span class="k">enum</span> <span class="k">class</span> <span class="nc">LelyBridgeErrc</span>
   <span class="p">{</span>
-  <span class="k">public</span><span class="o">:</span>
-    <span class="n">COData</span> <span class="n">data</span><span class="p">;</span>
-    <span class="n">LelyBridge</span> <span class="o">*</span> <span class="n">driver</span><span class="p">;</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">mtx</span><span class="p">;</span>
-    <span class="k">explicit</span> <span class="nf">TPDOWriteTask</span><span class="p">(</span><span class="n">ev_exec_t</span> <span class="o">*</span> <span class="n">exec</span><span class="p">)</span>
-    <span class="o">:</span> <span class="n">ev</span><span class="o">::</span><span class="n">CoTask</span><span class="p">(</span><span class="n">exec</span><span class="p">)</span>
+    <span class="n">NotListedDevice</span> <span class="o">=</span> <span class="sc">&#39;A&#39;</span><span class="p">,</span>
+    <span class="n">NoResponseOnDeviceType</span> <span class="o">=</span> <span class="sc">&#39;B&#39;</span><span class="p">,</span>
+    <span class="n">DeviceTypeDifference</span> <span class="o">=</span> <span class="sc">&#39;C&#39;</span><span class="p">,</span>
+    <span class="n">VendorIdDifference</span> <span class="o">=</span> <span class="sc">&#39;D&#39;</span><span class="p">,</span>
+    <span class="n">HeartbeatIssue</span> <span class="o">=</span> <span class="sc">&#39;E&#39;</span><span class="p">,</span>
+    <span class="n">NodeGuardingIssue</span> <span class="o">=</span> <span class="sc">&#39;F&#39;</span><span class="p">,</span>
+    <span class="n">InconsistentProgramDownload</span> <span class="o">=</span> <span class="sc">&#39;G&#39;</span><span class="p">,</span>
+    <span class="n">SoftwareUpdateRequired</span> <span class="o">=</span> <span class="sc">&#39;H&#39;</span><span class="p">,</span>
+    <span class="n">SoftwareDownloadFailed</span> <span class="o">=</span> <span class="sc">&#39;I&#39;</span><span class="p">,</span>
+    <span class="n">ConfigurationDownloadFailed</span> <span class="o">=</span> <span class="sc">&#39;J&#39;</span><span class="p">,</span>
+    <span class="n">StartErrorControlFailed</span> <span class="o">=</span> <span class="sc">&#39;K&#39;</span><span class="p">,</span>
+    <span class="n">NmtSlaveInitiallyOperational</span> <span class="o">=</span> <span class="sc">&#39;L&#39;</span><span class="p">,</span>
+    <span class="n">ProductCodeDifference</span> <span class="o">=</span> <span class="sc">&#39;M&#39;</span><span class="p">,</span>
+    <span class="n">RevisionCodeDifference</span> <span class="o">=</span> <span class="sc">&#39;N&#39;</span><span class="p">,</span>
+    <span class="n">SerialNumberDifference</span> <span class="o">=</span> <span class="sc">&#39;O&#39;</span>
+  <span class="p">};</span>
+
+  <span class="k">struct</span> <span class="nl">LelyBridgeErrCategory</span> <span class="p">:</span> <span class="n">std</span><span class="o">::</span><span class="n">error_category</span>
+  <span class="p">{</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">()</span> <span class="k">const</span> <span class="k">noexcept</span> <span class="k">override</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">message</span><span class="p">(</span><span class="kt">int</span> <span class="n">ev</span><span class="p">)</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="k">namespace</span> <span class="n">std</span>
+<span class="p">{</span>
+  <span class="k">template</span> <span class="o">&lt;&gt;</span>
+  <span class="k">struct</span> <span class="n">is_error_code_enum</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">LelyBridgeErrc</span><span class="o">&gt;</span> <span class="o">:</span> <span class="n">true_type</span>
+  <span class="p">{</span>
+  <span class="p">};</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">error_code</span> <span class="n">make_error_code</span><span class="p">(</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">LelyBridgeErrc</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">namespace</span> <span class="n">ros2_canopen</span><span class="p">{</span>
+  <span class="k">class</span> <span class="nc">LelyBridge</span> <span class="o">:</span> <span class="k">public</span> <span class="n">canopen</span><span class="o">::</span><span class="n">FiberDriver</span>
+  <span class="p">{</span>
+    <span class="k">class</span> <span class="nc">TPDOWriteTask</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ev</span><span class="o">::</span><span class="n">CoTask</span>
     <span class="p">{</span>
-      <span class="c1">// Lock and load</span>
-      <span class="n">mtx</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
-    <span class="p">}</span>
-    <span class="kt">void</span> <span class="nf">operator</span><span class="p">()()</span> <span class="k">noexcept</span>
-    <span class="p">{</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">scoped_lock</span><span class="o">&lt;</span><span class="n">util</span><span class="o">::</span><span class="n">BasicLockable</span><span class="o">&gt;</span> <span class="n">lk</span><span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">tpdo_event_mutex</span><span class="p">);</span>
-      <span class="k">switch</span> <span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">type_</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+      <span class="n">COData</span> <span class="n">data</span><span class="p">;</span>
+      <span class="n">LelyBridge</span> <span class="o">*</span><span class="n">driver</span><span class="p">;</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">mtx</span><span class="p">;</span>
+      <span class="k">explicit</span> <span class="nf">TPDOWriteTask</span><span class="p">(</span><span class="n">ev_exec_t</span> <span class="o">*</span><span class="n">exec</span><span class="p">)</span>
+          <span class="o">:</span> <span class="n">ev</span><span class="o">::</span><span class="n">CoTask</span><span class="p">(</span><span class="n">exec</span><span class="p">)</span>
+      <span class="p">{</span>
+        <span class="c1">// Lock and load</span>
+        <span class="n">mtx</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+      <span class="p">}</span>
+      <span class="kt">void</span> <span class="nf">operator</span><span class="p">()()</span> <span class="k">noexcept</span>
+      <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">scoped_lock</span><span class="o">&lt;</span><span class="n">util</span><span class="o">::</span><span class="n">BasicLockable</span><span class="o">&gt;</span> <span class="n">lk</span><span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">tpdo_event_mutex</span><span class="p">);</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">type_</span><span class="p">)</span>
+        <span class="p">{</span>
         <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData8</span><span class="p">:</span>
           <span class="n">driver</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">data</span><span class="p">.</span><span class="n">index_</span><span class="p">][</span><span class="n">data</span><span class="p">.</span><span class="n">subindex_</span><span class="p">]</span> <span class="o">=</span>
-            <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">data_</span><span class="p">);</span>
+              <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">data_</span><span class="p">);</span>
           <span class="k">break</span><span class="p">;</span>
         <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData16</span><span class="p">:</span>
           <span class="n">driver</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">data</span><span class="p">.</span><span class="n">index_</span><span class="p">][</span><span class="n">data</span><span class="p">.</span><span class="n">subindex_</span><span class="p">]</span> <span class="o">=</span>
-            <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">data_</span><span class="p">);</span>
+              <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">data_</span><span class="p">);</span>
           <span class="k">break</span><span class="p">;</span>
         <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
           <span class="n">driver</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">data</span><span class="p">.</span><span class="n">index_</span><span class="p">][</span><span class="n">data</span><span class="p">.</span><span class="n">subindex_</span><span class="p">]</span> <span class="o">=</span>
-            <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">data_</span><span class="p">);</span>
+              <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">data_</span><span class="p">);</span>
           <span class="k">break</span><span class="p">;</span>
         <span class="k">default</span><span class="o">:</span>
           <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">driver</span><span class="o">-&gt;</span><span class="n">master</span><span class="p">.</span><span class="n">TpdoWriteEvent</span><span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">(),</span> <span class="n">data</span><span class="p">.</span><span class="n">index_</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">subindex_</span><span class="p">);</span>
+        <span class="c1">// Unlock when done</span>
+        <span class="n">mtx</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
       <span class="p">}</span>
-      <span class="n">driver</span><span class="o">-&gt;</span><span class="n">master</span><span class="p">.</span><span class="n">TpdoWriteEvent</span><span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">(),</span> <span class="n">data</span><span class="p">.</span><span class="n">index_</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">subindex_</span><span class="p">);</span>
-      <span class="c1">// Unlock when done</span>
-      <span class="n">mtx</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+    <span class="p">};</span>
+
+  <span class="k">private</span><span class="o">:</span>
+    <span class="c1">// SDO Read synchronisation items</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;&gt;</span> <span class="n">sdo_read_data_promise</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;</span> <span class="n">sdo_write_data_promise</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">sdo_mutex</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">running</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">condition_variable</span> <span class="n">sdo_cond</span><span class="p">;</span>
+
+    <span class="c1">// NMT synchronisation items</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span><span class="o">&gt;</span> <span class="n">nmt_state_promise</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">nmt_state_is_set</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">nmt_mtex</span><span class="p">;</span>
+
+    <span class="c1">// RPDO synchronisation items</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;</span> <span class="n">rpdo_promise</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">rpdo_is_set</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">pdo_mtex</span><span class="p">;</span>
+
+    <span class="c1">// BOOT synchronisation items</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">booted</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">boot_status</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">boot_what</span><span class="p">;</span>
+    <span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span> <span class="n">boot_state</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">condition_variable</span> <span class="n">boot_cond</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">boot_mtex</span><span class="p">;</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">TPDOWriteTask</span><span class="o">&gt;&gt;</span> <span class="n">tpdo_tasks</span><span class="p">;</span>
+    <span class="kt">uint8_t</span> <span class="n">nodeid</span><span class="p">;</span>
+
+    <span class="kt">void</span>
+    <span class="nf">OnState</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span> <span class="n">state</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span><span class="p">;</span>
+
+    <span class="k">virtual</span> <span class="kt">void</span>
+    <span class="nf">OnBoot</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span> <span class="n">st</span><span class="p">,</span> <span class="kt">char</span> <span class="n">es</span><span class="p">,</span> <span class="k">const</span> <span class="o">::</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">what</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span><span class="p">;</span>
+
+    <span class="kt">void</span>
+    <span class="nf">OnRpdoWrite</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">idx</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">subidx</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span><span class="p">;</span>
+
+  <span class="k">public</span><span class="o">:</span>
+    <span class="k">using</span> <span class="n">FiberDriver</span><span class="o">::</span><span class="n">FiberDriver</span><span class="p">;</span>
+
+    <span class="n">LelyBridge</span><span class="p">(</span><span class="n">ev_exec_t</span> <span class="o">*</span><span class="n">exec</span><span class="p">,</span> <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span><span class="n">master</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">id</span><span class="p">)</span>
+        <span class="o">:</span> <span class="n">FiberDriver</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span> <span class="n">master</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">nodeid</span> <span class="o">=</span> <span class="n">id</span><span class="p">;</span>
+      <span class="n">running</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">async_sdo_write</span><span class="p">(</span><span class="n">COData</span> <span class="n">data</span><span class="p">);</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;</span> <span class="n">async_sdo_read</span><span class="p">(</span><span class="n">COData</span> <span class="n">data</span><span class="p">);</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span><span class="o">&gt;</span> <span class="n">async_request_nmt</span><span class="p">();</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;</span> <span class="n">async_request_rpdo</span><span class="p">();</span>
+
+    <span class="kt">void</span> <span class="nf">tpdo_transmit</span><span class="p">(</span><span class="n">COData</span> <span class="n">data</span><span class="p">);</span>
+
+    <span class="kt">void</span> <span class="nf">nmt_command</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtCommand</span> <span class="n">command</span><span class="p">);</span>
+
+    <span class="kt">uint8_t</span> <span class="nf">get_id</span><span class="p">();</span>
+
+    <span class="kt">bool</span> <span class="nf">wait_for_boot</span><span class="p">()</span>
+    <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">booted</span><span class="p">.</span><span class="n">load</span><span class="p">())</span>
+      <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span> <span class="n">lck</span><span class="p">(</span><span class="n">boot_mtex</span><span class="p">);</span>
+      <span class="n">boot_cond</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">lck</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">((</span><span class="n">boot_status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">boot_status</span> <span class="o">!=</span> <span class="sc">&#39;L&#39;</span><span class="p">))</span>
+      <span class="p">{</span>
+        <span class="k">throw</span> <span class="n">std</span><span class="o">::</span><span class="n">system_error</span><span class="p">(</span><span class="n">boot_status</span><span class="p">,</span> <span class="n">LelyBridgeErrCategory</span><span class="p">(),</span> <span class="s">&quot;Boot Issue&quot;</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">else</span>
+      <span class="p">{</span>
+        <span class="n">booted</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="nf">Boot</span><span class="p">()</span>
+    <span class="p">{</span>
+      <span class="n">booted</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+      <span class="n">FiberDriver</span><span class="o">::</span><span class="n">Boot</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kt">bool</span> <span class="nf">is_booted</span><span class="p">()</span>
+    <span class="p">{</span>
+      <span class="k">return</span> <span class="n">booted</span><span class="p">.</span><span class="n">load</span><span class="p">();</span>
     <span class="p">}</span>
   <span class="p">};</span>
 
-<span class="k">private</span><span class="o">:</span>
-  <span class="c1">// SDO Read synchronisation items</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;&gt;</span> <span class="n">sdo_read_data_promise</span><span class="p">;</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;</span> <span class="n">sdo_write_data_promise</span><span class="p">;</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">sdo_mutex</span><span class="p">;</span>
-  <span class="kt">bool</span> <span class="n">running</span><span class="p">;</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">condition_variable</span> <span class="n">sdo_cond</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// namespace ros2_canopen</span>
 
-  <span class="c1">// NMT synchronisation items</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span><span class="o">&gt;</span> <span class="n">nmt_state_promise</span><span class="p">;</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">nmt_state_is_set</span><span class="p">;</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">nmt_mtex</span><span class="p">;</span>
-
-  <span class="c1">// RPDO synchronisation items</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">promise</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;</span> <span class="n">rpdo_promise</span><span class="p">;</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">rpdo_is_set</span><span class="p">;</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">pdo_mtex</span><span class="p">;</span>
-
-  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">TPDOWriteTask</span><span class="o">&gt;&gt;</span> <span class="n">tpdo_tasks</span><span class="p">;</span>
-  <span class="kt">uint8_t</span> <span class="n">nodeid</span><span class="p">;</span>
-
-  <span class="kt">void</span>
-  <span class="nf">OnState</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span> <span class="n">state</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span><span class="p">;</span>
-
-  <span class="kt">void</span>
-  <span class="nf">OnRpdoWrite</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">idx</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">subidx</span><span class="p">)</span> <span class="k">noexcept</span> <span class="k">override</span><span class="p">;</span>
-
-<span class="k">public</span><span class="o">:</span>
-  <span class="k">using</span> <span class="n">FiberDriver</span><span class="o">::</span><span class="n">FiberDriver</span><span class="p">;</span>
-
-  <span class="n">LelyBridge</span><span class="p">(</span><span class="n">ev_exec_t</span> <span class="o">*</span> <span class="n">exec</span><span class="p">,</span> <span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span> <span class="o">&amp;</span> <span class="n">master</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">id</span><span class="p">)</span>
-  <span class="o">:</span> <span class="n">FiberDriver</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span> <span class="n">master</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span>
-  <span class="p">{</span>
-    <span class="n">nodeid</span> <span class="o">=</span> <span class="n">id</span><span class="p">;</span>
-    <span class="n">running</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">async_sdo_write</span><span class="p">(</span><span class="n">COData</span> <span class="n">data</span><span class="p">);</span>
-
-  <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;</span> <span class="n">async_sdo_read</span><span class="p">(</span><span class="n">COData</span> <span class="n">data</span><span class="p">);</span>
-
-  <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span><span class="o">&gt;</span> <span class="n">async_request_nmt</span><span class="p">();</span>
-
-  <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;</span> <span class="n">async_request_rpdo</span><span class="p">();</span>
-
-  <span class="kt">void</span> <span class="nf">tpdo_transmit</span><span class="p">(</span><span class="n">COData</span> <span class="n">data</span><span class="p">);</span>
-
-  <span class="kt">void</span> <span class="nf">nmt_command</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtCommand</span> <span class="n">command</span><span class="p">);</span>
-
-  <span class="kt">uint8_t</span> <span class="nf">get_id</span><span class="p">();</span>
-<span class="p">};</span>
-
-<span class="p">}</span>  <span class="c1">// namespace ros2_canopen</span>
-
-
-<span class="cp">#endif  </span><span class="c1">// CANOPEN_BASE_DRIVER__LELY_BRIDGE_HPP_</span>
+<span class="cp">#endif </span><span class="c1">// CANOPEN_BASE_DRIVER__LELY_BRIDGE_HPP_</span>
 </pre></div>
 </div>
 </section>

@@ -137,15 +137,12 @@
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">create_remote_obj</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">index</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">subindex</span><span class="p">,</span> <span class="n">CODataTypes</span> <span class="n">type</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="n">RemoteObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="p">{</span><span class="n">index</span><span class="p">,</span> <span class="n">subindex</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="nb">true</span><span class="p">};</span>
-            <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">objs</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">objs</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">objs</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">objs</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span>
             <span class="p">{</span>
-                <span class="k">if</span><span class="p">(</span>
-                    <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">index</span><span class="p">)</span>
-                    <span class="o">&amp;&amp;</span>
-                    <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">subindex</span> <span class="o">==</span> <span class="n">subindex</span><span class="p">)</span>
-                    <span class="o">&amp;&amp;</span>
-                    <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">type</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">index</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+                    <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">subindex</span> <span class="o">==</span> <span class="n">subindex</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+                    <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">type</span><span class="p">))</span>
                 <span class="p">{</span>
                     <span class="k">return</span> <span class="o">*</span><span class="n">it</span><span class="p">;</span>
                 <span class="p">}</span>
@@ -162,22 +159,22 @@
                 <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RemoteObject</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="o">*</span><span class="n">it</span><span class="p">;</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">idx</span> <span class="o">&amp;&amp;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span> <span class="o">==</span> <span class="n">subidx</span><span class="p">)</span>
                 <span class="p">{</span>
-                    <span class="k">if</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData8</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData8</span><span class="p">)</span>
                         <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">();</span>
-                    <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData16</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData16</span><span class="p">)</span>
                         <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">();</span>
-                    <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="n">COData32</span><span class="p">)</span>
                         <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
                     <span class="k">break</span><span class="p">;</span>
                 <span class="p">}</span>
             <span class="p">}</span>
 
-            <span class="k">if</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="mh">0x606C</span> <span class="o">&amp;&amp;</span> <span class="n">subidx</span> <span class="o">==</span> <span class="mh">0x0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="mh">0x606C</span> <span class="o">&amp;&amp;</span> <span class="n">subidx</span> <span class="o">==</span> <span class="mh">0x0</span><span class="p">)</span>
             <span class="p">{</span>
                 <span class="n">speed</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">();</span>
             <span class="p">}</span>
 
-            <span class="k">if</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="mh">0x6064</span> <span class="o">&amp;&amp;</span> <span class="n">subidx</span> <span class="o">==</span> <span class="mh">0x0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="mh">0x6064</span> <span class="o">&amp;&amp;</span> <span class="n">subidx</span> <span class="o">==</span> <span class="mh">0x0</span><span class="p">)</span>
             <span class="p">{</span>
                 <span class="n">position</span> <span class="o">=</span> <span class="n">rpdo_mapped</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">subidx</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">();</span>
             <span class="p">}</span>
@@ -216,6 +213,7 @@
                 <span class="p">}</span>
                 <span class="k">catch</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
                 <span class="p">{</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
                     <span class="n">obj</span><span class="o">-&gt;</span><span class="n">valid</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
                 <span class="p">}</span>
             <span class="p">}</span>
@@ -250,13 +248,13 @@
                     <span class="k">switch</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">)</span>
                     <span class="p">{</span>
                     <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData8</span><span class="p">:</span>
-                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">();</span>
+                        <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">();</span>
                         <span class="k">break</span><span class="p">;</span>
                     <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData16</span><span class="p">:</span>
-                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">();</span>
+                        <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">();</span>
                         <span class="k">break</span><span class="p">;</span>
                     <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
-                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
+                        <span class="k">this</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span><span class="p">[</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">][</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span><span class="p">].</span><span class="n">Read</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
                         <span class="k">break</span><span class="p">;</span>
                     <span class="k">default</span><span class="o">:</span>
                         <span class="k">throw</span> <span class="n">lely</span><span class="o">::</span><span class="n">canopen</span><span class="o">::</span><span class="n">SdoError</span><span class="p">(</span>
@@ -303,28 +301,35 @@
                     <span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
                 <span class="p">}</span>
 
-                <span class="k">switch</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">)</span>
+                <span class="k">try</span>
                 <span class="p">{</span>
-                <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData8</span><span class="p">:</span>
-                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
-                    <span class="k">break</span><span class="p">;</span>
-                <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData16</span><span class="p">:</span>
-                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
-                    <span class="k">break</span><span class="p">;</span>
-                <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
-                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
-                    <span class="k">break</span><span class="p">;</span>
-                <span class="k">default</span><span class="o">:</span>
-                <span class="k">break</span><span class="p">;</span>
+                    <span class="k">switch</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">)</span>
+                    <span class="p">{</span>
+                    <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData8</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData16</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="k">case</span> <span class="n">CODataTypes</span><span class="o">::</span><span class="nl">COData32</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">get_remote_obj</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="k">default</span><span class="o">:</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="k">catch</span> <span class="p">(</span><span class="n">lely</span><span class="o">::</span><span class="n">canopen</span><span class="o">::</span><span class="n">SdoError</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Could not fetch data.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
                 <span class="p">}</span>
                 <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Initialised object :&quot;</span>
-                    <span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_id</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
-                    <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">hex</span> <span class="o">&lt;&lt;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
-                    <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">dec</span> <span class="o">&lt;&lt;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
-                    <span class="o">&lt;&lt;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
-                    <span class="o">&lt;&lt;</span> <span class="s">&quot;RPDO: &quot;</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">?</span> <span class="s">&quot;yes&quot;</span> <span class="o">:</span> <span class="s">&quot;no&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
-                    <span class="o">&lt;&lt;</span> <span class="s">&quot;TPDO: &quot;</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span> <span class="o">?</span> <span class="s">&quot;yes&quot;</span> <span class="o">:</span> <span class="s">&quot;no&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
-                    <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+                          <span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_id</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                          <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">hex</span> <span class="o">&lt;&lt;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                          <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">dec</span> <span class="o">&lt;&lt;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">subindex</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                          <span class="o">&lt;&lt;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                          <span class="o">&lt;&lt;</span> <span class="s">&quot;RPDO: &quot;</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">rpdo_mapped</span> <span class="o">?</span> <span class="s">&quot;yes&quot;</span> <span class="o">:</span> <span class="s">&quot;no&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                          <span class="o">&lt;&lt;</span> <span class="s">&quot;TPDO: &quot;</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">tpdo_mapped</span> <span class="o">?</span> <span class="s">&quot;yes&quot;</span> <span class="o">:</span> <span class="s">&quot;no&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span>
+                          <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
             <span class="p">}</span>
         <span class="p">}</span>
 
@@ -344,7 +349,6 @@
             <span class="n">sync</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
         <span class="p">}</span>
     <span class="p">};</span>
-
 <span class="p">}</span>
 <span class="cp">#endif</span>
 </pre></div>
