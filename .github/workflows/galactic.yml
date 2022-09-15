@@ -2,9 +2,9 @@ name: galactic
 
 on: 
   push:
-    branches: [ master ] 
+    branches: [ galactic ] 
   pull_request:
-    branches: [ master ]
+    branches: [ galactic ]
   workflow_dispatch: 
 
 jobs:

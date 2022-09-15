@@ -2,9 +2,9 @@ name: humble
 
 on: 
   push:
-    branches: [ master ] 
+    branches: [ humble ] 
   pull_request:
-    branches: [ master ]
+    branches: [ humble ]
   workflow_dispatch: 
 
 jobs:

@@ -2,9 +2,9 @@ name: foxy
 
 on: 
   push:
-    branches: [ master ] 
+    branches: [ foxy ] 
   pull_request:
-    branches: [ master ]
+    branches: [ foxy ]
   workflow_dispatch: 
 
 jobs:
