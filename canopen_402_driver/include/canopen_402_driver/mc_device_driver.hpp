@@ -25,9 +25,9 @@ namespace ros2_canopen
 
     /**
      * @brief Specialised LelyBridge for MotionControllers
-     * 
+     *
      * This class provides funtionalities necessary for interacting
-     * with the canopen_402 stack from ros_canopen. 
+     * with the canopen_402 stack from ros_canopen.
      */
     class MCDeviceDriver : public LelyBridge
     {
@@ -40,27 +40,24 @@ namespace ros2_canopen
     public:
         /**
          * @brief Create a remote obj object
-         * 
+         *
          * This function registers an object on the remote that is frequently used
          * to control the device. A pointer to the object is stored.
-         * 
+         *
          * @param [in] index            Index of remote object
          * @param [in] subindex         Subindex of remote object
          * @param [in] type             Type of remote object
-         * @return std::shared_ptr<RemoteObject> 
+         * @return std::shared_ptr<RemoteObject>
          */
         std::shared_ptr<RemoteObject> create_remote_obj(uint16_t index, uint8_t subindex, CODataTypes type)
         {
             RemoteObject obj = {index, subindex, 0, type, false, false, true};
-            for(auto it = objs.begin(); it != objs.end(); ++it)
+            for (auto it = objs.begin(); it != objs.end(); ++it)
             {
-                if(
-                    ((*it)->index == index)
-                    &&
-                    ((*it)->subindex == subindex)
-                    &&
-                    ((*it)->type == type)
-                )
+                if (
+                    ((*it)->index == index) &&
+                    ((*it)->subindex == subindex) &&
+                    ((*it)->type == type))
                 {
                     return *it;
                 }
@@ -72,11 +69,11 @@ namespace ros2_canopen
 
         /**
          * @brief Update registered objectsa on RPDO write
-         * 
+         *
          * This function is called when an RPDO write request is received
          * from the remote device. The funciton updates the registered objects
          * in its remote dictionary.
-         * 
+         *
          * @param [in] idx              Index of written object
          * @param [in] subidx           Subindex of written object
          */
@@ -87,22 +84,22 @@ namespace ros2_canopen
                 std::shared_ptr<RemoteObject> obj = *it;
                 if (obj->index == idx && obj->subindex == subidx)
                 {
-                    if(obj->type == CODataTypes::COData8)
+                    if (obj->type == CODataTypes::COData8)
                         obj->data = rpdo_mapped[idx][subidx].Read<uint8_t>();
-                    else if(obj->type == CODataTypes::COData16)
+                    else if (obj->type == CODataTypes::COData16)
                         obj->data = rpdo_mapped[idx][subidx].Read<uint16_t>();
-                    else if(obj->type == CODataTypes::COData32)
+                    else if (obj->type == CODataTypes::COData32)
                         obj->data = rpdo_mapped[idx][subidx].Read<uint32_t>();
                     break;
                 }
             }
 
-            if(idx == 0x606C && subidx == 0x0)
+            if (idx == 0x606C && subidx == 0x0)
             {
                 speed = rpdo_mapped[idx][subidx].Read<int32_t>();
             }
 
-            if(idx == 0x6064 && subidx == 0x0)
+            if (idx == 0x6064 && subidx == 0x0)
             {
                 position = rpdo_mapped[idx][subidx].Read<int32_t>();
             }
@@ -110,10 +107,10 @@ namespace ros2_canopen
 
         /**
          * @brief Set the remote obj
-         * 
+         *
          * Set the data of the remote object. This function will write the
          * data passed to it to the local cache and the remote dictionary.
-         * 
+         *
          * @tparam T                Datatype of the object
          * @param [in] obj          Shared pointer to the object
          * @param [in] data         Data to be written
@@ -133,17 +130,17 @@ namespace ros2_canopen
             }
             else
             {
-                this->tpdo_mapped[obj->index][obj->subindex] = data; 
+                this->tpdo_mapped[obj->index][obj->subindex] = data;
                 this->tpdo_mapped[obj->index][obj->subindex].WriteEvent();
             }
         }
         /**
          * @brief Get the remote obj
-         * 
+         *
          * Gets the data stored in the remote object. If the object is
          * PDO mapped, the cached data is returned, else the data is fetched
          * via SDO request.
-         * 
+         *
          * @tparam T                Datatype of the object
          * @param [in] obj          Pointer to object
          * @return T                Data that was read
@@ -162,6 +159,7 @@ namespace ros2_canopen
                 }
                 catch (std::exception &e)
                 {
+                    std::cout << e.what() << std::endl;
                     obj->valid = false;
                 }
             }
@@ -187,9 +185,9 @@ namespace ros2_canopen
 
         /**
          * @brief Validate objects in dictionary
-         * 
+         *
          * Validates whether objects exist and whether they are pdo mapped.
-         * 
+         *
          */
         void validate_objs()
         {
@@ -202,19 +200,19 @@ namespace ros2_canopen
                     switch (obj->type)
                     {
                     case CODataTypes::COData8:
-                        obj->rpdo_mapped = this->tpdo_mapped[obj->index][obj->subindex].Read<uint8_t>();
+                        this->tpdo_mapped[obj->index][obj->subindex].Read<uint8_t>();
                         break;
                     case CODataTypes::COData16:
-                        obj->rpdo_mapped = this->tpdo_mapped[obj->index][obj->subindex].Read<uint16_t>();
+                        this->tpdo_mapped[obj->index][obj->subindex].Read<uint16_t>();
                         break;
                     case CODataTypes::COData32:
-                        obj->rpdo_mapped = this->tpdo_mapped[obj->index][obj->subindex].Read<uint32_t>();
+                        this->tpdo_mapped[obj->index][obj->subindex].Read<uint32_t>();
                         break;
                     default:
                         throw lely::canopen::SdoError(
-                            this->get_id(), 
-                            obj->index, 
-                            obj->subindex, 
+                            this->get_id(),
+                            obj->index,
+                            obj->subindex,
                             std::make_error_code(std::errc::function_not_supported),
                             "Unkown used, type must be 8, 16 or 32.");
                         break;
@@ -241,9 +239,9 @@ namespace ros2_canopen
                         break;
                     default:
                         throw lely::canopen::SdoError(
-                            this->get_id(), 
-                            obj->index, 
-                            obj->subindex, 
+                            this->get_id(),
+                            obj->index,
+                            obj->subindex,
                             std::make_error_code(std::errc::function_not_supported),
                             "Unkown used, type must be 8, 16 or 32.");
                         break;
@@ -255,35 +253,42 @@ namespace ros2_canopen
                     obj->rpdo_mapped = false;
                 }
 
-                switch (obj->type)
+                try
                 {
-                case CODataTypes::COData8:
-                    obj->data = get_remote_obj<uint8_t>(obj);
-                    break;
-                case CODataTypes::COData16:
-                    obj->data = get_remote_obj<uint16_t>(obj);
-                    break;
-                case CODataTypes::COData32:
-                    obj->data = get_remote_obj<uint32_t>(obj);
-                    break;
-                default:
-                break;
+                    switch (obj->type)
+                    {
+                    case CODataTypes::COData8:
+                        obj->data = get_remote_obj<uint8_t>(obj);
+                        break;
+                    case CODataTypes::COData16:
+                        obj->data = get_remote_obj<uint16_t>(obj);
+                        break;
+                    case CODataTypes::COData32:
+                        obj->data = get_remote_obj<uint32_t>(obj);
+                        break;
+                    default:
+                        break;
+                    }
                 }
-                std::cout << "Initialised object :" 
-                    << this->get_id() << " " 
-                    << std::hex << obj->index << " " 
-                    << std::dec << obj->subindex << " " 
-                    << obj->data << " "
-                    << "RPDO: " << (obj->rpdo_mapped ? "yes" : "no") << " "
-                    << "TPDO: " << (obj->tpdo_mapped ? "yes" : "no") << " "
-                    << std::endl;
+                catch (lely::canopen::SdoError &e)
+                {
+                    std::cout << "Could not fetch data." << e.what() << std::endl;
+                }
+                std::cout << "Initialised object :"
+                          << this->get_id() << " "
+                          << std::hex << obj->index << " "
+                          << std::dec << obj->subindex << " "
+                          << obj->data << " "
+                          << "RPDO: " << (obj->rpdo_mapped ? "yes" : "no") << " "
+                          << "TPDO: " << (obj->tpdo_mapped ? "yes" : "no") << " "
+                          << std::endl;
             }
         }
 
         /**
          * @brief Get the speed object
-         * 
-         * @return double 
+         *
+         * @return double
          */
         double get_speed()
         {
@@ -292,8 +297,8 @@ namespace ros2_canopen
 
         /**
          * @brief Get the position object
-         * 
-         * @return double 
+         *
+         * @return double
          */
         double get_position()
         {
@@ -306,6 +311,5 @@ namespace ros2_canopen
             sync = true;
         }
     };
-
 }
 #endif

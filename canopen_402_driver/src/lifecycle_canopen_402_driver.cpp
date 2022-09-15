@@ -179,7 +179,6 @@ void LifecycleMotionControllerDriver::start_timers()
 {
     ros2_canopen::LifecycleProxyDriver::start_timers();
     RCLCPP_INFO(this->get_logger(), "start_timers_start");
-    std::this_thread::sleep_for(10ms);
     motor_->registerDefaultModes();
     mc_driver_->validate_objs();
     timer_ = this->create_wall_timer(
@@ -204,27 +203,31 @@ bool LifecycleMotionControllerDriver::add()
     master_->GetExecutor().post(
         [this, prom]()
         {
-            RCLCPP_INFO(this->get_logger(), "in_executor_start");
             std::scoped_lock<std::mutex> lock(this->driver_mutex_);
             mc_driver_ = std::make_shared<MCDeviceDriver>(*exec_, *master_, node_id_);
-            RCLCPP_INFO(this->get_logger(), "inexecutor_boot");
             mc_driver_->Boot();
-            RCLCPP_INFO(this->get_logger(), "inexecutor_set");
             prom->set_value(mc_driver_);
-            RCLCPP_INFO(this->get_logger(), "in_executor_end");
         });
-    RCLCPP_INFO(this->get_logger(), "wait_future");
     auto future_status = f.wait_for(this->non_transmit_timeout_);
     if (future_status != std::future_status::ready)
     {
-        RCLCPP_INFO(this->get_logger(), "timed_out");
+        RCLCPP_ERROR(this->get_logger(), "Boot timed out.");
         return false;
     }
-    RCLCPP_INFO(this->get_logger(), "get_future");
     mc_driver_ = f.get();
-    RCLCPP_INFO(this->get_logger(), "set_driver");
     motor_ = std::make_shared<Motor402>(mc_driver_);
     driver_ = std::static_pointer_cast<LelyBridge>(mc_driver_);
+    if(!mc_driver_->is_booted())
+    {
+        try
+        {
+            mc_driver_->wait_for_boot();
+        }
+        catch(const std::exception& e)
+        {
+            RCLCPP_ERROR(this->get_logger(), e.what());
+        }
+    }
     RCLCPP_INFO(this->get_logger(), "add_end");
     return true;
 }
