@@ -144,11 +144,21 @@ def launch_setup(context, *args, **kwargs):
             }.items(),
     )
 
+    slave_node_2 = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(slave_launch),
+        launch_arguments={
+            "node_id": "3", 
+            "node_name": "slave_node",
+            "slave_config": slave_config,
+            }.items(),
+    )
+
     nodes_to_start = [
         control_node,
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         slave_node_1,
+        slave_node_2
     ]
 
     return nodes_to_start
