@@ -152,54 +152,17 @@
                 <span class="k">this</span><span class="p">,</span>
                 <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_1</span><span class="p">,</span>
                 <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="o">::</span><span class="n">_2</span><span class="p">));</span>
+
     <span class="p">}</span>
 
     <span class="kt">bool</span> <span class="n">init</span><span class="p">();</span>
 
     <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">on_load_node</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
-
-    <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">OnLoadNode</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
-    <span class="p">{</span>
-        <span class="n">on_load_node</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">on_unload_node</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
-
-    <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">OnUnloadNode</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
-    <span class="p">{</span>
-        <span class="n">on_unload_node</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="k">virtual</span> <span class="kt">void</span>
     <span class="nf">on_list_nodes</span><span class="p">(</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
 
-    <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">OnListNodes</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
-    <span class="p">{</span>
-        <span class="n">on_list_nodes</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
-    <span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
     <span class="c1">// Stores registered drivers as device_name, pair(node_id, driver_name)</span>

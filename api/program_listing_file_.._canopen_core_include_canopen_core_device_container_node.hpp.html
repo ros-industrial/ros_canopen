@@ -133,9 +133,7 @@
         <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">executor</span> <span class="o">=</span>
         <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">executors</span><span class="o">::</span><span class="n">MultiThreadedExecutor</span><span class="o">&gt;</span><span class="p">(),</span>
         <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">node_name</span> <span class="o">=</span> <span class="s">&quot;device_manager&quot;</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span> <span class="n">node_options</span> <span class="o">=</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span><span class="p">()</span>
-            <span class="p">.</span><span class="n">start_parameter_services</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
-            <span class="p">.</span><span class="n">start_parameter_event_publisher</span><span class="p">(</span><span class="nb">false</span><span class="p">))</span> <span class="o">:</span>
+        <span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span> <span class="n">node_options</span> <span class="o">=</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span><span class="p">())</span> <span class="o">:</span>
             <span class="n">rclcpp_components</span><span class="o">::</span><span class="n">ComponentManager</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">node_options</span><span class="p">)</span> <span class="p">{</span>
 
         <span class="n">executor_</span> <span class="o">=</span> <span class="n">executor</span><span class="p">;</span>
@@ -169,49 +167,10 @@
     <span class="p">}</span>
 
     <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="n">on_load_node</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
-
-    <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">OnLoadNode</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LoadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
-    <span class="p">{</span>
-        <span class="n">on_load_node</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">on_unload_node</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
-
-    <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">OnUnloadNode</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnloadNode</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
-    <span class="p">{</span>
-        <span class="n">on_unload_node</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">on_list_nodes</span><span class="p">(</span>
+    <span class="n">on_list_nodes</span><span class="p">(</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">);</span>
-
-    <span class="k">virtual</span> <span class="kt">void</span>
-    <span class="nf">OnListNodes</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">rmw_request_id_t</span><span class="o">&gt;</span> <span class="n">request_header</span><span class="p">,</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span> <span class="n">request</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
-    <span class="p">{</span>
-        <span class="n">on_list_nodes</span><span class="p">(</span><span class="n">request_header</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
-    <span class="p">}</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ListNodes</span><span class="o">::</span><span class="n">Response</span><span class="o">&gt;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span><span class="p">;</span>
 
 
 <span class="k">private</span><span class="o">:</span>
