@@ -40,8 +40,8 @@ Program Listing for File configuration_manager.hpp
        class ConfigurationManager
        {
        private:
-           std::string file_; 
-           YAML::Node root_; 
+           std::string file_;                          
+           YAML::Node root_;                           
            std::map<std::string, YAML::Node> devices_; 
    
        public:
@@ -65,6 +65,22 @@ Program Listing for File configuration_manager.hpp
    
                return std::nullopt;
            }
+   
+           std::string dump_device(std::string device_name)
+           {
+               std::string result;
+               try
+               {
+                   auto config = devices_.at(device_name);
+                   result = YAML::Dump(config);
+               }
+               catch (const std::exception &e)
+               {
+                   std::cerr << e.what() << '\n';
+               }
+               return result;
+           }
+   
    
            void init_config();
    

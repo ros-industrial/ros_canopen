@@ -168,7 +168,6 @@
             <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;init_from_master_start&quot;</span><span class="p">);</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">exec_</span> <span class="o">=</span> <span class="n">exec</span><span class="p">;</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">master_</span> <span class="o">=</span> <span class="n">master</span><span class="p">;</span>
-            <span class="k">this</span><span class="o">-&gt;</span><span class="n">config_</span> <span class="o">=</span> <span class="n">config</span><span class="p">;</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">initialised_</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
             <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;init_from_master_end&quot;</span><span class="p">);</span>
         <span class="p">}</span>
@@ -195,9 +194,12 @@
         <span class="p">{</span>
             <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;update_parameters_start&quot;</span><span class="p">);</span>
             <span class="kt">int</span> <span class="n">millis</span><span class="p">;</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">config</span><span class="p">;</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_parameter</span><span class="p">(</span><span class="s">&quot;container_name&quot;</span><span class="p">,</span> <span class="n">container_name_</span><span class="p">);</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_parameter</span><span class="p">(</span><span class="s">&quot;non_transmit_timeout&quot;</span><span class="p">,</span> <span class="n">millis</span><span class="p">);</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_parameter</span><span class="p">(</span><span class="s">&quot;node_id&quot;</span><span class="p">,</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">node_id_</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">get_parameter</span><span class="p">(</span><span class="s">&quot;config&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">config_</span> <span class="o">=</span> <span class="n">YAML</span><span class="o">::</span><span class="n">Load</span><span class="p">(</span><span class="n">config</span><span class="p">);</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">non_transmit_timeout_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="n">millis</span><span class="p">);</span>
             <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;update_parameters_start&quot;</span><span class="p">);</span>
         <span class="p">}</span>
@@ -215,6 +217,7 @@
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s">&quot;container_name&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s">&quot;node_id&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
             <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s">&quot;non_transmit_timeout&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s">&quot;config&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
             <span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_logger</span><span class="p">(),</span> <span class="s">&quot;register_ros_interface_end&quot;</span><span class="p">);</span>
         <span class="p">}</span>
 
@@ -329,7 +332,7 @@
         <span class="c1">// Storing ros2 canopen objects</span>
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">exec_</span><span class="p">;</span>
         <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">canopen</span><span class="o">::</span><span class="n">AsyncMaster</span><span class="o">&gt;</span> <span class="n">master_</span><span class="p">;</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">ConfigurationManager</span><span class="o">&gt;</span> <span class="n">config_</span><span class="p">;</span>
+        <span class="n">YAML</span><span class="o">::</span><span class="n">Node</span> <span class="n">config_</span><span class="p">;</span>
         <span class="n">rclcpp</span><span class="o">::</span><span class="n">Client</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">CONode</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">demand_init_from_master_client_</span><span class="p">;</span>
 
         <span class="c1">// Storing parameter values</span>

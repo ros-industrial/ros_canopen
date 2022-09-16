@@ -158,19 +158,11 @@
         <span class="p">}</span>
 
     <span class="k">protected</span><span class="o">:</span>
-        <span class="c1">// void read_config() override</span>
-        <span class="c1">// {</span>
-        <span class="c1">//     RCLCPP_INFO(this-&gt;get_logger(), &quot;read_config_start&quot;);</span>
-        <span class="c1">//     auto period = this-&gt;config_-&gt;get_entry&lt;uint32_t&gt;(std::string(this-&gt;get_name()), std::string(&quot;period&quot;));</span>
-        <span class="c1">//     RCLCPP_INFO(this-&gt;get_logger(), &quot;read_config_start&quot;);</span>
-        <span class="c1">//     if (!period.has_value())</span>
-        <span class="c1">//     {</span>
-        <span class="c1">//         RCLCPP_ERROR(this-&gt;get_logger(), &quot;ERROR: Bus Configuration does not set period for %s&quot;, this-&gt;get_name());</span>
-        <span class="c1">//     }</span>
-        <span class="c1">//     RCLCPP_INFO(this-&gt;get_logger(), &quot;read_config_start&quot;);</span>
-        <span class="c1">//     period_ms_ = period.value();</span>
-        <span class="c1">//     RCLCPP_INFO(this-&gt;get_logger(), &quot;read_config_end&quot;);</span>
-        <span class="c1">// }</span>
+        <span class="kt">void</span> <span class="n">read_config</span><span class="p">()</span> <span class="k">override</span>
+        <span class="p">{</span>
+            <span class="k">auto</span> <span class="n">period</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">config_</span><span class="p">[</span><span class="s">&quot;period&quot;</span><span class="p">].</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">();</span>
+            <span class="n">period_ms_</span> <span class="o">=</span> <span class="n">period</span><span class="p">;</span>
+        <span class="p">}</span>
 
         <span class="k">virtual</span> <span class="kt">void</span> <span class="n">on_rpdo</span><span class="p">(</span><span class="n">COData</span> <span class="n">data</span><span class="p">)</span> <span class="k">override</span>
         <span class="p">{</span>

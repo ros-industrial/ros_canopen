@@ -156,6 +156,22 @@
             <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">;</span>
         <span class="p">}</span>
 
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dump_device</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">device_name</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">result</span><span class="p">;</span>
+            <span class="k">try</span>
+            <span class="p">{</span>
+                <span class="k">auto</span> <span class="n">config</span> <span class="o">=</span> <span class="n">devices_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">device_name</span><span class="p">);</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">YAML</span><span class="o">::</span><span class="n">Dump</span><span class="p">(</span><span class="n">config</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">exception</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+        <span class="p">}</span>
+
+
         <span class="kt">void</span> <span class="n">init_config</span><span class="p">();</span>
 
         <span class="kt">uint32_t</span> <span class="nf">get_all_devices</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">devices</span><span class="p">);</span>
