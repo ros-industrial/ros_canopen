@@ -98,7 +98,11 @@ install(
 )
 
 if(BUILD_TESTING)
-
+  #find_package(launch_testing_ament_cmake)
+  #add_launch_test(test/test_nmt.py)
+  #add_launch_test(test/test_concurrency.py)
+  #add_launch_test(test/test_pdo.py)
+  #add_launch_test(test/test_sdo.py)
 endif()
 
 ament_export_include_directories(

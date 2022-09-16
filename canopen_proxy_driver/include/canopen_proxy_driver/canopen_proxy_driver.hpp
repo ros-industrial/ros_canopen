@@ -33,6 +33,35 @@ class ProxyDriver : public BaseDriver
 
   std::mutex sdo_mtex;
 
+  // expose for ros2 control purposes
+public:
+    bool reset_node_nmt_command(){
+        driver->nmt_command(canopen::NmtCommand::RESET_NODE);
+        return true;
+    }
+
+    bool start_nmt_command(){
+        driver->nmt_command(canopen::NmtCommand::START);
+        return true;
+    }
+
+    void tpdo_transmit(COData &data){
+            driver->tpdo_transmit(data);
+    }
+
+    void register_nmt_state_cb( std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb){
+        nmt_state_cb_ = std::move(nmt_state_cb);
+    }
+
+    void register_rpdo_cb( std::function<void(COData, uint8_t)> rpdo_cb){
+        rpdo_cb_ = std::move(rpdo_cb);
+    }
+
+    // nmt state callback
+    std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb_;
+    // rpdo callback
+    std::function<void(COData, uint8_t)> rpdo_cb_;
+
 protected:
   void on_nmt(canopen::NmtState nmt_state);
 
@@ -58,7 +87,7 @@ protected:
 
 public:
   explicit ProxyDriver(const rclcpp::NodeOptions & options)
-  : BaseDriver(options) {}
+  : BaseDriver(options), nmt_state_cb_(nullptr), rpdo_cb_(nullptr) {}
 
   void init(
     ev::Executor & exec,
