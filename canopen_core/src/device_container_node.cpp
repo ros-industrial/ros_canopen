@@ -169,7 +169,7 @@ bool DeviceContainerNode::init_devices_from_config()
         RCLCPP_ERROR(this->get_logger(), "Error: Master not in configuration");
         return false;
     }
-
+    
     for (auto it = devices.begin(); it != devices.end(); it++)
     {
         if (it->find("master") == std::string::npos)
@@ -220,6 +220,23 @@ bool DeviceContainerNode::init()
   this->config_->init_config();
   this->init_devices_from_config();
   return true;
+}
+
+bool DeviceContainerNode::init(
+    const std::string& can_interface_name,
+    const std::string& master_config,
+    const std::string& bus_config,
+    const std::string& master_bin)
+{
+    can_interface_name_ = can_interface_name;
+    dcf_txt_ = master_config;
+    dcf_bin_ = master_bin;
+    bus_config_ = bus_config;
+
+    this->config_ = std::make_shared<ros2_canopen::ConfigurationManager>(bus_config_);
+    this->config_->init_config();
+    this->init_devices_from_config();
+    return true;
 }
 
 void DeviceContainerNode::on_list_nodes(

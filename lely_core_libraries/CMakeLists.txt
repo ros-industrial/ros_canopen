@@ -6,7 +6,7 @@ include(ExternalProject)
 ExternalProject_Add(upstr_lely_core_libraries    # Name for custom target
   #--Download step--------------
   GIT_REPOSITORY https://gitlab.com/lely_industries/lely-core.git
-  GIT_TAG f13629b4fcc042744ff497c8bf7428cf2775aba8
+  GIT_TAG ac31cd5cdf2ded4b2a5ba4a94520f388450614ff
   TIMEOUT 60          
   #--Update/Patch step----------
   UPDATE_COMMAND touch <SOURCE_DIR>/config.h 

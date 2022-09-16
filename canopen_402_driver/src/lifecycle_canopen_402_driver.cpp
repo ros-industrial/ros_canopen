@@ -117,27 +117,26 @@ void LifecycleMotionControllerDriver::handle_set_target(
 {
     if (activated_.load())
     {
-        response->success = motor_->setTarget(request->target);
+        double target = request->target * 1000;
+        response->success = motor_->setTarget(target);
     }
 }
 
 void LifecycleMotionControllerDriver::publish()
 {
-    std_msgs::msg::Float64 pos_msg;
-    std_msgs::msg::Float64 speed_msg;
-    pos_msg.data = mc_driver_->get_position();
-    speed_msg.data = mc_driver_->get_speed();
-    publish_actual_position->publish(pos_msg);
-    publish_actual_speed->publish(speed_msg);
+    sensor_msgs::msg::JointState js_msg;
+    js_msg.name.push_back(this->get_name());
+    js_msg.position.push_back(mc_driver_->get_position()/1000);
+    js_msg.velocity.push_back(mc_driver_->get_speed()/1000);
+    js_msg.effort.push_back(0.0);
+    publish_joint_state->publish(js_msg);
 }
 
 void LifecycleMotionControllerDriver::register_ros_interface()
 {
     RCLCPP_INFO(this->get_logger(), "register_ros_interface");
     LifecycleProxyDriver::register_ros_interface();
-    publish_actual_position = this->create_publisher<std_msgs::msg::Float64>("~/actual_position", 10);
-
-    publish_actual_speed = this->create_publisher<std_msgs::msg::Float64>("~/actual_speed", 10);
+    publish_joint_state = this->create_publisher<sensor_msgs::msg::JointState>("~/joint_state", 10);
     handle_init_service = this->create_service<std_srvs::srv::Trigger>(
         std::string(this->get_name()).append("/init").c_str(),
         std::bind(&LifecycleMotionControllerDriver::handle_init, this, _1, _2));

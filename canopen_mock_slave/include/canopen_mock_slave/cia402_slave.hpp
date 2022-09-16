@@ -172,6 +172,10 @@ namespace ros2_canopen
                         std::this_thread::sleep_for(std::chrono::milliseconds(ccp_millis));
                         actual_position += increment;
                         (*this)[0x6064][0] = (int32_t)actual_position*1000;
+                        if(std::abs(actual_position - target_position) < 0.001)
+                        {
+                            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Reached Target %f", target_position);
+                        }
                     }
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(ccp_millis));

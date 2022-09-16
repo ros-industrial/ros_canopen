@@ -16,6 +16,7 @@ find_package(canopen_proxy_driver REQUIRED)
 find_package(Boost REQUIRED COMPONENTS container)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
+find_package(sensor_msgs)
 
 add_library(${PROJECT_NAME} 
   src/canopen_402_driver.cpp
@@ -38,6 +39,7 @@ ament_target_dependencies(
   "canopen_core"
   "canopen_proxy_driver"
   "canopen_base_driver"
+  "sensor_msgs"
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
@@ -71,6 +73,7 @@ ament_target_dependencies(
   "canopen_base_driver"
   "rclcpp_lifecycle"
   "lifecycle_msgs"
+  "sensor_msgs"
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
