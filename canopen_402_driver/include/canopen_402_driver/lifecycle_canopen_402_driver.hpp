@@ -63,19 +63,11 @@ namespace ros2_canopen
         }
 
     protected:
-        // void read_config() override
-        // {
-        //     RCLCPP_INFO(this->get_logger(), "read_config_start");
-        //     auto period = this->config_->get_entry<uint32_t>(std::string(this->get_name()), std::string("period"));
-        //     RCLCPP_INFO(this->get_logger(), "read_config_start");
-        //     if (!period.has_value())
-        //     {
-        //         RCLCPP_ERROR(this->get_logger(), "ERROR: Bus Configuration does not set period for %s", this->get_name());
-        //     }
-        //     RCLCPP_INFO(this->get_logger(), "read_config_start");
-        //     period_ms_ = period.value();
-        //     RCLCPP_INFO(this->get_logger(), "read_config_end");
-        // }
+        void read_config() override
+        {
+            auto period = this->config_["period"].as<uint32_t>();
+            period_ms_ = period;
+        }
 
         virtual void on_rpdo(COData data) override
         {

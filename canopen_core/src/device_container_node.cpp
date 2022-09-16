@@ -169,7 +169,7 @@ bool DeviceContainerNode::init_devices_from_config()
         RCLCPP_ERROR(this->get_logger(), "Error: Master not in configuration");
         return false;
     }
-    
+
     for (auto it = devices.begin(); it != devices.end(); it++)
     {
         if (it->find("master") == std::string::npos)

@@ -14,6 +14,9 @@
   <depend>canopen_base_driver</depend>
   <depend>canopen_proxy_driver</depend>
   <depend>canopen_402_driver</depend>
+  <depend>rviz2</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
 
   <test_depend>ament_lint_auto</test_depend>
 

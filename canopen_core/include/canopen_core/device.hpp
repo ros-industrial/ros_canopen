@@ -83,7 +83,6 @@ namespace ros2_canopen
             RCLCPP_DEBUG(this->get_logger(), "init_from_master_start");
             this->exec_ = exec;
             this->master_ = master;
-            this->config_ = config;
             this->initialised_ = true;
             RCLCPP_DEBUG(this->get_logger(), "init_from_master_end");
         }
@@ -124,9 +123,12 @@ namespace ros2_canopen
         {
             RCLCPP_DEBUG(this->get_logger(), "update_parameters_start");
             int millis;
+            std::string config;
             this->get_parameter("container_name", container_name_);
             this->get_parameter("non_transmit_timeout", millis);
             this->get_parameter("node_id", this->node_id_);
+            this->get_parameter("config", config);
+            this->config_ = YAML::Load(config);
             this->non_transmit_timeout_ = std::chrono::milliseconds(millis);
             RCLCPP_DEBUG(this->get_logger(), "update_parameters_start");
         }
@@ -150,6 +152,7 @@ namespace ros2_canopen
             this->declare_parameter("container_name", "");
             this->declare_parameter("node_id", 0);
             this->declare_parameter("non_transmit_timeout", 100);
+            this->declare_parameter("config", "");
             RCLCPP_DEBUG(this->get_logger(), "register_ros_interface_end");
         }
 
@@ -276,7 +279,7 @@ namespace ros2_canopen
         // Storing ros2 canopen objects
         std::shared_ptr<ev::Executor> exec_;
         std::shared_ptr<canopen::AsyncMaster> master_;
-        std::shared_ptr<ros2_canopen::ConfigurationManager> config_;
+        YAML::Node config_;
         rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr demand_init_from_master_client_;
 
         // Storing parameter values

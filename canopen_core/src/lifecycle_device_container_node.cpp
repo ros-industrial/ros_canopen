@@ -220,6 +220,7 @@ bool LifecycleDeviceContainerNode::load_drivers_from_config()
             add_node_to_executor(driver_name.value(), node_id.value(), *it);
             auto node_instance = std::static_pointer_cast<ros2_canopen::LifecycleDriverInterface>(node_wrappers_[node_id.value()].get_node_instance());
             node_instance->init();
+            node_instance->set_parameter(rclcpp::Parameter("config", config_->dump_device(*it)));
             node_instance->set_parameter(rclcpp::Parameter("node_id", node_id.value()));
             node_instance->set_parameter(rclcpp::Parameter("container_name", this->get_fully_qualified_name()));
             //init_driver(node_id.value());

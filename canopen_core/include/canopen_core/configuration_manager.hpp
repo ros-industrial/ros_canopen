@@ -27,18 +27,18 @@ namespace ros2_canopen
 {
     /**
      * @brief Manager for Bus Configuration.
-     * 
+     *
      * The Bus configuration Manager stores the YAML bus configuration and
      * enables reading configuration entries. The configuration manager is passed
      * to all ros2_canopen master and slave drivers to enable reading driver specific
      * configuration parameters from the YAML configuration file.
-     * 
+     *
      */
     class ConfigurationManager
     {
     private:
-        std::string file_; ///< Stores the configuration file name
-        YAML::Node root_; ///< Stores YAML root node
+        std::string file_;                          ///< Stores the configuration file name
+        YAML::Node root_;                           ///< Stores YAML root node
         std::map<std::string, YAML::Node> devices_; ///< Stores all configuration per device
 
     public:
@@ -49,7 +49,7 @@ namespace ros2_canopen
 
         /**
          * @brief Gets a configuration entry for a specific device
-         * 
+         *
          * @tparam T                Datatype of the retrieved object
          * @param device_name       Device name
          * @param entry_name        Entry name
@@ -72,14 +72,36 @@ namespace ros2_canopen
         }
 
         /**
-         * @brief Initialises the configuration.
+         * @brief Dump device string
          * 
+         * @param device_name 
+         * @return std::string 
+         */
+        std::string dump_device(std::string device_name)
+        {
+            std::string result;
+            try
+            {
+                auto config = devices_.at(device_name);
+                result = YAML::Dump(config);
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << e.what() << '\n';
+            }
+            return result;
+        }
+
+
+        /**
+         * @brief Initialises the configuration.
+         *
          */
         void init_config();
 
         /**
          * @brief Returns all device names
-         * 
+         *
          * @param devices           List with names of all devices
          * @return uint32_t         Number of devices discovered
          */

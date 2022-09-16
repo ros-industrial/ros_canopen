@@ -15,13 +15,12 @@ namespace ros2_canopen
             YAML::Node config_node = it->second;
             devices_.insert({driver_name, config_node});
         }
-
     }
 
     uint32_t ConfigurationManager::get_all_devices(std::vector<std::string> &devices)
     {
         uint32_t count = 0;
-        for(auto it = devices_.begin(); it != devices_.end(); it++)
+        for (auto it = devices_.begin(); it != devices_.end(); it++)
         {
             devices.emplace_back(it->first);
             count++;
