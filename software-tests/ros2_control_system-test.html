@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NMT test &mdash; ros2_canopen 0.0.1 documentation</title>
+  <title>ros2_control SystemInterface test &mdash; ros2_canopen 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -23,8 +23,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PDO test" href="pdo-test.html" />
-    <link rel="prev" title="Concurrency Test" href="concurrency-test.html" /> 
+    <link rel="next" title="SDO test" href="sdo-test.html" />
+    <link rel="prev" title="PDO test" href="pdo-test.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -73,12 +73,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../alpha-test-description.html">Alpha Tester Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../sil-tests.html">Software in the loop Tests</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="concurrency-test.html">Concurrency Test</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">NMT test</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nmt-test.html">NMT test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdo-test.html">PDO test</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ros2_control SystemInterface test</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#test-details">Test details</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pdo-test.html">PDO test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sdo-test.html">SDO test</a></li>
 </ul>
 </li>
@@ -100,9 +100,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../sil-tests.html">Software in the loop Tests</a> &raquo;</li>
-      <li>NMT test</li>
+      <li>ros2_control SystemInterface test</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/software-tests/nmt-test.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/software-tests/ros2_control_system-test.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -110,8 +110,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="nmt-test">
-<h1>NMT test<a class="headerlink" href="#nmt-test" title="Permalink to this headline"></a></h1>
+  <section id="ros2-control-systeminterface-test">
+<h1>ros2_control SystemInterface test<a class="headerlink" href="#ros2-control-systeminterface-test" title="Permalink to this headline"></a></h1>
 <section id="test-details">
 <h2>Test details<a class="headerlink" href="#test-details" title="Permalink to this headline"></a></h2>
 <table class="docutils align-default" id="id1">
@@ -127,16 +127,16 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Package</p></td>
-<td><p>canopen_proxy_driver</p></td>
+<td><p>canopen_ros2_control</p></td>
 </tr>
 <tr class="row-odd"><td><p>Test file</p></td>
-<td><p>test/test_nmt.py</p></td>
+<td><p>launch/canopen_system.launch.py</p></td>
 </tr>
 <tr class="row-even"><td><p>Description</p></td>
-<td><p>Checks whether nmt services are available and can be called.</p></td>
+<td><p>Create an exemplary ros2_control SystemInterface with CAN master and communicates to a slave node. After start check <code class="docutils literal notranslate"><span class="pre">/dynamic_joint_states</span></code> to show internal data from CAN nodes in ros2_control system.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Prequisites</p></td>
-<td><p>van0 must be available</p></td>
+<td><p>vcan0 must be available</p></td>
 </tr>
 </tbody>
 </table>
@@ -147,8 +147,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="concurrency-test.html" class="btn btn-neutral float-left" title="Concurrency Test" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="pdo-test.html" class="btn btn-neutral float-right" title="PDO test" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pdo-test.html" class="btn btn-neutral float-left" title="PDO test" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sdo-test.html" class="btn btn-neutral float-right" title="SDO test" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

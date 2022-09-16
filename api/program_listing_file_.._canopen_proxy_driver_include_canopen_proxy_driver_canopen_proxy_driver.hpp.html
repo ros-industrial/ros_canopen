@@ -135,6 +135,35 @@
 
   <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">sdo_mtex</span><span class="p">;</span>
 
+  <span class="c1">// expose for ros2 control purposes</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">bool</span> <span class="n">reset_node_nmt_command</span><span class="p">(){</span>
+        <span class="n">driver</span><span class="o">-&gt;</span><span class="n">nmt_command</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtCommand</span><span class="o">::</span><span class="n">RESET_NODE</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">bool</span> <span class="n">start_nmt_command</span><span class="p">(){</span>
+        <span class="n">driver</span><span class="o">-&gt;</span><span class="n">nmt_command</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtCommand</span><span class="o">::</span><span class="n">START</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">tpdo_transmit</span><span class="p">(</span><span class="n">COData</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">){</span>
+            <span class="n">driver</span><span class="o">-&gt;</span><span class="n">tpdo_transmit</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">register_nmt_state_cb</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">nmt_state_cb</span><span class="p">){</span>
+        <span class="n">nmt_state_cb_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">nmt_state_cb</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">register_rpdo_cb</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">COData</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">rpdo_cb</span><span class="p">){</span>
+        <span class="n">rpdo_cb_</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">rpdo_cb</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// nmt state callback</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">nmt_state_cb_</span><span class="p">;</span>
+    <span class="c1">// rpdo callback</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">COData</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">rpdo_cb_</span><span class="p">;</span>
+
 <span class="k">protected</span><span class="o">:</span>
   <span class="kt">void</span> <span class="n">on_nmt</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span> <span class="n">nmt_state</span><span class="p">);</span>
 
@@ -160,7 +189,7 @@
 
 <span class="k">public</span><span class="o">:</span>
   <span class="k">explicit</span> <span class="n">ProxyDriver</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span> <span class="o">&amp;</span> <span class="n">options</span><span class="p">)</span>
-  <span class="o">:</span> <span class="n">BaseDriver</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="o">:</span> <span class="n">BaseDriver</span><span class="p">(</span><span class="n">options</span><span class="p">),</span> <span class="n">nmt_state_cb_</span><span class="p">(</span><span class="k">nullptr</span><span class="p">),</span> <span class="n">rpdo_cb_</span><span class="p">(</span><span class="k">nullptr</span><span class="p">)</span> <span class="p">{}</span>
 
   <span class="kt">void</span> <span class="n">init</span><span class="p">(</span>
     <span class="n">ev</span><span class="o">::</span><span class="n">Executor</span> <span class="o">&amp;</span> <span class="n">exec</span><span class="p">,</span>
