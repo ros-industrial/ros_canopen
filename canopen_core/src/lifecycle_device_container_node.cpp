@@ -247,6 +247,8 @@ bool LifecycleDeviceContainerNode::load_manager()
 
 bool LifecycleDeviceContainerNode::init()
 {
+    this->loadNode_srv_.reset();
+    this->unloadNode_srv_.reset();
     if (!this->get_parameter("can_interface_name", can_interface_name_))
     {
         RCLCPP_ERROR(this->get_logger(), "Parameter can_interface_name could not be read.");
@@ -287,26 +289,6 @@ bool LifecycleDeviceContainerNode::init()
     }
 
     return true;
-}
-
-void LifecycleDeviceContainerNode::on_load_node(
-    const std::shared_ptr<rmw_request_id_t> request_header,
-    const std::shared_ptr<LoadNode::Request> request,
-    std::shared_ptr<LoadNode::Response> response)
-{
-    RCLCPP_ERROR(this->get_logger(), "Cannot load nodes.");
-    response->error_message = "Device container can not load nodes.";
-    response->success = false;
-}
-
-void LifecycleDeviceContainerNode::on_unload_node(
-    const std::shared_ptr<rmw_request_id_t> request_header,
-    const std::shared_ptr<UnloadNode::Request> request,
-    std::shared_ptr<UnloadNode::Response> response)
-{
-    RCLCPP_ERROR(this->get_logger(), "Cannot unload nodes.");
-    response->error_message = "Device container can not unload nodes.";
-    response->success = false;
 }
 
 void LifecycleDeviceContainerNode::on_list_nodes(

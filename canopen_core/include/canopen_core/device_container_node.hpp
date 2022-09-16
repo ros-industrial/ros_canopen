@@ -31,9 +31,7 @@ public:
         std::weak_ptr<rclcpp::Executor> executor =
         std::weak_ptr<rclcpp::executors::MultiThreadedExecutor>(),
         std::string node_name = "device_manager",
-        const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions()
-            .start_parameter_services(false)
-            .start_parameter_event_publisher(false)) :
+        const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions()) :
             rclcpp_components::ComponentManager(executor, node_name, node_options) {
         
         executor_ = executor;
@@ -67,49 +65,10 @@ public:
     }
 
     virtual void
-    on_load_node(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<LoadNode::Request> request,
-        std::shared_ptr<LoadNode::Response> response);
-
-    virtual void
-    OnLoadNode(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<LoadNode::Request> request,
-        std::shared_ptr<LoadNode::Response> response) override
-    {
-        on_load_node(request_header, request, response);
-    }
-
-    virtual void
-    on_unload_node(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<UnloadNode::Request> request,
-        std::shared_ptr<UnloadNode::Response> response);
-
-    virtual void
-    OnUnloadNode(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<UnloadNode::Request> request,
-        std::shared_ptr<UnloadNode::Response> response) override
-    {
-        on_unload_node(request_header, request, response);
-    }
-
-    virtual void
     on_list_nodes(
         const std::shared_ptr<rmw_request_id_t> request_header,
         const std::shared_ptr<ListNodes::Request> request,
-        std::shared_ptr<ListNodes::Response> response);
-
-    virtual void
-    OnListNodes(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<ListNodes::Request> request,
-        std::shared_ptr<ListNodes::Response> response) override
-    {
-        on_list_nodes(request_header, request, response);
-    }
+        std::shared_ptr<ListNodes::Response> response) override;
 
 
 private:

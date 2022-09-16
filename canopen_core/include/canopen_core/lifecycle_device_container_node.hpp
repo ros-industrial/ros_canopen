@@ -50,54 +50,17 @@ public:
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2));
+        
     }
 
     bool init();
 
     virtual void
-    on_load_node(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<LoadNode::Request> request,
-        std::shared_ptr<LoadNode::Response> response);
-
-    virtual void
-    OnLoadNode(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<LoadNode::Request> request,
-        std::shared_ptr<LoadNode::Response> response) override
-    {
-        on_load_node(request_header, request, response);
-    }
-
-    virtual void
-    on_unload_node(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<UnloadNode::Request> request,
-        std::shared_ptr<UnloadNode::Response> response);
-
-    virtual void
-    OnUnloadNode(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<UnloadNode::Request> request,
-        std::shared_ptr<UnloadNode::Response> response) override
-    {
-        on_unload_node(request_header, request, response);
-    }
-
-    virtual void
     on_list_nodes(
         const std::shared_ptr<rmw_request_id_t> request_header,
         const std::shared_ptr<ListNodes::Request> request,
-        std::shared_ptr<ListNodes::Response> response);
+        std::shared_ptr<ListNodes::Response> response) override;
 
-    virtual void
-    OnListNodes(
-        const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<ListNodes::Request> request,
-        std::shared_ptr<ListNodes::Response> response) override
-    {
-        on_list_nodes(request_header, request, response);
-    }
 
 private:
     // Stores registered drivers as device_name, pair(node_id, driver_name)

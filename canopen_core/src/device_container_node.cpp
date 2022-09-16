@@ -138,7 +138,6 @@ bool DeviceContainerNode::init_devices_from_config()
     RCLCPP_INFO(this->get_logger(), "Found %u devices", count);
     bool master_found = false;
 
-
     for (auto it = devices.begin(); it != devices.end(); it++)
     {
         if (it->find("master") != std::string::npos && !master_found)
@@ -170,7 +169,7 @@ bool DeviceContainerNode::init_devices_from_config()
         RCLCPP_ERROR(this->get_logger(), "Error: Master not in configuration");
         return false;
     }
-    
+
     for (auto it = devices.begin(); it != devices.end(); it++)
     {
         if (it->find("master") == std::string::npos)
@@ -178,8 +177,8 @@ bool DeviceContainerNode::init_devices_from_config()
             auto node_id = config_->get_entry<uint32_t>(*it, "node_id");
             auto driver_name = config_->get_entry<std::string>(*it, "driver");
             auto package_name = config_->get_entry<std::string>(*it, "package");
-            auto enable_lazy_load = config_->get_entry<bool>(*it, "enable_lazy_load");
-            if (!node_id.has_value() || !driver_name.has_value() || !package_name.has_value() || !enable_lazy_load.has_value())
+
+            if (!node_id.has_value() || !driver_name.has_value() || !package_name.has_value())
             {
                 RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has uncomplete configuration for %s", it->c_str());
                 return false;
@@ -190,16 +189,13 @@ bool DeviceContainerNode::init_devices_from_config()
                 RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has duplicate configuration for %s", it->c_str());
                 return false;
             }
-            RCLCPP_INFO(this->get_logger(), "Found Driver %s with lazy_load %s", driver_name.value().c_str(), enable_lazy_load.value() ? "true" : "false");
-            if (!enable_lazy_load.value())
-            {
-                this->load_component(package_name.value(), driver_name.value(), node_id.value(), *it);
-                add_node_to_executor(driver_name.value(), node_id.value(), *it);
-                this->add_driver_to_master(driver_name.value(), node_id.value());
-            }  
+            RCLCPP_INFO(this->get_logger(), "Found device %s with driver %s", it->c_str(), driver_name.value().c_str());
+
+            this->load_component(package_name.value(), driver_name.value(), node_id.value(), *it);
+            add_node_to_executor(driver_name.value(), node_id.value(), *it);
+            this->add_driver_to_master(driver_name.value(), node_id.value());
         }
     }
-
 
     auto components = list_components();
     RCLCPP_INFO(this->get_logger(), "List of active components:");
@@ -212,92 +208,18 @@ bool DeviceContainerNode::init_devices_from_config()
 
 bool DeviceContainerNode::init()
 {
-  this->get_parameter("can_interface_name", can_interface_name_);
-  this->get_parameter("master_config", dcf_txt_);
-  this->get_parameter("master_bin", dcf_bin_);
-  this->get_parameter("bus_config", bus_config_);
+    this->loadNode_srv_.reset();
+    this->unloadNode_srv_.reset();
+
+    this->get_parameter("can_interface_name", can_interface_name_);
+    this->get_parameter("master_config", dcf_txt_);
+    this->get_parameter("master_bin", dcf_bin_);
+    this->get_parameter("bus_config", bus_config_);
 
   this->config_ = std::make_shared<ros2_canopen::ConfigurationManager>(bus_config_);
   this->config_->init_config();
   this->init_devices_from_config();
   return true;
-}
-
-bool DeviceContainerNode::init(
-    const std::string& can_interface_name,
-    const std::string& master_config,
-    const std::string& bus_config,
-    const std::string& master_bin)
-{
-    can_interface_name_ = can_interface_name;
-    dcf_txt_ = master_config;
-    dcf_bin_ = master_bin;
-    bus_config_ = bus_config;
-
-    this->config_ = std::make_shared<ros2_canopen::ConfigurationManager>(bus_config_);
-    this->config_->init_config();
-    this->init_devices_from_config();
-    return true;
-}
-
-void DeviceContainerNode::on_load_node(
-    const std::shared_ptr<rmw_request_id_t> request_header,
-    const std::shared_ptr<LoadNode::Request> request,
-    std::shared_ptr<LoadNode::Response> response)
-{
-    (void)request_header;
-    std::string package_name = request->package_name;
-    std::string driver_name = request->plugin_name;
-    std::string node_name = request->node_name;
-
-    if (node_name.empty())
-    {
-        response->error_message = "Node name cannot be empty. To pass node name use '-n' option.";
-        response->success = false;
-        return;
-    }
-
-    auto registered_it = registered_drivers_.find(node_name);
-    auto active_it = active_drivers_.find(node_name);
-    if (registered_it == registered_drivers_.end())
-    {
-        response->error_message = "No node registered with the name " + node_name + ".";
-        response->success = false;
-        return;
-    }
-    if (active_it != active_drivers_.end())
-    {
-        response->error_message = node_name + " is already loaded.";
-        response->success = false;
-        return;
-    }
-
-    // pair of {node_id, driver_name}
-    auto node_id = registered_drivers_[node_name].first;
-
-    bool is_loaded = this->load_component(package_name, driver_name, node_id, node_name);
-
-    if (is_loaded)
-    {
-        add_node_to_executor(driver_name, node_id, node_name);
-        this->add_driver_to_master(driver_name, node_id);
-        response->full_node_name = node_name;
-        response->unique_id = node_id;
-        response->success = true;
-    }
-    else
-    {
-        response->error_message = "Failed to find class with the requested plugin name.";
-        response->success = false;
-    }
-
-}
-
-void DeviceContainerNode::on_unload_node(
-    const std::shared_ptr<rmw_request_id_t> request_header,
-    const std::shared_ptr<UnloadNode::Request> request,
-    std::shared_ptr<UnloadNode::Response> response)
-{
 }
 
 void DeviceContainerNode::on_list_nodes(
@@ -314,3 +236,4 @@ void DeviceContainerNode::on_list_nodes(
         response->full_node_names.push_back(it->second);
     }
 }
+
