@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>canopen_ros2_controllers</name>
+  <version>0.0.1</version>
+  <description>ros2_control controllers for ros2_canopen functionalities</description>
+  <maintainer email="denis@stoglrobotics.de">Denis Stogl</maintainer>
+  <maintainer email="lovro.ivanov@gmail.com">Lovro Ivanov</maintainer>
+
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>hardware_interface</depend>
+  <depend>controller_interface</depend>
+  <depend>controller_manager</depend>
+  <depend>realtime_tools</depend>
+  <depend>pluginlib</depend>
+  <depend>ros2_control_test_assets</depend>
+  <depend>ament_cmake_gmock</depend>
+  <depend>canopen_core</depend>
+  <depend>canopen_proxy_driver</depend>
+  <depend>canopen_interfaces</depend>
+  <depend>rclcpp_components</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
