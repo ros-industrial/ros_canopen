@@ -29,6 +29,4 @@ Currently under development. Not for production use.
 * CANopen Master (Service Interface)
 * ProxyDriver (Service Interface)
 * MotionControllerDriver (Service Interface)
-
-**Features under Development:**
-* System Interface (using ros2_control::SystemInterface)
+* Generic ros2_control Interface (implementing `hardware_interface::SystemInterface`) - check https://control.ros.org for more details

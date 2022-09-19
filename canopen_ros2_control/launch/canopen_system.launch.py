@@ -35,6 +35,8 @@ from launch.actions import OpaqueFunction
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -133,38 +135,28 @@ def launch_setup(context, *args, **kwargs):
 
     # hardcoded slave configuration form test package
     slave_config = PathJoinSubstitution(
-        [FindPackageShare("canopen_tests"), "config/simple", "simple.eds"]
+        [FindPackageShare(master_config_package), master_config_directory, "simple.eds"]
     )
 
-    # slave 1
-    slave_node_1 = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [
-                PathJoinSubstitution(
-                    [FindPackageShare("canopen_mock_slave"), "launch", "basic_slave.launch.py"]
-                )
-            ]
-        ),
-        launch_arguments={
-            "node_id": "2",
-            "node_name": "slave_node_1",
-            "slave_config": slave_config,
-        }.items(),
+    slave_launch = PathJoinSubstitution(
+        [FindPackageShare("canopen_mock_slave"), "launch", "basic_slave.launch.py"]
     )
-    # slave 2
-    slave_node_2 = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [
-                PathJoinSubstitution(
-                    [FindPackageShare("canopen_mock_slave"), "launch", "basic_slave.launch.py"]
-                )
-            ]
-        ),
+    slave_node_1 = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(slave_launch),
         launch_arguments={
-            "node_id": "3",
-            "node_name": "slave_node_2",
+            "node_id": "2", 
+            "node_name": "slave_node",
             "slave_config": slave_config,
-        }.items(),
+            }.items(),
+    )
+
+    slave_node_2 = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(slave_launch),
+        launch_arguments={
+            "node_id": "3", 
+            "node_name": "slave_node",
+            "slave_config": slave_config,
+            }.items(),
     )
 
     nodes_to_start = [
@@ -234,7 +226,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "bus_config_package",
-            default_value="canopen_ros2_control",
+            default_value="canopen_tests",
             description="Path to bus configuration.",
         )
     )
