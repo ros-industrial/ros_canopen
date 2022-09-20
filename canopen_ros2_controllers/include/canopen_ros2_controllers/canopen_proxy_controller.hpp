@@ -44,31 +44,31 @@ static constexpr size_t CMD_MY_ITFS = 0;
 class CanopenProxyController : public controller_interface::ControllerInterface
 {
 public:
-  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  CANOPEN_ROS2_CONTROLLERS__VISIBILITY_PUBLIC
   CanopenProxyController();
 
-  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  CANOPEN_ROS2_CONTROLLERS__VISIBILITY_PUBLIC
   controller_interface::CallbackReturn on_init() override;
 
-  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  CANOPEN_ROS2_CONTROLLERS__VISIBILITY_PUBLIC
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
-  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  CANOPEN_ROS2_CONTROLLERS__VISIBILITY_PUBLIC
   controller_interface::InterfaceConfiguration state_interface_configuration() const override;
 
-  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  CANOPEN_ROS2_CONTROLLERS__VISIBILITY_PUBLIC
   controller_interface::CallbackReturn on_configure(
     const rclcpp_lifecycle::State & previous_state) override;
 
-  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  CANOPEN_ROS2_CONTROLLERS__VISIBILITY_PUBLIC
   controller_interface::CallbackReturn on_activate(
     const rclcpp_lifecycle::State & previous_state) override;
 
-  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  CANOPEN_ROS2_CONTROLLERS__VISIBILITY_PUBLIC
   controller_interface::CallbackReturn on_deactivate(
     const rclcpp_lifecycle::State & previous_state) override;
 
-  TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+  CANOPEN_ROS2_CONTROLLERS__VISIBILITY_PUBLIC
   controller_interface::return_type update(
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
