@@ -32,6 +32,30 @@
 #include "std_srvs/srv/set_bool.hpp"
 #include "std_srvs/srv/trigger.hpp"
 
+namespace
+{
+enum CommandInterfaces
+{
+  TPDO_INDEX,
+  TPDO_SUBINDEX,
+  TPDO_TYPE,
+  TPDO_DATA,
+  TPDO_ONS,
+  NMT_RESET,
+  NMT_START,
+};
+
+enum StateInterfaces
+{
+  RPDO_INDEX,
+  RPDO_SUBINDEX,
+  RPDO_TYPE,
+  RPDO_DATA,
+  NMT_STATE,
+};
+
+}  // namespace
+
 namespace canopen_ros2_controllers
 {
 

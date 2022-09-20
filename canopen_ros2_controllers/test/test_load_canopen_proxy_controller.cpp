@@ -35,7 +35,9 @@ TEST(TestLoadCanopenProxyController, load_controller)
     executor, "test_controller_manager");
 
   ASSERT_NO_THROW(
-    cm.load_controller("test_canopen_ros2_controllers", "canopen_ros2_controllers/CanopenProxyController"));
+    cm.load_controller(
+      "test_canopen_ros2_controllers",
+      "canopen_ros2_controllers/CanopenProxyController"));
 
   rclcpp::shutdown();
 }

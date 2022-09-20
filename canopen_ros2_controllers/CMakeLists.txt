@@ -54,26 +54,26 @@ install(
 )
 
 if(BUILD_TESTING)
-#  find_package(ament_cmake_gmock REQUIRED)
-#  ament_add_gmock(test_load_canopen_proxy_controller test/test_load_canopen_proxy_controller.cpp)
-#  target_include_directories(test_load_canopen_proxy_controller PRIVATE include)
-#  ament_target_dependencies(
-#    test_load_canopen_proxy_controller
-#    controller_manager
-#    hardware_interface
-#    ros2_control_test_assets
-#    canopen_interfaces
-#  )
-#
-#  ament_add_gmock(test_canopen_proxy_controller test/test_canopen_proxy_controller.cpp)
-#  target_include_directories(test_canopen_proxy_controller PRIVATE include)
-#  target_link_libraries(test_canopen_proxy_controller ${PROJECT_NAME})
-#  ament_target_dependencies(
-#    test_canopen_proxy_controller
-#    controller_interface
-#    hardware_interface
-#    canopen_interfaces
-#  )
+  find_package(ament_cmake_gmock REQUIRED)
+  ament_add_gmock(test_load_canopen_proxy_controller test/test_load_canopen_proxy_controller.cpp)
+  target_include_directories(test_load_canopen_proxy_controller PRIVATE include)
+  ament_target_dependencies(
+    test_load_canopen_proxy_controller
+    controller_manager
+    hardware_interface
+    ros2_control_test_assets
+    canopen_interfaces
+  )
+
+  ament_add_gmock(test_canopen_proxy_controller test/test_canopen_proxy_controller.cpp)
+  target_include_directories(test_canopen_proxy_controller PRIVATE include)
+  target_link_libraries(test_canopen_proxy_controller ${PROJECT_NAME})
+  ament_target_dependencies(
+    test_canopen_proxy_controller
+    controller_interface
+    hardware_interface
+    canopen_interfaces
+  )
 endif()
 
 ament_export_include_directories(

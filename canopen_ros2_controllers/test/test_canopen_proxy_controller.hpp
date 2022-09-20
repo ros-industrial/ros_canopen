@@ -34,9 +34,10 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 
 // TODO(anyone): replace the state and command message types
-using ControllerStateMsg = canopen_ros2_controllers::CanopenProxyController::ControllerNMTStateMsg ;
+using ControllerStateMsg = canopen_ros2_controllers::CanopenProxyController::ControllerNMTStateMsg;
 using ControllerCommandMsg = canopen_ros2_controllers::CanopenProxyController::ControllerCommandMsg;
-using ControllerModeSrvType = canopen_ros2_controllers::CanopenProxyController::ControllerStartResetSrvType ;
+using ControllerModeSrvType =
+  canopen_ros2_controllers::CanopenProxyController::ControllerStartResetSrvType;
 
 namespace
 {
@@ -48,8 +49,6 @@ constexpr auto NODE_ERROR = controller_interface::CallbackReturn::ERROR;
 class TestableCanopenProxyController : public canopen_ros2_controllers::CanopenProxyController
 {
   FRIEND_TEST(CanopenProxyControllerTest, joint_names_parameter_not_set);
-  FRIEND_TEST(CanopenProxyControllerTest, state_joint_names_parameter_not_set);
-  FRIEND_TEST(CanopenProxyControllerTest, interface_parameter_not_set);
   FRIEND_TEST(CanopenProxyControllerTest, all_parameters_set_configure_success);
   FRIEND_TEST(CanopenProxyControllerTest, activate_success);
   FRIEND_TEST(CanopenProxyControllerTest, reactivate_success);
@@ -101,11 +100,11 @@ private:
 };
 
 // We are using template class here for easier reuse of Fixture in specializations of controllers
-template <typename CtrlType>
+template<typename CtrlType>
 class CanopenProxyControllerFixture : public ::testing::Test
 {
 public:
-  static void SetUpTestCase() { rclcpp::init(0, nullptr); }
+  static void SetUpTestCase() {rclcpp::init(0, nullptr);}
 
   void SetUp()
   {
@@ -121,9 +120,9 @@ public:
       "/test_canopen_ros2_controllers/set_slow_control_mode");
   }
 
-  static void TearDownTestCase() { rclcpp::shutdown(); }
+  static void TearDownTestCase() {rclcpp::shutdown();}
 
-  void TearDown() { controller_.reset(nullptr); }
+  void TearDown() {controller_.reset(nullptr);}
 
 protected:
   void SetUpController(
@@ -136,29 +135,27 @@ protected:
     command_ifs.reserve(joint_command_values_.size());
 
     for (size_t i = 0; i < joint_command_values_.size(); ++i) {
-      command_itfs_.emplace_back(hardware_interface::CommandInterface(
-        joint_names_[i], interface_name_, &joint_command_values_[i]));
+      command_itfs_.emplace_back(
+        hardware_interface::CommandInterface(
+          joint_name_, command_interface_names_[i], &joint_command_values_[i]));
       command_ifs.emplace_back(command_itfs_.back());
     }
-    // TODO(anyone): Add other command interfaces, if any
 
     std::vector<hardware_interface::LoanedStateInterface> state_ifs;
     state_itfs_.reserve(joint_state_values_.size());
     state_ifs.reserve(joint_state_values_.size());
 
     for (size_t i = 0; i < joint_state_values_.size(); ++i) {
-      state_itfs_.emplace_back(hardware_interface::StateInterface(
-        joint_names_[i], interface_name_, &joint_state_values_[i]));
+      state_itfs_.emplace_back(
+        hardware_interface::StateInterface(
+          joint_name_, state_interface_names_[i], &joint_state_values_[i]));
       state_ifs.emplace_back(state_itfs_.back());
     }
-    // TODO(anyone): Add other state interfaces, if any
 
     controller_->assign_interfaces(std::move(command_ifs), std::move(state_ifs));
 
     if (set_parameters) {
-      controller_->get_node()->set_parameter({"joints", joint_names_});
-      controller_->get_node()->set_parameter({"state_joints", state_joint_names_});
-      controller_->get_node()->set_parameter({"interface_name", interface_name_});
+      controller_->get_node()->set_parameter({"joint", joint_name_});
     }
   }
 
@@ -188,7 +185,7 @@ protected:
       }
     }
     ASSERT_GE(max_sub_check_loop_count, 0) << "Test was unable to publish a message through "
-                                              "controller/broadcaster update loop";
+      "controller/broadcaster update loop";
 
     // take message from subscription
     rclcpp::MessageInfo msg_info;
@@ -201,17 +198,17 @@ protected:
     const std::vector<double> & velocities = {0.0}, const double duration = 1.25)
   {
     auto wait_for_topic = [&](const auto topic_name) {
-      size_t wait_count = 0;
-      while (command_publisher_node_->count_subscribers(topic_name) == 0) {
-        if (wait_count >= 5) {
-          auto error_msg =
-            std::string("publishing to ") + topic_name + " but no node subscribes to it";
-          throw std::runtime_error(error_msg);
+        size_t wait_count = 0;
+        while (command_publisher_node_->count_subscribers(topic_name) == 0) {
+          if (wait_count >= 5) {
+            auto error_msg =
+              std::string("publishing to ") + topic_name + " but no node subscribes to it";
+            throw std::runtime_error(error_msg);
+          }
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          ++wait_count;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        ++wait_count;
-      }
-    };
+      };
 
     wait_for_topic(command_publisher_->get_topic_name());
 
@@ -246,11 +243,27 @@ protected:
   // TODO(anyone): adjust the members as needed
 
   // Controller-related parameters
-  std::vector<std::string> joint_names_ = {"joint1"};
-  std::vector<std::string> state_joint_names_ = {"joint1state"};
-  std::string interface_name_ = "my_interface";
-  std::array<double, 1> joint_state_values_ = {1.1};
-  std::array<double, 1> joint_command_values_ = {101.101};
+  std::string joint_name_ = {"joint1"};
+//  std::vector<std::string> state_joint_names_ = {"joint1state"};
+  std::vector<std::string> command_interface_names_ = {"tpdo/index",
+    "tpdo/subindex",
+    "tpdo/type",
+    "tpdo/data",
+    "tpdo/ons",
+    "nmt/reset",
+    "nmt/start"};
+
+  std::vector<std::string> state_interface_names_ = {"rpdo/index",
+    "rpdo/subindex",
+    "rpdo/type",
+    "rpdo/data",
+    "nmt/state"};
+
+  // see StateInterfaces in canopen_proxy_controller.hpp for correct order;
+  std::array<double, 5> joint_state_values_ = {0, 0, 0, 0, 0};
+  // see CommandInterfaces in canopen_proxy_controller.hpp for correct order;
+  std::array<double,
+    7> joint_command_values_ = {101.101, 101.101, 101.101, 101.101, 101.101, 101.101, 101.101};
 
   std::vector<hardware_interface::StateInterface> state_itfs_;
   std::vector<hardware_interface::CommandInterface> command_itfs_;
@@ -265,13 +278,13 @@ protected:
 
 // From the tutorial: https://www.sandordargo.com/blog/2019/04/24/parameterized-testing-with-gtest
 class CanopenProxyControllerTestParameterizedParameters
-: public CanopenProxyControllerFixture<TestableCanopenProxyController>,
+  : public CanopenProxyControllerFixture<TestableCanopenProxyController>,
   public ::testing::WithParamInterface<std::tuple<std::string, rclcpp::ParameterValue>>
 {
 public:
-  virtual void SetUp() { CanopenProxyControllerFixture::SetUp(); }
+  virtual void SetUp() {CanopenProxyControllerFixture::SetUp();}
 
-  static void TearDownTestCase() { CanopenProxyControllerFixture::TearDownTestCase(); }
+  static void TearDownTestCase() {CanopenProxyControllerFixture::TearDownTestCase();}
 
 protected:
   void SetUpController(bool set_parameters = true)
