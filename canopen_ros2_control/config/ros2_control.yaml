@@ -11,5 +11,3 @@ controller_manager:
 node_1_controller:
   ros__parameters:
     joint: node_1
-#    node_1:
-#      node_id: 2

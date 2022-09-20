@@ -1,5 +1,4 @@
 // Copyright (c) 2022, Stogl Robotics Consulting UG (haftungsbeschränkt)
-// Copyright (c) 2022, Stogl Robotics Consulting UG (haftungsbeschränkt) (template)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,18 +19,17 @@
 #include <string>
 #include <vector>
 
+#include "canopen_interfaces/msg/co_data.hpp"
+#include "canopen_interfaces/srv/co_write.hpp"
+#include "canopen_interfaces/srv/co_read.hpp"
 #include "controller_interface/controller_interface.hpp"
 #include "canopen_ros2_controllers/visibility_control.h"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "realtime_tools/realtime_buffer.h"
 #include "realtime_tools/realtime_publisher.h"
-#include "std_srvs/srv/set_bool.hpp"
-
-#include "canopen_interfaces/msg/co_data.hpp"
-#include "canopen_interfaces/srv/co_write.hpp"
-#include "canopen_interfaces/srv/co_read.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "std_srvs/srv/set_bool.hpp"
 #include "std_srvs/srv/trigger.hpp"
 
 namespace canopen_ros2_controllers
@@ -74,7 +72,6 @@ public:
   controller_interface::return_type update(
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
-  // TODO(anyone): replace the state and command message types
   using ControllerCommandMsg = canopen_interfaces::msg::COData;
   using ControllerStartResetSrvType = std_srvs::srv::Trigger;
   using ControllerSDOReadSrvType = canopen_interfaces::srv::CORead;
@@ -107,9 +104,6 @@ protected:
   rclcpp::Service<ControllerSDOReadSrvType>::SharedPtr sdo_read_service_;
   // SDO write service
   rclcpp::Service<ControllerSDOWriteSrvType>::SharedPtr sdo_write_service_;
-
-
-
 };
 
 }  // namespace canopen_ros2_controllers
