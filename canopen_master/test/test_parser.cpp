@@ -37,6 +37,8 @@ TYPED_TEST(TestHexTypes, checkZero){
         TestFixture::test_hex_node(0,"0x0",i);
         TestFixture::test_hex_node(0+i,"$NODEID+0",i);
         TestFixture::test_hex_node(0+i,"$NODEID+0x0",i);
+        TestFixture::test_hex_node(0+i,"0+$NODEID",i);
+        TestFixture::test_hex_node(0+i,"0x0+$NODEID",i);
     }
 }
 TEST(TestHex, checkCamelCase){
@@ -73,6 +75,13 @@ TEST(TestHex, checkNodeSpaces){
         TestHexTypes<uint16_t>::test_hex_node(i+1,"$NODEID +1",i);
         TestHexTypes<uint16_t>::test_hex_node(i+1,"$NODEID +0x1 ",i);
         TestHexTypes<uint16_t>::test_hex_node(i+1,"$NODEID + 0x1",i);
+        
+        TestHexTypes<uint16_t>::test_hex_node(i+1,"1 + $NODEID",i);
+        TestHexTypes<uint16_t>::test_hex_node(i+1,"1+ $NODEID",i);
+        TestHexTypes<uint16_t>::test_hex_node(i+1,"1+$NODEID",i);
+        TestHexTypes<uint16_t>::test_hex_node(i+1,"1 +$NODEID",i);
+        TestHexTypes<uint16_t>::test_hex_node(i+1,"0x1 +  $NODEID ",i);
+        TestHexTypes<uint16_t>::test_hex_node(i+1,"0x1  +$NODEID",i);
     }
 }
 TEST(TestHex, checkCommonObjects){
@@ -95,6 +104,24 @@ TEST(TestHex, checkCommonObjects){
         TestHexTypes<uint32_t>::test_hex_node(0x600+i,"$NODEID+0x600",i); // RSDO
 
         TestHexTypes<uint32_t>::test_hex_node(0x700+i,"$NODEID+0x700",i); //NMT
+
+        TestHexTypes<uint32_t>::test_hex_node( 0x80+i,"0x80+$NODEID",i); // EMCY
+
+        TestHexTypes<uint32_t>::test_hex_node(0x180+i,"0x180+$NODEID",i); //TPDO1
+        TestHexTypes<uint32_t>::test_hex_node(0x200+i,"0x200+$NODEID",i); //RPDO1
+
+        TestHexTypes<uint32_t>::test_hex_node(0x280+i,"0x280+$NODEID",i); //TPDO2
+        TestHexTypes<uint32_t>::test_hex_node(0x300+i,"0x300+$NODEID",i); //RPDO2
+        TestHexTypes<uint32_t>::test_hex_node(0x380+i,"0x380+$NODEID",i); //TPDO3
+        TestHexTypes<uint32_t>::test_hex_node(0x400+i,"0x400+$NODEID",i); //RPDO3
+
+        TestHexTypes<uint32_t>::test_hex_node(0x480+i,"0x480+$NODEID",i); //TPDO4
+        TestHexTypes<uint32_t>::test_hex_node(0x500+i,"0x500+$NODEID",i); //RPDO4
+
+        TestHexTypes<uint32_t>::test_hex_node(0x580+i,"0x580+$NODEID",i); // TSDO
+        TestHexTypes<uint32_t>::test_hex_node(0x600+i,"0x600+$NODEID",i); // RSDO
+
+        TestHexTypes<uint32_t>::test_hex_node(0x700+i,"0x700+$NODEID",i); //NMT
     }
 }
 
