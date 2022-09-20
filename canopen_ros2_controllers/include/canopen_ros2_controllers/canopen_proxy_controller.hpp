@@ -34,12 +34,6 @@
 
 namespace canopen_ros2_controllers
 {
-// name constants for state interfaces
-static constexpr size_t STATE_MY_ITFS = 0;
-
-// name constants for command interfaces
-static constexpr size_t CMD_MY_ITFS = 0;
-
 
 class CanopenProxyController : public controller_interface::ControllerInterface
 {

@@ -161,9 +161,13 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
 
   };
 
+  // init service profile
+  auto service_profile = rmw_qos_profile_services_default;
+  service_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+  service_profile.depth = 1;
   nmt_state_reset_service_ = get_node()->create_service<ControllerStartResetSrvType>(
           "~/nmt_reset_node", on_nmt_state_reset,
-          rmw_qos_profile_services_hist_keep_all);
+          service_profile);
 
   // NMT start
   auto on_nmt_state_start = [&](const std_srvs::srv::Trigger::Request::SharedPtr request,
@@ -182,7 +186,7 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
   };
   nmt_state_start_service_ = get_node()->create_service<ControllerStartResetSrvType>(
           "~/nmt_start_node", on_nmt_state_start,
-          rmw_qos_profile_services_hist_keep_all);
+          service_profile);
 
   // SDO read
   auto on_sdo_read = [&](
@@ -191,7 +195,7 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
 
   sdo_read_service_ = get_node()->create_service<ControllerSDOReadSrvType>(
           "~/sdo_read", on_sdo_read,
-          rmw_qos_profile_services_hist_keep_all);
+          service_profile);
 
   // SDO write
   auto on_sdo_write = [&](
@@ -202,7 +206,7 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
 
   sdo_write_service_ = get_node()->create_service<ControllerSDOWriteSrvType>(
           "~/sdo_write", on_sdo_write,
-          rmw_qos_profile_services_hist_keep_all);
+          service_profile);
 
   RCLCPP_INFO(get_node()->get_logger(), "configure successful");
   return controller_interface::CallbackReturn::SUCCESS;
