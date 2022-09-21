@@ -130,12 +130,32 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleBaseDriver3addEv">
 <span id="_CPPv3N12ros2_canopen19LifecycleBaseDriver3addEv"></span><span id="_CPPv2N12ros2_canopen19LifecycleBaseDriver3addEv"></span><span id="ros2_canopen::LifecycleBaseDriver::add"></span><span class="target" id="classros2__canopen_1_1LifecycleBaseDriver_1aa603be1945413fc12ecc553055b237d0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleBaseDriver3addEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Adds the driver to the master event loop. </p>
+<p>Driver needs to be initialised before calling this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>false </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleBaseDriver6removeEv">
 <span id="_CPPv3N12ros2_canopen19LifecycleBaseDriver6removeEv"></span><span id="_CPPv2N12ros2_canopen19LifecycleBaseDriver6removeEv"></span><span id="ros2_canopen::LifecycleBaseDriver::remove"></span><span class="target" id="classros2__canopen_1_1LifecycleBaseDriver_1a294523992714a704a97e000e51ecc504"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleBaseDriver6removeEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Removes the driver from the masters event loop. </p>
+<p>Driver needs to be intialised before calling this funciton.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>false </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -154,14 +174,14 @@
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleBaseDriver13start_threadsEv">
 <span id="_CPPv3N12ros2_canopen19LifecycleBaseDriver13start_threadsEv"></span><span id="_CPPv2N12ros2_canopen19LifecycleBaseDriver13start_threadsEv"></span><span id="ros2_canopen::LifecycleBaseDriver::start_threads"></span><span class="target" id="classros2__canopen_1_1LifecycleBaseDriver_1abb5d341f6c03066e1cb7ac358899723e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">start_threads</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleBaseDriver13start_threadsEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Start Threads. </p>
-<p>Used during activate transition to start threads that run tasks in active state. </p>
+<p>This funciton will start the nt and rpdo publisher threads. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleBaseDriver12join_threadsEv">
 <span id="_CPPv3N12ros2_canopen19LifecycleBaseDriver12join_threadsEv"></span><span id="_CPPv2N12ros2_canopen19LifecycleBaseDriver12join_threadsEv"></span><span id="ros2_canopen::LifecycleBaseDriver::join_threads"></span><span class="target" id="classros2__canopen_1_1LifecycleBaseDriver_1ac2c268654fc6c3a0a1b1f1eb77ae5199"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">join_threads</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleBaseDriver12join_threadsEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Join Threads. </p>
-<p>Used during deactivate transition to join threads that run tasks in active state. </p>
+<dd><p>Join worker threads. </p>
+<p>This function will wait for the nmt and rpdo publisher threads to finish. </p>
 </dd></dl>
 
 <dl class="cpp function">

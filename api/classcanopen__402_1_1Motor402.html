@@ -205,12 +205,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N11canopen_4028Motor40210handleReadEv">
 <span id="_CPPv3N11canopen_4028Motor40210handleReadEv"></span><span id="_CPPv2N11canopen_4028Motor40210handleReadEv"></span><span id="canopen_402::Motor402::handleRead"></span><span class="target" id="classcanopen__402_1_1Motor402_1af68c2b07795df262e5c34cff921b5c89"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handleRead</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11canopen_4028Motor40210handleReadEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Read objects of the drive. </p>
+<p>This function should be called regularly. It reads the status word from the device and translates it into the devices state. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N11canopen_4028Motor40211handleWriteEv">
 <span id="_CPPv3N11canopen_4028Motor40211handleWriteEv"></span><span id="_CPPv2N11canopen_4028Motor40211handleWriteEv"></span><span id="canopen_402::Motor402::handleWrite"></span><span class="target" id="classcanopen__402_1_1Motor402_1a935fa190e310bfac1db67833655ec5cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handleWrite</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11canopen_4028Motor40211handleWriteEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Writes objects to the drive. </p>
+<p>This function should be called regularly. It writes the new command word to the drive </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N11canopen_4028Motor40214handleShutdownEv">
@@ -236,12 +240,34 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0DpEN11canopen_4028Motor40212registerModeEb8uint16_tDpRR4Args">
 <span id="_CPPv3I0DpEN11canopen_4028Motor40212registerModeE8uint16_tDpRR4Args"></span><span id="_CPPv2I0DpEN11canopen_4028Motor40212registerModeE8uint16_tDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classcanopen__402_1_1Motor402_1a06a27232cd407f3bcbf93f1149ddac4d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">registerMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN11canopen_4028Motor40212registerModeEb8uint16_tDpRR4Args" title="canopen_402::Motor402::registerMode::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN11canopen_4028Motor40212registerModeEb8uint16_tDpRR4Args" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Register a new operation mode for the drive. </p>
+<p>This function will register an operation mode for the drive. It will check if the mode is supported by the drive by reading 0x6508 object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> – </p></li>
+<li><p><strong>Args</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>mode</strong> – </p></li>
+<li><p><strong>args</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>false </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N11canopen_4028Motor40220registerDefaultModesEv">
 <span id="_CPPv3N11canopen_4028Motor40220registerDefaultModesEv"></span><span id="_CPPv2N11canopen_4028Motor40220registerDefaultModesEv"></span><span id="canopen_402::Motor402::registerDefaultModes"></span><span class="target" id="classcanopen__402_1_1Motor402_1a503e593cb54ace4ba19969af1d61f92e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">registerDefaultModes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11canopen_4028Motor40220registerDefaultModesEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Register default Operation Modes. </p>
+<dd><p>Tries to register the standard operation modes defined in cia402. </p>
 </dd></dl>
 
 </div>

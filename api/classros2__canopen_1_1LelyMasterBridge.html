@@ -116,35 +116,65 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyMasterBridgeE">
 <span id="_CPPv3N12ros2_canopen16LelyMasterBridgeE"></span><span id="_CPPv2N12ros2_canopen16LelyMasterBridgeE"></span><span id="ros2_canopen::LelyMasterBridge"></span><span class="target" id="classros2__canopen_1_1LelyMasterBridge"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LelyMasterBridge</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncMaster</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyMasterBridgeE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Creates services to pass values between Lely and ROS executor. </p>
+<dd><p>Lely Master Bridge. </p>
+<p>Creates services to pass values between the CANopen executor and ROS executor. This is important because certain functions can only be called from within the thread of the CANopen executor. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyMasterBridge16LelyMasterBridgeEP9ev_exec_tRN4lely2io9TimerBaseERN4lely2io14CanChannelBaseERKNSt6stringERKNSt6stringE7uint8_t">
 <span id="_CPPv3N12ros2_canopen16LelyMasterBridge16LelyMasterBridgeEP9ev_exec_tRN4lely2io9TimerBaseERN4lely2io14CanChannelBaseERKNSt6stringERKNSt6stringE7uint8_t"></span><span id="_CPPv2N12ros2_canopen16LelyMasterBridge16LelyMasterBridgeEP9ev_exec_tRN4lely2io9TimerBaseERN4lely2io14CanChannelBaseERKNSt6stringERKNSt6stringE7uint8_t"></span><span id="ros2_canopen::LelyMasterBridge::LelyMasterBridge__ev_exec_tP.lely::io::TimerBaseR.lely::io::CanChannelBaseR.ssCR.ssCR.uint8_t"></span><span class="target" id="classros2__canopen_1_1LelyMasterBridge_1a31a6168f36ed76896b7a9cd008fc071c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LelyMasterBridge</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ev_exec_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exec</span></span>, <span class="n"><span class="pre">lely</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">io</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TimerBase</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">timer</span></span>, <span class="n"><span class="pre">lely</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">io</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CanChannelBase</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">chan</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dcf_txt</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dcf_bin</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">)</span></span><span class="m"><span class="pre">255U</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyMasterBridge16LelyMasterBridgeEP9ev_exec_tRN4lely2io9TimerBaseERN4lely2io14CanChannelBaseERKNSt6stringERKNSt6stringE7uint8_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Construct a new Lely Master Bridge object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exec</strong> – <strong>[in]</strong> Pointer to the executor </p></li>
+<li><p><strong>timer</strong> – <strong>[in]</strong> Pointer to the timer </p></li>
+<li><p><strong>chan</strong> – <strong>[in]</strong> Pointer to the channel </p></li>
+<li><p><strong>dcf_txt</strong> – <strong>[in]</strong> Path to the DCF file </p></li>
+<li><p><strong>dcf_bin</strong> – <strong>[in]</strong> Path to the DCF bin file </p></li>
+<li><p><strong>id</strong> – <strong>[in]</strong> CANopen node id of the master </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyMasterBridge15async_write_sdoE7uint8_t6COData">
 <span id="_CPPv3N12ros2_canopen16LelyMasterBridge15async_write_sdoE7uint8_t6COData"></span><span id="_CPPv2N12ros2_canopen16LelyMasterBridge15async_write_sdoE7uint8_t6COData"></span><span id="ros2_canopen::LelyMasterBridge::async_write_sdo__uint8_t.COData"></span><span class="target" id="classros2__canopen_1_1LelyMasterBridge_1a9de4ae4c58e8a7c44eda8985da626648"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_write_sdo</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <a class="reference internal" href="structros2__canopen_1_1COData.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyMasterBridge15async_write_sdoE7uint8_t6COData" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Asynchronous call for writing to an SDO. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – <strong>[in]</strong> CANopen node id of the target device </p></li>
+<li><p><strong>data</strong> – <strong>[in]</strong> Data to write </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>std::future&lt;bool&gt; A future that indicates wether the write Operation was successful. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyMasterBridge14async_read_sdoE7uint8_t6COData">
 <span id="_CPPv3N12ros2_canopen16LelyMasterBridge14async_read_sdoE7uint8_t6COData"></span><span id="_CPPv2N12ros2_canopen16LelyMasterBridge14async_read_sdoE7uint8_t6COData"></span><span id="ros2_canopen::LelyMasterBridge::async_read_sdo__uint8_t.COData"></span><span class="target" id="classros2__canopen_1_1LelyMasterBridge_1a7ba46f54593bcef1a576ddaee932632e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structros2__canopen_1_1COData.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_read_sdo</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <a class="reference internal" href="structros2__canopen_1_1COData.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyMasterBridge14async_read_sdoE7uint8_t6COData" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – <strong>[in]</strong> CANopen node id of the target device </p></li>
+<li><p><strong>data</strong> – <strong>[in]</strong> Data to read, value is disregarded </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>std::future&lt;COData&gt; A future that returns the read result once the process finished. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyMasterBridge15async_write_nmtE7uint8_t7uint8_t">
 <span id="_CPPv3N12ros2_canopen16LelyMasterBridge15async_write_nmtE7uint8_t7uint8_t"></span><span id="_CPPv2N12ros2_canopen16LelyMasterBridge15async_write_nmtE7uint8_t7uint8_t"></span><span id="ros2_canopen::LelyMasterBridge::async_write_nmt__uint8_t.uint8_t"></span><span class="target" id="classros2__canopen_1_1LelyMasterBridge_1a072b6b8af401b1569d5ec1bd95d902e6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_write_nmt</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">command</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyMasterBridge15async_write_nmtE7uint8_t7uint8_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>async_write_nmt </p>
-<p><dl>
-<dt class="sig sig-object cpp">
-<a class="reference internal" href="page_todo.html#todo_1_todo000001"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
-<dd><p>Catch errors and transmit via future </p>
-</dd></dl>
-
-</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -153,7 +183,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>std::future&lt;bool&gt;</p>
+<dd class="field-even"><p>std::future&lt;bool&gt; </p>
 </dd>
 </dl>
 </dd></dl>

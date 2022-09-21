@@ -116,12 +116,20 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleMasterNodeE">
 <span id="_CPPv3N12ros2_canopen19LifecycleMasterNodeE"></span><span id="_CPPv2N12ros2_canopen19LifecycleMasterNodeE"></span><span id="ros2_canopen::LifecycleMasterNode"></span><span class="target" id="classros2__canopen_1_1LifecycleMasterNode"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleMasterNode</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">ros2_canopen</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classros2__canopen_1_1LifecycleMasterInterface.html#_CPPv4N12ros2_canopen24LifecycleMasterInterfaceE" title="ros2_canopen::LifecycleMasterInterface"><span class="n"><span class="pre">LifecycleMasterInterface</span></span></a><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleMasterNodeE" title="Permalink to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>Lifecycle Master Node. </p>
+<p>This class implements the Lifecycle master interface. It uses the Lely Master Bridge and exposes a ROS node interface. </p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleMasterNode19LifecycleMasterNodeERKN6rclcpp11NodeOptionsE">
 <span id="_CPPv3N12ros2_canopen19LifecycleMasterNode19LifecycleMasterNodeERKN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N12ros2_canopen19LifecycleMasterNode19LifecycleMasterNodeERKN6rclcpp11NodeOptionsE"></span><span id="ros2_canopen::LifecycleMasterNode::LifecycleMasterNode__rclcpp::NodeOptionsCR"></span><span class="target" id="classros2__canopen_1_1LifecycleMasterNode_1a5ac8a8dde5bf66ac6019dc70dd2a493d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleMasterNode</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node_options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleMasterNode19LifecycleMasterNodeERKN6rclcpp11NodeOptionsE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Construct a new Lifecycle Master Node object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_options</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleMasterNode4initEv">
@@ -132,28 +140,72 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleMasterNode12on_configureERKN16rclcpp_lifecycle5StateE">
-<span id="_CPPv3N12ros2_canopen19LifecycleMasterNode12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen19LifecycleMasterNode12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleMasterNode::on_configure__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleMasterNode_1a18fc76cffcb35a716a10b26f421520df"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_configure</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleMasterNode12on_configureERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N12ros2_canopen19LifecycleMasterNode12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen19LifecycleMasterNode12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleMasterNode::on_configure__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleMasterNode_1a10c98104f9032e5cd1c3fa09a03a9790"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_configure</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleMasterNode12on_configureERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Callback for Configuration Transition. </p>
+<p>This reads the nodes paramters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleMasterNode11on_activateERKN16rclcpp_lifecycle5StateE">
 <span id="_CPPv3N12ros2_canopen19LifecycleMasterNode11on_activateERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen19LifecycleMasterNode11on_activateERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleMasterNode::on_activate__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleMasterNode_1a93e736a27b5e7f5b536a27de8979271b"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_activate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleMasterNode11on_activateERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Callback for Activate Transition. </p>
+<p>This creates the necessary objects for the Lely Master Bridge and starts the Master Bridge and the associated executor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleMasterNode13on_deactivateERKN16rclcpp_lifecycle5StateE">
 <span id="_CPPv3N12ros2_canopen19LifecycleMasterNode13on_deactivateERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen19LifecycleMasterNode13on_deactivateERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleMasterNode::on_deactivate__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleMasterNode_1a7f1243e3638c274c2d74d2186ffb3987"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_deactivate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleMasterNode13on_deactivateERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Callback for Deactivate Transition. </p>
+<p>This stops the Masterbridge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleMasterNode10on_cleanupERKN16rclcpp_lifecycle5StateE">
 <span id="_CPPv3N12ros2_canopen19LifecycleMasterNode10on_cleanupERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen19LifecycleMasterNode10on_cleanupERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleMasterNode::on_cleanup__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleMasterNode_1a7666585b69b96d9860b13f332ea1267e"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_cleanup</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleMasterNode10on_cleanupERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Callback for the Cleanup Transition. </p>
+<p>This does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleMasterNode11on_shutdownERKN16rclcpp_lifecycle5StateE">
 <span id="_CPPv3N12ros2_canopen19LifecycleMasterNode11on_shutdownERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen19LifecycleMasterNode11on_shutdownERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleMasterNode::on_shutdown__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleMasterNode_1aab1c4cb9e7fdb52e2ac007663c2b3b47"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_shutdown</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleMasterNode11on_shutdownERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Callback for the Shutdown Transition. </p>
+<p>This does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleMasterNode11init_driverENSt10shared_ptrIN12ros2_canopen24LifecycleDriverInterfaceEEE7uint8_t">

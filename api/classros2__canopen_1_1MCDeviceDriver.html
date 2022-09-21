@@ -193,12 +193,36 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN12ros2_canopen14MCDeviceDriver21get_remote_obj_cachedE1TNSt10shared_ptrI12RemoteObjectEE">
 <span id="_CPPv3I0EN12ros2_canopen14MCDeviceDriver21get_remote_obj_cachedENSt10shared_ptrI12RemoteObjectEE"></span><span id="_CPPv2I0EN12ros2_canopen14MCDeviceDriver21get_remote_obj_cachedENSt10shared_ptrI12RemoteObjectEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classros2__canopen_1_1MCDeviceDriver_1a9db2af343eb61e497c8f5991a9d6e619"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN12ros2_canopen14MCDeviceDriver21get_remote_obj_cachedE1TNSt10shared_ptrI12RemoteObjectEE" title="ros2_canopen::MCDeviceDriver::get_remote_obj_cached::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_remote_obj_cached</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structros2__canopen_1_1RemoteObject.html#_CPPv4N12ros2_canopen12RemoteObjectE" title="ros2_canopen::RemoteObject"><span class="n"><span class="pre">RemoteObject</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN12ros2_canopen14MCDeviceDriver21get_remote_obj_cachedE1TNSt10shared_ptrI12RemoteObjectEE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Get an object from local cache. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>T</strong> – </p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>obj</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>T </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN12ros2_canopen14MCDeviceDriver21set_remote_obj_cachedEvNSt10shared_ptrI12RemoteObjectEEK1T">
 <span id="_CPPv3I0EN12ros2_canopen14MCDeviceDriver21set_remote_obj_cachedENSt10shared_ptrI12RemoteObjectEEK1T"></span><span id="_CPPv2I0EN12ros2_canopen14MCDeviceDriver21set_remote_obj_cachedENSt10shared_ptrI12RemoteObjectEEK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classros2__canopen_1_1MCDeviceDriver_1ad2202b72ce79103cab25fb26f3600fc5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_remote_obj_cached</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structros2__canopen_1_1RemoteObject.html#_CPPv4N12ros2_canopen12RemoteObjectE" title="ros2_canopen::RemoteObject"><span class="n"><span class="pre">RemoteObject</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">obj</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN12ros2_canopen14MCDeviceDriver21set_remote_obj_cachedEvNSt10shared_ptrI12RemoteObjectEEK1T" title="ros2_canopen::MCDeviceDriver::set_remote_obj_cached::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN12ros2_canopen14MCDeviceDriver21set_remote_obj_cachedEvNSt10shared_ptrI12RemoteObjectEEK1T" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Set an object in local cache. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>T</strong> – </p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>obj</strong> – </p></li>
+<li><p><strong>data</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14MCDeviceDriver13validate_objsEv">
@@ -232,7 +256,17 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14MCDeviceDriver14MCDeviceDriverEP9ev_exec_tRN7canopen11AsyncMasterE7uint8_t">
 <span id="_CPPv3N12ros2_canopen14MCDeviceDriver14MCDeviceDriverEP9ev_exec_tRN7canopen11AsyncMasterE7uint8_t"></span><span id="_CPPv2N12ros2_canopen14MCDeviceDriver14MCDeviceDriverEP9ev_exec_tRN7canopen11AsyncMasterE7uint8_t"></span><span id="ros2_canopen::MCDeviceDriver::MCDeviceDriver__ev_exec_tP.canopen::AsyncMasterR.uint8_t"></span><span class="target" id="classros2__canopen_1_1MCDeviceDriver_1a345e744b28bea56f19b7bc4649af3c6d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MCDeviceDriver</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ev_exec_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exec</span></span>, <span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">AsyncMaster</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">master</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen14MCDeviceDriver14MCDeviceDriverEP9ev_exec_tRN7canopen11AsyncMasterE7uint8_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Construct a new <a class="reference internal" href="#classros2__canopen_1_1MCDeviceDriver"><span class="std std-ref">MCDeviceDriver</span></a> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exec</strong> – <strong>[in]</strong> </p></li>
+<li><p><strong>master</strong> – <strong>[in]</strong> </p></li>
+<li><p><strong>id</strong> – <strong>[in]</strong> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </dd></dl>

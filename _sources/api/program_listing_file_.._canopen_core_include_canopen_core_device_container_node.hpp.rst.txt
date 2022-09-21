@@ -39,6 +39,7 @@ Program Listing for File device_container_node.hpp
    
    class DeviceContainerNode : public rclcpp_components::ComponentManager {
    public:
+   
        DeviceContainerNode(
            std::weak_ptr<rclcpp::Executor> executor =
            std::weak_ptr<rclcpp::executors::MultiThreadedExecutor>(),
@@ -55,7 +56,6 @@ Program Listing for File device_container_node.hpp
    
        const std::shared_ptr<void> get_node(size_t node_id){
            return node_wrappers_[node_id].get_node_instance();
-   
        }
    
        bool init();
@@ -65,6 +65,7 @@ Program Listing for File device_container_node.hpp
                  const std::string& bus_config,
                  const std::string& master_bin="");
    
+   
        std::map<uint8_t, rclcpp_components::NodeInstanceWrapper> get_node_instance_wrapper_map(){
            return node_wrappers_;
        }
@@ -72,6 +73,7 @@ Program Listing for File device_container_node.hpp
        std::map<std::string, std::pair<uint8_t, std::string>> get_active_drivers(){
            return active_drivers_;
        }
+   
        std::map<std::string, std::pair<uint8_t, std::string>> get_registered_drivers(){
            return registered_drivers_;
        }
@@ -84,30 +86,35 @@ Program Listing for File device_container_node.hpp
    
    
    private:
-       std::map<std::string, std::pair<uint8_t, std::string>> registered_drivers_;
-       std::map<std::string, std::pair<uint8_t, std::string>> active_drivers_;
-       std::shared_ptr<ros2_canopen::MasterInterface> can_master_;
-       std::shared_ptr<ev::Executor> exec_;
-       std::weak_ptr<rclcpp::Executor> executor_;
-       std::map<uint8_t, rclcpp_components::NodeInstanceWrapper> node_wrappers_;
-       std::shared_ptr<ros2_canopen::ConfigurationManager> config_;
-       std::string dcf_txt_;
-       std::string bus_config_;
-       std::string dcf_bin_;
-       std::string can_interface_name_;
+       std::map<std::string, std::pair<uint8_t, std::string>> registered_drivers_; 
+       std::map<std::string, std::pair<uint8_t, std::string>> active_drivers_;     
+       std::shared_ptr<ros2_canopen::MasterInterface> can_master_;                 
+       std::shared_ptr<ev::Executor> exec_;                                        
+       std::weak_ptr<rclcpp::Executor> executor_;                                  
+       std::map<uint8_t, rclcpp_components::NodeInstanceWrapper> node_wrappers_;   
+       std::shared_ptr<ros2_canopen::ConfigurationManager> config_;                
+       std::string dcf_txt_;                                                       
+       std::string bus_config_;                                                    
+       std::string dcf_bin_;                                                       
+       std::string can_interface_name_;                                            
    
        void set_executor(const std::weak_ptr<rclcpp::Executor> executor);
+   
        void add_node_to_executor(const std::string &driver_name, const uint8_t node_id, const std::string &node_name);
+   
        void remove_node_from_executor(const std::string &driver_name, const uint8_t node_id, const std::string &node_name);
    
        void add_driver_to_master(std::string driver_name, uint8_t node_id);
    
        void remove_driver_from_master(uint8_t node_id);
    
+   
        bool load_component(std::string& package_name, std::string& driver_name, uint8_t node_id, std::string& node_name);
+   
        std::map<uint32_t, std::string> list_components();
    
        bool init_devices_from_config();
+   
        bool add_master(uint8_t node_id);
    };
    

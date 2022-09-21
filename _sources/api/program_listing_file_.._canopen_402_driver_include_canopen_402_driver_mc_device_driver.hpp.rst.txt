@@ -131,7 +131,6 @@ Program Listing for File mc_device_driver.hpp
                std::memcpy(&data, &(obj->data), sizeof(T));
                return data;
            }
-   
            template <typename T>
            T get_remote_obj_cached(std::shared_ptr<RemoteObject> obj)
            {

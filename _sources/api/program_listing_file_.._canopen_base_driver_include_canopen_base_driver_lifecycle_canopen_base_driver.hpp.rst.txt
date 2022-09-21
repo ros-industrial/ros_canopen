@@ -51,7 +51,7 @@ Program Listing for File lifecycle_canopen_base_driver.hpp
        std::thread nmt_state_publisher_thread_;
        std::thread rpdo_publisher_thread_;
        
-   
+       
        void nmt_listener();
        void rdpo_listener();
    
@@ -100,6 +100,7 @@ Program Listing for File lifecycle_canopen_base_driver.hpp
    
      public:
        virtual bool add() override;
+   
        virtual bool remove() override;
      };
    } // namespace ros2_canopen

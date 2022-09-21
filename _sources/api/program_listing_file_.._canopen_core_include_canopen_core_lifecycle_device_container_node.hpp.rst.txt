@@ -38,10 +38,10 @@ Program Listing for File lifecycle_device_container_node.hpp
    #include "canopen_interfaces/srv/co_node.hpp"
    
    #include "device.hpp"
-   
    class LifecycleDeviceContainerNode : public rclcpp_components::ComponentManager
    {
    public:
+   
        LifecycleDeviceContainerNode(
            std::weak_ptr<rclcpp::Executor> executor =
                std::weak_ptr<rclcpp::executors::MultiThreadedExecutor>(),
@@ -75,25 +75,28 @@ Program Listing for File lifecycle_device_container_node.hpp
    
    
    private:
-       // Stores registered drivers as device_name, pair(node_id, driver_name)
-       std::map<std::string, std::pair<uint16_t, std::string>> registered_drivers_;
-       // Stores drivers that were succesfully added to executor as device_name, pair(node_id, driver_name)
-       std::map<std::string, std::pair<uint16_t, std::string>> active_drivers_;
-       // Stores componentes as node_id and wrapper_object
-       std::map<uint16_t, rclcpp_components::NodeInstanceWrapper> node_wrappers_;
-       std::shared_ptr<ros2_canopen::LifecycleMasterInterface> can_master_;
-       std::shared_ptr<ev::Executor> exec_;
-       std::weak_ptr<rclcpp::Executor> executor_;
-       std::shared_ptr<ros2_canopen::ConfigurationManager> config_;
-       std::string dcf_txt_;
-       std::string bus_config_;
-       std::string dcf_bin_;
-       std::string can_interface_name_;
    
+   
+       
+       std::map<std::string, std::pair<uint16_t, std::string>> registered_drivers_;    
+       std::map<std::string, std::pair<uint16_t, std::string>> active_drivers_;        
+       std::map<uint16_t, rclcpp_components::NodeInstanceWrapper> node_wrappers_;      
+       std::shared_ptr<ros2_canopen::LifecycleMasterInterface> can_master_;            
+       std::shared_ptr<ev::Executor> exec_;                                            
+       std::weak_ptr<rclcpp::Executor> executor_;                                      
+       std::shared_ptr<ros2_canopen::ConfigurationManager> config_;                    
+       std::string dcf_txt_;                                                           
+       std::string bus_config_;                                                        
+       std::string dcf_bin_;                                                           
+       std::string can_interface_name_;                                                
        rclcpp::Service<canopen_interfaces::srv::CONode>::SharedPtr init_driver_service_;
+   
        rclcpp::Service<canopen_interfaces::srv::CONode>::SharedPtr remove_node_master_service_;
+   
        bool init_device_manager(uint16_t node_id);
+   
        void set_executor(const std::weak_ptr<rclcpp::Executor> executor);
+   
        void add_node_to_executor(const std::string &driver_name, const uint16_t node_id, const std::string &node_name);
        void remove_node_from_executor(const std::string &driver_name, const uint16_t node_id, const std::string &node_name);
    

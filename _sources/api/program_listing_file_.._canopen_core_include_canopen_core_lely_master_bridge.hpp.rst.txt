@@ -43,14 +43,15 @@ Program Listing for File lely_master_bridge.hpp
        class LelyMasterBridge : public lely::canopen::AsyncMaster
        {
    
-           std::shared_ptr<std::promise<COData>> sdo_read_data_promise;
-           std::shared_ptr<std::promise<bool>> sdo_write_data_promise;
-           std::promise<bool> nmt_promise;
-           std::mutex sdo_mutex;
-           bool running;
-           std::condition_variable sdo_cond;
+           std::shared_ptr<std::promise<COData>> sdo_read_data_promise;        
+           std::shared_ptr<std::promise<bool>> sdo_write_data_promise;         
+           std::promise<bool> nmt_promise;                                     
+           std::mutex sdo_mutex;                                               
+           bool running;                                                       
+           std::condition_variable sdo_cond;                                   
    
        public:
+   
            LelyMasterBridge(
                ev_exec_t *exec,
                lely::io::TimerBase &timer,
@@ -62,6 +63,7 @@ Program Listing for File lely_master_bridge.hpp
            }
    
            std::future<bool> async_write_sdo(uint8_t id, COData data);
+   
            std::future<COData> async_read_sdo(uint8_t id, COData data);
    
            std::future<bool> async_write_nmt(uint8_t id, uint8_t command);

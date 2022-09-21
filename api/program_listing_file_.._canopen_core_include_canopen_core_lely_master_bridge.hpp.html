@@ -141,6 +141,7 @@
         <span class="n">std</span><span class="o">::</span><span class="n">condition_variable</span> <span class="n">sdo_cond</span><span class="p">;</span>
 
     <span class="k">public</span><span class="o">:</span>
+
         <span class="n">LelyMasterBridge</span><span class="p">(</span>
             <span class="n">ev_exec_t</span> <span class="o">*</span><span class="n">exec</span><span class="p">,</span>
             <span class="n">lely</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">TimerBase</span> <span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span>
@@ -152,6 +153,7 @@
         <span class="p">}</span>
 
         <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">async_write_sdo</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">id</span><span class="p">,</span> <span class="n">COData</span> <span class="n">data</span><span class="p">);</span>
+
         <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">COData</span><span class="o">&gt;</span> <span class="n">async_read_sdo</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">id</span><span class="p">,</span> <span class="n">COData</span> <span class="n">data</span><span class="p">);</span>
 
         <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">async_write_nmt</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">id</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">command</span><span class="p">);</span>

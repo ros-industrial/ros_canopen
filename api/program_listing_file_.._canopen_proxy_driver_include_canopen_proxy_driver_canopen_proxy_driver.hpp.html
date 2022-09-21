@@ -125,6 +125,7 @@
 <span class="p">{</span>
 <span class="k">class</span> <span class="nc">ProxyDriver</span> <span class="o">:</span> <span class="k">public</span> <span class="n">BaseDriver</span>
 <span class="p">{</span>
+  <span class="c1">//publishers, subscriptions and services</span>
   <span class="n">rclcpp</span><span class="o">::</span><span class="n">Publisher</span><span class="o">&lt;</span><span class="n">std_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">String</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">nmt_state_publisher</span><span class="p">;</span>
   <span class="n">rclcpp</span><span class="o">::</span><span class="n">Publisher</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">COData</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">rpdo_publisher</span><span class="p">;</span>
   <span class="n">rclcpp</span><span class="o">::</span><span class="n">Subscription</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">COData</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">tpdo_subscriber</span><span class="p">;</span>
@@ -165,11 +166,13 @@
     <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">COData</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">rpdo_cb_</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
+
   <span class="kt">void</span> <span class="n">on_nmt</span><span class="p">(</span><span class="n">canopen</span><span class="o">::</span><span class="n">NmtState</span> <span class="n">nmt_state</span><span class="p">);</span>
 
   <span class="kt">void</span> <span class="nf">on_tpdo</span><span class="p">(</span><span class="k">const</span> <span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">COData</span><span class="o">::</span><span class="n">SharedPtr</span> <span class="n">msg</span><span class="p">);</span>
 
   <span class="kt">void</span> <span class="nf">on_rpdo</span><span class="p">(</span><span class="n">COData</span> <span class="n">d</span><span class="p">);</span>
+
 
   <span class="kt">void</span> <span class="nf">on_nmt_state_reset</span><span class="p">(</span>
     <span class="k">const</span> <span class="n">std_srvs</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">Trigger</span><span class="o">::</span><span class="n">Request</span><span class="o">::</span><span class="n">SharedPtr</span> <span class="n">request</span><span class="p">,</span>

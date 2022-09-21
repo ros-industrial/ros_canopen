@@ -137,20 +137,7 @@
 
 <span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono_literals</span><span class="p">;</span>
 <span class="cm">/*</span>
-<span class="cm">Start-up sequence</span>
-<span class="cm">--------------------------------------------------------------------</span>
-<span class="cm">master | unconfigured | x |</span>
-<span class="cm">       | inactive     |   | x |</span>
-<span class="cm">       | active       |       | x | x | x | x | x |...</span>
-<span class="cm">--------------------------------------------------------------------</span>
-<span class="cm">drv1   | unconfigured | x | x | x |</span>
-<span class="cm">       | inactive     |           | x |</span>
-<span class="cm">       | active       |               | x | x | x |...</span>
-<span class="cm">--------------------------------------------------------------------</span>
-<span class="cm">driv2  | unconfigured | x | x | x | x | x |</span>
-<span class="cm">       | inactive     |                   | x |</span>
-<span class="cm">       | active       |                       | x |...</span>
-<span class="cm">--------------------------------------------------------------------</span>
+
 <span class="cm">*/</span>
 <span class="k">namespace</span> <span class="n">ros2_canopen</span>
 <span class="p">{</span>
@@ -185,12 +172,10 @@
         <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span>
         <span class="n">on_shutdown</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">State</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">);</span>
 
-        <span class="c1">// stores node_id and get_state client</span>
+
         <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="p">,</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Client</span><span class="o">&lt;</span><span class="n">lifecycle_msgs</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">GetState</span><span class="o">&gt;::</span><span class="n">SharedPtr</span><span class="o">&gt;</span> <span class="n">drivers_get_state_clients</span><span class="p">;</span>
-        <span class="c1">// stores node_id and change_state client</span>
         <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="p">,</span> <span class="n">rclcpp</span><span class="o">::</span><span class="n">Client</span><span class="o">&lt;</span><span class="n">lifecycle_msgs</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">ChangeState</span><span class="o">&gt;::</span><span class="n">SharedPtr</span><span class="o">&gt;</span> <span class="n">drivers_change_state_clients</span><span class="p">;</span>
-        <span class="c1">// stores device_name and node_id</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">device_names_to_ids</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">device_names_to_ids</span><span class="p">;</span>     <span class="c1">// stores device_name and node_id</span>
 
         <span class="n">rclcpp</span><span class="o">::</span><span class="n">Client</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">CONode</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">add_driver_client_</span><span class="p">;</span>
         <span class="n">rclcpp</span><span class="o">::</span><span class="n">Client</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">CONode</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">remove_driver_client_</span><span class="p">;</span>

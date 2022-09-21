@@ -162,11 +162,22 @@ whatsoever.</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver6on_nmtEN7canopen8NmtStateE">
 <span id="_CPPv3N12ros2_canopen11ProxyDriver6on_nmtEN7canopen8NmtStateE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver6on_nmtEN7canopen8NmtStateE"></span><span id="ros2_canopen::ProxyDriver::on_nmt__canopen::NmtState"></span><span class="target" id="classros2__canopen_1_1ProxyDriver_1a50fd9412f553e65e246f7cf28c430fdc"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_nmt</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nmt_state</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>NMT State Change Callback. </p>
-<p>This function is called, when the NMT State of the associated <a class="reference internal" href="#classros2__canopen_1_1LelyBridge"><span class="std std-ref">LelyBridge</span></a> changes,</p>
+<dd><p>Callback function that is called on NMT state change. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>nmt_state</strong> – <strong>[in]</strong> New NMT state </p>
+<dd class="field-odd"><p><strong>nmt_state</strong> – <strong>[in]</strong> New state </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_tpdo__canopen_interfaces::msg::COData::SharedPtrC"></span><span class="target" id="classros2__canopen_1_1ProxyDriver_1aedbdcbe76b623dc685428f0db4aae48d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_tpdo</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COData</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Callback function that is called on TPDO subscription event. </p>
+<p>Transforms the message received into an <a class="reference internal" href="api/structros2__canopen_1_1COData.html#structros2__canopen_1_1COData"><span class="std std-ref">COData</span></a> object and calls the tpdo transmission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> – <strong>[in]</strong> Message received </p>
 </dd>
 </dl>
 </dd></dl>
@@ -174,11 +185,67 @@ whatsoever.</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver7on_rpdoE6COData">
 <span id="_CPPv3N12ros2_canopen11ProxyDriver7on_rpdoE6COData"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver7on_rpdoE6COData"></span><span id="ros2_canopen::ProxyDriver::on_rpdo__COData"></span><span class="target" id="classros2__canopen_1_1ProxyDriver_1a2dd958a0f6b2b80e3d2c484d0fc8653d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_rpdo</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="api/structros2__canopen_1_1COData.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>RPDO Callback. </p>
-<p>This funciton is called when the associated <a class="reference internal" href="#classros2__canopen_1_1LelyBridge"><span class="std std-ref">LelyBridge</span></a> detects a change on a specific object, due to an RPDO event.</p>
+<dd><p>Callback function that is called on reception of an Object via RPDO. </p>
+<p>Publishes the received data via the RPDO topic of the driver and calls the rpdo callback if it was registered earlier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> – <strong>[in]</strong> Changed object </p>
+<dd class="field-odd"><p><strong>d</strong> – <strong>[in]</strong> Object data received </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_nmt_state_reset__std_srvs::srv::Trigger::Request::SharedPtrC.std_srvs::srv::Trigger::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1ProxyDriver_1ae474bf504203b799398cfeb083f52d6f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_nmt_state_reset</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Callback function for nmt_state_reset service. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>response</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_nmt_state_start__std_srvs::srv::Trigger::Request::SharedPtrC.std_srvs::srv::Trigger::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1ProxyDriver_1ad058aa606e70636d1c522aa12fd3b0a9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_nmt_state_start</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Callback for nmt_state_start service. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>response</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_sdo_read__canopen_interfaces::srv::CORead::Request::SharedPtrC.canopen_interfaces::srv::CORead::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1ProxyDriver_1aee9435db93c9c87ade129abdc5dfa1ca"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_sdo_read</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CORead</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CORead</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Callback for sdo_read service. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>response</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_sdo_write__canopen_interfaces::srv::COWrite::Request::SharedPtrC.canopen_interfaces::srv::COWrite::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1ProxyDriver_1a08b83808f6597b24abc96fe95882a44c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_sdo_write</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COWrite</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COWrite</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Callback for sdo_write service. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>response</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -307,6 +374,40 @@ is easy to use from a ROS node. Or write a similar Class yourself, for example u
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>uint8_t </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen10LelyBridge13wait_for_bootEv">
+<span id="_CPPv3N12ros2_canopen10LelyBridge13wait_for_bootEv"></span><span id="_CPPv2N12ros2_canopen10LelyBridge13wait_for_bootEv"></span><span id="ros2_canopen::LelyBridge::wait_for_boot"></span><span class="target" id="classros2__canopen_1_1LelyBridge_1a57b549ffe5dcccd84925d6010b1b38e6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wait_for_boot</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Wait for device to be booted. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>false </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen10LelyBridge4BootEv">
+<span id="_CPPv3N12ros2_canopen10LelyBridge4BootEv"></span><span id="_CPPv2N12ros2_canopen10LelyBridge4BootEv"></span><span id="ros2_canopen::LelyBridge::Boot"></span><span class="target" id="classros2__canopen_1_1LelyBridge_1a8241ca897829b1527eb9a52c551f3e94"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Boot</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Request master to boot device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen10LelyBridge9is_bootedEv">
+<span id="_CPPv3N12ros2_canopen10LelyBridge9is_bootedEv"></span><span id="_CPPv2N12ros2_canopen10LelyBridge9is_bootedEv"></span><span id="ros2_canopen::LelyBridge::is_booted"></span><span class="target" id="classros2__canopen_1_1LelyBridge_1a8034b08b3236c6fc88f9cb2f610734c7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_booted</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Indicates if Device is booted. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>false </p>
 </dd>
 </dl>
 </dd></dl>

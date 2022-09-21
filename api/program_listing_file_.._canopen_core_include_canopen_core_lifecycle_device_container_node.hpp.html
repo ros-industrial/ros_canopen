@@ -128,10 +128,10 @@
 <span class="cp">#include</span> <span class="cpf">&quot;canopen_interfaces/srv/co_node.hpp&quot;</span><span class="cp"></span>
 
 <span class="cp">#include</span> <span class="cpf">&quot;device.hpp&quot;</span><span class="cp"></span>
-
 <span class="k">class</span> <span class="nc">LifecycleDeviceContainerNode</span> <span class="o">:</span> <span class="k">public</span> <span class="n">rclcpp_components</span><span class="o">::</span><span class="n">ComponentManager</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
+
     <span class="n">LifecycleDeviceContainerNode</span><span class="p">(</span>
         <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">executor</span> <span class="o">=</span>
             <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">executors</span><span class="o">::</span><span class="n">MultiThreadedExecutor</span><span class="o">&gt;</span><span class="p">(),</span>
@@ -165,11 +165,11 @@
 
 
 <span class="k">private</span><span class="o">:</span>
-    <span class="c1">// Stores registered drivers as device_name, pair(node_id, driver_name)</span>
+
+
+
     <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span> <span class="n">registered_drivers_</span><span class="p">;</span>
-    <span class="c1">// Stores drivers that were succesfully added to executor as device_name, pair(node_id, driver_name)</span>
     <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span> <span class="n">active_drivers_</span><span class="p">;</span>
-    <span class="c1">// Stores componentes as node_id and wrapper_object</span>
     <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint16_t</span><span class="p">,</span> <span class="n">rclcpp_components</span><span class="o">::</span><span class="n">NodeInstanceWrapper</span><span class="o">&gt;</span> <span class="n">node_wrappers_</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">LifecycleMasterInterface</span><span class="o">&gt;</span> <span class="n">can_master_</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ev</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">exec_</span><span class="p">;</span>
@@ -179,11 +179,14 @@
     <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">bus_config_</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dcf_bin_</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">can_interface_name_</span><span class="p">;</span>
-
     <span class="n">rclcpp</span><span class="o">::</span><span class="n">Service</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">CONode</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">init_driver_service_</span><span class="p">;</span>
+
     <span class="n">rclcpp</span><span class="o">::</span><span class="n">Service</span><span class="o">&lt;</span><span class="n">canopen_interfaces</span><span class="o">::</span><span class="n">srv</span><span class="o">::</span><span class="n">CONode</span><span class="o">&gt;::</span><span class="n">SharedPtr</span> <span class="n">remove_node_master_service_</span><span class="p">;</span>
+
     <span class="kt">bool</span> <span class="nf">init_device_manager</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">node_id</span><span class="p">);</span>
+
     <span class="kt">void</span> <span class="nf">set_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Executor</span><span class="o">&gt;</span> <span class="n">executor</span><span class="p">);</span>
+
     <span class="kt">void</span> <span class="nf">add_node_to_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">driver_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">);</span>
     <span class="kt">void</span> <span class="nf">remove_node_from_executor</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">driver_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint16_t</span> <span class="n">node_id</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">node_name</span><span class="p">);</span>
 

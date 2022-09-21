@@ -35,6 +35,7 @@ Program Listing for File canopen_proxy_driver.hpp
    {
    class ProxyDriver : public BaseDriver
    {
+     //publishers, subscriptions and services
      rclcpp::Publisher<std_msgs::msg::String>::SharedPtr nmt_state_publisher;
      rclcpp::Publisher<canopen_interfaces::msg::COData>::SharedPtr rpdo_publisher;
      rclcpp::Subscription<canopen_interfaces::msg::COData>::SharedPtr tpdo_subscriber;
@@ -75,11 +76,13 @@ Program Listing for File canopen_proxy_driver.hpp
        std::function<void(COData, uint8_t)> rpdo_cb_;
    
    protected:
+   
      void on_nmt(canopen::NmtState nmt_state);
    
      void on_tpdo(const canopen_interfaces::msg::COData::SharedPtr msg);
    
      void on_rpdo(COData d);
+   
    
      void on_nmt_state_reset(
        const std_srvs::srv::Trigger::Request::SharedPtr request,

@@ -160,7 +160,7 @@
         <span class="kt">void</span> <span class="n">init</span><span class="p">()</span> <span class="k">override</span><span class="p">;</span>
 
         <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span>
-        <span class="n">on_configure</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">State</span> <span class="o">&amp;</span><span class="p">);</span>
+        <span class="n">on_configure</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">State</span> <span class="o">&amp;</span> <span class="n">state</span><span class="p">);</span>
 
         <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">LifecycleNodeInterface</span><span class="o">::</span><span class="n">CallbackReturn</span>
         <span class="n">on_activate</span><span class="p">(</span><span class="k">const</span> <span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">State</span> <span class="o">&amp;</span> <span class="n">state</span><span class="p">);</span>

@@ -116,12 +116,20 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNodeE">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNodeE"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNodeE"></span><span id="ros2_canopen::LifecycleDeviceManagerNode"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleDeviceManagerNode</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LifecycleNode</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNodeE" title="Permalink to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>Lifecycle Device Manager Node. </p>
+<p>This class provides functionalities to coordinate the lifecycle of master and device drivers that are loaded into the executor.</p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode26LifecycleDeviceManagerNodeERKN6rclcpp11NodeOptionsE">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode26LifecycleDeviceManagerNodeERKN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode26LifecycleDeviceManagerNodeERKN6rclcpp11NodeOptionsE"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::LifecycleDeviceManagerNode__rclcpp::NodeOptionsCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1a9ea3e0865b6059670dc761e322968b7d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleDeviceManagerNode</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node_options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode26LifecycleDeviceManagerNodeERKN6rclcpp11NodeOptionsE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Construct a new Lifecycle Device Manager Node object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_options</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode4initENSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE">
@@ -134,27 +142,77 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode12on_configureERKN16rclcpp_lifecycle5StateE">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::on_configure__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1a13284be095ac8a00aee18a3c78874376"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_configure</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode12on_configureERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Callback for the Configure Tranistion. </p>
+<p>This will cause the device manager to load the configuration from the configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode11on_activateERKN16rclcpp_lifecycle5StateE">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode11on_activateERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode11on_activateERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::on_activate__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1adb28e882f42862cc50bff567b46563fa"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_activate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode11on_activateERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Callback fro the Activate Transition. </p>
+<p>This will bringup master and device drivers using the bring_up_all function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode13on_deactivateERKN16rclcpp_lifecycle5StateE">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode13on_deactivateERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode13on_deactivateERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::on_deactivate__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1a5871d2f1cda889cfbca581d1ff868551"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_deactivate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode13on_deactivateERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Callback for the Deactivate Transition. </p>
+<p>This will bring down master and device drivers using the bring_down_all function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode10on_cleanupERKN16rclcpp_lifecycle5StateE">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode10on_cleanupERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode10on_cleanupERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::on_cleanup__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1a637a8af1ded08fb617a277ab77badcea"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_cleanup</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode10on_cleanupERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Callback for the Cleanup Transition. </p>
+<p>Does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode11on_shutdownERKN16rclcpp_lifecycle5StateE">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode11on_shutdownERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode11on_shutdownERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::on_shutdown__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1a7b7b950b7ebf44ccf35e49fca62bdcf7"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_shutdown</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode11on_shutdownERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Callback for the Shutdown Transition. </p>
+<p>Does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -172,12 +230,14 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode25drivers_get_state_clientsE">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode25drivers_get_state_clientsE"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode25drivers_get_state_clientsE"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::drivers_get_state_clients__std::map:uint8_t.rclcpp::Client:lifecycle_msgs::srv::GetState:::SharedPtr:"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1a2bc6e94bf3b71bc49192de390a2444f0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Client</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">lifecycle_msgs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">GetState</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">drivers_get_state_clients</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode25drivers_get_state_clientsE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>stores node_id and get_state client </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode28drivers_change_state_clientsE">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode28drivers_change_state_clientsE"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode28drivers_change_state_clientsE"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::drivers_change_state_clients__std::map:uint8_t.rclcpp::Client:lifecycle_msgs::srv::ChangeState:::SharedPtr:"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1aeee9e5e1d3df79bf726d5323bb9aed3f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Client</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">lifecycle_msgs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ChangeState</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">drivers_change_state_clients</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode28drivers_change_state_clientsE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>stores node_id and change_state client </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode19device_names_to_idsE">
@@ -187,22 +247,33 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode18add_driver_client_E">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode18add_driver_client_E"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode18add_driver_client_E"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::add_driver_client___rclcpp::Client:canopen_interfaces::srv::CONode:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1aae0e7a73194deab977a8bb40a8bcb197"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Client</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CONode</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_driver_client_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode18add_driver_client_E" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Service client object for adding a driver. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="page_todo.html#todo_1_todo000002"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>Remove relicts?</p>
+</dd></dl>
+
+</p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode21remove_driver_client_E">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode21remove_driver_client_E"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode21remove_driver_client_E"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::remove_driver_client___rclcpp::Client:canopen_interfaces::srv::CONode:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1a2c918a1190b1df4457e0c2adbefdefe3"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Client</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CONode</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_driver_client_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode21remove_driver_client_E" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Service client object for removing a driver. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode10master_id_E">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode10master_id_E"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode10master_id_E"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::master_id___uint8_t"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1a65d32b565a8c37227bd7091297524e33"></span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">master_id_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode10master_id_E" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Stores master id. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode15container_name_E">
 <span id="_CPPv3N12ros2_canopen26LifecycleDeviceManagerNode15container_name_E"></span><span id="_CPPv2N12ros2_canopen26LifecycleDeviceManagerNode15container_name_E"></span><span id="ros2_canopen::LifecycleDeviceManagerNode::container_name___ss"></span><span class="target" id="classros2__canopen_1_1LifecycleDeviceManagerNode_1a2b13b9ebef9bdb17e04bc27359f6a3df"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">container_name_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen26LifecycleDeviceManagerNode15container_name_E" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Stores name of the associated device_container. </p>
+</dd></dl>
 
 </div>
 </dd></dl>

@@ -415,6 +415,7 @@ Program Listing for File motor.hpp
            void handleHalt();
    
            void handleRecover();
+   
            template <typename T, typename... Args>
            bool registerMode(uint16_t mode, Args &&...args)
            {

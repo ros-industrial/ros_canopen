@@ -187,6 +187,7 @@ Program Listing for File lely_bridge.hpp
    
        uint8_t get_id();
    
+   
        bool wait_for_boot()
        {
          if (booted.load())

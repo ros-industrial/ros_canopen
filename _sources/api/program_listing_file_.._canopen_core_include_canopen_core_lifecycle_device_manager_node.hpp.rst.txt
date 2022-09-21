@@ -47,20 +47,7 @@ Program Listing for File lifecycle_device_manager_node.hpp
    
    using namespace std::chrono_literals;
    /*
-   Start-up sequence
-   --------------------------------------------------------------------
-   master | unconfigured | x |
-          | inactive     |   | x |
-          | active       |       | x | x | x | x | x |...
-   --------------------------------------------------------------------
-   drv1   | unconfigured | x | x | x |
-          | inactive     |           | x |
-          | active       |               | x | x | x |...
-   --------------------------------------------------------------------
-   driv2  | unconfigured | x | x | x | x | x |
-          | inactive     |                   | x |
-          | active       |                       | x |...
-   --------------------------------------------------------------------
+   
    */
    namespace ros2_canopen
    {
@@ -95,18 +82,16 @@ Program Listing for File lifecycle_device_manager_node.hpp
            rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
            on_shutdown(const rclcpp_lifecycle::State &state);
    
-           // stores node_id and get_state client
-           std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::GetState>::SharedPtr> drivers_get_state_clients;
-           // stores node_id and change_state client
-           std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr> drivers_change_state_clients;
-           // stores device_name and node_id
-           std::map<std::string, uint8_t> device_names_to_ids;
+           
+           std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::GetState>::SharedPtr> drivers_get_state_clients;  
+           std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr> drivers_change_state_clients;   
+           std::map<std::string, uint8_t> device_names_to_ids;     // stores device_name and node_id
    
-           rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr add_driver_client_;
-           rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr remove_driver_client_;
+           rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr add_driver_client_;          
+           rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr remove_driver_client_;       
    
-           uint8_t master_id_;
-           std::string container_name_;
+           uint8_t master_id_;             
+           std::string container_name_;    
    
        private:
            template <typename FutureT, typename WaitTimeT>
