@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ros2_control SystemInterface test &mdash; ros2_canopen 0.0.1 documentation</title>
+  <title>Overview &mdash; ros2_canopen 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -20,7 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Lifecycle Proxy Driver Test" href="proxy-driver-test.html" /> 
+    <link rel="next" title="Creating a new device driver" href="new-driver.html" />
+    <link rel="prev" title="Design Objectives" href="design-objectives.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,23 +57,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/motion-controller-driver.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/design-objectives.html">Design Objectives</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/new-driver.html">Creating a new device driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/new-master.html">Creating a new master</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_core/reference.html">Core API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_base_driver/reference.html">Base Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_proxy_driver/reference.html">Proxy Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design-objectives.html">Design Objectives</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="new-master.html">Creating a new master</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canopen_core/reference.html">Core API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canopen_base_driver/reference.html">Base Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canopen_proxy_driver/reference.html">Proxy Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ros2_control SystemInterface test</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#test-details">Test details</a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
 </ul>
 
         </div>
@@ -89,9 +87,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ros2_control SystemInterface test</li>
+      <li>Overview</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/software-tests/ros2_control_system-test.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/developers-guide/overview.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -99,44 +97,49 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="ros2-control-systeminterface-test">
-<h1>ros2_control SystemInterface test<a class="headerlink" href="#ros2-control-systeminterface-test" title="Permalink to this headline"></a></h1>
-<section id="test-details">
-<h2>Test details<a class="headerlink" href="#test-details" title="Permalink to this headline"></a></h2>
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Tests</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Detail</p></th>
-<th class="head"><p>Information</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Package</p></td>
-<td><p>canopen_ros2_control</p></td>
-</tr>
-<tr class="row-odd"><td><p>Test file</p></td>
-<td><p>launch/canopen_system.launch.py</p></td>
-</tr>
-<tr class="row-even"><td><p>Description</p></td>
-<td><p>Create an exemplary ros2_control SystemInterface with CAN master and communicates to a slave node. After start check <code class="docutils literal notranslate"><span class="pre">/dynamic_joint_states</span></code> to show internal data from CAN nodes in ros2_control system.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Prequisites</p></td>
-<td><p>vcan0 must be available</p></td>
-</tr>
-</tbody>
-</table>
-</section>
+  <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h1>
+<p>ros2_canopen provides nodes for interfacing with CANopen devices. The library builds upon the professional and open source
+lelycore canopen library as opposed to the previous ros_canopen stack.
+In ros2_canopen the bus configuration is simplified through the use of
+lelycore’s configutaration toolchain.</p>
+<p>ros2_canopen contains a number of packages that serve different serve different puposes.</p>
+<ul>
+<li><p><strong>canopen</strong>:</p>
+<p>Meta-package for easy installation and contains overall documentation
+of the ros2_canopen stack.</p>
+</li>
+<li><p><strong>lely_core_libraries</strong>:</p>
+<p>A colcon package wrapper for the lelycore canopen library, for convenient
+installation with rosdep.</p>
+</li>
+<li><p><strong>canopen_core</strong>:</p>
+<p>Contains the core structures of the ros2_canopen stack such as the device manager
+and the master node and the driver node interface.</p>
+</li>
+<li><p><strong>canopen_base_driver</strong>:</p>
+<p>This package contains the base implementation of a ROS2 CANopen device driver. It can base
+used by other drivers for easy extension.</p>
+</li>
+<li><p><strong>canopen_proxy_driver</strong>:</p>
+<p>Contains an implmentation of a proxy driver which simply forwards CANopen functionality
+for a specific device via ROS2 services and messages.</p>
+</li>
+<li><p><strong>canopen_402_driver</strong>:</p>
+<p>Contains an implementation of the CIA402 profile for motion controllers and exposes
+the profiles functionalities via ROS2 services and messages. The implementation is
+copied from ros_canopen/canopen_402 and this package is licensed accordingly under
+GNU Lesser General Public License v3.0!</p>
+</li>
+</ul>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="proxy-driver-test.html" class="btn btn-neutral float-left" title="Lifecycle Proxy Driver Test" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="design-objectives.html" class="btn btn-neutral float-left" title="Design Objectives" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="new-driver.html" class="btn btn-neutral float-right" title="Creating a new device driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

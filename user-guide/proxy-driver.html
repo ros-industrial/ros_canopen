@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ros2_control SystemInterface test &mdash; ros2_canopen 0.0.1 documentation</title>
+  <title>Proxy Driver &mdash; ros2_canopen 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -20,7 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Lifecycle Proxy Driver Test" href="proxy-driver-test.html" /> 
+    <link rel="next" title="Motion Controller Driver" href="motion-controller-driver.html" />
+    <link rel="prev" title="Master Node" href="master.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,14 +47,19 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart/operation.html">Starting a Configuration Package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/configuration/configuration.html">Bus Configuration Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/service-based/overview.html">Service Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/lifecycle-service-based/overview.html">Lifecycled Service Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/ros2-control/overview.html">ROS2 Control System Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/proxy-driver.html">Proxy Driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/motion-controller-driver.html">Motion Controller Driver</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="configuration/configuration.html">Bus Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="service-based/overview.html">Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lifecycle-service-based/overview.html">Lifecycled Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ros2-control/overview.html">ROS2 Control System Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="master.html">Master Node</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proxy Driver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#services">Services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#publishers">Publishers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subscribers">Subscribers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="motion-controller-driver.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul>
@@ -67,12 +73,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ros2_control SystemInterface test</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#test-details">Test details</a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
 </ul>
 
         </div>
@@ -89,9 +92,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ros2_control SystemInterface test</li>
+      <li>Proxy Driver</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/software-tests/ros2_control_system-test.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/user-guide/proxy-driver.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -99,33 +102,83 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="ros2-control-systeminterface-test">
-<h1>ros2_control SystemInterface test<a class="headerlink" href="#ros2-control-systeminterface-test" title="Permalink to this headline"></a></h1>
-<section id="test-details">
-<h2>Test details<a class="headerlink" href="#test-details" title="Permalink to this headline"></a></h2>
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Tests</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+  <section id="proxy-driver">
+<h1>Proxy Driver<a class="headerlink" href="#proxy-driver" title="Permalink to this headline"></a></h1>
+<p>A proxy driver which simply forwards CANopen functionality for a specific device via ROS2 services and messages.</p>
+<section id="services">
+<h2>Services<a class="headerlink" href="#services" title="Permalink to this headline"></a></h2>
+<table class="colwidths-given docutils align-left">
 <colgroup>
-<col style="width: 50%" />
+<col style="width: 30%" />
+<col style="width: 20%" />
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Detail</p></th>
-<th class="head"><p>Information</p></th>
+<tr class="row-odd"><th class="head"><p>Services</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Package</p></td>
-<td><p>canopen_ros2_control</p></td>
+<tr class="row-even"><td><p>~/nmt_reset_node</p></td>
+<td><p>Trigger</p></td>
+<td><p>Resets CANopen Device the Proxy Device Node manages.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Test file</p></td>
-<td><p>launch/canopen_system.launch.py</p></td>
+<tr class="row-odd"><td><p>~/sdo_read</p></td>
+<td><p>CORead</p></td>
+<td><p>Reads an SDO object from the specified index, subindex and datatype of the remote device.</p></td>
 </tr>
-<tr class="row-even"><td><p>Description</p></td>
-<td><p>Create an exemplary ros2_control SystemInterface with CAN master and communicates to a slave node. After start check <code class="docutils literal notranslate"><span class="pre">/dynamic_joint_states</span></code> to show internal data from CAN nodes in ros2_control system.</p></td>
+<tr class="row-even"><td><p>~/sdo_write</p></td>
+<td><p>COWrite</p></td>
+<td><p>Writes data to an SDO object on the specified index, subindex and datatype of the remote device.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Prequisites</p></td>
-<td><p>vcan0 must be available</p></td>
+</tbody>
+</table>
+</section>
+<section id="publishers">
+<h2>Publishers<a class="headerlink" href="#publishers" title="Permalink to this headline"></a></h2>
+<table class="colwidths-given docutils align-left">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 20%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Topic</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>~/nmt_state</p></td>
+<td><p>String</p></td>
+<td><p>Publishes NMT state on change</p></td>
+</tr>
+<tr class="row-odd"><td><p>~/rpdo</p></td>
+<td><p>COData</p></td>
+<td><p>Publishes received PDO objects on reception</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="subscribers">
+<h2>Subscribers<a class="headerlink" href="#subscribers" title="Permalink to this headline"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 20%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Topic</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>~/tpdo</p></td>
+<td><p>COData</p></td>
+<td><p>Writes received data to remote device if the specified object is RPDO mapped on remote device.</p></td>
 </tr>
 </tbody>
 </table>
@@ -136,7 +189,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="proxy-driver-test.html" class="btn btn-neutral float-left" title="Lifecycle Proxy Driver Test" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="master.html" class="btn btn-neutral float-left" title="Master Node" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="motion-controller-driver.html" class="btn btn-neutral float-right" title="Motion Controller Driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

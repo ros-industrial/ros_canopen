@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proxy Driver API Reference &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="CIA402 Driver API Reference" href="../canopen_402_driver/reference.html" />
+    <link rel="prev" title="Base Driver API Reference" href="../canopen_base_driver/reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/configuration.html">Creating a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/operation.html">Starting a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/configuration/configuration.html">Bus Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/service-based/overview.html">Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/lifecycle-service-based/overview.html">Lifecycled Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/ros2-control/overview.html">ROS2 Control System Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/proxy-driver.html">Proxy Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/motion-controller-driver.html">Motion Controller Driver</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../design-objectives.html">Design Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../canopen_core/reference.html">Core API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../canopen_base_driver/reference.html">Base Driver API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proxy Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Proxy Driver API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/developers-guide/canopen_proxy_driver/reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="proxy-driver-api-reference">
+<h1>Proxy Driver API Reference<a class="headerlink" href="#proxy-driver-api-reference" title="Permalink to this headline"></a></h1>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriverE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriverE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriverE"></span><span id="ros2_canopen::LifecycleProxyDriver"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleProxyDriver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../canopen_base_driver/reference.html#_CPPv4N12ros2_canopen19LifecycleBaseDriverE" title="ros2_canopen::LifecycleBaseDriver"><span class="n"><span class="pre">LifecycleBaseDriver</span></span></a><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriverE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver20LifecycleProxyDriverERKN6rclcpp11NodeOptionsE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver20LifecycleProxyDriverERKN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver20LifecycleProxyDriverERKN6rclcpp11NodeOptionsE"></span><span id="ros2_canopen::LifecycleProxyDriver::LifecycleProxyDriver__rclcpp::NodeOptionsCR"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1ad718adcc275034358dd027946a7ca02e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleProxyDriver</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver20LifecycleProxyDriverERKN6rclcpp11NodeOptionsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver6on_nmtEN7canopen8NmtStateE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver6on_nmtEN7canopen8NmtStateE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver6on_nmtEN7canopen8NmtStateE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_nmt__canopen::NmtState"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a7a2091b2f4d68f83fb0b76bab2ab5106"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_nmt</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nmt_state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver6on_nmtEN7canopen8NmtStateE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_tpdo__canopen_interfaces::msg::COData::SharedPtrC"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a5bac8ef1caddb87ce3c292fd929f5783"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_tpdo</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COData</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver7on_rpdoE6COData">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver7on_rpdoE6COData"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver7on_rpdoE6COData"></span><span id="ros2_canopen::LifecycleProxyDriver::on_rpdo__COData"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1abd81be70886bdd7c8fd9cb391b64ca8c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_rpdo</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver7on_rpdoE6COData" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_nmt_state_reset__std_srvs::srv::Trigger::Request::SharedPtrC.std_srvs::srv::Trigger::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a863238bb0c9c0618e02e7fd2ec860920"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_nmt_state_reset</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_nmt_state_start__std_srvs::srv::Trigger::Request::SharedPtrC.std_srvs::srv::Trigger::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1ac1e9524048fa4aa51973b3f7c3c75bbb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_nmt_state_start</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_sdo_read__canopen_interfaces::srv::CORead::Request::SharedPtrC.canopen_interfaces::srv::CORead::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1ad0d56980e45792a7838b5450a1dbb29c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_sdo_read</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CORead</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CORead</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_sdo_write__canopen_interfaces::srv::COWrite::Request::SharedPtrC.canopen_interfaces::srv::COWrite::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1ad4e47e5e595d661b9621c440914227e9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_sdo_write</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COWrite</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COWrite</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver22register_ros_interfaceEv">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver22register_ros_interfaceEv"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver22register_ros_interfaceEv"></span><span id="ros2_canopen::LifecycleProxyDriver::register_ros_interface"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a1daf372fbad76cd304bea16a6d6cf03d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_ros_interface</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver22register_ros_interfaceEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver12on_configureERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver12on_configureERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_configure__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a9212d81154c57ddcd3fc9993438e31a8"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_configure</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver12on_configureERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Configures the driver. </p>
+<p>Read parameters Initialise objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver11on_activateERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver11on_activateERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver11on_activateERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_activate__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a7b227efdd78c1141f10a57b927586ecf"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_activate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver11on_activateERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Activates the driver. </p>
+<p>Add driver to masters event loop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver13on_deactivateERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver13on_deactivateERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver13on_deactivateERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_deactivate__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a2d96b1b6c8efd2b3ef2e3d52ada4595e"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_deactivate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver13on_deactivateERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Deactivates the driver. </p>
+<p>Remove driver from masters event loop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver10on_cleanupERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver10on_cleanupERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver10on_cleanupERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_cleanup__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a86e6e70d01983ac9f04b018739c2526e"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_cleanup</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver10on_cleanupERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Cleanup the driver. </p>
+<p>Delete objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver11on_shutdownERKN16rclcpp_lifecycle5StateE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver11on_shutdownERKN16rclcpp_lifecycle5StateE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver11on_shutdownERKN16rclcpp_lifecycle5StateE"></span><span id="ros2_canopen::LifecycleProxyDriver::on_shutdown__rclcpp_lifecycle::StateCR"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1aa5b2581b05658e091624e2b59352aa03"></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNodeInterface</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CallbackReturn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_shutdown</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">State</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver11on_shutdownERKN16rclcpp_lifecycle5StateE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver19nmt_state_publisherE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver19nmt_state_publisherE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver19nmt_state_publisherE"></span><span id="ros2_canopen::LifecycleProxyDriver::nmt_state_publisher__rclcpp::Publisher:std_msgs::msg::String:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1ab89976b3b4d9ea20964b703534e86f2d"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Publisher</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std_msgs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_state_publisher</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver19nmt_state_publisherE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver14rpdo_publisherE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver14rpdo_publisherE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver14rpdo_publisherE"></span><span id="ros2_canopen::LifecycleProxyDriver::rpdo_publisher__rclcpp::Publisher:canopen_interfaces::msg::COData:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1accf997b11087f49358a69b558c16aacb"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Publisher</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COData</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rpdo_publisher</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver14rpdo_publisherE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver15tpdo_subscriberE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver15tpdo_subscriberE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver15tpdo_subscriberE"></span><span id="ros2_canopen::LifecycleProxyDriver::tpdo_subscriber__rclcpp::Subscription:canopen_interfaces::msg::COData:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a1de0f2e8caa917a341b57972f15e8bd8"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Subscription</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COData</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tpdo_subscriber</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver15tpdo_subscriberE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver23nmt_state_reset_serviceE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver23nmt_state_reset_serviceE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver23nmt_state_reset_serviceE"></span><span id="ros2_canopen::LifecycleProxyDriver::nmt_state_reset_service__rclcpp::Service:std_srvs::srv::Trigger:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1aba036c9a21163d5b40c2bdf68e237bdc"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Service</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_state_reset_service</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver23nmt_state_reset_serviceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver23nmt_state_start_serviceE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver23nmt_state_start_serviceE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver23nmt_state_start_serviceE"></span><span id="ros2_canopen::LifecycleProxyDriver::nmt_state_start_service__rclcpp::Service:std_srvs::srv::Trigger:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1abc720b9c7f9b630229d45fd156190e8d"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Service</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_state_start_service</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver23nmt_state_start_serviceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver16sdo_read_serviceE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver16sdo_read_serviceE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver16sdo_read_serviceE"></span><span id="ros2_canopen::LifecycleProxyDriver::sdo_read_service__rclcpp::Service:canopen_interfaces::srv::CORead:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a20f99379fc5e389fb3732e70c3597cd0"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Service</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CORead</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_read_service</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver16sdo_read_serviceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver17sdo_write_serviceE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver17sdo_write_serviceE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver17sdo_write_serviceE"></span><span id="ros2_canopen::LifecycleProxyDriver::sdo_write_service__rclcpp::Service:canopen_interfaces::srv::COWrite:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1aaad787b9506eb7b384c118ffdb7f478a"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Service</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COWrite</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_write_service</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver17sdo_write_serviceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen20LifecycleProxyDriver8sdo_mtexE">
+<span id="_CPPv3N12ros2_canopen20LifecycleProxyDriver8sdo_mtexE"></span><span id="_CPPv2N12ros2_canopen20LifecycleProxyDriver8sdo_mtexE"></span><span id="ros2_canopen::LifecycleProxyDriver::sdo_mtex__std::mutex"></span><span class="target" id="classros2__canopen_1_1_lifecycle_proxy_driver_1a5a56f649e1d4255d4cc7d9cff6946d39"></span><a class="reference internal" href="../canopen_base_driver/reference.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_mtex</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen20LifecycleProxyDriver8sdo_mtexE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriverE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriverE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriverE"></span><span id="ros2_canopen::ProxyDriver"></span><span class="target" id="classros2__canopen_1_1_proxy_driver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProxyDriver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../canopen_base_driver/reference.html#_CPPv4N12ros2_canopen10BaseDriverE" title="ros2_canopen::BaseDriver"><span class="n"><span class="pre">BaseDriver</span></span></a><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriverE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver22reset_node_nmt_commandEv">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver22reset_node_nmt_commandEv"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver22reset_node_nmt_commandEv"></span><span id="ros2_canopen::ProxyDriver::reset_node_nmt_command"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1abf68045ab8e355dd321896ddac4279ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset_node_nmt_command</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver22reset_node_nmt_commandEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Send Reset Node NMT command. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>false </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver17start_nmt_commandEv">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver17start_nmt_commandEv"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver17start_nmt_commandEv"></span><span id="ros2_canopen::ProxyDriver::start_nmt_command"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1abbb4dd51bf79fdad6fa4e6ad633c3620"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">start_nmt_command</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver17start_nmt_commandEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Send Start Node NMT command. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>false </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver13tpdo_transmitER6COData">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver13tpdo_transmitER6COData"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver13tpdo_transmitER6COData"></span><span id="ros2_canopen::ProxyDriver::tpdo_transmit__CODataR"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a47c8168dbeb201a55887016d39efe31b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tpdo_transmit</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver13tpdo_transmitER6COData" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Transmit Object via TPDO. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1aaecb7402d90a97d19c6c8c146929d06c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_nmt_state_cb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../canopen_base_driver/reference.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nmt_state_cb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Register a callback for NMT state change. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nmt_state_cb</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a09ef0eb010a2abbecfb638053da4d63f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_rpdo_cb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../canopen_base_driver/reference.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rpdo_cb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Register a callback for RPDO. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rpdo_cb</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver11ProxyDriverERKN6rclcpp11NodeOptionsE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver11ProxyDriverERKN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver11ProxyDriverERKN6rclcpp11NodeOptionsE"></span><span id="ros2_canopen::ProxyDriver::ProxyDriver__rclcpp::NodeOptionsCR"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a371370bf73416d7a6051787af57b0693"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProxyDriver</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver11ProxyDriverERKN6rclcpp11NodeOptionsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Construct a new Proxy Driver object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>options</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE"></span><span id="ros2_canopen::ProxyDriver::init__ev::ExecutorR.canopen::AsyncMasterR.uint8_t.std::shared_ptr:ros2_canopen::ConfigurationManager:"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a439db380cb9fb95c5e125642146f1375"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ev</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Executor</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">exec</span></span>, <span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">AsyncMaster</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">master</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node_id</span></span>, <a class="reference internal" href="../canopen_base_driver/reference.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../canopen_402_driver/reference.html#_CPPv412ros2_canopen" title="ros2_canopen"><span class="n"><span class="pre">ros2_canopen</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen20ConfigurationManagerE" title="ros2_canopen::ConfigurationManager"><span class="n"><span class="pre">ConfigurationManager</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver4initERN2ev8ExecutorERN7canopen11AsyncMasterE7uint8_tNSt10shared_ptrIN12ros2_canopen20ConfigurationManagerEEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Initialize driver. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exec</strong> – <strong>[in]</strong> Executor </p></li>
+<li><p><strong>master</strong> – <strong>[in]</strong> Master </p></li>
+<li><p><strong>node_id</strong> – <strong>[in]</strong> Target device’s CANopen node id </p></li>
+<li><p><strong>config</strong> – <strong>[in]</strong> Pointer to Configuration Manager </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver13nmt_state_cb_E">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver13nmt_state_cb_E"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver13nmt_state_cb_E"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1acb0dddc185e48b330459967ac7db1337"></span><a class="reference internal" href="../canopen_base_driver/reference.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_state_cb_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver13nmt_state_cb_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver8rpdo_cb_E">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver8rpdo_cb_E"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver8rpdo_cb_E"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1aedea514f6fed27d59535c6c3482dfc24"></span><a class="reference internal" href="../canopen_base_driver/reference.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rpdo_cb_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver8rpdo_cb_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver6on_nmtEN7canopen8NmtStateE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver6on_nmtEN7canopen8NmtStateE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver6on_nmtEN7canopen8NmtStateE"></span><span id="ros2_canopen::ProxyDriver::on_nmt__canopen::NmtState"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a50fd9412f553e65e246f7cf28c430fdc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_nmt</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nmt_state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver6on_nmtEN7canopen8NmtStateE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Callback function that is called on NMT state change. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nmt_state</strong> – <strong>[in]</strong> New state </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_tpdo__canopen_interfaces::msg::COData::SharedPtrC"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1aedbdcbe76b623dc685428f0db4aae48d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_tpdo</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COData</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver7on_tpdoEKN18canopen_interfaces3msg6COData9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Callback function that is called on TPDO subscription event. </p>
+<p>Transforms the message received into an COData object and calls the tpdo transmission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> – <strong>[in]</strong> Message received </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver7on_rpdoE6COData">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver7on_rpdoE6COData"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver7on_rpdoE6COData"></span><span id="ros2_canopen::ProxyDriver::on_rpdo__COData"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a2dd958a0f6b2b80e3d2c484d0fc8653d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_rpdo</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver7on_rpdoE6COData" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Callback function that is called on reception of an Object via RPDO. </p>
+<p>Publishes the received data via the RPDO topic of the driver and calls the rpdo callback if it was registered earlier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – <strong>[in]</strong> Object data received </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_nmt_state_reset__std_srvs::srv::Trigger::Request::SharedPtrC.std_srvs::srv::Trigger::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1ae474bf504203b799398cfeb083f52d6f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_nmt_state_reset</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver18on_nmt_state_resetEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Callback function for nmt_state_reset service. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>response</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_nmt_state_start__std_srvs::srv::Trigger::Request::SharedPtrC.std_srvs::srv::Trigger::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1ad058aa606e70636d1c522aa12fd3b0a9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_nmt_state_start</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver18on_nmt_state_startEKN8std_srvs3srv7Trigger7Request9SharedPtrEN8std_srvs3srv7Trigger8Response9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Callback for nmt_state_start service. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>response</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_sdo_read__canopen_interfaces::srv::CORead::Request::SharedPtrC.canopen_interfaces::srv::CORead::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1aee9435db93c9c87ade129abdc5dfa1ca"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_sdo_read</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CORead</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CORead</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver11on_sdo_readEKN18canopen_interfaces3srv6CORead7Request9SharedPtrEN18canopen_interfaces3srv6CORead8Response9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Callback for sdo_read service. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>response</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE"></span><span id="ros2_canopen::ProxyDriver::on_sdo_write__canopen_interfaces::srv::COWrite::Request::SharedPtrC.canopen_interfaces::srv::COWrite::Response::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a08b83808f6597b24abc96fe95882a44c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">on_sdo_write</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COWrite</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">request</span></span>, <span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COWrite</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Response</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">response</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver12on_sdo_writeEKN18canopen_interfaces3srv7COWrite7Request9SharedPtrEN18canopen_interfaces3srv7COWrite8Response9SharedPtrE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Callback for sdo_write service. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>response</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver19nmt_state_publisherE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver19nmt_state_publisherE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver19nmt_state_publisherE"></span><span id="ros2_canopen::ProxyDriver::nmt_state_publisher__rclcpp::Publisher:std_msgs::msg::String:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a25e70ce742ade479aeb3e40e2d0a225a"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Publisher</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std_msgs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_state_publisher</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver19nmt_state_publisherE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver14rpdo_publisherE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver14rpdo_publisherE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver14rpdo_publisherE"></span><span id="ros2_canopen::ProxyDriver::rpdo_publisher__rclcpp::Publisher:canopen_interfaces::msg::COData:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1adc00c68a7c120c3d1fccc79fe536bf03"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Publisher</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COData</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rpdo_publisher</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver14rpdo_publisherE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver15tpdo_subscriberE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver15tpdo_subscriberE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver15tpdo_subscriberE"></span><span id="ros2_canopen::ProxyDriver::tpdo_subscriber__rclcpp::Subscription:canopen_interfaces::msg::COData:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a5bd12fa3e545343141b17b5d41f2ee5a"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Subscription</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COData</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tpdo_subscriber</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver15tpdo_subscriberE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver23nmt_state_reset_serviceE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver23nmt_state_reset_serviceE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver23nmt_state_reset_serviceE"></span><span id="ros2_canopen::ProxyDriver::nmt_state_reset_service__rclcpp::Service:std_srvs::srv::Trigger:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a1b5c879ca3566d30f302e60336f477c2"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Service</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_state_reset_service</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver23nmt_state_reset_serviceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver23nmt_state_start_serviceE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver23nmt_state_start_serviceE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver23nmt_state_start_serviceE"></span><span id="ros2_canopen::ProxyDriver::nmt_state_start_service__rclcpp::Service:std_srvs::srv::Trigger:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1ac5f21c50488da0d78025c60f40c8e9c7"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Service</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std_srvs</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Trigger</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_state_start_service</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver23nmt_state_start_serviceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver16sdo_read_serviceE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver16sdo_read_serviceE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver16sdo_read_serviceE"></span><span id="ros2_canopen::ProxyDriver::sdo_read_service__rclcpp::Service:canopen_interfaces::srv::CORead:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a7a0206986f3d235dec0670ddf02ae974"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Service</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CORead</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_read_service</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver16sdo_read_serviceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver17sdo_write_serviceE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver17sdo_write_serviceE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver17sdo_write_serviceE"></span><span id="ros2_canopen::ProxyDriver::sdo_write_service__rclcpp::Service:canopen_interfaces::srv::COWrite:::SharedPtr"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1ae1e02917c87ba96cfc38aafb4cd1bda1"></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Service</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">srv</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COWrite</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">SharedPtr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_write_service</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver17sdo_write_serviceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen11ProxyDriver8sdo_mtexE">
+<span id="_CPPv3N12ros2_canopen11ProxyDriver8sdo_mtexE"></span><span id="_CPPv2N12ros2_canopen11ProxyDriver8sdo_mtexE"></span><span id="ros2_canopen::ProxyDriver::sdo_mtex__std::mutex"></span><span class="target" id="classros2__canopen_1_1_proxy_driver_1a1205ad303d2d93f2d7384bc3929300a3"></span><a class="reference internal" href="../canopen_base_driver/reference.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_mtex</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen11ProxyDriver8sdo_mtexE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv412ros2_canopen">
+<span id="_CPPv312ros2_canopen"></span><span id="_CPPv212ros2_canopen"></span><span id="ros2_canopen"></span><span class="target" id="namespaceros2__canopen"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ros2_canopen</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="canopen__proxy__driver_8hpp"></span><em><span class="pre">file</span></em> <span class="sig-name descname"><span class="pre">canopen_proxy_driver.hpp</span></span></dt>
+<dd><div class="docutils container">
+<em>#include &lt;string&gt;</em></div>
+<div class="docutils container">
+<em>#include “canopen_proxy_driver/visibility_control.h”</em></div>
+<div class="docutils container">
+<em>#include “canopen_base_driver/canopen_base_driver.hpp”</em></div>
+</dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="lifecycle__canopen__proxy__driver_8hpp"></span><em><span class="pre">file</span></em> <span class="sig-name descname"><span class="pre">lifecycle_canopen_proxy_driver.hpp</span></span></dt>
+<dd><div class="docutils container">
+<em>#include &lt;string&gt;</em></div>
+<div class="docutils container">
+<em>#include “canopen_proxy_driver/visibility_control.h”</em></div>
+<div class="docutils container">
+<em>#include “canopen_base_driver/lifecycle_canopen_base_driver.hpp”</em></div>
+</dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="dir_f6e8483cb8e8d332b74dc9f4ee720f50"></span><em><span class="pre">dir</span></em> <span class="sig-name descname"><span class="pre">/home/runner/work/ros2_canopen/ros2_canopen/canopen_proxy_driver</span></span></dt>
+<dd></dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="dir_48fa6da974ca963ea3dfdc5b73bd95b1"></span><em><span class="pre">dir</span></em> <span class="sig-name descname"><span class="pre">/home/runner/work/ros2_canopen/ros2_canopen/canopen_proxy_driver/include/canopen_proxy_driver</span></span></dt>
+<dd></dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="dir_a01fd6203223f5698e3d12839958da6f"></span><em><span class="pre">dir</span></em> <span class="sig-name descname"><span class="pre">/home/runner/work/ros2_canopen/ros2_canopen/canopen_proxy_driver/include</span></span></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../canopen_base_driver/reference.html" class="btn btn-neutral float-left" title="Base Driver API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../canopen_402_driver/reference.html" class="btn btn-neutral float-right" title="CIA402 Driver API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

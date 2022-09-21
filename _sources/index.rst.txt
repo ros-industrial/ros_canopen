@@ -3,45 +3,46 @@ ROS2 CANopen Stack
 
 This is the documentation of the ROS2 CANopen stack. 
 
-
-.. toctree::
+.. toctree:: 
   :maxdepth: 1
-  :caption: Getting started
+  :caption: Quickstart
+  :glob:
 
-  overview
-  installation
-    
-.. toctree::
+  quickstart/installation
+  quickstart/configuration
+  quickstart/operation
+
+.. toctree:: 
   :maxdepth: 1
-  :caption: Concepts and Design
+  :caption: User Guide
+  :glob:
 
-  design-objectives
-  configuration
-  device-manager
-  system-interface
-  master
-  proxy-device
-  motion-controller
+  user-guide/configuration/configuration
+  user-guide/service-based/overview
+  user-guide/lifecycle-service-based/overview
+  user-guide/ros2-control/overview
+  user-guide/master 
+  user-guide/proxy-driver
+  user-guide/motion-controller-driver
 
-.. toctree::
+
+.. toctree:: 
   :maxdepth: 1
-  :caption: Usage
-  
-  configuration-package
-  running-configuration-package
-  
+  :caption: Developer Guide
+  :glob:
 
-.. toctree::
+  developers-guide/design-objectives
+  developers-guide/overview
+  developers-guide/new-driver
+  developers-guide/new-master
+  developers-guide/canopen_core/*
+  developers-guide/canopen_base_driver/*
+  developers-guide/canopen_proxy_driver/*
+  developers-guide/canopen_402_driver/*
+
+.. toctree:: 
   :maxdepth: 1
-  :caption: Extension
+  :caption: Software Tests
+  :glob:
 
-  new-driver
-  new-master
-
-.. toctree::
-  :maxdepth: 1
-  :caption: Tests and Benchmarks
-
-  alpha-test-description
-  sil-tests
-  tested-hardware
+  software-tests/**

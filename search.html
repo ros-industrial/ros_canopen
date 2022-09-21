@@ -7,7 +7,6 @@
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
-      <link rel="stylesheet" href="_static/collapsible-lists/css/tree_view.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
     
   <!--[if lt IE 9]>
@@ -18,8 +17,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
-        <script src="_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
     <script src="_static/js/theme.js"></script>
     <script src="_static/searchtools.js"></script>
     <script src="_static/language_data.js"></script>
@@ -43,36 +40,37 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart/configuration.html">Creating a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart/operation.html">Starting a Configuration Package</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Concepts and Design</span></p>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="design-objectives.html">Development Objectives</a></li>
-<li class="toctree-l1"><a class="reference internal" href="configuration.html">Bus Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device-manager.html">Device Manager</a></li>
-<li class="toctree-l1"><a class="reference internal" href="system-interface.html">System Interface Manager</a></li>
-<li class="toctree-l1"><a class="reference internal" href="master.html">Master Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="proxy-device.html">Proxy Driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="motion-controller.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/configuration/configuration.html">Bus Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/service-based/overview.html">Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/lifecycle-service-based/overview.html">Lifecycled Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/ros2-control/overview.html">ROS2 Control System Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/proxy-driver.html">Proxy Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/motion-controller-driver.html">Motion Controller Driver</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="configuration-package.html">Creating a Configuration Package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="running-configuration-package.html">Starting a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers-guide/design-objectives.html">Design Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers-guide/new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers-guide/new-master.html">Creating a new master</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers-guide/canopen_core/reference.html">Core API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers-guide/canopen_base_driver/reference.html">Base Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers-guide/canopen_proxy_driver/reference.html">Proxy Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers-guide/canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Extension</span></p>
+<p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="new-driver.html">Creating a new device driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="new-master.html">Creating a new master</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Tests and Benchmarks</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="alpha-test-description.html">Alpha Tester Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="sil-tests.html">Software in the loop Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tested-hardware.html">Tested Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
 </ul>
 
         </div>

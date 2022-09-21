@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ros2_control SystemInterface test &mdash; ros2_canopen 0.0.1 documentation</title>
+  <title>Design Objectives &mdash; ros2_canopen 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -20,7 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Lifecycle Proxy Driver Test" href="proxy-driver-test.html" /> 
+    <link rel="next" title="Overview" href="overview.html" />
+    <link rel="prev" title="Motion Controller Driver" href="../user-guide/motion-controller-driver.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,23 +57,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/motion-controller-driver.html">Motion Controller Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/design-objectives.html">Design Objectives</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/new-driver.html">Creating a new device driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/new-master.html">Creating a new master</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_core/reference.html">Core API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_base_driver/reference.html">Base Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_proxy_driver/reference.html">Proxy Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Design Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="new-master.html">Creating a new master</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canopen_core/reference.html">Core API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canopen_base_driver/reference.html">Base Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canopen_proxy_driver/reference.html">Proxy Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ros2_control SystemInterface test</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#test-details">Test details</a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
 </ul>
 
         </div>
@@ -89,9 +87,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ros2_control SystemInterface test</li>
+      <li>Design Objectives</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/software-tests/ros2_control_system-test.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/developers-guide/design-objectives.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -99,44 +97,55 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="ros2-control-systeminterface-test">
-<h1>ros2_control SystemInterface test<a class="headerlink" href="#ros2-control-systeminterface-test" title="Permalink to this headline"></a></h1>
-<section id="test-details">
-<h2>Test details<a class="headerlink" href="#test-details" title="Permalink to this headline"></a></h2>
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Tests</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+  <section id="design-objectives">
+<h1>Design Objectives<a class="headerlink" href="#design-objectives" title="Permalink to this headline"></a></h1>
+<p>The ros_canopen stack had a number of drawbacks especially when it came
+to maintainablity and complexity. In order to address these drawbacks, we
+have decided to redesign the ros2_canopen stack completely with the following
+development goals.</p>
+<table class="colwidths-given longtable docutils align-default" id="id1">
+<caption><span class="caption-text">Development Objectives</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 33%" />
+<col style="width: 67%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Detail</p></th>
-<th class="head"><p>Information</p></th>
+<tr class="row-odd"><th class="head"><p>Objective</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Package</p></td>
-<td><p>canopen_ros2_control</p></td>
+<tr class="row-even"><td><p>Understandability and Extendability</p></td>
+<td><p>One major drawback of ros_canopen was that actually extending it with new drivers required to understand the complex stack with its different layers.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Test file</p></td>
-<td><p>launch/canopen_system.launch.py</p></td>
+<tr class="row-odd"><td><p>Robust Parallel Requests</p></td>
+<td><p>When multiple nodes are running on the same bus, it should be possible to make requests to the nodes concurrently from ROS2 and have the canopen master handle the sequencing.</p></td>
 </tr>
-<tr class="row-even"><td><p>Description</p></td>
-<td><p>Create an exemplary ros2_control SystemInterface with CAN master and communicates to a slave node. After start check <code class="docutils literal notranslate"><span class="pre">/dynamic_joint_states</span></code> to show internal data from CAN nodes in ros2_control system.</p></td>
+<tr class="row-even"><td><p>Easy Maintenance</p></td>
+<td><p>Maintenance effort should be reduced as much as possible. Therefore, a clean and clear code structure and documentation is needed and only funcitonalities that are not already available from other high quality open source libraries should be self implmented.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Prequisites</p></td>
-<td><p>vcan0 must be available</p></td>
+<tr class="row-odd"><td><p>Enable controlling drives via ros2_control</p></td>
+<td><p>A driver for CIA402 and a ros2_control interface need to be developed.</p></td>
+</tr>
+<tr class="row-even"><td><p>Enable controlling drives via ros2 ervice interface</p></td>
+<td><p>A driver for CIA402 and a service interface need to be developed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Enable proxy functionalities via ros2 interface</p></td>
+<td><p>For debugging purposes a proxy driver should be developed, which enables sending and receiving CANopen objects via a ros2 interface.</p></td>
+</tr>
+<tr class="row-even"><td><p>Good enough documentation</p></td>
+<td><p>Write documentation for using and understanding the ros2_canopen stack.</p></td>
 </tr>
 </tbody>
 </table>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="proxy-driver-test.html" class="btn btn-neutral float-left" title="Lifecycle Proxy Driver Test" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../user-guide/motion-controller-driver.html" class="btn btn-neutral float-left" title="Motion Controller Driver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="overview.html" class="btn btn-neutral float-right" title="Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
