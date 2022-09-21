@@ -1,4 +1,4 @@
-Development Objectives
+Design Objectives
 ======================
 
 The ros_canopen stack had a number of drawbacks especially when it came

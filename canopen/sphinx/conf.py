@@ -10,7 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-
+from pathlib import Path
 
 # -- Project information -----------------------------------------------------
 
@@ -33,27 +33,27 @@ extensions = [
  'sphinx.ext.imgmath',
  'sphinx.ext.todo',
  'sphinx.ext.graphviz',
- 'breathe',
- 'exhale'
+ 'breathe'
 ]
 
-breathe_projects = { "ros2_canopen": "../doxygen/doc_output/xml" }
-breathe_default_project = "ros2_canopen"
+breathe_default_project = "canopen_core"
 
-exhale_args = {
-    # These arguments are required
-    "containmentFolder":     "./api",
-    "rootFileName":          "library_root.rst",
-    "doxygenStripFromPath":  "..",
-    # Heavily encouraged optional argument (see docs)
-    "rootFileTitle":         "API Reference",
-    # Suggested optional arguments
-    "createTreeView":        True,
-    # TIP: if using the sphinx-bootstrap-theme, you need
-    # "treeViewIsBootstrap": True,
-    "exhaleExecutesDoxygen": True,
-    "exhaleDoxygenStdin":    "INPUT = ../../canopen_core/include/ ../../canopen_base_driver/include ../../canopen_402_driver/include ../../canopen_proxy_driver/include"
+def get_package(package: str):
+    path = Path(__file__).parent.parent.parent.joinpath("{}/include/{}".format(package, package))
+    files_gen = path.glob("*.hpp")
+    files = []
+    for file in files_gen:
+        files.append(file.name)
+    return (path, files)
+
+
+breathe_projects_source = {
+    "canopen_core": get_package("canopen_core"),
+    "canopen_base_driver": get_package("canopen_base_driver"),
+    "canopen_proxy_driver": get_package("canopen_proxy_driver"),
+    "canopen_402_driver": get_package("canopen_402_driver"),
 }
+
 
 # Tell sphinx what the primary language being documented is.
 primary_domain = 'cpp'

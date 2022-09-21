@@ -7,6 +7,5 @@ implementation.
 
 Master implementations need to implement the MasterInterface.
 
-.. doxygenclass:: ros2_canopen::MasterInterface
-   :project: ros2_canopen
-   :members:
+.. autodoxygenindex::
+   :project: canopen_core
