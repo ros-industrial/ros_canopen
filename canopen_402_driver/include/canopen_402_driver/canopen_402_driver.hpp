@@ -47,7 +47,10 @@ namespace ros2_canopen
         {
             intialised = false;
         }
-
+        /**
+         * @brief Regularly called function when device is running
+         * 
+         */
         void run()
         {
             if(!intialised)
@@ -67,6 +70,14 @@ namespace ros2_canopen
             publish();
         }
 
+        /**
+         * @brief Initialises driver
+         * 
+         * @param [in] exec 
+         * @param [in] master 
+         * @param [in] node_id 
+         * @param [in] config 
+         */
         void init(ev::Executor &exec,
                   canopen::AsyncMaster &master,
                   uint8_t node_id,

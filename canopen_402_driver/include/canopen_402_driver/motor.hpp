@@ -405,7 +405,21 @@ namespace canopen_402
          * 
          */
         void handleInit();
+        /**
+         * @brief Read objects of the drive
+         * 
+         * This function should be called regularly. It reads the status word
+         * from the device and translates it into the devices state.
+         * 
+         */
         void handleRead();
+        /**
+         * @brief Writes objects to the drive
+         * 
+         * This function should be called regularly. It writes the new command
+         * word to the drive
+         * 
+         */
         void handleWrite();
         /**
          * @brief Shutdowns the drive
@@ -431,6 +445,21 @@ namespace canopen_402
          * 
          */
         void handleRecover();
+
+        /**
+         * @brief Register a new operation mode for the drive
+         * 
+         * This function will register an operation mode for the drive.
+         * It will check if the mode is supported by the drive by reading
+         * 0x6508 object.
+         * 
+         * @tparam T 
+         * @tparam Args 
+         * @param mode 
+         * @param args 
+         * @return true 
+         * @return false 
+         */
         template <typename T, typename... Args>
         bool registerMode(uint16_t mode, Args &&...args)
         {
@@ -440,6 +469,10 @@ namespace canopen_402
                 .second;
         }
 
+        /**
+         * @brief Tries to register the standard operation modes defined in cia402
+         * 
+         */
         virtual void registerDefaultModes()
         {
             registerMode<ProfiledPositionMode>(MotorBase::Profiled_Position, driver);

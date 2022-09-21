@@ -51,15 +51,40 @@ namespace ros2_canopen
         {
         }
 
+        /**
+         * @brief Initialize master
+         * 
+         * @param [in] dcf_txt              Path to the DCF file
+         * @param [in] dcf_bin              Path to the DCF Bin file
+         * @param [in] can_interface_name   Name of the can interface
+         * @param [in] nodeid               CANopen node id
+         * @param [in] config               Pointer to the Configuration Manager
+         */
         void init(std::string dcf_txt, std::string dcf_bin, std::string can_interface_name, uint8_t nodeid, 
                     std::shared_ptr<ConfigurationManager> config) override;
 
+        /**
+         * @brief Add a driver to the master
+         * 
+         * @param [in] node_instance        Instance of the driver to add
+         * @param [in] node_id              CANopen node id of the target device
+         */
         void add_driver(std::shared_ptr<ros2_canopen::DriverInterface> node_instance, uint8_t node_id) override;
 
+        /**
+         * @brief Remove a driver from the master
+         * 
+         * @param [in] node_instance        Instance of the driver to add
+         * @param [in] node_id              CANopen node id of the target device
+         */
         void remove_driver(std::shared_ptr<ros2_canopen::DriverInterface> node_instance, uint8_t node_id) override;
 
         /**
-         * @brief on_sdo_read
+         * @brief Read Service Data Object
+         * 
+         * This Service is only available when the node is in active lifecycle state.
+         * It will return with success false in any other lifecycle state and log an
+         * RCLCPP_ERROR.
          * 
          * @param request 
          * @param response 
@@ -69,7 +94,11 @@ namespace ros2_canopen
             std::shared_ptr<canopen_interfaces::srv::COReadID::Response> response);
 
         /**
-         * @brief on_sdo_write
+         * @brief Write Service Data Object
+         * 
+         * This service is only available when the node is in active lifecycle state.
+         * It will return with success false in any other lifecycle state and log an
+         * RCLCPP_ERROR.
          * 
          * @param request 
          * @param response 

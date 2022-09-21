@@ -35,26 +35,42 @@
 
 using namespace std::chrono_literals;
 /*
-Start-up sequence
---------------------------------------------------------------------
-master | unconfigured | x |
-       | inactive     |   | x |
-       | active       |       | x | x | x | x | x |...
---------------------------------------------------------------------
-drv1   | unconfigured | x | x | x |
-       | inactive     |           | x |
-       | active       |               | x | x | x |...
---------------------------------------------------------------------
-driv2  | unconfigured | x | x | x | x | x |
-       | inactive     |                   | x |
-       | active       |                       | x |...
---------------------------------------------------------------------
+
 */
 namespace ros2_canopen
 {
+    /**
+     * @brief Lifecycle Device Manager Node
+     *
+     * This class provides functionalities to coordinate the lifecycle
+     * of master and device drivers that are loaded into the executor.
+     * 
+     * Start-up sequence
+     * --------------------------------------------------------------------
+     * master | unconfigured | x |
+     *        | inactive     |   | x |
+     *        | active       |       | x | x | x | x | x |...
+     * --------------------------------------------------------------------
+     * drv1   | unconfigured | x | x | x |
+     *        | inactive     |           | x |
+     *        | active       |               | x | x | x |...
+     * --------------------------------------------------------------------
+     * driv2  | unconfigured | x | x | x | x | x |
+     *        | inactive     |                   | x |
+     *        | active       |                       | x |...
+     * --------------------------------------------------------------------
+     *
+     *
+     *
+     */
     class LifecycleDeviceManagerNode : public rclcpp_lifecycle::LifecycleNode
     {
     public:
+    /**
+     * @brief Construct a new Lifecycle Device Manager Node object
+     * 
+     * @param node_options 
+     */
         LifecycleDeviceManagerNode(const rclcpp::NodeOptions &node_options)
             : rclcpp_lifecycle::LifecycleNode("LifecycleDeviceManagerNode", node_options)
         {
@@ -68,33 +84,78 @@ namespace ros2_canopen
         rclcpp::CallbackGroup::SharedPtr cbg_clients;
         std::shared_ptr<ros2_canopen::ConfigurationManager> config_;
 
+        /**
+         * @brief Callback for the Configure Tranistion
+         * 
+         * This will cause the device manager to load the configuration
+         * from the configuration file.
+         *
+         * @param state 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_configure(const rclcpp_lifecycle::State &state);
 
+        /**
+         * @brief Callback fro the Activate Transition
+         * 
+         * This will bringup master and device drivers using the
+         * bring_up_all function.
+         *
+         * @param state 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_activate(const rclcpp_lifecycle::State &state);
 
+        /**
+         * @brief Callback for the Deactivate Transition
+         * 
+         * This will bring down master and device drivers using the
+         * bring_down_all function.
+         * 
+         * @param state 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_deactivate(const rclcpp_lifecycle::State &state);
 
+        /**
+         * @brief Callback for the Cleanup Transition
+         * 
+         * Does nothing.
+         * 
+         * @param state 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_cleanup(const rclcpp_lifecycle::State &state);
 
+        /**
+         * @brief Callback for the Shutdown Transition
+         * 
+         * Does nothing.
+         * 
+         * @param state 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_shutdown(const rclcpp_lifecycle::State &state);
 
-        // stores node_id and get_state client
-        std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::GetState>::SharedPtr> drivers_get_state_clients;
-        // stores node_id and change_state client
-        std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr> drivers_change_state_clients;
-        // stores device_name and node_id
-        std::map<std::string, uint8_t> device_names_to_ids;
+        
+        std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::GetState>::SharedPtr> drivers_get_state_clients;  ///< stores node_id and get_state client
+        std::map<uint8_t, rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr> drivers_change_state_clients;   ///< stores node_id and change_state client
+        std::map<std::string, uint8_t> device_names_to_ids;     // stores device_name and node_id
 
-        rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr add_driver_client_;
-        rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr remove_driver_client_;
+        /**
+         * @todo Remove relicts?
+         * 
+         */
+        rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr add_driver_client_;          ///< Service client object for adding a driver
+        rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr remove_driver_client_;       ///< Service client object for removing a driver
 
-        uint8_t master_id_;
-        std::string container_name_;
+        uint8_t master_id_;             ///< Stores master id
+        std::string container_name_;    ///< Stores name of the associated device_container
 
     private:
         template <typename FutureT, typename WaitTimeT>
@@ -119,9 +180,25 @@ namespace ros2_canopen
             return status;
         }
 
+        /**
+         * @brief Get the lifecycle state of a driver node
+         * 
+         * @param [in] node_id 
+         * @param [in] time_out 
+         * @return unsigned int 
+         */
         unsigned int
         get_state(uint8_t node_id, std::chrono::seconds time_out = 3s);
 
+        /**
+         * @brief Change the lifecycle state of a driver node
+         * 
+         * @param [in] node_id      CANopen node id of the driver
+         * @param [in] transition   Lifecyle transition to trigger
+         * @param [in] time_out     Timeout
+         * @return true 
+         * @return false 
+         */
         bool
         change_state(uint8_t node_id, uint8_t transition, std::chrono::seconds time_out = 3s);
 

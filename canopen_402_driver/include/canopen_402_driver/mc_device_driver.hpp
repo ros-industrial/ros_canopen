@@ -167,7 +167,13 @@ namespace ros2_canopen
             std::memcpy(&data, &(obj->data), sizeof(T));
             return data;
         }
-
+        /**
+         * @brief Get an object from local cache
+         * 
+         * @tparam T 
+         * @param obj 
+         * @return T 
+         */
         template <typename T>
         T get_remote_obj_cached(std::shared_ptr<RemoteObject> obj)
         {
@@ -176,6 +182,13 @@ namespace ros2_canopen
             return data;
         }
 
+        /**
+         * @brief Set an object in local cache
+         * 
+         * @tparam T 
+         * @param obj 
+         * @param data 
+         */
         template <typename T>
         void set_remote_obj_cached(std::shared_ptr<RemoteObject> obj, const T data)
         {
@@ -305,6 +318,13 @@ namespace ros2_canopen
             return position;
         }
 
+        /**
+         * @brief Construct a new MCDeviceDriver object
+         * 
+         * @param [in] exec 
+         * @param [in] master 
+         * @param [in] id 
+         */
         MCDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
             : LelyBridge(exec, master, id)
         {

@@ -26,10 +26,26 @@
 #include "canopen_interfaces/srv/co_node.hpp"
 
 #include "device.hpp"
-
+/**
+ * @brief Lifecyle Device Container for CANopen
+ * 
+ * This class provides the functionality for loading a
+ * the CANopen Master and CANopen Device Drivers based on the 
+ * Configuration Files. Configuration files need to be passed in
+ * as paramters.
+ * 
+ */
 class LifecycleDeviceContainerNode : public rclcpp_components::ComponentManager
 {
 public:
+
+    /**
+     * @brief Construct a new Lifecycle Device Container Node object
+     * 
+     * @param [in] executor     The executor to add loaded master and devices to.
+     * @param [in] node_name    The name of the node    
+     * @param [in] node_options Passed to the device_container node
+     */
     LifecycleDeviceContainerNode(
         std::weak_ptr<rclcpp::Executor> executor =
             std::weak_ptr<rclcpp::executors::MultiThreadedExecutor>(),
@@ -53,8 +69,25 @@ public:
         
     }
 
+    /**
+     * @brief Executes the intialisation
+     *
+     * This will read nodes parameters and initialize
+     * the configuration defined in the paramters. It
+     * will also start loading the components.
+     * 
+     * @return true 
+     * @return false 
+     */
     bool init();
 
+    /**
+     * @brief Callback for the listing service
+     * 
+     * @param request_header 
+     * @param request 
+     * @param response 
+     */
     virtual void
     on_list_nodes(
         const std::shared_ptr<rmw_request_id_t> request_header,
@@ -63,25 +96,50 @@ public:
 
 
 private:
-    // Stores registered drivers as device_name, pair(node_id, driver_name)
-    std::map<std::string, std::pair<uint16_t, std::string>> registered_drivers_;
-    // Stores drivers that were succesfully added to executor as device_name, pair(node_id, driver_name)
-    std::map<std::string, std::pair<uint16_t, std::string>> active_drivers_;
-    // Stores componentes as node_id and wrapper_object
-    std::map<uint16_t, rclcpp_components::NodeInstanceWrapper> node_wrappers_;
-    std::shared_ptr<ros2_canopen::LifecycleMasterInterface> can_master_;
-    std::shared_ptr<ev::Executor> exec_;
-    std::weak_ptr<rclcpp::Executor> executor_;
-    std::shared_ptr<ros2_canopen::ConfigurationManager> config_;
-    std::string dcf_txt_;
-    std::string bus_config_;
-    std::string dcf_bin_;
-    std::string can_interface_name_;
 
-    rclcpp::Service<canopen_interfaces::srv::CONode>::SharedPtr init_driver_service_;
+
+    
+    std::map<std::string, std::pair<uint16_t, std::string>> registered_drivers_;    ///< Map of drivers registered in busconfiguration. Name is key.                        
+    std::map<std::string, std::pair<uint16_t, std::string>> active_drivers_;        ///< Map of drivers activated (added to ros executor). Name is key.            
+    std::map<uint16_t, rclcpp_components::NodeInstanceWrapper> node_wrappers_;      ///< Map of node instances. CAN id is key.            
+    std::shared_ptr<ros2_canopen::LifecycleMasterInterface> can_master_;            ///< Pointer to can master instance
+    std::shared_ptr<ev::Executor> exec_;                                            ///< Pointer to can executor instance
+    std::weak_ptr<rclcpp::Executor> executor_;                                      ///< Pointer to ros executor instance
+    std::shared_ptr<ros2_canopen::ConfigurationManager> config_;                    ///< Pointer to configuration manager instance
+    std::string dcf_txt_;                                                           ///< Cached value of .dcf file parameter
+    std::string bus_config_;                                                        ///< Cached value of bus.yml file parameter
+    std::string dcf_bin_;                                                           ///< Cached value of .bin file parameter
+    std::string can_interface_name_;                                                ///< Cached value of can interface name
+    rclcpp::Service<canopen_interfaces::srv::CONode>::SharedPtr init_driver_service_;///< Service object for init_driver service 
+    /**
+     * @todo Relict??
+     * 
+     */          
     rclcpp::Service<canopen_interfaces::srv::CONode>::SharedPtr remove_node_master_service_;
+
+    /**
+     * @brief Initialize the device manager
+     * 
+     * @param [in] node_id  CANopen node id of the device manager
+     * @return true 
+     * @return false 
+     */
     bool init_device_manager(uint16_t node_id);
+
+    /**
+     * @brief Set the ROS executor object
+     * 
+     * @param [in] executor     Pointer to the Executor
+     */
     void set_executor(const std::weak_ptr<rclcpp::Executor> executor);
+
+    /**
+     * @brief Add driver to executor
+     * 
+     * @param [in] driver_name  Name of the driver 
+     * @param [in] node_id      CANopen node id of the target device
+     * @param [in] node_name    Node name 
+     */
     void add_node_to_executor(const std::string &driver_name, const uint16_t node_id, const std::string &node_name);
     void remove_node_from_executor(const std::string &driver_name, const uint16_t node_id, const std::string &node_name);
 
@@ -92,13 +150,19 @@ private:
      * CANopen master loop, so that it has access to CANopen events
      * and can send messages.
      *
-     * @param driver_name   Name of the driver
-     * @param node_id       CANopen Id of the device the driver targets
+     * @param node_id       CANopen node id of the target device
      *
-     *
+     * @return true
+     * @return false
      */
     bool init_driver(uint16_t node_id);
 
+    /**
+     * @brief Callback for init driver service
+     * 
+     * @param request 
+     * @param response 
+     */
     void on_init_driver(
         const canopen_interfaces::srv::CONode::Request::SharedPtr request,
         canopen_interfaces::srv::CONode::Response::SharedPtr response)
@@ -106,6 +170,16 @@ private:
         response->success = init_driver(request->nodeid);
     }
 
+    /**
+     * @brief Load a component
+     * 
+     * @param [in] package_name     Name of the package
+     * @param [in] driver_name      Name of the driver class to load
+     * @param [in] node_id          CANopen node id of the target device
+     * @param [in] node_name        Node name of the ROS node
+     * @return true 
+     * @return false 
+     */
     bool load_component(std::string &package_name, std::string &driver_name, uint16_t node_id, std::string &node_name);
 
     /**
@@ -115,10 +189,35 @@ private:
      */
     std::map<uint16_t, std::string> list_components();
 
+    /**
+     * @brief Loads drivers from configuration
+     * 
+     * @return true 
+     * @return false 
+     */
     bool load_drivers_from_config();
+    /**
+     * @brief Loads master from configuration
+     * 
+     * @return true 
+     * @return false 
+     */
     bool load_master_from_config();
+    /**
+     * @brief Loads the device manager
+     * 
+     * @return true 
+     * @return false 
+     */
     bool load_manager();
 
+    /**
+     * @brief Initialises the master
+     * 
+     * @param node_id 
+     * @return true 
+     * @return false 
+     */
     bool init_master(uint16_t node_id);
 };
 

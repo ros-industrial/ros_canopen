@@ -29,6 +29,14 @@
 
 namespace ros2_canopen
 {
+    /**
+     * @brief Lifecycle Master Node
+     * 
+     * This class implements the Lifecycle master interface.
+     * It uses the Lely Master Bridge and exposes a ROS node
+     * interface.
+     * 
+     */
     class LifecycleMasterNode : public LifecycleMasterInterface
     {
     protected:
@@ -49,6 +57,11 @@ namespace ros2_canopen
         rclcpp::Service<canopen_interfaces::srv::COWriteID>::SharedPtr sdo_write_service;
 
     public:
+        /**
+         * @brief Construct a new Lifecycle Master Node object
+         * 
+         * @param node_options 
+         */
         LifecycleMasterNode(
             const rclcpp::NodeOptions &node_options
             ) : LifecycleMasterInterface("master", node_options)
@@ -64,18 +77,57 @@ namespace ros2_canopen
          */
         void init() override;
 
+        /**
+         * @brief Callback for Configuration Transition
+         * 
+         * This reads the nodes paramters.
+         * 
+         * @param state 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-        on_configure(const rclcpp_lifecycle::State &);
+        on_configure(const rclcpp_lifecycle::State & state);
 
+        /**
+         * @brief Callback for Activate Transition
+         * 
+         * This creates the necessary objects for the Lely Master Bridge and
+         * starts the Master Bridge and the associated executor.
+         * 
+         * @param state 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_activate(const rclcpp_lifecycle::State & state);
 
+        /**
+         * @brief Callback for Deactivate Transition
+         * 
+         * This stops the Masterbridge.
+         * 
+         * @param state 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_deactivate(const rclcpp_lifecycle::State & state);
         
+        /**
+         * @brief Callback for the Cleanup Transition
+         * 
+         * This does nothing.
+         * 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_cleanup(const rclcpp_lifecycle::State &);
 
+        /**
+         * @brief Callback for the Shutdown Transition
+         * 
+         * This does nothing.
+         * 
+         * @return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+         */
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_shutdown(const rclcpp_lifecycle::State & state);
 

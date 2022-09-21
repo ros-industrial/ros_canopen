@@ -165,6 +165,9 @@ namespace ros2_canopen{
 
     /**
      * @brief OnBoot Callback
+     * This callback is called when the Boot process of the 
+     * slave that was initiated by the master has been success
+     * fully finished.
      *
      * @param st
      * @param es
@@ -283,6 +286,13 @@ namespace ros2_canopen{
      */
     uint8_t get_id();
 
+
+    /**
+     * @brief Wait for device to be booted
+     * 
+     * @return true 
+     * @return false 
+     */
     bool wait_for_boot()
     {
       if (booted.load())
@@ -301,12 +311,22 @@ namespace ros2_canopen{
       }
     }
 
+    /**
+     * @brief Request master to boot device
+     * 
+     */
     void Boot()
     {
       booted.store(false);
       FiberDriver::Boot();
     }
 
+    /**
+     * @brief Indicates if Device is booted
+     * 
+     * @return true 
+     * @return false 
+     */
     bool is_booted()
     {
       return booted.load();

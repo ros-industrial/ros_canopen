@@ -47,7 +47,10 @@ namespace ros2_canopen
             : LifecycleProxyDriver(options)
         {
         }
-
+        /**
+         * @brief Regularly called function
+         * 
+         */
         void run()
         {
             motor_->handleRead();
@@ -56,6 +59,10 @@ namespace ros2_canopen
             publish();
         }
 
+        /**
+         * @brief Initialises the device
+         * 
+         */
         void init() override
         {
             LifecycleProxyDriver::init();
@@ -63,12 +70,26 @@ namespace ros2_canopen
         }
 
     protected:
+        /**
+         * @brief Reads the configuration
+         * 
+         * This will read the refresh period from the configuration
+         * of the device.
+         * 
+         */
         void read_config() override
         {
             auto period = this->config_["period"].as<uint32_t>();
             period_ms_ = period;
         }
 
+        /**
+         * @brief Callback function for an RPDO
+         * 
+         * This is not used.
+         * 
+         * @param data 
+         */
         virtual void on_rpdo(COData data) override
         {
             RCLCPP_INFO(this->get_logger(), "on_rpo not implemented");
@@ -257,7 +278,7 @@ namespace ros2_canopen
             canopen_interfaces::srv::COTargetDouble::Response::SharedPtr response);
 
         /**
-         * @brief Publishes actual position and speed
+         * @brief Publishes joint state values
          *
          */
         void publish();

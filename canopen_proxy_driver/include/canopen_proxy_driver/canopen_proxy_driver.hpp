@@ -23,6 +23,7 @@ namespace ros2_canopen
 {
 class ProxyDriver : public BaseDriver
 {
+  //publishers, subscriptions and services
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr nmt_state_publisher;
   rclcpp::Publisher<canopen_interfaces::msg::COData>::SharedPtr rpdo_publisher;
   rclcpp::Subscription<canopen_interfaces::msg::COData>::SharedPtr tpdo_subscriber;
@@ -35,24 +36,51 @@ class ProxyDriver : public BaseDriver
 
   // expose for ros2 control purposes
 public:
+    /**
+     * @brief Send Reset Node NMT command
+     * 
+     * @return true 
+     * @return false 
+     */
     bool reset_node_nmt_command(){
         driver->nmt_command(canopen::NmtCommand::RESET_NODE);
         return true;
     }
 
+    /**
+     * @brief Send Start Node NMT command
+     * 
+     * @return true 
+     * @return false 
+     */
     bool start_nmt_command(){
         driver->nmt_command(canopen::NmtCommand::START);
         return true;
     }
 
+  /**
+   * @brief Transmit Object via TPDO
+   * 
+   * @param data 
+   */
     void tpdo_transmit(COData &data){
             driver->tpdo_transmit(data);
     }
 
+    /**
+     * @brief Register a callback for NMT state change
+     * 
+     * @param nmt_state_cb 
+     */
     void register_nmt_state_cb( std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb){
         nmt_state_cb_ = std::move(nmt_state_cb);
     }
 
+    /**
+     * @brief Register a callback for RPDO
+     * 
+     * @param rpdo_cb 
+     */
     void register_rpdo_cb( std::function<void(COData, uint8_t)> rpdo_cb){
         rpdo_cb_ = std::move(rpdo_cb);
     }
@@ -63,32 +91,92 @@ public:
     std::function<void(COData, uint8_t)> rpdo_cb_;
 
 protected:
+
+  /**
+   * @brief Callback function that is called on NMT state change
+   * 
+   * @param [in] nmt_state    New state
+   */
   void on_nmt(canopen::NmtState nmt_state);
 
+  /**
+   * @brief Callback function that is called on TPDO subscription event
+   * 
+   * Transforms the message received into an COData object and calls
+   * the tpdo transmission.
+   * 
+   * @param [in] msg      Message received
+   */
   void on_tpdo(const canopen_interfaces::msg::COData::SharedPtr msg);
 
+  /**
+   * @brief Callback function that is called on reception of an Object via RPDO
+   * 
+   * Publishes the received data via the RPDO topic of the driver and
+   * calls the rpdo callback if it was registered earlier.
+   * 
+   * @param [in] d      Object data received
+   */
   void on_rpdo(COData d);
 
+
+  /**
+   * @brief Callback function for nmt_state_reset service
+   * 
+   * @param request 
+   * @param response 
+   */
   void on_nmt_state_reset(
     const std_srvs::srv::Trigger::Request::SharedPtr request,
     std_srvs::srv::Trigger::Response::SharedPtr response);
 
+  /**
+   * @brief Callback for nmt_state_start service
+   * 
+   * @param request 
+   * @param response 
+   */
   void on_nmt_state_start(
     const std_srvs::srv::Trigger::Request::SharedPtr request,
     std_srvs::srv::Trigger::Response::SharedPtr response);
 
+  /**
+   * @brief Callback for sdo_read service
+   * 
+   * @param request 
+   * @param response 
+   */
   void on_sdo_read(
     const canopen_interfaces::srv::CORead::Request::SharedPtr request,
     canopen_interfaces::srv::CORead::Response::SharedPtr response);
 
+  /**
+   * @brief Callback for sdo_write service
+   * 
+   * @param request 
+   * @param response 
+   */
   void on_sdo_write(
     const canopen_interfaces::srv::COWrite::Request::SharedPtr request,
     canopen_interfaces::srv::COWrite::Response::SharedPtr response);
 
 public:
+  /**
+   * @brief Construct a new Proxy Driver object
+   * 
+   * @param options 
+   */
   explicit ProxyDriver(const rclcpp::NodeOptions & options)
   : BaseDriver(options), nmt_state_cb_(nullptr), rpdo_cb_(nullptr) {}
 
+  /**
+   * @brief Initialize driver
+   * 
+   * @param [in] exec       Executor
+   * @param [in] master     Master
+   * @param [in] node_id    Target device's CANopen node id 
+   * @param [in] config     Pointer to Configuration Manager
+   */
   void init(
     ev::Executor & exec,
     canopen::AsyncMaster & master,

@@ -45,13 +45,20 @@ namespace ros2_canopen
     std::thread nmt_state_publisher_thread_;
     std::thread rpdo_publisher_thread_;
     
-
+    
     void nmt_listener();
     void rdpo_listener();
 
     std::mutex driver_mutex_;
     std::shared_ptr<ros2_canopen::LelyBridge> driver_;
 
+    /**
+     * @brief Start Threads
+     * 
+     * This funciton will start the nt and rpdo
+     * publisher threads.
+     * 
+     */
     virtual void start_threads() override
     {
       nmt_state_publisher_thread_ =
@@ -61,6 +68,13 @@ namespace ros2_canopen
           std::thread(std::bind(&ros2_canopen::LifecycleBaseDriver::rdpo_listener, this));
     }
 
+    /**
+     * @brief Join worker threads
+     * 
+     * This function will wait for the nmt and rpdo
+     * publisher threads to finish.
+     * 
+     */
     virtual void join_threads() override
     {
       nmt_state_publisher_thread_.join();
@@ -143,7 +157,25 @@ namespace ros2_canopen
     }
 
   public:
+    /**
+     * @brief Adds the driver to the master event loop.
+     * 
+     * Driver needs to be initialised before calling this
+     * function.
+     * 
+     * @return true 
+     * @return false 
+     */
     virtual bool add() override;
+
+    /**
+     * @brief Removes the driver from the masters event loop.
+     * 
+     * Driver needs to be intialised before calling this funciton.
+     * 
+     * @return true 
+     * @return false 
+     */
     virtual bool remove() override;
   };
 } // namespace ros2_canopen
