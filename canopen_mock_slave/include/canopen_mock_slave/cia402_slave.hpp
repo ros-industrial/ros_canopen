@@ -15,6 +15,7 @@
 
 #include "lifecycle_msgs/msg/state.hpp"
 #include "canopen_mock_slave/base_slave.hpp"
+#include "canopen_mock_slave/motion_generator.hpp"
 
 using namespace lely;
 using namespace std::chrono_literals;
@@ -129,6 +130,57 @@ namespace ros2_canopen
         double acceleration;
         double control_cycle_period;
 
+        void run_profiled_position_mode()
+        {
+            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "run_profiled_position_mode");
+            double profile_speed = static_cast<double>(((uint32_t)(*this)[0x6081][0])) / 1000;
+            double profile_accerlation = static_cast<double>(((uint32_t)(*this)[0x6083][0])) / 1000;
+            double actual_position = static_cast<double>(((int32_t)(*this)[0x6064][0])) / 1000.0;
+            double target_position = static_cast<double>(((int32_t)(*this)[0x607A][0])) / 1000.0;
+            double actual_speed = static_cast<double>(((int32_t)(*this)[0x606C][0])) / 1000.0;
+            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Profile_Speed %f, Profile Acceleration: %f", profile_speed, profile_accerlation);
+
+            while (
+                (state.load() == InternalState::Operation_Enable) &&
+                (operation_mode.load() == Profiled_Position) &&
+                (rclcpp::ok()))
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                target_position = static_cast<double>(((int32_t)(*this)[0x607A][0])) / 1000.0;
+                if (target_position != actual_position)
+                {
+                    clear_status_bit(SW_Operation_mode_specific0);
+                    clear_status_bit(SW_Target_reached);
+                    {
+                        std::scoped_lock<std::mutex> lock(w_mutex);
+                        (*this)[0x6041][0] = status_word;
+                        this->TpdoEvent(1);
+                    }
+                    is_new_set_point.store(false);
+                    RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Move from %f to %f", actual_position, target_position);
+                    {
+                        MotionGenerator gen(profile_accerlation, profile_speed, actual_position);
+                        
+                        while (!gen.getFinished())
+                        {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                            actual_position = gen.update(target_position);
+                            actual_speed = gen.getVelocity();
+                            (*this)[0x6064][0] = (int32_t)(actual_position * 1000);
+                            (*this)[0x606C][0] = (int32_t)(actual_speed * 1000);
+                        }
+                    }
+                    RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Reached target position %f", actual_position);
+                    clear_status_bit(SW_Operation_mode_specific0);
+                    set_status_bit(SW_Target_reached);
+                    {
+                        std::scoped_lock<std::mutex> lock(w_mutex);
+                        (*this)[0x6041][0] = status_word;
+                        this->TpdoEvent(1);
+                    }
+                }
+            }
+        }
         void run_cyclic_position_mode()
         {
             RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "run_cyclic_position_mode");
@@ -138,10 +190,10 @@ namespace ros2_canopen
             int32_t offset = (*this)[0x60B0][0];
             int8_t index = (*this)[0x60C2][2];
 
-            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"),"Lower Software Limit: %d", min_pos);
-            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"),"Upper Software Limit: %d", max_pos);
-            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"),"Control Cycle: %hhu + 10^%hhd", int_period, index);
-            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"),"Offset: %d", offset);
+            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Lower Software Limit: %d", min_pos);
+            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Upper Software Limit: %d", max_pos);
+            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Control Cycle: %hhu + 10^%hhd", int_period, index);
+            RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Offset: %d", offset);
 
             double cp_min_position = min_pos / 1000;
             double cp_max_position = max_pos / 1000;
@@ -158,7 +210,7 @@ namespace ros2_canopen
                 double target_position = (act_pos) / 1000 - cp_offset;     // m
                 double position_delta = target_position - actual_position; // m
                 double speed = position_delta / cp_interpolation_period;   // m/s
-                double increment = control_cycle_period * speed;                     // m
+                double increment = control_cycle_period * speed;           // m
                 (*this)[0x606C][0] = (int32_t)speed * 1000;
                 if (
                     (target_position < cp_max_position) &&
@@ -171,8 +223,8 @@ namespace ros2_canopen
                     {
                         std::this_thread::sleep_for(std::chrono::milliseconds(ccp_millis));
                         actual_position += increment;
-                        (*this)[0x6064][0] = (int32_t)actual_position*1000;
-                        if(std::abs(actual_position - target_position) < 0.001)
+                        (*this)[0x6064][0] = (int32_t)actual_position * 1000;
+                        if (std::abs(actual_position - target_position) < 0.001)
                         {
                             RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Reached Target %f", target_position);
                         }
@@ -180,6 +232,10 @@ namespace ros2_canopen
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(ccp_millis));
             }
+        }
+
+        void run_position_mode()
+        {
         }
 
         void set_new_status_word_and_state()
@@ -364,6 +420,9 @@ namespace ros2_canopen
                 case Cyclic_Synchronous_Position:
                     start_sync_pos_mode();
                     break;
+                case Profiled_Position:
+                    start_profile_pos_mode();
+                    break;
                 default:
                     break;
                 }
@@ -374,6 +433,11 @@ namespace ros2_canopen
         {
 
             cyclic_position_mode = std::thread(std::bind(&CIA402MockSlave::run_cyclic_position_mode, this));
+        }
+
+        void start_profile_pos_mode()
+        {
+            profiled_position_mode = std::thread(std::bind(&CIA402MockSlave::run_profiled_position_mode, this));
         }
 
         void on_quickstop_active()

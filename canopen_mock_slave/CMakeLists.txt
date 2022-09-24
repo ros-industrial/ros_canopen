@@ -34,6 +34,7 @@ ament_target_dependencies(
 add_executable(
   cia402_slave_node
   "src/cia402_slave.cpp"
+  "src/motion_generator.cpp"
 )
 target_compile_features(cia402_slave_node  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(cia402_slave_node  PUBLIC
