@@ -220,31 +220,10 @@ protected:
 
     command_publisher_->publish(msg);
   }
-
-//  std::shared_ptr<ControllerModeSrvType::Response> call_service(
-//    const bool slow_control, rclcpp::Executor & executor)
-//  {
-//    auto request = std::make_shared<ControllerModeSrvType::Request>();
-//    request->data = slow_control;
-//
-//    bool wait_for_service_ret =
-//      slow_control_service_client_->wait_for_service(std::chrono::milliseconds(500));
-//    EXPECT_TRUE(wait_for_service_ret);
-//    if (!wait_for_service_ret) {
-//      throw std::runtime_error("Services is not available!");
-//    }
-//    auto result = slow_control_service_client_->async_send_request(request);
-//    EXPECT_EQ(executor.spin_until_future_complete(result), rclcpp::FutureReturnCode::SUCCESS);
-//
-//    return result.get();
-//  }
-
+  
 protected:
-  // TODO(anyone): adjust the members as needed
-
   // Controller-related parameters
   std::string joint_name_ = {"joint1"};
-//  std::vector<std::string> state_joint_names_ = {"joint1state"};
   std::vector<std::string> command_interface_names_ = {"tpdo/index",
     "tpdo/subindex",
     "tpdo/type",
