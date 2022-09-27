@@ -7,7 +7,7 @@
 #include <cstring>
 
 #include "canopen_402_driver/base.hpp"
-#include "canopen_base_driver/lely_bridge.hpp"
+#include "canopen_base_driver/lely_driver_bridge.hpp"
 
 using namespace ros2_canopen;
 namespace ros2_canopen
@@ -24,12 +24,12 @@ namespace ros2_canopen
     };
 
     /**
-     * @brief Specialised LelyBridge for MotionControllers
+     * @brief Specialised LelyDriverBridge for MotionControllers
      *
      * This class provides funtionalities necessary for interacting
      * with the canopen_402 stack from ros_canopen.
      */
-    class MCDeviceDriver : public LelyBridge
+    class LelyMotionControllerBridge : public LelyDriverBridge
     {
     private:
         std::vector<std::shared_ptr<RemoteObject>> objs;
@@ -319,14 +319,14 @@ namespace ros2_canopen
         }
 
         /**
-         * @brief Construct a new MCDeviceDriver object
+         * @brief Construct a new LelyMotionControllerBridge object
          * 
          * @param [in] exec 
          * @param [in] master 
          * @param [in] id 
          */
-        MCDeviceDriver(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
-            : LelyBridge(exec, master, id)
+        LelyMotionControllerBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
+            : LelyDriverBridge(exec, master, id)
         {
             sync = true;
         }

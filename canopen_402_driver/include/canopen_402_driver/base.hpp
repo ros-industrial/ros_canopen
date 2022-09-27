@@ -5,7 +5,7 @@
 #include "lely/coapp/master.hpp"
 #include "lely/coapp/driver.hpp"
 
-namespace canopen_402
+namespace ros2_canopen
 {
 
 /**

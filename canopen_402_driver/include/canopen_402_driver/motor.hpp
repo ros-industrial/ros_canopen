@@ -12,9 +12,9 @@
 #include <bitset>
 #include "rclcpp/rclcpp.hpp"
 
-#include "canopen_402_driver/mc_device_driver.hpp"
+#include "canopen_402_driver/lely_motion_controller_bridge.hpp"
 using namespace ros2_canopen;
-namespace canopen_402
+namespace ros2_canopen
 {
     class State402
     {
@@ -213,11 +213,11 @@ namespace canopen_402
     template <uint16_t ID, typename TYPE, CODataTypes TPY, uint16_t OBJ, uint8_t SUB, uint16_t CW_MASK>
     class ModeForwardHelper : public ModeTargetHelper<TYPE>
     {
-        std::shared_ptr<MCDeviceDriver> driver;
+        std::shared_ptr<LelyMotionControllerBridge> driver;
         std::shared_ptr<RemoteObject> obj;
 
     public:
-        ModeForwardHelper(std::shared_ptr<MCDeviceDriver> driver) : ModeTargetHelper<TYPE>(ID)
+        ModeForwardHelper(std::shared_ptr<LelyMotionControllerBridge> driver) : ModeTargetHelper<TYPE>(ID)
         {
             this->obj = driver->create_remote_obj(OBJ, SUB, TPY);
             this->driver = driver;
@@ -251,7 +251,7 @@ namespace canopen_402
     class ProfiledPositionMode : public ModeTargetHelper<int32_t>
     {
         const uint16_t index = 0x607A;
-        std::shared_ptr<MCDeviceDriver> driver;
+        std::shared_ptr<LelyMotionControllerBridge> driver;
         std::shared_ptr<RemoteObject> obj;
 
         double last_target_;
@@ -270,7 +270,7 @@ namespace canopen_402
             CW_Immediate = Command402::CW_Operation_mode_specific1,
             CW_Blending = Command402::CW_Operation_mode_specific3,
         };
-        ProfiledPositionMode(std::shared_ptr<MCDeviceDriver> driver)
+        ProfiledPositionMode(std::shared_ptr<LelyMotionControllerBridge> driver)
             : ModeTargetHelper(MotorBase::Profiled_Position)
         {
             this->driver  = driver;
@@ -338,7 +338,7 @@ namespace canopen_402
     class DefaultHomingMode : public HomingMode
     {
         const uint16_t index = 0x6098;
-        std::shared_ptr<MCDeviceDriver> driver;
+        std::shared_ptr<LelyMotionControllerBridge> driver;
         std::shared_ptr<RemoteObject> obj;
 
         std::atomic<bool> execute_;
@@ -361,7 +361,7 @@ namespace canopen_402
         }
 
     public:
-        DefaultHomingMode(std::shared_ptr<MCDeviceDriver> driver)
+        DefaultHomingMode(std::shared_ptr<LelyMotionControllerBridge> driver)
         {
             this->driver = driver;
             obj = driver->create_remote_obj(index, 0U, CODataTypes::COData32);
@@ -376,7 +376,7 @@ namespace canopen_402
     class Motor402 : public MotorBase
     {
     public:
-        Motor402(std::shared_ptr<MCDeviceDriver> driver) : 
+        Motor402(std::shared_ptr<LelyMotionControllerBridge> driver) : 
             MotorBase(),
             switching_state_(State402::Operation_Enable),
             monitor_mode_(true),
@@ -516,7 +516,7 @@ namespace canopen_402
         const bool monitor_mode_;
         const std::chrono::seconds state_switch_timeout_;
 
-        std::shared_ptr<MCDeviceDriver> driver;
+        std::shared_ptr<LelyMotionControllerBridge> driver;
         std::shared_ptr<RemoteObject> status_word_entry_;
         std::shared_ptr<RemoteObject> control_word_entry_;
         std::shared_ptr<RemoteObject> op_mode_display_;
