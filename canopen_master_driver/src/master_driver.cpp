@@ -1,0 +1,15 @@
+#include "canopen_master_driver/master_driver.hpp"
+
+namespace ros2_canopen
+{
+
+    ros2_canopen::MasterDriver::MasterDriver(rclcpp::NodeOptions node_options) :
+        CanopenMaster(node_options)
+    {
+        node_canopen_master_ = std::make_shared<node_interfaces::NodeCanopenBasicMaster<rclcpp::Node>>(this);
+    }
+
+}
+
+#include "rclcpp_components/register_node_macro.hpp"
+RCLCPP_COMPONENTS_REGISTER_NODE(ros2_canopen::MasterDriver)
