@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef CANOPEN_PROXY_DRIVER__CANOPEN_PROXY_DRIVER_HPP_
-#define CANOPEN_PROXY_DRIVER__CANOPEN_PROXY_DRIVER_HPP_
+#ifndef CANOPEN_PROXY_DRIVER__CANOPEN_LIFECYCLE_PROXY_DRIVER_HPP_
+#define CANOPEN_PROXY_DRIVER__CANOPEN_LIFECYCLE_PROXY_DRIVER_HPP_
 
 #include "canopen_proxy_driver/node_interfaces/node_canopen_proxy_driver.hpp"
 #include "canopen_core/driver_node.hpp"
@@ -33,4 +33,4 @@ namespace ros2_canopen
   };
 }
 
-#endif // CANOPEN_PROXY_DRIVER__CANOPEN_PROXY_DRIVER_HPP_
+#endif // CANOPEN_PROXY_DRIVER__CANOPEN_LIFECYCLE_PROXY_DRIVER_HPP_
