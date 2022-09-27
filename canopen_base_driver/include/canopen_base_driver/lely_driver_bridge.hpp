@@ -83,13 +83,13 @@ namespace ros2_canopen{
    * library.
    *
    */
-  class LelyBridge : public canopen::FiberDriver
+  class LelyDriverBridge : public canopen::FiberDriver
   {
     class TPDOWriteTask : public ev::CoTask
     {
     public:
       COData data;
-      LelyBridge *driver;
+      LelyDriverBridge *driver;
       std::mutex mtx;
       explicit TPDOWriteTask(ev_exec_t *exec)
           : ev::CoTask(exec)
@@ -198,7 +198,7 @@ namespace ros2_canopen{
      * @param [in] master   Master to use
      * @param [in] id       NodeId to connect to
      */
-    LelyBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
+    LelyDriverBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
         : FiberDriver(exec, master, id)
     {
       nodeid = id;
