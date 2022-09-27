@@ -121,32 +121,8 @@ install(
 )
 
 install(
-  TARGETS lifecycle_base_driver
-  EXPORT export_lifecycle_base_driver
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-install(
-  TARGETS base_driver
-  EXPORT export_base_driver
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-install(
-  TARGETS node_canopen_base_driver
-  EXPORT export_node_canopen_base_driver
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-install(
-  TARGETS lely_driver_bridge
-  EXPORT export_lely_driver_bridge
+  TARGETS lifecycle_base_driver base_driver node_canopen_base_driver lely_driver_bridge
+  EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -167,10 +143,7 @@ ament_export_libraries(
   lely_driver_bridge
 )
 ament_export_targets(
-  export_lifecycle_base_driver
-  export_base_driver
-  export_node_canopen_base_driver
-  export_lely_driver_bridge
+  export_${PROJECT_NAME}
 )
 
 ament_package()
