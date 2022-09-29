@@ -4,3 +4,10 @@ controller_manager:
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
+
+    node_1_controller:
+      type: canopen_ros2_controllers/CanopenProxyController
+
+node_1_controller:
+  ros__parameters:
+    joint: node_1
