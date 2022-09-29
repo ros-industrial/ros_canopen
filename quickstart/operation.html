@@ -106,25 +106,25 @@
 <section id="setup-can-controller">
 <h2>Setup CAN Controller<a class="headerlink" href="#setup-can-controller" title="Permalink to this headline"></a></h2>
 <p><strong>Option 1</strong>: Virtual CANController</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo modprobe vcan
-<span class="gp">$</span> sudo ip link add dev vcan0 <span class="nb">type</span> vcan
-<span class="gp">$</span> sudo ip link <span class="nb">set</span> vcan0 txqueuelen <span class="m">1000</span>
-<span class="gp">$</span> sudo ip link <span class="nb">set</span> up vcan0
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo modprobe vcan
+<span class="gp">$ </span>sudo ip link add dev vcan0 <span class="nb">type</span> vcan
+<span class="gp">$ </span>sudo ip link <span class="nb">set</span> vcan0 txqueuelen <span class="m">1000</span>
+<span class="gp">$ </span>sudo ip link <span class="nb">set</span> up vcan0
 </pre></div>
 </div>
 <p><strong>Option 2</strong>: Peak CANController</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo modprobe peak_usb
-<span class="gp">$</span> sudo ip link <span class="nb">set</span> can0 up <span class="nb">type</span> can bitrate <span class="m">1000000</span>
-<span class="gp">$</span> sudo ip link <span class="nb">set</span> can0 txqueuelen <span class="m">1000</span>
-<span class="gp">$</span> sudo ip link <span class="nb">set</span> up can0
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo modprobe peak_usb
+<span class="gp">$ </span>sudo ip link <span class="nb">set</span> can0 up <span class="nb">type</span> can bitrate <span class="m">1000000</span>
+<span class="gp">$ </span>sudo ip link <span class="nb">set</span> can0 txqueuelen <span class="m">1000</span>
+<span class="gp">$ </span>sudo ip link <span class="nb">set</span> up can0
 </pre></div>
 </div>
 <p>Bitrate depends on your bus and devices capabilities.</p>
 <p><strong>Option 3</strong>: candleLight USB-CAN Adapter</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo modprobe gs_usb
-<span class="gp">$</span> sudo ip link <span class="nb">set</span> can0 up <span class="nb">type</span> can bitrate <span class="m">500000</span>
-<span class="gp">$</span> sudo ip link <span class="nb">set</span> can0 txqueuelen <span class="m">1000</span>
-<span class="gp">$</span> sudo ip link <span class="nb">set</span> up can0
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo modprobe gs_usb
+<span class="gp">$ </span>sudo ip link <span class="nb">set</span> can0 up <span class="nb">type</span> can bitrate <span class="m">500000</span>
+<span class="gp">$ </span>sudo ip link <span class="nb">set</span> can0 txqueuelen <span class="m">1000</span>
+<span class="gp">$ </span>sudo ip link <span class="nb">set</span> up can0
 </pre></div>
 </div>
 <p>Bitrate depends on your bus and devices capabilities.</p>
@@ -133,7 +133,7 @@
 <section id="launch-configuration">
 <h2>Launch configuration<a class="headerlink" href="#launch-configuration" title="Permalink to this headline"></a></h2>
 <p>Once the CANController is setup you can go on and launch your configuration package.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ros2 launch <span class="o">[</span>package<span class="o">]</span> <span class="o">[</span>launchfile<span class="o">]</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2 launch <span class="o">[</span>package<span class="o">]</span> <span class="o">[</span>launchfile<span class="o">]</span>
 </pre></div>
 </div>
 </section>

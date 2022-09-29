@@ -119,12 +119,12 @@ you need to have (usually one per CAN interface) and which slaves you have.</p>
 <div class="line"><strong>bus_config_name</strong>: Name of the the bus configuration (you can have multiple)</div>
 </div>
 <p>You can use <cite>ros2 pkg create</cite> command to create your package.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ros2 pkg create --dependencies ros2_canopen lely_core_libraries --build-type ament_cmake <span class="o">{</span>package_name<span class="o">}</span>
-<span class="gp">$</span> <span class="nb">cd</span> <span class="o">{</span>package_name<span class="o">}</span>
-<span class="gp">$</span> rm -rf src
-<span class="gp">$</span> rm -rf include
-<span class="gp">$</span> mkdir -p launch
-<span class="gp">$</span> mkdir -p config
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2 pkg create --dependencies ros2_canopen lely_core_libraries --build-type ament_cmake <span class="o">{</span>package_name<span class="o">}</span>
+<span class="gp">$ </span><span class="nb">cd</span> <span class="o">{</span>package_name<span class="o">}</span>
+<span class="gp">$ </span>rm -rf src
+<span class="gp">$ </span>rm -rf include
+<span class="gp">$ </span>mkdir -p launch
+<span class="gp">$ </span>mkdir -p config
 </pre></div>
 </div>
 <p>Now your package directory should look like this.</p>
@@ -169,7 +169,7 @@ for the devices that are in the bus configuration to the respective folder.</p>
 <li><dl>
 <dt><strong>Create the bus configuration specifications</strong></dt><dd><p>To specify the bus configuration ros2_canopen uses the a YAML-file called
 bus.yml. Create the file in the respective bus configuration folder.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> touch bus.yml
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>touch bus.yml
 </pre></div>
 </div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>{package_name}
@@ -196,15 +196,15 @@ bus.yml. Create the file in the respective bus configuration folder.</p>
 First you need to define where these files and generated files will be
 found at runtime. This is usually the following if you use colcon to
 build from source.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">options</span><span class="p">:</span>
-  <span class="nt">dcf_path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">install/{package_name}/share/{package_name}/config/{bus_config_name}</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">options</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">dcf_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">install/{package_name}/share/{package_name}/config/{bus_config_name}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Then you need to define your master.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">master</span><span class="p">:</span>
-  <span class="nt">node_id</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">node id</span><span class="p p-Indicator">]</span>
-  <span class="nt">package</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">ros2 package where to find the master driver (usually canopen_core)</span><span class="p p-Indicator">]</span>
-  <span class="nt">driver</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">component type of the driver (ros2_canopen</span><span class="p p-Indicator">::</span><span class="nv">MasterNode or ros2_canopen</span><span class="p p-Indicator">::</span><span class="nv">LifecycleMasterNode)</span><span class="p p-Indicator">]</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">master</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">node id</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">package</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ros2 package where to find the master driver (usually canopen_core)</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">component type of the driver (ros2_canopen</span><span class="p p-Indicator">::</span><span class="nv">MasterNode or ros2_canopen</span><span class="p p-Indicator">::</span><span class="nv">LifecycleMasterNode)</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Make sure, that you specify a lifecycle master if you use the lifecycled version of ros2_canopen.
@@ -213,10 +213,10 @@ available can be found in the <a class="reference internal" href="#"><span class
 <p>Once you have defined the configuration of your master, add your slaves. The following
 describes the mandatory data per slave. Further configuration options can be found in the <a class="reference internal" href="#"><span class="doc">Creating a Configuration Package</span></a> documentation.
 The slave name is the node name that will be assigned to the driver.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">unique slave name</span><span class="p p-Indicator">]:</span>
-  <span class="nt">node_id</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">node id</span><span class="p p-Indicator">]</span>
-  <span class="nt">package</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">ros2 package where to find the driver</span><span class="p p-Indicator">]</span>
-  <span class="nt">driver</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">qualified name of the driver</span><span class="p p-Indicator">]</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">unique slave name</span><span class="p p-Indicator">]:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">node id</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">package</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ros2 package where to find the driver</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">qualified name of the driver</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Make sure you use a lifecycle slave if you use the lifecycled version of ros2_canopen.</p>
@@ -249,21 +249,21 @@ The slave name is the node name that will be assigned to the driver.</p>
           <span class="p">),</span>
           <span class="n">launch_arguments</span><span class="o">=</span><span class="p">{</span>
               <span class="s2">&quot;master_config&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                  <span class="n">get_package_share_directory</span><span class="p">(</span><span class="s2">&quot;{package_name}&quot;</span><span class="p">),</span>
+                  <span class="n">get_package_share_directory</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{package_name}</span><span class="s2">&quot;</span><span class="p">),</span>
                   <span class="s2">&quot;config&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;{bus_config_name}&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;</span><span class="si">{bus_config_name}</span><span class="s2">&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;master.dcf&quot;</span><span class="p">,</span>
               <span class="p">),</span>
               <span class="s2">&quot;master_bin&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                  <span class="n">get_package_share_directory</span><span class="p">(</span><span class="s2">&quot;{package_name}&quot;</span><span class="p">),</span>
+                  <span class="n">get_package_share_directory</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{package_name}</span><span class="s2">&quot;</span><span class="p">),</span>
                   <span class="s2">&quot;config&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;{bus_config_name}&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;</span><span class="si">{bus_config_name}</span><span class="s2">&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;master.bin&quot;</span><span class="p">,</span>
               <span class="p">),</span>
               <span class="s2">&quot;bus_config&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                  <span class="n">get_package_share_directory</span><span class="p">(</span><span class="s2">&quot;{package_name}&quot;</span><span class="p">),</span>
+                  <span class="n">get_package_share_directory</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{package_name}</span><span class="s2">&quot;</span><span class="p">),</span>
                   <span class="s2">&quot;config&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;{bus_config_name}&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;</span><span class="si">{bus_config_name}</span><span class="s2">&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;bus.yml&quot;</span><span class="p">,</span>
               <span class="p">),</span>
               <span class="s2">&quot;can_interface_name&quot;</span><span class="p">:</span> <span class="s2">&quot;{can_interface i.e. can0}&quot;</span><span class="p">,</span>
@@ -280,45 +280,45 @@ The slave name is the node name that will be assigned to the driver.</p>
 <section id="cmake-configuration-creation">
 <h2>CMAKE Configuration creation<a class="headerlink" href="#cmake-configuration-creation" title="Permalink to this headline"></a></h2>
 <p>Finally we need to adjust the CMakeLists.txt file to pick everything up correctly.</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">3.8</span><span class="p">)</span>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.8</span><span class="p">)</span>
 <span class="nb">project</span><span class="p">(</span><span class="s">{package_name}</span><span class="p">)</span>
 
-<span class="nb">if</span><span class="p">(</span><span class="s">CMAKE_COMPILER_IS_GNUCXX</span> <span class="s">OR</span> <span class="s">CMAKE_CXX_COMPILER_ID</span> <span class="s">MATCHES</span> <span class="s2">&quot;Clang&quot;</span><span class="p">)</span>
-  <span class="nb">add_compile_options</span><span class="p">(</span><span class="s">-Wall</span> <span class="s">-Wextra</span> <span class="s">-Wpedantic</span><span class="p">)</span>
+<span class="nb">if</span><span class="p">(</span><span class="s">CMAKE_COMPILER_IS_GNUCXX</span><span class="w"> </span><span class="s">OR</span><span class="w"> </span><span class="s">CMAKE_CXX_COMPILER_ID</span><span class="w"> </span><span class="s">MATCHES</span><span class="w"> </span><span class="s2">&quot;Clang&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">add_compile_options</span><span class="p">(</span><span class="s">-Wall</span><span class="w"> </span><span class="s">-Wextra</span><span class="w"> </span><span class="s">-Wpedantic</span><span class="p">)</span>
 <span class="nb">endif</span><span class="p">()</span>
 
 <span class="c"># find dependencies</span>
-<span class="nb">find_package</span><span class="p">(</span><span class="s">ament_cmake</span> <span class="s">REQUIRED</span><span class="p">)</span>
-<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_core</span> <span class="s">REQUIRED</span><span class="p">)</span>
-<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_interfaces</span> <span class="s">REQUIRED</span><span class="p">)</span>
-<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_base_driver</span> <span class="s">REQUIRED</span><span class="p">)</span>
-<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_proxy_driver</span> <span class="s">REQUIRED</span><span class="p">)</span>
-<span class="nb">find_package</span><span class="p">(</span><span class="s">lely_core_libraries</span> <span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">ament_cmake</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_core</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_interfaces</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_base_driver</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_proxy_driver</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">lely_core_libraries</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
 
 
 <span class="nb">generate_dcf</span><span class="p">(</span><span class="s">{bus_config_name}</span><span class="p">)</span>
 
 <span class="nb">install</span><span class="p">(</span><span class="s">DIRECTORY</span>
-  <span class="s">launch/</span>
-  <span class="s">DESTINATION</span> <span class="s">share/</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="s">/launch/</span>
+<span class="w">  </span><span class="s">launch/</span>
+<span class="w">  </span><span class="s">DESTINATION</span><span class="w"> </span><span class="s">share/</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="s">/launch/</span>
 <span class="p">)</span>
 
 <span class="nb">install</span><span class="p">(</span><span class="s">DIRECTORY</span>
-  <span class="s">launch_tests/</span>
-  <span class="s">DESTINATION</span> <span class="s">share/</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="s">/launch_tests/</span>
+<span class="w">  </span><span class="s">launch_tests/</span>
+<span class="w">  </span><span class="s">DESTINATION</span><span class="w"> </span><span class="s">share/</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="s">/launch_tests/</span>
 <span class="p">)</span>
 
 
 <span class="nb">if</span><span class="p">(</span><span class="s">BUILD_TESTING</span><span class="p">)</span>
-  <span class="nb">find_package</span><span class="p">(</span><span class="s">ament_lint_auto</span> <span class="s">REQUIRED</span><span class="p">)</span>
-  <span class="c"># the following line skips the linter which checks for copyrights</span>
-  <span class="c"># comment the line when a copyright and license is added to all source files</span>
-  <span class="nb">set</span><span class="p">(</span><span class="s">ament_cmake_copyright_FOUND</span> <span class="s">TRUE</span><span class="p">)</span>
-  <span class="c"># the following line skips cpplint (only works in a git repo)</span>
-  <span class="c"># comment the line when this package is in a git repo and when</span>
-  <span class="c"># a copyright and license is added to all source files</span>
-  <span class="nb">set</span><span class="p">(</span><span class="s">ament_cmake_cpplint_FOUND</span> <span class="s">TRUE</span><span class="p">)</span>
-  <span class="nb">ament_lint_auto_find_test_dependencies</span><span class="p">()</span>
+<span class="w">  </span><span class="nb">find_package</span><span class="p">(</span><span class="s">ament_lint_auto</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="w">  </span><span class="c"># the following line skips the linter which checks for copyrights</span>
+<span class="w">  </span><span class="c"># comment the line when a copyright and license is added to all source files</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">ament_cmake_copyright_FOUND</span><span class="w"> </span><span class="s">TRUE</span><span class="p">)</span>
+<span class="w">  </span><span class="c"># the following line skips cpplint (only works in a git repo)</span>
+<span class="w">  </span><span class="c"># comment the line when this package is in a git repo and when</span>
+<span class="w">  </span><span class="c"># a copyright and license is added to all source files</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">ament_cmake_cpplint_FOUND</span><span class="w"> </span><span class="s">TRUE</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">ament_lint_auto_find_test_dependencies</span><span class="p">()</span>
 <span class="nb">endif</span><span class="p">()</span>
 
 <span class="nb">ament_package</span><span class="p">()</span>
