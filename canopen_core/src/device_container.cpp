@@ -94,12 +94,6 @@ bool DeviceContainer::load_component(
     return false;
 }
 
-bool DeviceContainer::init_master(uint16_t node_id)
-{
-    can_master_->init();
-    return true;
-}
-
 bool DeviceContainer::init_device_manager(uint16_t node_id)
 {
     // RCLCPP_INFO(this->get_logger(), "Initialising device_manager with node id %u", node_id);
@@ -179,7 +173,7 @@ bool DeviceContainer::load_master()
             }
 
             add_node_to_executor(can_master_->get_node_base_interface());
-            init_master(node_id.value());
+            can_master_->init();
             master_found = true;
             can_master_id_ = node_id.value();
         }

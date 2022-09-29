@@ -61,31 +61,31 @@ TEST(ComponentLoad, test_load_master)
 
 
 
-TEST(ComponentLoad, test_load_component_2)
-{
-    rclcpp::init(0, nullptr);
-    auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
-    auto device_container = std::make_shared<DeviceContainer>(exec);
-    exec->add_node(device_container);
+// TEST(ComponentLoad, test_load_component_2)
+// {
+//     rclcpp::init(0, nullptr);
+//     auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+//     auto device_container = std::make_shared<DeviceContainer>(exec);
+//     exec->add_node(device_container);
 
-    device_container->set_parameter(Parameter("bus_config", "bus.yml"));
-    device_container->set_parameter(Parameter("master_config", "master.dcf"));
-    device_container->set_parameter(Parameter("can_interface", "vcan0"));
+//     device_container->set_parameter(Parameter("bus_config", "bus.yml"));
+//     device_container->set_parameter(Parameter("master_config", "master.dcf"));
+//     device_container->set_parameter(Parameter("can_interface", "vcan0"));
 
     
 
-    std::thread spinner (
-        [exec](){
-            exec->spin();
-            RCLCPP_INFO(rclcpp::get_logger("test"), "Executor done.");
-        }
-    );
-    device_container->configure();
-    device_container->load_master();
-    EXPECT_THROW(device_container->load_drivers(), std::system_error);
-    std::this_thread::sleep_for(500ms);
-    device_container->shutdown();
-    rclcpp::shutdown();
-    spinner.join();
+//     std::thread spinner (
+//         [exec](){
+//             exec->spin();
+//             RCLCPP_INFO(rclcpp::get_logger("test"), "Executor done.");
+//         }
+//     );
+//     device_container->configure();
+//     device_container->load_master();
+//     EXPECT_THROW(device_container->load_drivers(), std::system_error);
+//     std::this_thread::sleep_for(500ms);
+//     device_container->shutdown();
+//     rclcpp::shutdown();
+//     spinner.join();
         
-}
+// }

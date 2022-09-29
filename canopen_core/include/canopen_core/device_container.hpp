@@ -112,31 +112,18 @@ namespace ros2_canopen
          */
         bool load_manager();
 
+        /**
+         * @brief Shutdown all devices.
+         *
+         */
         void shutdown()
         {
-            for (auto it = node_wrappers_.begin(); it != node_wrappers_.end(); ++it)
+            for (auto it = registered_drivers_.begin(); it != registered_drivers_.end(); ++it)
             {
-                if (it->first == can_master_id_)
-                {
-                    continue;
-                }
-                else
-                {
-                    auto node = std::static_pointer_cast<ros2_canopen::CanopenDriverInterface>(it->second.get_node_instance());
-                    RCLCPP_INFO(this->get_logger(), "Shutdown driver %s", node->get_node_base_interface()->get_name());
-                    node->shutdown();
-                }
+                it->second->shutdown();
+                break;
             }
-            for (auto it = node_wrappers_.begin(); it != node_wrappers_.end(); ++it)
-            {
-                if (it->first == can_master_id_)
-                {
-
-                    auto node = std::static_pointer_cast<ros2_canopen::CanopenMasterInterface>(it->second.get_node_instance());
-                    node->shutdown();
-                    break;
-                }
-            }
+            can_master_->shutdown();
         }
         /**
          * @brief Callback for the listing service
@@ -150,6 +137,16 @@ namespace ros2_canopen
             const std::shared_ptr<rmw_request_id_t> request_header,
             const std::shared_ptr<ListNodes::Request> request,
             std::shared_ptr<ListNodes::Response> response) override;
+
+        /**
+         * @brief Get the registered drivers object
+         * 
+         * @return std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>> 
+         */
+        std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>> get_registered_drivers(){
+            return registered_drivers_;
+        }
+        
 
     protected:
         // Components
@@ -236,15 +233,6 @@ namespace ros2_canopen
          * @return std::map<uint16_t, std::string>
          */
         std::map<uint16_t, std::string> list_components();
-
-        /**
-         * @brief Initialises the master
-         *
-         * @param node_id
-         * @return true
-         * @return false
-         */
-        bool init_master(uint16_t node_id);
 
         /**
          * @brief Add driver to executor
