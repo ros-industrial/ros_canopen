@@ -12,14 +12,17 @@ namespace ros2_canopen
     public:
         virtual void init() = 0;
         virtual void set_master(std::shared_ptr<lely::ev::Executor> exec,
-                        std::shared_ptr<lely::canopen::AsyncMaster> master) = 0;
+                                std::shared_ptr<lely::canopen::AsyncMaster> master) = 0;
+        virtual rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() = 0;
+        virtual void shutdown() = 0;
     };
 
-    class CanopenDriver : public rclcpp::Node, public CanopenDriverInterface
+    class CanopenDriver : public CanopenDriverInterface, public rclcpp::Node
     {
     public:
         std::shared_ptr<node_interfaces::NodeCanopenDriverInterface> node_canopen_driver_;
-        CanopenDriver(rclcpp::NodeOptions node_options = rclcpp::NodeOptions())
+        explicit CanopenDriver(
+            const rclcpp::NodeOptions &node_options = rclcpp::NodeOptions())
             : rclcpp::Node("canopen_driver", node_options)
         {
             node_canopen_driver_ = std::make_shared<node_interfaces::NodeCanopenDriver<rclcpp::Node>>(this);
@@ -30,14 +33,23 @@ namespace ros2_canopen
         virtual void set_master(
             std::shared_ptr<lely::ev::Executor> exec,
             std::shared_ptr<lely::canopen::AsyncMaster> master) override;
+
+        virtual rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() override
+        {
+            return rclcpp::Node::get_node_base_interface();
+        }
+
+        virtual void shutdown() override;
     };
 
-    class LifecycleCanopenDriver : public rclcpp_lifecycle::LifecycleNode, public CanopenDriverInterface
+    class LifecycleCanopenDriver : public CanopenDriverInterface, public rclcpp_lifecycle::LifecycleNode
     {
     protected:
         std::shared_ptr<node_interfaces::NodeCanopenDriverInterface> node_canopen_driver_;
+
     public:
-        LifecycleCanopenDriver(rclcpp::NodeOptions node_options = rclcpp::NodeOptions())
+        explicit LifecycleCanopenDriver(
+            const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions())
             : rclcpp_lifecycle::LifecycleNode("lifecycle_canopen_driver", node_options)
         {
             node_canopen_driver_ = std::make_shared<node_interfaces::NodeCanopenDriver<rclcpp_lifecycle::LifecycleNode>>(this);
@@ -63,6 +75,12 @@ namespace ros2_canopen
 
         rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
         on_shutdown(const rclcpp_lifecycle::State &state);
+
+        rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() override
+        {
+            return rclcpp_lifecycle::LifecycleNode::get_node_base_interface();
+        }
+        virtual void shutdown() override;
     };
 
 }

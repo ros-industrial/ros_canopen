@@ -9,7 +9,6 @@ using namespace ros2_canopen::node_interfaces;
 template <class NODETYPE>
 NodeCanopenProxyDriver<NODETYPE>::NodeCanopenProxyDriver(NODETYPE *node) : ros2_canopen::node_interfaces::NodeCanopenBaseDriver<NODETYPE>(node)
 {
-	RCLCPP_INFO(this->node_->get_logger(), "Instanciated NodeCanopenProxyDriver");
 }
 
 template <class NODETYPE>
@@ -157,7 +156,7 @@ void NodeCanopenProxyDriver<NODETYPE>::on_nmt(canopen::NmtState nmt_state)
 		RCLCPP_INFO(
 			this->node_->get_logger(),
 			"Slave %hhu: Switched NMT state to %s",
-			this->driver_->get_id(),
+			this->lely_driver_->get_id(),
 			message.data.c_str());
 
 		nmt_state_publisher->publish(message);
@@ -170,7 +169,7 @@ void NodeCanopenProxyDriver<NODETYPE>::on_tpdo(const canopen_interfaces::msg::CO
 	if (this->activated_.load())
 	{
 		COData data = {msg->index, msg->subindex, msg->data, static_cast<CODataTypes>(msg->type)};
-		this->driver_->tpdo_transmit(data);
+		this->lely_driver_->tpdo_transmit(data);
 		return;
 	}
 	RCLCPP_ERROR(this->node_->get_logger(), "Could transmit PDO because driver not activated.");
@@ -184,7 +183,7 @@ void NodeCanopenProxyDriver<NODETYPE>::on_rpdo(COData d)
 		RCLCPP_INFO(
 			this->node_->get_logger(),
 			"Slave %hhu: Sent PDO index %hu, subindex %hhu, data %x",
-			this->driver_->get_id(),
+			this->lely_driver_->get_id(),
 			d.index_,
 			d.subindex_,
 			d.data_);
@@ -204,7 +203,7 @@ void NodeCanopenProxyDriver<NODETYPE>::on_nmt_state_reset(
 {
 	if (this->activated_.load())
 	{
-		this->driver_->nmt_command(canopen::NmtCommand::RESET_NODE);
+		this->lely_driver_->nmt_command(canopen::NmtCommand::RESET_NODE);
 		response->success = true;
 		return;
 	}
@@ -219,7 +218,7 @@ void NodeCanopenProxyDriver<NODETYPE>::on_nmt_state_start(
 {
 	if (this->activated_.load())
 	{
-		this->driver_->nmt_command(canopen::NmtCommand::START);
+		this->lely_driver_->nmt_command(canopen::NmtCommand::START);
 		response->success = true;
 		return;
 	}
@@ -236,14 +235,14 @@ void NodeCanopenProxyDriver<NODETYPE>::on_sdo_read(
 	{
 		RCLCPP_INFO(
 			this->node_->get_logger(), "Slave %hhu: SDO Read Call index=0x%x subindex=%hhu bits=%hhu",
-			this->driver_->get_id(), request->index, request->subindex, request->type);
+			this->lely_driver_->get_id(), request->index, request->subindex, request->type);
 
 		// Only allow one SDO request concurrently
 		std::scoped_lock<std::mutex> lk(sdo_mtex);
 		// Prepare Data read
 		COData data = {request->index, request->subindex, 0U, static_cast<CODataTypes>(request->type)};
 		// Send read request
-		auto f = this->driver_->async_sdo_read(data);
+		auto f = this->lely_driver_->async_sdo_read(data);
 		// Wait for response
 		f.wait();
 		// Process response
@@ -272,7 +271,7 @@ void NodeCanopenProxyDriver<NODETYPE>::on_sdo_write(
 	{
 		RCLCPP_INFO(
 			this->node_->get_logger(), "Slave %hhu: SDO Write Call index=0x%x subindex=%hhu bits=%hhu data=%u",
-			this->driver_->get_id(), request->index, request->subindex, request->type, request->data);
+			this->lely_driver_->get_id(), request->index, request->subindex, request->type, request->data);
 
 		// Only allow one SDO request concurrently
 		std::scoped_lock<std::mutex> lk(sdo_mtex);
@@ -281,7 +280,7 @@ void NodeCanopenProxyDriver<NODETYPE>::on_sdo_write(
 		COData d =
 			{request->index, request->subindex, request->data, static_cast<CODataTypes>(request->type)};
 		// Send write request
-		auto f = this->driver_->async_sdo_write(d);
+		auto f = this->lely_driver_->async_sdo_write(d);
 		// Wait for request to complete
 		f.wait();
 

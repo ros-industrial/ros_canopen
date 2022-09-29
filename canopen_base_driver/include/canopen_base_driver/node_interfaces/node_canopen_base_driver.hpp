@@ -26,7 +26,7 @@ namespace ros2_canopen
             std::thread nmt_state_publisher_thread_;
             std::thread rpdo_publisher_thread_;
             std::mutex driver_mutex_;
-            std::shared_ptr<ros2_canopen::LelyDriverBridge> driver_;
+            std::shared_ptr<ros2_canopen::LelyDriverBridge> lely_driver_;
 
             void nmt_listener();
             virtual void on_nmt(canopen::NmtState nmt_state);
@@ -35,6 +35,18 @@ namespace ros2_canopen
 
         public:
             NodeCanopenBaseDriver(NODETYPE *node);
+
+            virtual ~NodeCanopenBaseDriver()
+            {
+                if(nmt_state_publisher_thread_.joinable())
+                {
+                    nmt_state_publisher_thread_.join();
+                }
+                if(rpdo_publisher_thread_.joinable())
+                {
+                    rpdo_publisher_thread_.join();
+                }
+            }
 
             virtual void init(bool called_from_base);
 

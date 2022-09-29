@@ -3,7 +3,8 @@
 namespace ros2_canopen
 {
 
-    ros2_canopen::MasterDriver::MasterDriver(rclcpp::NodeOptions node_options) :
+    ros2_canopen::MasterDriver::MasterDriver(
+        const rclcpp::NodeOptions &node_options) :
         CanopenMaster(node_options)
     {
         node_canopen_master_ = std::make_shared<node_interfaces::NodeCanopenBasicMaster<rclcpp::Node>>(this);

@@ -1,43 +1,32 @@
 #include "canopen_core/node_interfaces/node_canopen_master.hpp"
+#include "canopen_core/master_node.hpp"
 #include "gtest/gtest.h"
-
-class RclCppFixture
-{
-public:
-  RclCppFixture()
-  {
-    rclcpp::init(0, nullptr);
-    node = new rclcpp::Node("Node");
-    interface =
-        new ros2_canopen::node_interfaces::NodeCanopenMaster<rclcpp::Node>(node);
-  }
-  ~RclCppFixture()
-  {
-    rclcpp::shutdown();
-    delete(interface);
-    delete(node);
-    
-  }
-
-  rclcpp::Node *node;
-  ros2_canopen::node_interfaces::NodeCanopenMaster<rclcpp::Node> *interface;
-};
-RclCppFixture g_rclcppfixture;
 
 TEST(NodeCanopenMaster, test_bad_sequence_configure)
 {
-  EXPECT_ANY_THROW(g_rclcppfixture.interface->configure());
-}
-
-TEST(NodeCanopenMaster, test_bad_sequence_activate)
-{
-  EXPECT_ANY_THROW(g_rclcppfixture.interface->activate());
+  rclcpp::init(0, nullptr);
+  auto node = new rclcpp::Node("Node");
+  auto interface =
+      new ros2_canopen::node_interfaces::NodeCanopenMaster<rclcpp::Node>(node);
+  EXPECT_ANY_THROW(interface->configure());
+  rclcpp::shutdown();
 }
 
 TEST(NodeCanopenMaster, test_good_sequence)
 {
-  EXPECT_NO_THROW(g_rclcppfixture.interface->init());
-  EXPECT_NO_THROW(g_rclcppfixture.interface->configure());
+  rclcpp::init(0, nullptr);
+  auto node = new rclcpp::Node("Node");
+  auto interface =
+      new ros2_canopen::node_interfaces::NodeCanopenMaster<rclcpp::Node>(node);
+  rclcpp::shutdown();
 }
 
-
+TEST(NodeCanopenMaster, test_init)
+{
+  rclcpp::init(0, nullptr);
+  
+  auto node = std::make_shared<ros2_canopen::CanopenMaster>();
+  auto node_interface = std::static_pointer_cast<ros2_canopen::CanopenMasterInterface>(node);
+  EXPECT_THROW(node_interface->get_executor(), ros2_canopen::MasterException);
+  rclcpp::shutdown();
+}

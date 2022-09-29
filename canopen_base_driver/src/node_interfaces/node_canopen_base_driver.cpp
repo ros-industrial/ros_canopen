@@ -4,5 +4,5 @@
 
 using namespace ros2_canopen::node_interfaces;
 
-template class NodeCanopenBaseDriver<rclcpp::Node>;
-template class NodeCanopenBaseDriver<rclcpp_lifecycle::LifecycleNode>;
+template class ros2_canopen::node_interfaces::NodeCanopenBaseDriver<rclcpp::Node>;
+template class ros2_canopen::node_interfaces::NodeCanopenBaseDriver<rclcpp_lifecycle::LifecycleNode>;

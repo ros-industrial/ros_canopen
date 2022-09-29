@@ -3,11 +3,21 @@
 using namespace ros2_canopen;
 void CanopenDriver::init()
 {
+    
+    RCLCPP_INFO(this->get_logger(), "INIT");
     node_canopen_driver_->init();
     node_canopen_driver_->configure();
     node_canopen_driver_->demand_set_master();
     node_canopen_driver_->activate();
 }
+
+void CanopenDriver::shutdown()
+{
+    
+    RCLCPP_INFO(this->get_logger(), "INIT");
+    node_canopen_driver_->shutdown();
+}
+
 
 void CanopenDriver::set_master(
     std::shared_ptr<lely::ev::Executor> exec,
@@ -19,6 +29,11 @@ void CanopenDriver::set_master(
 void LifecycleCanopenDriver::init()
 {
     node_canopen_driver_->init();
+}
+
+void LifecycleCanopenDriver::shutdown()
+{
+    node_canopen_driver_->shutdown();
 }
 
 void LifecycleCanopenDriver::set_master(

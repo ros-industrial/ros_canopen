@@ -30,7 +30,7 @@ namespace ros2_canopen
 {
     namespace node_interfaces
     {
-        
+
         template <class NODETYPE>
         class NodeCanopenDriver : public NodeCanopenDriverInterface
         {
@@ -44,7 +44,7 @@ namespace ros2_canopen
 
             std::shared_ptr<lely::ev::Executor> exec_;
             std::shared_ptr<lely::canopen::AsyncMaster> master_;
-            std::unique_ptr<lely::canopen::BasicDriver> driver_;
+            std::shared_ptr<lely::canopen::BasicDriver> driver_;
 
             std::chrono::milliseconds non_transmit_timeout_;
             YAML::Node config_;
@@ -79,19 +79,19 @@ namespace ros2_canopen
                 std::shared_ptr<lely::ev::Executor> exec,
                 std::shared_ptr<lely::canopen::AsyncMaster> master)
             {
-                RCLCPP_DEBUG(node_->get_logger(), "set_master_start");
+                RCLCPP_INFO(node_->get_logger(), "set_master_start");
                 if (!configured_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotConfigured, DriverErrorCategory(), "Set Master");
+                    throw DriverException(DriverErrorCode::DriverNotConfigured, "Set Master");
                 }
                 if (activated_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverAlreadyActivated, DriverErrorCategory(), "Set Master");
+                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Set Master");
                 }
                 this->exec_ = exec;
                 this->master_ = master;
                 this->master_set_.store(true);
-                RCLCPP_DEBUG(node_->get_logger(), "set_master_end");
+                RCLCPP_INFO(node_->get_logger(), "set_master_end");
             }
 
             /**
@@ -103,14 +103,14 @@ namespace ros2_canopen
              */
             void init()
             {
-                RCLCPP_DEBUG(node_->get_logger(), "init_start");
+                RCLCPP_INFO(node_->get_logger(), "init_start");
                 if (configured_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverAlreadyConfigured, DriverErrorCategory(), "Init");
+                    throw DriverException(DriverErrorCode::DriverAlreadyConfigured, "Init");
                 }
                 if (activated_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverAlreadyActivated, DriverErrorCategory(), "Init");
+                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Init");
                 }
                 client_cbg_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
                 timer_cbg_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
@@ -121,7 +121,7 @@ namespace ros2_canopen
                 node_->declare_parameter("config", "");
                 this->init(true);
                 this->initialised_.store(true);
-                RCLCPP_DEBUG(node_->get_logger(), "init_end");
+                RCLCPP_INFO(node_->get_logger(), "init_end");
             }
 
             virtual void init(bool called_from_base)
@@ -137,18 +137,18 @@ namespace ros2_canopen
              */
             void configure()
             {
-                RCLCPP_DEBUG(node_->get_logger(), "configure_start");
+                RCLCPP_INFO(node_->get_logger(), "configure_start");
                 if (!initialised_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotInitialised, DriverErrorCategory(), "Configure");
+                    throw DriverException(DriverErrorCode::DriverNotInitialised, "Configure");
                 }
                 if (configured_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverAlreadyConfigured, DriverErrorCategory(), "Configure");
+                    throw DriverException(DriverErrorCode::DriverAlreadyConfigured, "Configure");
                 }
                 if (activated_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverAlreadyActivated, DriverErrorCategory(), "Configure");
+                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Configure");
                 }
                 int non_transmit_timeout;
                 std::string config;
@@ -160,10 +160,10 @@ namespace ros2_canopen
                 this->non_transmit_timeout_ = std::chrono::milliseconds(non_transmit_timeout);
                 this->configure(true);
                 this->configured_.store(true);
-                RCLCPP_DEBUG(node_->get_logger(), "configure_end");
+                RCLCPP_INFO(node_->get_logger(), "configure_end");
             }
 
-            virtual void configure(bool called_from_base )
+            virtual void configure(bool called_from_base)
             {
             }
 
@@ -176,30 +176,30 @@ namespace ros2_canopen
              */
             void activate()
             {
-                RCLCPP_DEBUG(node_->get_logger(), "activate_start");
+                RCLCPP_INFO(node_->get_logger(), "activate_start");
                 if (!master_set_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotMasterSet, DriverErrorCategory(), "Activate");
+                    throw DriverException(DriverErrorCode::DriverNotMasterSet, "Activate");
                 }
                 if (!initialised_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotInitialised, DriverErrorCategory(), "Activate");
+                    throw DriverException(DriverErrorCode::DriverNotInitialised, "Activate");
                 }
                 if (!configured_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotConfigured, DriverErrorCategory(), "Activate");
+                    throw DriverException(DriverErrorCode::DriverNotConfigured, "Activate");
                 }
                 if (activated_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverAlreadyActivated, DriverErrorCategory(), "Activate");
+                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Activate");
                 }
                 this->add_to_master();
                 this->activate(true);
                 this->activated_.store(true);
-                RCLCPP_DEBUG(node_->get_logger(), "activate_end");
+                RCLCPP_INFO(node_->get_logger(), "activate_end");
             }
 
-            virtual void activate(bool called_from_base )
+            virtual void activate(bool called_from_base)
             {
             }
 
@@ -215,15 +215,15 @@ namespace ros2_canopen
                 RCLCPP_DEBUG(node_->get_logger(), "deactivate_start");
                 if (!initialised_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotInitialised, DriverErrorCategory(), "Deactivate");
+                    throw DriverException(DriverErrorCode::DriverNotInitialised, "Deactivate");
                 }
                 if (!configured_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotConfigured, DriverErrorCategory(), "Deactivate");
+                    throw DriverException(DriverErrorCode::DriverNotConfigured, "Deactivate");
                 }
                 if (!activated_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotActivated, DriverErrorCategory(), "Deactivate");
+                    throw DriverException(DriverErrorCode::DriverNotActivated, "Deactivate");
                 }
                 this->remove_from_master();
                 this->deactivate(true);
@@ -231,7 +231,7 @@ namespace ros2_canopen
                 RCLCPP_DEBUG(node_->get_logger(), "deactivate_end");
             }
 
-            virtual void deactivate(bool called_from_base )
+            virtual void deactivate(bool called_from_base)
             {
             }
 
@@ -246,20 +246,20 @@ namespace ros2_canopen
             {
                 if (!initialised_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotInitialised, DriverErrorCategory(), "Cleanup");
+                    throw DriverException(DriverErrorCode::DriverNotInitialised, "Cleanup");
                 }
                 if (!configured_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverNotConfigured, DriverErrorCategory(), "Cleanup");
+                    throw DriverException(DriverErrorCode::DriverNotConfigured, "Cleanup");
                 }
                 if (activated_.load())
                 {
-                    throw std::system_error(DriverErrorCode::DriverAlreadyActivated, DriverErrorCategory(), "Cleanup");
+                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Cleanup");
                 }
                 this->configured_.store(false);
             }
 
-            virtual void cleanup(bool called_from_base )
+            virtual void cleanup(bool called_from_base)
             {
             }
 
@@ -271,18 +271,28 @@ namespace ros2_canopen
              */
             void shutdown()
             {
+                RCLCPP_INFO(this->node_->get_logger(), "Shutting down.");
+                if (this->activated_)
+                {
+                    this->deactivate();
+                }
+                if (this->configured_)
+                {
+                    this->cleanup();
+                }
+                shutdown(true);
                 this->master_set_.store(false);
                 this->initialised_.store(false);
                 this->configured_.store(false);
                 this->activated_.store(false);
-                shutdown(true);
             }
 
-            virtual void shutdown(bool called_from_base )
+            virtual void shutdown(bool called_from_base)
             {
             }
 
-            virtual void demand_set_master() {}
+            virtual void demand_set_master();
+
         protected:
             /**
              * @brief Add the driver to master
@@ -290,6 +300,7 @@ namespace ros2_canopen
              */
             virtual void add_to_master()
             {
+                throw DriverException(DriverManual, "Add to master not implemented.");
             }
 
             /**
@@ -298,11 +309,8 @@ namespace ros2_canopen
              */
             virtual void remove_from_master()
             {
+                throw DriverException(DriverManual, "Remove from master not implemented.");
             }
-
-            
-
-
         };
     }
 }

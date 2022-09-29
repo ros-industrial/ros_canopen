@@ -1,46 +1,53 @@
 #include "canopen_core/driver_error.hpp"
-
-const ros2_canopen::DriverErrorCategory DriverErrorCategoryInstance{};
-
-std::error_code std::make_error_code(ros2_canopen::DriverErrorCode e)
-{
-    return {static_cast<int>(e), DriverErrorCategoryInstance};
-}
-
+#include <cstring>
 namespace ros2_canopen
 {
 
-    const char *DriverErrorCategory::name() const noexcept
+    char *DriverException::what()
     {
-        return "LelyBridgeError";
-    }
-
-    std::string DriverErrorCategory::message(int ev) const
-    {
-        switch (static_cast<DriverErrorCode>(ev))
+        std::string message;
+        message.append(where_);
+        switch (code_)
         {
-            case DriverErrorCode::DriverNotMasterSet:
-            return "Driver does not have a master object set.";
-            case DriverErrorCode::DriverNotInitialised:
-            return "Driver is not yet intialised.";
-            case DriverErrorCode::DriverNotConfigured:
-            return "Driver is not yet configured.";
-            case DriverErrorCode::DriverNotActivated:
-            return "Driver is not yet activated.";
-            case DriverErrorCode::DriverAlreadyMasterSet:
-            return "Driver does already have a master object set.";
-            case DriverErrorCode::DriverAlreadyInitialised:
-            return "Driver is already initialised.";
-            case DriverErrorCode::DriverAlreadyConfigured:
-            return "Driver is already configured.";
-            case DriverErrorCode::DriverAlreadyActivated:
-            return "Driver is already activated.";
-            case DriverErrorCode::DriverFailedAddingToMaster:
-            return "Driver could not be added to master.";
-            case DriverErrorCode::DriverFailedRemovnigFromMaster:
-            return "Driver could not be removed from master.";
-            default : 
-            return "(unrecognized error)";
+        case DriverErrorCode::DriverNotMasterSet:
+            message.append("Driver does not have a master object set.");
+            break;
+        case DriverErrorCode::DriverNotInitialised:
+            message.append("Driver is not yet intialised.");
+            break;
+        case DriverErrorCode::DriverNotConfigured:
+            message.append("Driver is not yet configured.");
+            break;
+        case DriverErrorCode::DriverNotActivated:
+            message.append("Driver is not yet activated.");
+            break;
+        case DriverErrorCode::DriverAlreadyMasterSet:
+            message.append("Driver does already have a master object set.");
+            break;
+        case DriverErrorCode::DriverAlreadyInitialised:
+            message.append("Driver is already initialised.");
+            break;
+        case DriverErrorCode::DriverAlreadyConfigured:
+            message.append("Driver is already configured.");
+            break;
+        case DriverErrorCode::DriverAlreadyActivated:
+            message.append("Driver is already activated.");
+            break;
+        case DriverErrorCode::DriverFailedAddingToMaster:
+            message.append("Driver could not be added to master.");
+            break;
+        case DriverErrorCode::DriverFailedRemovnigFromMaster:
+            message.append("Driver could not be removed from master.");
+            break;
+        case DriverManual:
+            break;
+        default:
+            message.append("(unrecognized error)");
+            break;
         }
+        
+        char *res = new char[1000];  
+        strcpy(res, message.c_str());
+        return res;
     }
 }

@@ -32,7 +32,7 @@ def generate_launch_description():
 
     master_bin_arg = DeclareLaunchArgument(
       'master_bin', 
-      default_value=TextSubstitution(text='2'), 
+      default_value=TextSubstitution(text=''), 
       description="Path to the master configuration to use (bin)."
     )
 

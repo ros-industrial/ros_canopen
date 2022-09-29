@@ -73,15 +73,6 @@ namespace ros2_canopen
                 node_ = node;
             }
 
-            virtual ~NodeCanopenMaster()
-            {
-                if(this->spinner_.joinable())
-                {
-                    RCLCPP_INFO(node_->get_logger(), "Joining Spinner Thread.");
-                    this->spinner_.join();
-                }
-            }
-
             /**
              * @brief Initialise Master
              *
@@ -91,11 +82,11 @@ namespace ros2_canopen
                 RCLCPP_DEBUG(node_->get_logger(), "init_start");
                 if (configured_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterAlreadyConfigured, MasterErrorCategory(), "Init");
+                    throw MasterException(MasterErrorCode::MasterAlreadyConfigured, "Init");
                 }
                 if (activated_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterAlreadyActivated, MasterErrorCategory(), "Init");
+                    throw MasterException(MasterErrorCode::MasterAlreadyActivated, "Init");
                 }
                 client_cbg_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
                 timer_cbg_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
@@ -113,7 +104,6 @@ namespace ros2_canopen
             }
             virtual void init(bool called_from_base)
             {
-
             }
 
             /**
@@ -127,15 +117,15 @@ namespace ros2_canopen
             {
                 if (!initialised_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotInitialised, MasterErrorCategory(), "Configure");
+                    throw MasterException(MasterErrorCode::MasterNotInitialised, "Configure");
                 }
                 if (configured_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterAlreadyConfigured, MasterErrorCategory(), "Configure");
+                    throw MasterException(MasterErrorCode::MasterAlreadyConfigured, "Configure");
                 }
                 if (activated_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterAlreadyActivated, MasterErrorCategory(), "Configure");
+                    throw MasterException(MasterErrorCode::MasterAlreadyActivated, "Configure");
                 }
 
                 int non_transmit_timeout;
@@ -158,7 +148,6 @@ namespace ros2_canopen
 
             virtual void configure(bool called_from_base)
             {
-                
             }
 
             /**
@@ -170,17 +159,18 @@ namespace ros2_canopen
              */
             void activate() override
             {
+                RCLCPP_INFO(this->node_->get_logger(), "NodeCanopenMaster activate start");
                 if (!initialised_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotInitialised, MasterErrorCategory(), "Activate");
+                    throw MasterException(MasterErrorCode::MasterNotInitialised, "Activate");
                 }
                 if (!configured_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotConfigured, MasterErrorCategory(), "Activate");
+                    throw MasterException(MasterErrorCode::MasterNotConfigured, "Activate");
                 }
                 if (activated_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterAlreadyActivated, MasterErrorCategory(), "Activate");
+                    throw MasterException(MasterErrorCode::MasterAlreadyActivated, "Activate");
                 }
 
                 io_guard_ = std::make_unique<lely::io::IoGuard>();
@@ -211,21 +201,20 @@ namespace ros2_canopen
                     });
 
                 this->activate(true);
-                if(!master_)
+                if (!master_)
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotMasterSet, MasterErrorCategory(), "activate");
+                    throw MasterException(MasterErrorCode::MasterNotMasterSet, "activate");
                 }
                 this->master_set_.store(true);
+                this->master_->Reset();
                 this->spinner_ = std::thread(
                     [this]()
                     {
-                        while(rclcpp::ok())
-                        {
-                            loop_->run_for(std::chrono::milliseconds(100));
-                        }
-
+                        loop_->run();
+                        RCLCPP_INFO(this->node_->get_logger(), "Spinner killed.");
                     });
                 this->activated_.store(true);
+                RCLCPP_INFO(this->node_->get_logger(), "NodeCanopenMaster activate end");
             }
             /**
              * @brief Activate hook for derived classes
@@ -238,7 +227,6 @@ namespace ros2_canopen
              */
             virtual void activate(bool called_from_base)
             {
-                
             }
 
             /**
@@ -252,15 +240,15 @@ namespace ros2_canopen
             {
                 if (!initialised_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotInitialised, MasterErrorCategory(), "Deactivate");
+                    throw MasterException(MasterErrorCode::MasterNotInitialised, "Deactivate");
                 }
                 if (!configured_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotConfigured, MasterErrorCategory(), "Deactivate");
+                    throw MasterException(MasterErrorCode::MasterNotConfigured, "Deactivate");
                 }
                 if (!activated_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotActivated, MasterErrorCategory(), "Deactivate");
+                    throw MasterException(MasterErrorCode::MasterNotActivated, "Deactivate");
                 }
 
                 exec_->post(
@@ -268,6 +256,8 @@ namespace ros2_canopen
                     {
                         ctx_->shutdown();
                     });
+
+                this->spinner_.join();
 
                 this->deactivate(true);
                 this->activated_.store(false);
@@ -283,7 +273,6 @@ namespace ros2_canopen
              */
             virtual void deactivate(bool called_from_base)
             {
-                
             }
 
             /**
@@ -297,22 +286,21 @@ namespace ros2_canopen
             {
                 if (!initialised_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotInitialised, MasterErrorCategory(), "Cleanup");
+                    throw MasterException(MasterErrorCode::MasterNotInitialised, "Cleanup");
                 }
                 if (!configured_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotConfigured, MasterErrorCategory(), "Cleanup");
+                    throw MasterException(MasterErrorCode::MasterNotConfigured, "Cleanup");
                 }
                 if (activated_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterAlreadyActivated, MasterErrorCategory(), "Cleanup");
+                    throw MasterException(MasterErrorCode::MasterAlreadyActivated, "Cleanup");
                 }
                 this->cleanup(true);
                 this->configured_.store(false);
             }
             virtual void cleanup(bool called_from_base)
             {
-                
             }
 
             /**
@@ -323,15 +311,25 @@ namespace ros2_canopen
              */
             void shutdown() override
             {
+                RCLCPP_INFO(this->node_->get_logger(), "Shutting down.");
+                if(this->activated_)
+                {
+                    this->deactivate();
+                }
+
+                if(this->configured_)
+                {
+                    this->cleanup();
+                }
+                shutdown(true);
+
                 this->master_set_.store(false);
                 this->initialised_.store(false);
                 this->configured_.store(false);
                 this->activated_.store(false);
-                shutdown(true);
             }
             virtual void shutdown(bool called_from_base)
             {
-                
             }
 
             /**
@@ -343,7 +341,7 @@ namespace ros2_canopen
             {
                 if (!master_set_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotMasterSet, MasterErrorCategory(), "get_master");
+                    throw MasterException(MasterErrorCode::MasterNotMasterSet, "get_master");
                 }
                 return master_;
             }
@@ -356,7 +354,7 @@ namespace ros2_canopen
             {
                 if (!master_set_.load())
                 {
-                    throw std::system_error(MasterErrorCode::MasterNotMasterSet, MasterErrorCategory(), "get_executor");
+                    throw MasterException(MasterErrorCode::MasterNotMasterSet, "get_executor");
                 }
                 return exec_;
             }

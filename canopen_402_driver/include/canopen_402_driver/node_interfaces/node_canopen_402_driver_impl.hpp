@@ -10,7 +10,6 @@ using namespace std::placeholders;
 template <class NODETYPE>
 NodeCanopen402Driver<NODETYPE>::NodeCanopen402Driver(NODETYPE *node) : ros2_canopen::node_interfaces::NodeCanopenProxyDriver<NODETYPE>(node)
 {
-	RCLCPP_INFO(this->node_->get_logger(), "Instanciated NodeCanopen402Driver");
 }
 
 template <class NODETYPE>

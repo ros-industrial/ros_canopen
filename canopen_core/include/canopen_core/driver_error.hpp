@@ -2,6 +2,7 @@
 #define DRIVER_ERROR_HPP_
 
 #include <system_error>
+#include <string>
 
 namespace ros2_canopen
 {
@@ -18,22 +19,24 @@ namespace ros2_canopen
     DriverAlreadyActivated = 8,
     DriverFailedAddingToMaster = 9,
     DriverFailedRemovnigFromMaster = 10,
+    DriverManual = 11,
   };
 
-  struct DriverErrorCategory : std::error_category
+  class DriverException : public std::exception
   {
-    const char *name() const noexcept override;
-    std::string message(int ev) const override;
-  };
-}
+  private:
+    std::string where_;
+    DriverErrorCode code_;
+  public:
+    DriverException(DriverErrorCode code, std::string where)
+    {
+      where_ = where;
+      code_ = code;
+    }
 
-namespace std
-{
-  template <>
-  struct is_error_code_enum<ros2_canopen::DriverErrorCategory> : true_type
-  {
+    char *what();
   };
-  std::error_code make_error_code(ros2_canopen::DriverErrorCode);
+
 }
 
 #endif

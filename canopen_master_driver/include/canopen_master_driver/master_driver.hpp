@@ -30,11 +30,13 @@ namespace ros2_canopen
      */
     class MasterDriver : public ros2_canopen::CanopenMaster
     {
+        std::shared_ptr<node_interfaces::NodeCanopenBasicMaster<rclcpp::Node>> node_canopen_basic_master_;
     public:
-        MasterDriver(rclcpp::NodeOptions node_options = rclcpp::NodeOptions());
+        explicit MasterDriver(
+            const rclcpp::NodeOptions &node_options);
+
     };
 
 }
-
 
 #endif

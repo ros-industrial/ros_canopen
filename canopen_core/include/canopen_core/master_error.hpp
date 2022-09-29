@@ -18,20 +18,21 @@ namespace ros2_canopen
     MasterAlreadyActivated = 8,
   };
 
-  struct MasterErrorCategory : std::error_category
+  class MasterException : public std::exception
   {
-    const char *name() const noexcept override;
-    std::string message(int ev) const override;
-  };
-}
+  private:
+    std::string where_;
+    MasterErrorCode code_;
 
-namespace std
-{
-  template <>
-  struct is_error_code_enum<ros2_canopen::MasterErrorCategory> : true_type
-  {
+  public:
+    MasterException(MasterErrorCode code, std::string where)
+    {
+      where_ = where;
+      code_ = code;
+    }
+
+    char *what();
   };
-  std::error_code make_error_code(ros2_canopen::MasterErrorCode);
 }
 
 #endif

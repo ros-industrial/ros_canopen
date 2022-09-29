@@ -1,11 +1,17 @@
 #include "canopen_core/master_node.hpp"
 
 using namespace ros2_canopen;
+
 void CanopenMaster::init()
 {
+    RCLCPP_INFO(this->get_logger(), "INIT");
     node_canopen_master_->init();
     node_canopen_master_->configure();
     node_canopen_master_->activate();
+}
+void CanopenMaster::shutdown()
+{
+    node_canopen_master_->shutdown();
 }
 
 std::shared_ptr<lely::canopen::AsyncMaster> 
@@ -23,6 +29,11 @@ CanopenMaster::get_executor()
 void LifecycleCanopenMaster::init()
 {
     node_canopen_master_->init();
+}
+
+void LifecycleCanopenMaster::shutdown()
+{
+    node_canopen_master_->shutdown();
 }
 
 std::shared_ptr<lely::canopen::AsyncMaster> 
