@@ -8,6 +8,7 @@ endif()
 # find dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   canopen_core
+  canopen_base_driver
   canopen_proxy_driver
   hardware_interface
   pluginlib

@@ -33,7 +33,7 @@ def generate_launch_description():
     )
 
     can_interface_arg = DeclareLaunchArgument(
-      'can_interface_name', 
+      'can_interface', 
       default_value=TextSubstitution(text="vcan0"), 
       description="CAN interface to be used by mock slave."
     )
@@ -54,7 +54,7 @@ def generate_launch_description():
                 {
                     "slave_config": LaunchConfiguration("slave_config"),
                     "node_id": LaunchConfiguration("node_id"),
-                    "can_interface_name": LaunchConfiguration("can_interface_name")
+                    "can_interface": LaunchConfiguration("can_interface")
                 }
             ],
     )

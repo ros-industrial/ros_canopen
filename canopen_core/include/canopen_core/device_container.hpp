@@ -89,6 +89,11 @@ namespace ros2_canopen
          */
         void init();
 
+        void init(const std::string &can_interface,
+                  const std::string &master_config,
+                  const std::string &bus_config,
+                  const std::string &master_bin = "");
+
         void configure();
         /**
          * @brief Loads drivers from configuration
@@ -140,13 +145,49 @@ namespace ros2_canopen
 
         /**
          * @brief Get the registered drivers object
-         * 
-         * @return std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>> 
+         *
+         * @return std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>>
          */
-        std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>> get_registered_drivers(){
+        std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>> get_registered_drivers()
+        {
             return registered_drivers_;
         }
-        
+
+        /**
+         * @brief Get the number of registered drivers
+         *
+         * @return size_t
+         */
+        size_t count_drivers()
+        {
+            return registered_drivers_.size();
+        }
+
+        /**
+         * @brief Get the ids of drivers with type object
+         *
+         * @param type
+         * @param ids
+         */
+        void get_ids_of_drivers_with_type(std::string type, std::vector<uint16_t> ids)
+        {
+            std::vector<std::string> devices;
+            uint32_t count = this->config_->get_all_devices(devices);
+
+            for (auto it = devices.begin(); it != devices.end(); it++)
+            {
+                auto driver_name = config_->get_entry<std::string>(*it, "driver");
+                if (driver_name.has_value())
+                {
+                    std::string name = driver_name.value();
+                    if (name.compare(type) == 0)
+                    {
+                        auto node_id = config_->get_entry<uint16_t>(*it, "node_id");
+                        ids.push_back(node_id.value());
+                    }
+                }
+            }
+        }
 
     protected:
         // Components
@@ -160,7 +201,7 @@ namespace ros2_canopen
         std::string dcf_txt_;                                        ///< Cached value of .dcf file parameter
         std::string bus_config_;                                     ///< Cached value of bus.yml file parameter
         std::string dcf_bin_;                                        ///< Cached value of .bin file parameter
-        std::string can_interface_name_;                             ///< Cached value of can interface name
+        std::string can_interface_;                             ///< Cached value of can interface name
 
         // ROS Objects
         std::weak_ptr<rclcpp::Executor> executor_;                                        ///< Pointer to ros executor instance

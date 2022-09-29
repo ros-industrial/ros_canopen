@@ -28,6 +28,11 @@ namespace ros2_canopen
             std::mutex driver_mutex_;
             std::shared_ptr<ros2_canopen::LelyDriverBridge> lely_driver_;
 
+            // nmt state callback
+            std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb_;
+            // rpdo callback
+            std::function<void(COData, uint8_t)> rpdo_cb_;
+
             void nmt_listener();
             virtual void on_nmt(canopen::NmtState nmt_state);
             void rdpo_listener();
@@ -38,11 +43,11 @@ namespace ros2_canopen
 
             virtual ~NodeCanopenBaseDriver()
             {
-                if(nmt_state_publisher_thread_.joinable())
+                if (nmt_state_publisher_thread_.joinable())
                 {
                     nmt_state_publisher_thread_.join();
                 }
-                if(rpdo_publisher_thread_.joinable())
+                if (rpdo_publisher_thread_.joinable())
                 {
                     rpdo_publisher_thread_.join();
                 }
@@ -64,6 +69,25 @@ namespace ros2_canopen
 
             virtual void remove_from_master();
 
+            /**
+             * @brief Register a callback for NMT state change
+             *
+             * @param nmt_state_cb
+             */
+            void register_nmt_state_cb(std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb)
+            {
+                nmt_state_cb_ = std::move(nmt_state_cb);
+            }
+
+            /**
+             * @brief Register a callback for RPDO
+             *
+             * @param rpdo_cb
+             */
+            void register_rpdo_cb(std::function<void(COData, uint8_t)> rpdo_cb)
+            {
+                rpdo_cb_ = std::move(rpdo_cb);
+            }
         };
         typedef NodeCanopenBaseDriver<rclcpp::Node> NCBDNode;
         typedef NodeCanopenBaseDriver<rclcpp_lifecycle::LifecycleNode> NCBDLifecycleNode;

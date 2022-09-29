@@ -18,7 +18,8 @@ using namespace ros2_canopen;
 
 ProxyDriver::ProxyDriver(rclcpp::NodeOptions node_options) : CanopenDriver(node_options)
 {
-  node_canopen_driver_ = std::make_shared<node_interfaces::NodeCanopenProxyDriver<rclcpp::Node>>(this);
+  node_canopen_proxy_driver_ = std::make_shared<node_interfaces::NodeCanopenProxyDriver<rclcpp::Node>>(this);
+  node_canopen_driver_ = std::static_pointer_cast<node_interfaces::NodeCanopenDriverInterface>(node_canopen_proxy_driver_);
 }
 
 #include "rclcpp_components/register_node_macro.hpp"

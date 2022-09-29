@@ -17,7 +17,6 @@
 #include "canopen_proxy_driver/node_interfaces/node_canopen_proxy_driver.hpp"
 #include "canopen_core/driver_node.hpp"
 
-
 namespace ros2_canopen
 {
   /**
@@ -28,9 +27,46 @@ namespace ros2_canopen
    */
   class ProxyDriver : public ros2_canopen::CanopenDriver
   {
-    public:
+    std::shared_ptr<node_interfaces::NodeCanopenProxyDriver<rclcpp::Node>> node_canopen_proxy_driver_;
+
+  public:
     ProxyDriver(rclcpp::NodeOptions node_options = rclcpp::NodeOptions());
+
+    virtual bool reset_node_nmt_command()
+    {
+      return node_canopen_proxy_driver_->reset_node_nmt_command();
+    }
+
+    virtual bool start_node_nmt_command()
+    {
+      return node_canopen_proxy_driver_->start_node_nmt_command();
+    }
+
+    virtual bool tpdo_transmit(ros2_canopen::COData &data)
+    {
+      return node_canopen_proxy_driver_->tpdo_transmit(data);
+    }
+
+    virtual bool sdo_write(ros2_canopen::COData &data)
+    {
+      return node_canopen_proxy_driver_->sdo_write(data);
+    }
+
+    virtual bool sdo_read(ros2_canopen::COData &data)
+    {
+      return node_canopen_proxy_driver_->sdo_read(data);
+    }
+    
+    void register_nmt_state_cb(std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb)
+    {
+      node_canopen_proxy_driver_->register_nmt_state_cb(nmt_state_cb);
+    }
+
+    void register_rpdo_cb(std::function<void(COData, uint8_t)> rpdo_cb)
+    {
+      node_canopen_proxy_driver_->register_rpdo_cb(rpdo_cb);
+    }
   };
 } // namespace ros2_canopen
 
-#endif  // CANOPEN_PROXY_DRIVER__CANOPEN_PROXY_DRIVER_HPP_
+#endif // CANOPEN_PROXY_DRIVER__CANOPEN_PROXY_DRIVER_HPP_

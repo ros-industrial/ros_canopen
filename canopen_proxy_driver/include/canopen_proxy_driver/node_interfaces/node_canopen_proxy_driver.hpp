@@ -50,6 +50,16 @@ namespace ros2_canopen
             NodeCanopenProxyDriver(NODETYPE *node);
 
             virtual void init(bool called_from_base) override;
+
+            virtual bool reset_node_nmt_command();
+
+            virtual bool start_node_nmt_command();
+
+            virtual bool tpdo_transmit(COData& data);
+
+            virtual bool sdo_write(COData& data);
+
+            virtual bool sdo_read(COData& data);
         };
     }
 }

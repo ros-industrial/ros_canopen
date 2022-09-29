@@ -105,10 +105,10 @@ bool DeviceContainer::init_device_manager(uint16_t node_id)
 
 void DeviceContainer::configure()
 {
-    if (!this->get_parameter("can_interface", can_interface_name_))
+    if (!this->get_parameter("can_interface", can_interface_))
     {
         throw DeviceContainerException("Fatal: Getting Parameter failed.");
-        RCLCPP_ERROR(this->get_logger(), "Parameter can_interface_name could not be read.");
+        RCLCPP_ERROR(this->get_logger(), "Parameter can_interface could not be read.");
     }
     if (!this->get_parameter("master_config", dcf_txt_))
     {
@@ -161,7 +161,7 @@ bool DeviceContainer::load_master()
             params.push_back(rclcpp::Parameter("container_name", this->get_fully_qualified_name()));
             params.push_back(rclcpp::Parameter("master_dcf", this->dcf_txt_));
             params.push_back(rclcpp::Parameter("master_bin", this->dcf_bin_));
-            params.push_back(rclcpp::Parameter("can_interface", this->can_interface_name_));
+            params.push_back(rclcpp::Parameter("can_interface", this->can_interface_));
             params.push_back(rclcpp::Parameter("node_id", (int)node_id.value()));
             params.push_back(rclcpp::Parameter("non_transmit_timeout", 100));
             params.push_back(rclcpp::Parameter("config", config_->dump_device(*it)));
@@ -192,6 +192,13 @@ bool DeviceContainer::load_drivers()
     RCLCPP_INFO(this->get_logger(), "Loading Driver Configuration.");
     std::vector<std::string> devices;
     uint32_t count = this->config_->get_all_devices(devices);
+    std::sort(devices.begin(), devices.end());
+    auto it = std::unique(devices.begin(), devices.end());
+    if(it != devices.end())
+    {
+        RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has dublicate device names.");
+    }
+
     for (auto it = devices.begin(); it != devices.end(); it++)
     {
         if (it->find("master") == std::string::npos)
@@ -202,7 +209,19 @@ bool DeviceContainer::load_drivers()
             if (!node_id.has_value() || !driver_name.has_value() || !package_name.has_value())
             {
                 RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has uncomplete configuration for %s", it->c_str());
-                return false;
+                throw DeviceContainerException("Error: Bus Configuration has uncomplete configuration.");
+            }
+
+            if (node_id.value() == can_master_id_)
+            {
+                RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has duplicate entry for node id %i", node_id.value());
+                throw DeviceContainerException("Error: Bus Configuration has duplicate entry.");
+            }
+
+            if(registered_drivers_.count(node_id.value()) != 0)
+            {
+                RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has duplicate entry for node id %i", node_id.value());
+                throw DeviceContainerException("Error: Bus Configuration has duplicate entry.");
             }
 
             RCLCPP_INFO(this->get_logger(), "Found device %s with driver %s", it->c_str(), driver_name.value().c_str());
@@ -215,7 +234,8 @@ bool DeviceContainer::load_drivers()
 
             if (!this->load_component(package_name.value(), driver_name.value(), node_id.value(), *it, params))
             {
-                RCLCPP_ERROR(this->get_logger(), "Error: Loading master failed.");
+                RCLCPP_ERROR(this->get_logger(), "Error: Loading driver failed.");
+                throw DeviceContainerException("Error: Loading driver failed.");
                 return false;
             }
             add_node_to_executor(registered_drivers_[node_id.value()]->get_node_base_interface());
@@ -246,6 +266,39 @@ bool DeviceContainer::load_manager()
 void DeviceContainer::init()
 {
     configure();
+    if (!this->load_master())
+    {
+        throw DeviceContainerException("Fatal: Loading Master Failed.");
+    }
+    if (!this->load_drivers())
+    {
+        throw DeviceContainerException("Fatal: Loading Drivers Failed.");
+    }
+
+    if (!this->load_manager())
+    {
+        throw DeviceContainerException("Fatal: Loading Manager Failed.");
+    }
+}
+
+void DeviceContainer::init(
+    const std::string& can_interface,
+    const std::string& master_config,
+    const std::string& bus_config,
+    const std::string& master_bin)
+{
+    can_interface_ = can_interface;
+    dcf_txt_ = master_config;
+    dcf_bin_ = master_bin;
+    bus_config_ = bus_config;
+
+    RCLCPP_INFO(this->get_logger(), "Starting Device Container with:");
+    RCLCPP_INFO(this->get_logger(), "\t master_config %s", dcf_txt_.c_str());
+    RCLCPP_INFO(this->get_logger(), "\t bus_config %s", bus_config_.c_str());
+
+    this->config_ = std::make_unique<ros2_canopen::ConfigurationManager>(bus_config_);
+    this->config_->init_config();
+
     if (!this->load_master())
     {
         throw DeviceContainerException("Fatal: Loading Master Failed.");

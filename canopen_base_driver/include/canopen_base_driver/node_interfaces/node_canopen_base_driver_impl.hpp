@@ -70,12 +70,11 @@ void NodeCanopenBaseDriver<NODETYPE>::add_to_master()
 	}
 	this->lely_driver_ = f.get();
 	this->driver_ = std::static_pointer_cast<lely::canopen::BasicDriver>(this->lely_driver_);
-	if(!this->lely_driver_->IsReady())
+	if (!this->lely_driver_->IsReady())
 	{
 		RCLCPP_ERROR(this->node_->get_logger(), "Driver Not Ready, waiting for boot.");
 		this->lely_driver_->wait_for_boot();
 		RCLCPP_ERROR(this->node_->get_logger(), "Driver booted and ready.");
-		
 	}
 	RCLCPP_INFO(this->node_->get_logger(), "add_to_master end");
 }
@@ -112,7 +111,12 @@ void NodeCanopenBaseDriver<NODETYPE>::nmt_listener()
 			if (!this->activated_.load())
 				return;
 		}
-		on_nmt(f.get());
+		auto state = f.get();
+		if (nmt_state_cb_)
+		{
+			nmt_state_cb_(state, this->lely_driver_->get_id());
+		}
+		on_nmt(state);
 	}
 }
 template <class NODETYPE>
@@ -141,7 +145,11 @@ void NodeCanopenBaseDriver<NODETYPE>::rdpo_listener()
 			if (!this->activated_.load())
 				return;
 		}
-
+		auto rpdo = f.get();
+		if (rpdo_cb_)
+		{
+			rpdo_cb_(rpdo, this->lely_driver_->get_id());
+		}
 		on_rpdo(f.get());
 	}
 }

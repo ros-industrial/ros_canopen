@@ -5,7 +5,9 @@ project(canopen_ros2_controllers)
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   canopen_core
   canopen_interfaces
+  canopen_base_driver
   canopen_proxy_driver
+  lely_core_libraries
   control_msgs
   controller_interface
   controller_manager
