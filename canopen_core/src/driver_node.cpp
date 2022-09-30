@@ -3,8 +3,6 @@
 using namespace ros2_canopen;
 void CanopenDriver::init()
 {
-    
-    RCLCPP_INFO(this->get_logger(), "INIT");
     node_canopen_driver_->init();
     node_canopen_driver_->configure();
     node_canopen_driver_->demand_set_master();
@@ -13,8 +11,6 @@ void CanopenDriver::init()
 
 void CanopenDriver::shutdown()
 {
-    
-    RCLCPP_INFO(this->get_logger(), "INIT");
     node_canopen_driver_->shutdown();
 }
 

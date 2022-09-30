@@ -10,10 +10,8 @@ using namespace ros2_canopen::node_interfaces;
 template <class NODETYPE>
 void NodeCanopenBasicMaster<NODETYPE>::activate(bool called_from_base)
 {
-    RCLCPP_INFO(this->node_->get_logger(), "NodeCanopenBasicMaster activate start");
     master_bridge_ = std::make_shared<LelyMasterBridge>(*(this->exec_), *(this->timer_), *(this->chan_), this->master_dcf_, this->master_bin_, this->node_id_);
     this->master_ = std::static_pointer_cast<lely::canopen::AsyncMaster>(master_bridge_);
-    RCLCPP_INFO(this->node_->get_logger(), "NodeCanopenBasicMaster activate end");
 }
 
 template <class NODETYPE>

@@ -79,7 +79,7 @@ namespace ros2_canopen
                 std::shared_ptr<lely::ev::Executor> exec,
                 std::shared_ptr<lely::canopen::AsyncMaster> master)
             {
-                RCLCPP_INFO(node_->get_logger(), "set_master_start");
+                RCLCPP_DEBUG(node_->get_logger(), "set_master_start");
                 if (!configured_.load())
                 {
                     throw DriverException(DriverErrorCode::DriverNotConfigured, "Set Master");
@@ -91,7 +91,7 @@ namespace ros2_canopen
                 this->exec_ = exec;
                 this->master_ = master;
                 this->master_set_.store(true);
-                RCLCPP_INFO(node_->get_logger(), "set_master_end");
+                RCLCPP_DEBUG(node_->get_logger(), "set_master_end");
             }
 
             /**
@@ -103,7 +103,7 @@ namespace ros2_canopen
              */
             void init()
             {
-                RCLCPP_INFO(node_->get_logger(), "init_start");
+                RCLCPP_DEBUG(node_->get_logger(), "init_start");
                 if (configured_.load())
                 {
                     throw DriverException(DriverErrorCode::DriverAlreadyConfigured, "Init");
@@ -121,7 +121,7 @@ namespace ros2_canopen
                 node_->declare_parameter("config", "");
                 this->init(true);
                 this->initialised_.store(true);
-                RCLCPP_INFO(node_->get_logger(), "init_end");
+                RCLCPP_DEBUG(node_->get_logger(), "init_end");
             }
 
             virtual void init(bool called_from_base)
@@ -137,7 +137,7 @@ namespace ros2_canopen
              */
             void configure()
             {
-                RCLCPP_INFO(node_->get_logger(), "configure_start");
+                RCLCPP_DEBUG(node_->get_logger(), "configure_start");
                 if (!initialised_.load())
                 {
                     throw DriverException(DriverErrorCode::DriverNotInitialised, "Configure");
@@ -160,7 +160,7 @@ namespace ros2_canopen
                 this->non_transmit_timeout_ = std::chrono::milliseconds(non_transmit_timeout);
                 this->configure(true);
                 this->configured_.store(true);
-                RCLCPP_INFO(node_->get_logger(), "configure_end");
+                RCLCPP_DEBUG(node_->get_logger(), "configure_end");
             }
 
             virtual void configure(bool called_from_base)
@@ -176,7 +176,7 @@ namespace ros2_canopen
              */
             void activate()
             {
-                RCLCPP_INFO(node_->get_logger(), "activate_start");
+                RCLCPP_DEBUG(node_->get_logger(), "activate_start");
                 if (!master_set_.load())
                 {
                     throw DriverException(DriverErrorCode::DriverNotMasterSet, "Activate");
@@ -196,7 +196,7 @@ namespace ros2_canopen
                 this->add_to_master();
                 this->activate(true);
                 this->activated_.store(true);
-                RCLCPP_INFO(node_->get_logger(), "activate_end");
+                RCLCPP_DEBUG(node_->get_logger(), "activate_end");
             }
 
             virtual void activate(bool called_from_base)
@@ -271,7 +271,7 @@ namespace ros2_canopen
              */
             void shutdown()
             {
-                RCLCPP_INFO(this->node_->get_logger(), "Shutting down.");
+                RCLCPP_DEBUG(this->node_->get_logger(), "Shutting down.");
                 if (this->activated_)
                 {
                     this->deactivate();

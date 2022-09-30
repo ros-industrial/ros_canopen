@@ -159,7 +159,7 @@ namespace ros2_canopen
              */
             void activate() override
             {
-                RCLCPP_INFO(this->node_->get_logger(), "NodeCanopenMaster activate start");
+                RCLCPP_DEBUG(this->node_->get_logger(), "NodeCanopenMaster activate start");
                 if (!initialised_.load())
                 {
                     throw MasterException(MasterErrorCode::MasterNotInitialised, "Activate");
@@ -211,10 +211,10 @@ namespace ros2_canopen
                     [this]()
                     {
                         loop_->run();
-                        RCLCPP_INFO(this->node_->get_logger(), "Spinner killed.");
+                        RCLCPP_INFO(this->node_->get_logger(), "Canopen master loop stopped");
                     });
                 this->activated_.store(true);
-                RCLCPP_INFO(this->node_->get_logger(), "NodeCanopenMaster activate end");
+                RCLCPP_DEBUG(this->node_->get_logger(), "NodeCanopenMaster activate end");
             }
             /**
              * @brief Activate hook for derived classes
@@ -311,7 +311,7 @@ namespace ros2_canopen
              */
             void shutdown() override
             {
-                RCLCPP_INFO(this->node_->get_logger(), "Shutting down.");
+                RCLCPP_DEBUG(this->node_->get_logger(), "Shutting down.");
                 if(this->activated_)
                 {
                     this->deactivate();

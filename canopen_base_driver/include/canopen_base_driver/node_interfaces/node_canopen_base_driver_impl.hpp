@@ -23,7 +23,6 @@ void NodeCanopenBaseDriver<NODETYPE>::configure(bool called_from_base)
 template <class NODETYPE>
 void NodeCanopenBaseDriver<NODETYPE>::activate(bool called_from_base)
 {
-	RCLCPP_INFO(this->node_->get_logger(), "activate start");
 	nmt_state_publisher_thread_ =
 		std::thread(std::bind(&NodeCanopenBaseDriver<NODETYPE>::nmt_listener, this));
 
@@ -51,7 +50,6 @@ void NodeCanopenBaseDriver<NODETYPE>::shutdown(bool called_from_base)
 template <class NODETYPE>
 void NodeCanopenBaseDriver<NODETYPE>::add_to_master()
 {
-	RCLCPP_INFO(this->node_->get_logger(), "add_to_master start");
 	std::shared_ptr<std::promise<std::shared_ptr<ros2_canopen::LelyDriverBridge>>> prom;
 	prom = std::make_shared<std::promise<std::shared_ptr<ros2_canopen::LelyDriverBridge>>>();
 	std::future<std::shared_ptr<ros2_canopen::LelyDriverBridge>> f = prom->get_future();
@@ -59,24 +57,31 @@ void NodeCanopenBaseDriver<NODETYPE>::add_to_master()
 					  {
                         std::scoped_lock<std::mutex> lock (this->driver_mutex_);
                         this->lely_driver_ =
-                            std::make_shared<ros2_canopen::LelyDriverBridge>(*(this->exec_), *(this->master_), this->node_id_);
+                            std::make_shared<ros2_canopen::LelyDriverBridge>(*(this->exec_), *(this->master_), this->node_id_, this->node_->get_name());
 						this->driver_ = std::static_pointer_cast<lely::canopen::BasicDriver>(this->lely_driver_);
                         prom->set_value(lely_driver_); });
 
 	auto future_status = f.wait_for(this->non_transmit_timeout_);
 	if (future_status != std::future_status::ready)
 	{
+		RCLCPP_ERROR(this->node_->get_logger(), "Adding timed out.");
 		throw DriverException(DriverErrorCode::DriverFailedAddingToMaster, "add_to_master");
 	}
 	this->lely_driver_ = f.get();
 	this->driver_ = std::static_pointer_cast<lely::canopen::BasicDriver>(this->lely_driver_);
 	if (!this->lely_driver_->IsReady())
 	{
-		RCLCPP_ERROR(this->node_->get_logger(), "Driver Not Ready, waiting for boot.");
-		this->lely_driver_->wait_for_boot();
-		RCLCPP_ERROR(this->node_->get_logger(), "Driver booted and ready.");
+		RCLCPP_WARN(this->node_->get_logger(), "Wait for device to boot.");
+		try
+		{
+			this->lely_driver_->wait_for_boot();
+		}
+		catch (const std::exception &e)
+		{
+			RCLCPP_ERROR(this->node_->get_logger(), e.what());
+		}
 	}
-	RCLCPP_INFO(this->node_->get_logger(), "add_to_master end");
+	RCLCPP_INFO(this->node_->get_logger(), "Driver booted and ready.");
 }
 
 template <class NODETYPE>

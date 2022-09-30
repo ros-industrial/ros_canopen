@@ -159,7 +159,7 @@ namespace ros2_canopen
                 }
                 catch (std::exception &e)
                 {
-                    std::cout << e.what() << std::endl;
+                    RCLCPP_ERROR(rclcpp::get_logger(name_), e.what());
                     obj->valid = false;
                 }
             }
@@ -285,16 +285,16 @@ namespace ros2_canopen
                 }
                 catch (lely::canopen::SdoError &e)
                 {
-                    std::cout << "Could not fetch data." << e.what() << std::endl;
+                    RCLCPP_ERROR(rclcpp::get_logger(name_), "Could not fetch data. %s", e.what());
                 }
-                std::cout << "Initialised object :"
-                          << this->get_id() << " "
-                          << std::hex << obj->index << " "
-                          << std::dec << obj->subindex << " "
-                          << obj->data << " "
-                          << "RPDO: " << (obj->rpdo_mapped ? "yes" : "no") << " "
-                          << "TPDO: " << (obj->tpdo_mapped ? "yes" : "no") << " "
-                          << std::endl;
+                RCLCPP_INFO(rclcpp::get_logger(name_), "Initialised object: node_id %hu, index %x, subindex %hhu, data %u, RPDO: %s, TPDO: %s",
+                    this->get_id(),
+                    obj->index,
+                    obj->subindex,
+                    obj->data,
+                    (obj->rpdo_mapped ? "yes" : "no"),
+                    (obj->tpdo_mapped ? "yes" : "no")
+                    );
             }
         }
 
@@ -325,11 +325,7 @@ namespace ros2_canopen
          * @param [in] master 
          * @param [in] id 
          */
-        LelyMotionControllerBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
-            : LelyDriverBridge(exec, master, id)
-        {
-            sync = true;
-        }
+        LelyMotionControllerBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id, std::string name);
     };
 }
 #endif

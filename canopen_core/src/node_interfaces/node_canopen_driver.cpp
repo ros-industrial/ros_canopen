@@ -4,13 +4,13 @@ using namespace std::chrono_literals;
 template <>
 void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp::Node>::demand_set_master()
 {
-    RCLCPP_INFO(node_->get_logger(), "demand_set_master_start");
+    RCLCPP_DEBUG(node_->get_logger(), "demand_set_master_start");
     if (!configured_.load())
     {
         throw ros2_canopen::DriverException(DriverErrorCode::DriverNotConfigured, "Set Master");
     }
     std::string init_service_name = container_name_ + "/init_driver";
-    RCLCPP_INFO(node_->get_logger(), "Service: %s", init_service_name.c_str());
+    RCLCPP_DEBUG(node_->get_logger(), "Service: %s", init_service_name.c_str());
     rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr demand_set_master_client;
     // demand_set_master_client;
     demand_set_master_client = node_->create_client<canopen_interfaces::srv::CONode>(
@@ -32,7 +32,7 @@ void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp::Node>::demand_set_
     auto future_result = demand_set_master_client->async_send_request(request);
 
     auto future_status = future_result.wait_for(10s);
-    RCLCPP_INFO(node_->get_logger(), "demand_set_master end");
+    RCLCPP_DEBUG(node_->get_logger(), "demand_set_master end");
 
     if (future_status == std::future_status::ready)
     {
@@ -48,7 +48,7 @@ void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp::Node>::demand_set_
 template <>
 void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp_lifecycle::LifecycleNode>::demand_set_master()
 {
-    RCLCPP_INFO(node_->get_logger(), "demand_set_master_start");
+    RCLCPP_DEBUG(node_->get_logger(), "demand_set_master_start");
     if (!configured_.load())
     {
         throw ros2_canopen::DriverException(DriverErrorCode::DriverNotConfigured, "Set Master");
@@ -75,7 +75,7 @@ void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp_lifecycle::Lifecycl
     auto future_result = demand_set_master_client->async_send_request(request);
 
     auto future_status = future_result.wait_for(non_transmit_timeout_);
-    RCLCPP_INFO(node_->get_logger(), "demand_set_master end");
+    RCLCPP_DEBUG(node_->get_logger(), "demand_set_master end");
 
     if (future_status == std::future_status::ready)
     {

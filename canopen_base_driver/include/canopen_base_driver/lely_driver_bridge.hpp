@@ -28,6 +28,7 @@
 #include <vector>
 #include <condition_variable>
 #include <system_error>
+#include <rclcpp/rclcpp.hpp>
 
 #include "canopen_core/exchange.hpp"
 
@@ -123,7 +124,7 @@ namespace ros2_canopen{
       }
     };
 
-  private:
+  protected:
     // SDO Read synchronisation items
     std::shared_ptr<std::promise<COData>> sdo_read_data_promise;
     std::shared_ptr<std::promise<bool>> sdo_write_data_promise;
@@ -151,6 +152,7 @@ namespace ros2_canopen{
 
     std::vector<std::shared_ptr<TPDOWriteTask>> tpdo_tasks;
     uint8_t nodeid;
+    std::string name_;
 
     /**
      * @brief OnState Callback
@@ -198,11 +200,13 @@ namespace ros2_canopen{
      * @param [in] master   Master to use
      * @param [in] id       NodeId to connect to
      */
-    LelyDriverBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id)
+    LelyDriverBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id, std::string name)
         : FiberDriver(exec, master, id)
     {
       nodeid = id;
       running = false;
+      name_ = name;
+
     }
 
     /**
