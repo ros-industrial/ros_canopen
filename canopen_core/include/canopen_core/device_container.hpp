@@ -169,9 +169,10 @@ namespace ros2_canopen
          * @param type
          * @param ids
          */
-        void get_ids_of_drivers_with_type(std::string type, std::vector<uint16_t> ids)
+        std::vector<uint16_t> get_ids_of_drivers_with_type(std::string type)
         {
             std::vector<std::string> devices;
+            std::vector<uint16_t> ids;
             uint32_t count = this->config_->get_all_devices(devices);
 
             for (auto it = devices.begin(); it != devices.end(); it++)
@@ -185,6 +186,22 @@ namespace ros2_canopen
                         auto node_id = config_->get_entry<uint16_t>(*it, "node_id");
                         ids.push_back(node_id.value());
                     }
+                }
+            }
+            return ids;
+        }
+
+        std::string get_driver_type(uint16_t id)
+        {
+            std::vector<std::string> devices;
+            uint32_t count = this->config_->get_all_devices(devices);
+            for (auto it = devices.begin(); it != devices.end(); it++)
+            {
+                auto node_id = config_->get_entry<uint16_t>(*it, "node_id");
+                if(node_id.has_value() && node_id.value() == id)
+                {
+                    auto driver_name = config_->get_entry<std::string>(*it, "driver");
+                    return driver_name.value();
                 }
             }
         }
