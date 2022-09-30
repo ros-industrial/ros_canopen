@@ -34,6 +34,7 @@ namespace ros2_canopen
      */
     class LifecycleMasterDriver : public ros2_canopen::LifecycleCanopenMaster
     {
+        std::shared_ptr<node_interfaces::NodeCanopenBasicMaster<rclcpp_lifecycle::LifecycleNode>> node_canopen_basic_master_;
     public:
         explicit LifecycleMasterDriver(
             const rclcpp::NodeOptions &node_options);

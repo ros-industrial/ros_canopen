@@ -27,8 +27,19 @@ namespace ros2_canopen
    */
   class LifecycleBaseDriver : public ros2_canopen::LifecycleCanopenDriver
   {
+    std::shared_ptr<node_interfaces::NodeCanopenBaseDriver<rclcpp_lifecycle::LifecycleNode>> node_canopen_base_driver_;
   public:
     LifecycleBaseDriver(rclcpp::NodeOptions node_options = rclcpp::NodeOptions());
+
+    void register_nmt_state_cb(std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb)
+    {
+      node_canopen_base_driver_->register_nmt_state_cb(nmt_state_cb);
+    }
+
+    void register_rpdo_cb(std::function<void(COData, uint8_t)> rpdo_cb)
+    {
+      node_canopen_base_driver_->register_rpdo_cb(rpdo_cb);
+    }
   };
 }
 

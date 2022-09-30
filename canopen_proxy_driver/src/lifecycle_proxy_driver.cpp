@@ -18,7 +18,8 @@ using namespace ros2_canopen;
 
 LifecycleProxyDriver::LifecycleProxyDriver(rclcpp::NodeOptions node_options) : LifecycleCanopenDriver(node_options)
 {
-  node_canopen_driver_ = std::make_shared<node_interfaces::NodeCanopenProxyDriver<rclcpp_lifecycle::LifecycleNode>>(this);
+  node_canopen_proxy_driver_ = std::make_shared<node_interfaces::NodeCanopenProxyDriver<rclcpp_lifecycle::LifecycleNode>>(this);
+  node_canopen_driver_ = std::static_pointer_cast<node_interfaces::NodeCanopenDriverInterface>(node_canopen_proxy_driver_);
 }
 
 #include "rclcpp_components/register_node_macro.hpp"

@@ -7,7 +7,8 @@ namespace ros2_canopen
         const rclcpp::NodeOptions &node_options) :
         CanopenMaster(node_options)
     {
-        node_canopen_master_ = std::make_shared<node_interfaces::NodeCanopenBasicMaster<rclcpp::Node>>(this);
+        node_canopen_basic_master_ = std::make_shared<node_interfaces::NodeCanopenBasicMaster<rclcpp::Node>>(this);
+        node_canopen_master_ = std::static_pointer_cast<node_interfaces::NodeCanopenMasterInterface>(node_canopen_basic_master_);
     }
 
 }
