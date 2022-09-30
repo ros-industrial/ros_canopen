@@ -31,6 +31,7 @@ TEST(NodeCanopenBaseDriver, test_good_sequence_advanced)
   EXPECT_NO_THROW(iface->configure());
   // Can't activate as master cannot be set.
   EXPECT_ANY_THROW(iface->activate());
+  iface->shutdown();
   rclcpp::shutdown();
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   if(spinner.joinable())
