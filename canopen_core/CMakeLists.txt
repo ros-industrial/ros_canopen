@@ -89,6 +89,7 @@ add_library(device_container
   src/device_container.cpp
   src/configuration_manager.cpp
   src/device_container_error.cpp
+  src/lifecycle_manager.cpp
 )
 target_compile_features(device_container  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_options(device_container PUBLIC -fPIC -Wl,--no-undefined)
