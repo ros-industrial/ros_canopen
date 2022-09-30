@@ -15,6 +15,9 @@ namespace ros2_canopen
                                 std::shared_ptr<lely::canopen::AsyncMaster> master) = 0;
         virtual rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() = 0;
         virtual void shutdown() = 0;
+        virtual bool is_lifecycle() = 0;
+        virtual std::shared_ptr<node_interfaces::NodeCanopenDriverInterface> get_node_canopen_driver_interface() = 0;
+
     };
 
     class CanopenDriver : public CanopenDriverInterface, public rclcpp::Node
@@ -40,6 +43,16 @@ namespace ros2_canopen
         }
 
         virtual void shutdown() override;
+
+        virtual bool is_lifecycle() override
+        {
+            return false;
+        }
+
+        virtual std::shared_ptr<node_interfaces::NodeCanopenDriverInterface> get_node_canopen_driver_interface()
+        {
+            return node_canopen_driver_;
+        }
     };
 
     class LifecycleCanopenDriver : public CanopenDriverInterface, public rclcpp_lifecycle::LifecycleNode
@@ -81,6 +94,16 @@ namespace ros2_canopen
             return rclcpp_lifecycle::LifecycleNode::get_node_base_interface();
         }
         virtual void shutdown() override;
+
+        virtual bool is_lifecycle() override
+        {
+            return true;
+        }
+
+        virtual std::shared_ptr<node_interfaces::NodeCanopenDriverInterface> get_node_canopen_driver_interface()
+        {
+            return node_canopen_driver_;
+        }
     };
 
 }
