@@ -26,33 +26,14 @@ namespace ros2_canopen
         public:
             NodeCanopenBasicMaster(NODETYPE *node) : ros2_canopen::node_interfaces::NodeCanopenMaster<NODETYPE>(node)
             {
+                this->activated_.load();
                 RCLCPP_INFO(this->node_->get_logger(), "NodeCanopenBasicMaster");
             }
             
-            virtual void init(bool called_from_base) override
-            {
-            }
+            virtual void activate(bool called_from_base) override;
+            virtual void deactivate(bool called_from_base) override;
+            virtual void init(bool called_from_base) override;
 
-            virtual void configure(bool called_from_base) override
-            {
-            }
-            virtual void activate(bool called_from_base) override
-            {
-                RCLCPP_INFO(this->node_->get_logger(), "NodeCanopenBasicMaster activate start");
-                master_bridge_ = std::make_shared<LelyMasterBridge>(*(this->exec_), *(this->timer_), *(this->chan_), this->master_dcf_, this->master_bin_, this->node_id_);
-                this->master_ = std::static_pointer_cast<lely::canopen::AsyncMaster>(master_bridge_);
-                RCLCPP_INFO(this->node_->get_logger(), "NodeCanopenBasicMaster activate end");
-            }
-            virtual void deactivate(bool called_from_base) override
-            {
-                this->master_.reset();
-            }
-            virtual void cleanup(bool called_from_base) override
-            {
-            }
-            virtual void shutdown(bool called_from_base) override
-            {
-            }
             /**
              * @brief Read Service Data Object
              *

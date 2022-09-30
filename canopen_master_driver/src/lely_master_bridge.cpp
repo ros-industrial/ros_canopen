@@ -12,7 +12,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-#include "canopen_core/lely_master_bridge.hpp"
+#include "canopen_master_driver/lely_master_bridge.hpp"
 
 #include <chrono>
 

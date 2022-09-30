@@ -12,8 +12,8 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-#ifndef LIFECYCLE_MASTER_NODE_HPP
-#define LIFECYCLE_MASTER_NODE_HPP
+#ifndef MASTER_DRIVER_HPP
+#define MASTER_DRIVER_HPP
 
 #include "canopen_core/master_node.hpp"
 #include "canopen_master_driver/node_interfaces/node_canopen_basic_master.hpp"
