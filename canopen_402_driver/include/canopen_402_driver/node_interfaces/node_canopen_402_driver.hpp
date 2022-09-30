@@ -50,12 +50,12 @@ namespace ros2_canopen
 
             virtual double get_speed()
             {
-                this->mc_driver_->get_speed();
+                return this->mc_driver_->get_speed();
             }
             
             virtual double get_position()
             {
-                this->mc_driver_->get_position();
+                return this->mc_driver_->get_position();
             }
 
             /**
