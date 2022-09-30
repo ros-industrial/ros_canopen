@@ -404,7 +404,7 @@ namespace ros2_canopen
          * and then executes the chosen homing method.
          * 
          */
-        void handleInit();
+        bool handleInit();
         /**
          * @brief Read objects of the drive
          * 
@@ -428,14 +428,14 @@ namespace ros2_canopen
          * SwitchOn disbled state.
          * 
          */
-        void handleShutdown();
+        bool handleShutdown();
         /**
          * @brief Executes a quickstop
          * 
          * The function executes a quickstop.
          * 
          */
-        void handleHalt();
+        bool handleHalt();
 
         /**
          * @brief Recovers the device from fault
@@ -444,7 +444,7 @@ namespace ros2_canopen
          * put the device back to operational state.
          * 
          */
-        void handleRecover();
+        bool handleRecover();
 
         /**
          * @brief Register a new operation mode for the drive

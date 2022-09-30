@@ -561,7 +561,7 @@ void Motor402::handleDiag()
         std::cout << "Internal limit active" << std::endl;
     }
 }
-void Motor402::handleInit()
+bool Motor402::handleInit()
 {
     for (std::unordered_map<uint16_t, AllocFuncType>::iterator it = mode_allocators_.begin(); it != mode_allocators_.end(); ++it)
     {
@@ -571,7 +571,7 @@ void Motor402::handleInit()
     if (!readState())
     {
         std::cout << "Could not read motor state" << std::endl;
-        return;
+        return false;
     }
     {
         std::scoped_lock lock(cw_mutex_);
@@ -582,13 +582,14 @@ void Motor402::handleInit()
     if (!switchState(State402::Operation_Enable))
     {
         std::cout << "Could not enable motor" << std::endl;
-        return;
+        return false;
     }
 
     ModeSharedPtr m = allocMode(MotorBase::Homing);
     if (!m)
     {
-        return; // homing not supported
+        std::cout << "Homeing mode not supported" << std::endl;
+        return false; // homing not supported
     }
 
     HomingMode *homing = dynamic_cast<HomingMode *>(m.get());
@@ -596,40 +597,41 @@ void Motor402::handleInit()
     if (!homing)
     {
         std::cout << "Homing mode has incorrect handler" << std::endl;
-        return;
+        return false;
     }
     RCLCPP_INFO(rclcpp::get_logger("canopen_402_driver"), "Init: Switch to homing");
     if (!switchMode(MotorBase::Homing))
     {
         std::cout << "Could not enter homing mode" << std::endl;
-        return;
+        return false;
     }
     RCLCPP_INFO(rclcpp::get_logger("canopen_402_driver"), "Init: Execute homing");
     if (!homing->executeHoming())
     {
         std::cout << "Homing failed" << std::endl;
-        return;
+        return false;
     }
     RCLCPP_INFO(rclcpp::get_logger("canopen_402_driver"), "Init: Switch no mode");
     if (!switchMode(MotorBase::No_Mode))
     {
         std::cout << "Could not enter no mode" << std::endl;
-        return;
+        return false;
     }
+    return true;
 }
-void Motor402::handleShutdown()
+bool Motor402::handleShutdown()
 {
     switchMode(MotorBase::No_Mode);
-    switchState(State402::Switch_On_Disabled);
+    return switchState(State402::Switch_On_Disabled);
 }
-void Motor402::handleHalt()
+bool Motor402::handleHalt()
 {
     State402::InternalState state = state_handler_.getState();
     std::scoped_lock lock(cw_mutex_);
 
     // do not demand quickstop in case of fault
     if (state == State402::Fault_Reaction_Active || state == State402::Fault)
-        return;
+        return false;
 
     if (state != State402::Operation_Enable)
     {
@@ -641,10 +643,12 @@ void Motor402::handleHalt()
         if (!Command402::setTransition(control_word_, state, State402::Quick_Stop_Active, 0))
         {
             std::cout << "Could not quick stop" << std::endl;
+            return false;
         }
     }
+    return true;
 }
-void Motor402::handleRecover()
+bool Motor402::handleRecover()
 {
     start_fault_reset_ = true;
     {
@@ -652,13 +656,14 @@ void Motor402::handleRecover()
         if (selected_mode_ && !selected_mode_->start())
         {
             std::cout << "Could not restart mode." << std::endl;
-            return;
+            return false;
         }
     }
     if (!switchState(State402::Operation_Enable))
     {
         std::cout << "Could not enable motor" << std::endl;
-        return;
+        return false;
     }
+    return true;
 }
 
