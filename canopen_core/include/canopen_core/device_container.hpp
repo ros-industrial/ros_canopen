@@ -25,6 +25,7 @@
 #include "canopen_interfaces/srv/co_node.hpp"
 #include "canopen_core/driver_node.hpp"
 #include "canopen_core/master_node.hpp"
+#include "canopen_core/lifecycle_manager.hpp"
 #include "rcl_interfaces/srv/set_parameters.hpp"
 
 using namespace std::chrono_literals;
@@ -75,6 +76,7 @@ namespace ros2_canopen
 
             this->loadNode_srv_.reset();
             this->unloadNode_srv_.reset();
+            lifecycle_operation_ = false;
         }
 
         /**
@@ -211,14 +213,15 @@ namespace ros2_canopen
         std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>> registered_drivers_; ///< Map of drivers registered in busconfiguration. Name is key.
         std::shared_ptr<ros2_canopen::CanopenMasterInterface> can_master_;               ///< Pointer to can master instance
         uint16_t can_master_id_;
-        // std::shared_ptr<ros2_canopen::LifecycleManager> lifecycle_manager;
+        std::unique_ptr<ros2_canopen::LifecycleManager> lifecycle_manager_;
 
         // Configuration
-        std::unique_ptr<ros2_canopen::ConfigurationManager> config_; ///< Pointer to configuration manager instance
+        std::shared_ptr<ros2_canopen::ConfigurationManager> config_; ///< Pointer to configuration manager instance
         std::string dcf_txt_;                                        ///< Cached value of .dcf file parameter
         std::string bus_config_;                                     ///< Cached value of bus.yml file parameter
         std::string dcf_bin_;                                        ///< Cached value of .bin file parameter
-        std::string can_interface_;                             ///< Cached value of can interface name
+        std::string can_interface_;                                  ///< Cached value of can interface name
+        bool lifecycle_operation_;
 
         // ROS Objects
         std::weak_ptr<rclcpp::Executor> executor_;                                        ///< Pointer to ros executor instance

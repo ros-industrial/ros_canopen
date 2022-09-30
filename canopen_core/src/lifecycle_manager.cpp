@@ -1,10 +1,10 @@
-#include "canopen_core/lifecycle_device_manager_node.hpp"
+#include "canopen_core/lifecycle_manager.hpp"
 
 namespace ros2_canopen
 {
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-    LifecycleDeviceManagerNode::on_configure(const rclcpp_lifecycle::State &state)
+    LifecycleManager::on_configure(const rclcpp_lifecycle::State &state)
     {
         if (!this->has_parameter("container_name"))
         {
@@ -23,7 +23,7 @@ namespace ros2_canopen
     }
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-    LifecycleDeviceManagerNode::on_activate(const rclcpp_lifecycle::State &state)
+    LifecycleManager::on_activate(const rclcpp_lifecycle::State &state)
     {
         if (!this->bring_up_all())
         {
@@ -33,7 +33,7 @@ namespace ros2_canopen
     }
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-    LifecycleDeviceManagerNode::on_deactivate(const rclcpp_lifecycle::State &state)
+    LifecycleManager::on_deactivate(const rclcpp_lifecycle::State &state)
     {
         if (this->bring_down_all())
         {
@@ -43,25 +43,25 @@ namespace ros2_canopen
     }
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-    LifecycleDeviceManagerNode::on_cleanup(const rclcpp_lifecycle::State &state)
+    LifecycleManager::on_cleanup(const rclcpp_lifecycle::State &state)
     {
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
     }
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-    LifecycleDeviceManagerNode::on_shutdown(const rclcpp_lifecycle::State &state)
+    LifecycleManager::on_shutdown(const rclcpp_lifecycle::State &state)
     {
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
     }
 
     void
-    LifecycleDeviceManagerNode::init(std::shared_ptr<ros2_canopen::ConfigurationManager> config)
+    LifecycleManager::init(std::shared_ptr<ros2_canopen::ConfigurationManager> config)
     {
         this->config_ = config;
     }
 
     bool
-    LifecycleDeviceManagerNode::load_from_config()
+    LifecycleManager::load_from_config()
     {
 
         std::vector<std::string> devices;
@@ -96,7 +96,7 @@ namespace ros2_canopen
     }
 
     unsigned int
-    LifecycleDeviceManagerNode::get_state(uint8_t node_id, std::chrono::seconds time_out)
+    LifecycleManager::get_state(uint8_t node_id, std::chrono::seconds time_out)
     {
         auto request = std::make_shared<lifecycle_msgs::srv::GetState::Request>();
         auto client = this->drivers_get_state_clients[node_id];
@@ -128,7 +128,7 @@ namespace ros2_canopen
     }
 
     bool
-    LifecycleDeviceManagerNode::change_state(uint8_t node_id, uint8_t transition, std::chrono::seconds time_out)
+    LifecycleManager::change_state(uint8_t node_id, uint8_t transition, std::chrono::seconds time_out)
     {
         auto client = this->drivers_change_state_clients[node_id];
         auto request = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
@@ -158,8 +158,6 @@ namespace ros2_canopen
 
         if (future_result.get()->success)
         {
-            RCLCPP_INFO(
-                get_logger(), "Transition %d successfully triggered.", static_cast<int>(transition));
             return true;
         }
         else
@@ -172,7 +170,7 @@ namespace ros2_canopen
     }
 
     bool
-    LifecycleDeviceManagerNode::bring_up_master()
+    LifecycleManager::bring_up_master()
     {
         auto state = this->get_state(master_id_);
         if (state != lifecycle_msgs::msg::State::PRIMARY_STATE_UNCONFIGURED)
@@ -180,24 +178,24 @@ namespace ros2_canopen
             RCLCPP_ERROR(this->get_logger(), "Failed to bring up master. Master not in unconfigured state.");
             return false;
         }
-        RCLCPP_INFO(this->get_logger(), "Master (node_id=%hu) has state unconfigured.", master_id_);
+        RCLCPP_DEBUG(this->get_logger(), "Master (node_id=%hu) has state unconfigured.", master_id_);
         if (!this->change_state(master_id_, lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE))
         {
             RCLCPP_ERROR(this->get_logger(), "Failed to bring up master. Configure Transition failed.");
             return false;
         }
-        RCLCPP_INFO(this->get_logger(), "Master (node_id=%hu) has state inactive.", master_id_);
+        RCLCPP_DEBUG(this->get_logger(), "Master (node_id=%hu) has state inactive.", master_id_);
         if (!this->change_state(master_id_, lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE))
         {
             RCLCPP_ERROR(this->get_logger(), "Failed to bring up master. Activate Transition failed.");
             return false;
         }
-        RCLCPP_INFO(this->get_logger(), "Master (node_id=%hu) has state active.", master_id_);
+        RCLCPP_DEBUG(this->get_logger(), "Master (node_id=%hu) has state active.", master_id_);
         return true;
     }
 
     bool
-    LifecycleDeviceManagerNode::bring_down_master()
+    LifecycleManager::bring_down_master()
     {
         this->change_state(master_id_, lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
         this->change_state(master_id_, lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
@@ -213,11 +211,11 @@ namespace ros2_canopen
     }
 
     bool
-    LifecycleDeviceManagerNode::bring_up_driver(std::string device_name)
+    LifecycleManager::bring_up_driver(std::string device_name)
     {
         
         auto node_id = this->device_names_to_ids[device_name];
-        RCLCPP_INFO(this->get_logger(), "Bringing up %s with id %u", device_name.c_str(), node_id);
+        RCLCPP_DEBUG(this->get_logger(), "Bringing up %s with id %u", device_name.c_str(), node_id);
         auto master_state = this->get_state(master_id_);
         auto state = this->get_state(node_id);
 
@@ -232,24 +230,24 @@ namespace ros2_canopen
             RCLCPP_ERROR(this->get_logger(), "Failed to bring up %s. Not in unconfigured state.", device_name.c_str());
             return false;
         }
-        RCLCPP_INFO(this->get_logger(), "%s (node_id=%hu) has state unconfigured. Attempting to configure.", device_name.c_str(), node_id);
+        RCLCPP_DEBUG(this->get_logger(), "%s (node_id=%hu) has state unconfigured. Attempting to configure.", device_name.c_str(), node_id);
         if (!this->change_state(node_id, lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE))
         {
             RCLCPP_ERROR(this->get_logger(), "Failed to bring up %s. Configure Transition failed.", device_name.c_str());
             return false;
         }
-        RCLCPP_INFO(this->get_logger(), "%s (node_id=%hu) has state inactive. Attempting to activate.", device_name.c_str(), node_id);
+        RCLCPP_DEBUG(this->get_logger(), "%s (node_id=%hu) has state inactive. Attempting to activate.", device_name.c_str(), node_id);
         if (!this->change_state(node_id, lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE))
         {
             RCLCPP_ERROR(this->get_logger(), "Failed to bring up %s. Activate Transition failed.", device_name.c_str());
             return false;
         }
-        RCLCPP_INFO(this->get_logger(), "%s (node_id=%hu) has state active.", device_name.c_str(), node_id);
+        RCLCPP_DEBUG(this->get_logger(), "%s (node_id=%hu) has state active.", device_name.c_str(), node_id);
         return true;
     }
 
     bool
-    LifecycleDeviceManagerNode::bring_down_driver(std::string device_name)
+    LifecycleManager::bring_down_driver(std::string device_name)
     {
         auto node_id = this->device_names_to_ids[device_name];
         auto master_state = this->get_state(master_id_);
@@ -265,7 +263,7 @@ namespace ros2_canopen
     }
 
     bool
-    LifecycleDeviceManagerNode::bring_up_all()
+    LifecycleManager::bring_up_all()
     {
         if (!this->bring_up_master())
         {
@@ -281,14 +279,14 @@ namespace ros2_canopen
                 }
             }
             else{
-                RCLCPP_INFO(this->get_logger(), "Skipped master.");
+                RCLCPP_DEBUG(this->get_logger(), "Skipped master.");
             }
         }
         return true;
     }
 
     bool
-    LifecycleDeviceManagerNode::bring_down_all()
+    LifecycleManager::bring_down_all()
     {
         for (auto it = this->device_names_to_ids.begin(); it != this->device_names_to_ids.end(); ++it)
         {
@@ -311,4 +309,4 @@ namespace ros2_canopen
 }
 
 #include "rclcpp_components/register_node_macro.hpp"
-RCLCPP_COMPONENTS_REGISTER_NODE(ros2_canopen::LifecycleDeviceManagerNode)
+RCLCPP_COMPONENTS_REGISTER_NODE(ros2_canopen::LifecycleManager)

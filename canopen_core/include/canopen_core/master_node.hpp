@@ -15,6 +15,8 @@ namespace ros2_canopen
         virtual std::shared_ptr<lely::canopen::AsyncMaster> get_master() = 0;
         virtual std::shared_ptr<lely::ev::Executor> get_executor() = 0;
         virtual rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() = 0;
+
+        virtual bool is_lifecycle() = 0;
     };
 
     class CanopenMaster : public CanopenMasterInterface, public rclcpp::Node 
@@ -40,9 +42,13 @@ namespace ros2_canopen
             return rclcpp::Node::get_node_base_interface();
         }
 
+        virtual bool is_lifecycle()
+        {
+            return false;
+        }
     };
 
-    class LifecycleCanopenMaster : public rclcpp_lifecycle::LifecycleNode, public CanopenMasterInterface
+    class LifecycleCanopenMaster : public CanopenMasterInterface, public rclcpp_lifecycle::LifecycleNode
     {
     protected:
         std::shared_ptr<node_interfaces::NodeCanopenMasterInterface> node_canopen_master_;
@@ -80,6 +86,11 @@ namespace ros2_canopen
         virtual rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() override
         {
             return rclcpp_lifecycle::LifecycleNode::get_node_base_interface();
+        }
+        
+        virtual bool is_lifecycle()
+        {
+            return true;
         }
     };
 

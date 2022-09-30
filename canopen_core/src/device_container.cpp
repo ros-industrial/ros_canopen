@@ -25,7 +25,7 @@ void DeviceContainer::set_executor(const std::weak_ptr<rclcpp::Executor> executo
 
 bool DeviceContainer::init_driver(uint16_t node_id)
 {
-    RCLCPP_INFO(this->get_logger(), "init_driver");
+    RCLCPP_DEBUG(this->get_logger(), "init_driver");
     registered_drivers_[node_id]->set_master(this->can_master_->get_executor(), this->can_master_->get_master());
     return true;
 }
@@ -48,8 +48,8 @@ bool DeviceContainer::load_component(
             opts.use_global_arguments(false);
             std::vector<std::string> remap_rules;
             remap_rules.push_back("--ros-args");
-            remap_rules.push_back("--log-level");
-            remap_rules.push_back("debug");
+            //remap_rules.push_back("--log-level");
+            //remap_rules.push_back("debug");
             remap_rules.push_back("-r");
             remap_rules.push_back("__node:=" + node_name);
 
@@ -70,8 +70,44 @@ bool DeviceContainer::load_component(
                 {
                     RCLCPP_INFO(this->get_logger(),
                                 "Load driver component.");
-                    registered_drivers_[node_id] =
-                        std::static_pointer_cast<CanopenDriverInterface>(wrapper.get_node_instance());
+                    if (this->lifecycle_operation_)
+                    {
+                        auto node = std::static_pointer_cast<CanopenDriverInterface>(wrapper.get_node_instance());
+                        if (!node->is_lifecycle())
+                        {
+                            std::string execption_string;
+                            execption_string.append("Driver ");
+                            execption_string.append(driver_name);
+                            execption_string.append(" for device ");
+                            execption_string.append(node_name);
+                            execption_string.append("is not a lifecycle driver while the master is.");
+                            RCLCPP_ERROR(this->get_logger(), execption_string.c_str());
+                            throw DeviceContainerException(execption_string);
+                        }
+                        else
+                        {
+                            registered_drivers_[node_id] = node;
+                        }
+                    }
+                    else
+                    {
+                        auto node = std::static_pointer_cast<CanopenDriverInterface>(wrapper.get_node_instance());
+                        if (node->is_lifecycle())
+                        {
+                            std::string execption_string;
+                            execption_string.append("Driver ");
+                            execption_string.append(driver_name);
+                            execption_string.append(" for device ");
+                            execption_string.append(node_name);
+                            execption_string.append("is a lifecycle driver while the master is not.");
+                            RCLCPP_ERROR(this->get_logger(), execption_string.c_str());
+                            throw DeviceContainerException(execption_string);
+                        }
+                        else
+                        {
+                            registered_drivers_[node_id] = node;
+                        }
+                    }
                 }
             }
             catch (const std::exception &ex)
@@ -92,15 +128,6 @@ bool DeviceContainer::load_component(
         }
     }
     return false;
-}
-
-bool DeviceContainer::init_device_manager(uint16_t node_id)
-{
-    // RCLCPP_INFO(this->get_logger(), "Initialising device_manager with node id %u", node_id);
-    // auto device_manager = std::static_pointer_cast<ros2_canopen::LifecycleDeviceManagerNode>(node_wrappers_[node_id].get_node_instance());
-    // device_manager->init(this->config_);
-    // set_remote_paramter("master", rclcpp::Parameter("container_name", this->get_fully_qualified_name()));
-    // return true;
 }
 
 void DeviceContainer::configure()
@@ -147,7 +174,6 @@ bool DeviceContainer::load_master()
     {
         if (it->find("master") != std::string::npos && !master_found)
         {
-            RCLCPP_INFO(this->get_logger(), "Master Entry found.");
             auto node_id = config_->get_entry<uint16_t>(*it, "node_id");
             auto driver_name = config_->get_entry<std::string>(*it, "driver");
             auto package_name = config_->get_entry<std::string>(*it, "package");
@@ -176,6 +202,7 @@ bool DeviceContainer::load_master()
             can_master_->init();
             master_found = true;
             can_master_id_ = node_id.value();
+            this->lifecycle_operation_ = can_master_->is_lifecycle();
         }
     }
 
@@ -194,7 +221,7 @@ bool DeviceContainer::load_drivers()
     uint32_t count = this->config_->get_all_devices(devices);
     std::sort(devices.begin(), devices.end());
     auto it = std::unique(devices.begin(), devices.end());
-    if(it != devices.end())
+    if (it != devices.end())
     {
         RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has dublicate device names.");
     }
@@ -218,7 +245,7 @@ bool DeviceContainer::load_drivers()
                 throw DeviceContainerException("Error: Bus Configuration has duplicate entry.");
             }
 
-            if(registered_drivers_.count(node_id.value()) != 0)
+            if (registered_drivers_.count(node_id.value()) != 0)
             {
                 RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has duplicate entry for node id %i", node_id.value());
                 throw DeviceContainerException("Error: Bus Configuration has duplicate entry.");
@@ -236,7 +263,6 @@ bool DeviceContainer::load_drivers()
             {
                 RCLCPP_ERROR(this->get_logger(), "Error: Loading driver failed.");
                 throw DeviceContainerException("Error: Loading driver failed.");
-                return false;
             }
             add_node_to_executor(registered_drivers_[node_id.value()]->get_node_base_interface());
             registered_drivers_[node_id.value()]->init();
@@ -247,19 +273,29 @@ bool DeviceContainer::load_drivers()
 
 bool DeviceContainer::load_manager()
 {
-    // RCLCPP_INFO(this->get_logger(), "Loading Manager Configuration.");
-    // std::string package = "canopen_core";
-    // std::string driver = "ros2_canopen::LifecycleDeviceManagerNode";
-    // uint16_t id = 256;
-    // std::string name = "lifecycle_device_manager_node";
-    // if (!this->load_component(package, driver, 256, name))
-    // {
-    //     RCLCPP_ERROR(this->get_logger(), "Error: Loading device_manager failed.");
-    //     return false;
-    // }
-    // add_node_to_executor(driver, id, name);
-    // init_device_manager(id);
-    // return true;
+    if(this->lifecycle_operation_)
+    {
+        RCLCPP_INFO(this->get_logger(), "Loading Manager Configuration.");
+        auto node_options = rclcpp::NodeOptions();
+        node_options.use_global_arguments(false);
+
+        //Set parameters
+        rclcpp::Parameter container_name("container_name", this->get_fully_qualified_name());
+        std::vector<rclcpp::Parameter> params;
+        params.push_back(container_name);
+        node_options.parameter_overrides(params);
+
+        //Instantiate Manager
+        this->lifecycle_manager_ = std::make_unique<ros2_canopen::LifecycleManager>(
+            node_options
+        );
+
+        //Add to executor
+        add_node_to_executor(this->lifecycle_manager_->get_node_base_interface());
+
+        //Initialise based on configuration file.
+        this->lifecycle_manager_->init(this->config_);
+    }
     return true;
 }
 
@@ -282,10 +318,10 @@ void DeviceContainer::init()
 }
 
 void DeviceContainer::init(
-    const std::string& can_interface,
-    const std::string& master_config,
-    const std::string& bus_config,
-    const std::string& master_bin)
+    const std::string &can_interface,
+    const std::string &master_config,
+    const std::string &bus_config,
+    const std::string &master_bin)
 {
     can_interface_ = can_interface;
     dcf_txt_ = master_config;

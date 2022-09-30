@@ -25,7 +25,7 @@
 #include "lifecycle_msgs/msg/transition.hpp"
 #include "lifecycle_msgs/srv/change_state.hpp"
 #include "lifecycle_msgs/srv/get_state.hpp"
-#include "std_srvs/srv/trigger.hpp"
+//#include "std_srvs/srv/trigger.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
@@ -63,7 +63,7 @@ namespace ros2_canopen
      *
      *
      */
-    class LifecycleDeviceManagerNode : public rclcpp_lifecycle::LifecycleNode
+    class LifecycleManager : public rclcpp_lifecycle::LifecycleNode
     {
     public:
     /**
@@ -71,8 +71,8 @@ namespace ros2_canopen
      * 
      * @param node_options 
      */
-        LifecycleDeviceManagerNode(const rclcpp::NodeOptions &node_options)
-            : rclcpp_lifecycle::LifecycleNode("LifecycleDeviceManagerNode", node_options)
+        LifecycleManager(const rclcpp::NodeOptions &node_options)
+            : rclcpp_lifecycle::LifecycleNode("lifecycle_manager", node_options)
         {
             this->declare_parameter("container_name", "");
             cbg_clients = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
