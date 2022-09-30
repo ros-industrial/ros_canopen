@@ -12,8 +12,6 @@ TEST(NodeCanopenDriver, test_bad_sequence_configure)
   std::shared_ptr<lely::ev::Executor> executor;
   EXPECT_ANY_THROW(interface->configure());
   rclcpp::shutdown();
-  delete(interface);
-  delete(node);
 }
 
 TEST(NodeCanopenDriver, test_good_sequence)
@@ -26,21 +24,6 @@ TEST(NodeCanopenDriver, test_good_sequence)
   std::shared_ptr<lely::ev::Executor> executor;
   interface->init();
   interface->configure();
-  interface->set_master(executor, master);
-  interface->activate();
-  interface->deactivate();
-  interface->cleanup();
   rclcpp::shutdown();
-  delete(interface);
-  delete(node);
 }
 
-TEST(NodeCanopenDriver, test_init)
-{
-  rclcpp::init(0, nullptr);
-  auto node = std::make_shared<ros2_canopen::CanopenDriver>();
-  auto node_interface = static_cast<std::shared_ptr<ros2_canopen::CanopenDriverInterface>>(node);
-  auto base_interface = node_interface->get_node_base_interface();
-  EXPECT_TRUE(base_interface);
-  rclcpp::shutdown();
-}
