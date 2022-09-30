@@ -32,6 +32,7 @@ target_link_libraries(test_node_canopen_master
     node_canopen_master
 )
 
+if(MANUAL_TEST)
 ament_add_gtest(test_device_container
   test_device_container.cpp
 )
@@ -46,5 +47,6 @@ target_link_libraries(test_device_container
     node_canopen_driver
     device_container
 )
+endif()
 
 FILE(COPY master.dcf bus.yml simple.eds DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

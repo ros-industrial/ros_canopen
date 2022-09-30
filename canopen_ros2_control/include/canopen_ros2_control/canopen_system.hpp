@@ -40,168 +40,162 @@
 
 namespace canopen_ros2_control
 {
-	// needed auxiliary struct for ros2 control double registration
-	struct Ros2ControlCOData
-	{
-		ros2_canopen::COData original_data;
+    // needed auxiliary struct for ros2 control double registration
+    struct Ros2ControlCOData{
+        ros2_canopen::COData original_data;
 
-		double index;	 // cast to uint16_t
-		double subindex; // cast to uint8_t
-		double data;	 // cast to uint32_t
-		double type;	 // cast to uint8_t
-	};
+        double index; // cast to uint16_t
+        double subindex; // cast to uint8_t
+        double data;    // cast to uint32_t
+        double type;// cast to uint8_t
 
-	struct RORos2ControlCOData : public Ros2ControlCOData
-	{
-		void set_data(ros2_canopen::COData d)
-		{
-			original_data = d;
+    };
 
-			index = static_cast<double>(original_data.index_);
-			subindex = static_cast<double>(original_data.subindex_);
-			data = static_cast<double>(original_data.data_);
-			type = static_cast<double>(original_data.type_);
-		}
-	};
+    struct RORos2ControlCOData: public Ros2ControlCOData{
 
-	struct WORos2ControlCoData : public Ros2ControlCOData
-	{
+        void set_data(ros2_canopen::COData d){
+            original_data = d;
 
-		WORos2ControlCoData() : one_shot(std::numeric_limits<double>::infinity()) {}
+            index = static_cast<double>(original_data.index_);
+            subindex = static_cast<double>(original_data.subindex_);
+            data = static_cast<double>(original_data.data_);
+            type = static_cast<double>(original_data.type_);
 
-		// needed internally for write-only data
-		double one_shot;
+        }
+    };
 
-		bool write_command()
-		{
-			bool ret_val;
-			// store ret value
-			ret_val = (one_shot != std::numeric_limits<double>::infinity());
-			// reset the existing active command if one exists
-			one_shot = std::numeric_limits<double>::infinity();
-			return ret_val;
-		}
+    struct WORos2ControlCoData: public Ros2ControlCOData{
 
-		void prepare_data()
-		{
+        WORos2ControlCoData(): one_shot(std::numeric_limits<double>::infinity()){}
 
-			original_data.index_ = static_cast<uint16_t>(index);
-			original_data.subindex_ = static_cast<uint8_t>(subindex);
-			original_data.data_ = static_cast<uint32_t>(data);
-			original_data.type_ = static_cast<ros2_canopen::CODataTypes>(type);
-		}
-	};
-	struct Ros2ControlNmtState
-	{
+        // needed internally for write-only data
+        double one_shot;
 
-		Ros2ControlNmtState() : reset_ons(std::numeric_limits<double>::infinity()), start_ons(std::numeric_limits<double>::infinity()) {}
+        bool write_command(){
+            bool ret_val;
+            // store ret value
+            ret_val = (one_shot != std::numeric_limits<double>::infinity());
+            // reset the existing active command if one exists
+            one_shot = std::numeric_limits<double>::infinity();
+            return ret_val;
+        }
 
-		void set_state(canopen::NmtState s)
-		{
-			original_state = s;
-			state = static_cast<double>(s);
-		}
+        void prepare_data(){
 
-		bool reset_command()
-		{
-			bool ret_val;
-			// store ret value
-			ret_val = (reset_ons != std::numeric_limits<double>::infinity());
-			// reset the existing active command if one exists
-			reset_ons = std::numeric_limits<double>::infinity();
-			return ret_val;
-		}
+            original_data.index_ = static_cast<uint16_t>(index);
+            original_data.subindex_ = static_cast<uint8_t>(subindex);
+            original_data.data_ =   static_cast<uint32_t>(data);
+            original_data.type_ = static_cast<ros2_canopen::CODataTypes>(type);
+        }
+    };
+    struct Ros2ControlNmtState{
 
-		bool start_command()
-		{
-			bool ret_val;
-			// store ret value
-			ret_val = (start_ons != std::numeric_limits<double>::infinity());
-			// reset the existing active command if one exists
-			start_ons = std::numeric_limits<double>::infinity();
-			return ret_val;
-		}
-		canopen::NmtState original_state;
+        Ros2ControlNmtState(): reset_ons(std::numeric_limits<double>::infinity()), start_ons(std::numeric_limits<double>::infinity()){}
 
-		double state; // read-only
 
-		// basic commands
-		double reset_ons; // write-only
-		double start_ons; // write-only
-	};
+        void set_state(canopen::NmtState s){
+            original_state = s;
+            state = static_cast<double>(s);
+        }
 
-	struct CanopenNodeData
-	{
-		Ros2ControlNmtState nmt_state; // read-write
-		RORos2ControlCOData rpdo_data; // read-only
-		WORos2ControlCoData tpdo_data; // write-only
+        bool reset_command(){
+            bool ret_val;
+            // store ret value
+            ret_val = (reset_ons != std::numeric_limits<double>::infinity());
+            // reset the existing active command if one exists
+            reset_ons = std::numeric_limits<double>::infinity();
+            return ret_val;
+        }
 
-		WORos2ControlCoData rsdo; // write-only
-		WORos2ControlCoData wsdo; // write-only
-	};
+        bool start_command(){
+            bool ret_val;
+            // store ret value
+            ret_val = (start_ons != std::numeric_limits<double>::infinity());
+            // reset the existing active command if one exists
+            start_ons = std::numeric_limits<double>::infinity();
+            return ret_val;
+        }
+        canopen::NmtState original_state;
 
-	class CanopenSystem : public hardware_interface::SystemInterface
-	{
-	public:
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		~CanopenSystem();
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		hardware_interface::CallbackReturn on_init(
-			const hardware_interface::HardwareInfo &info) override;
+        double state; //read-only
 
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
+        // basic commands
+        double reset_ons; // write-only
+        double start_ons; // write-only
 
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
+    };
 
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		hardware_interface::CallbackReturn on_configure(
-			const rclcpp_lifecycle::State &previous_state) override;
+    struct CanopenNodeData{
+        Ros2ControlNmtState nmt_state; // read-write
+        RORos2ControlCOData rpdo_data; // read-only
+        WORos2ControlCoData tpdo_data; // write-only
 
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		hardware_interface::CallbackReturn on_cleanup(
-			const rclcpp_lifecycle::State &previous_state) override;
+        WORos2ControlCoData rsdo; // write-only
+        WORos2ControlCoData wsdo; // write-only
+};
 
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		hardware_interface::CallbackReturn on_shutdown(
-			const rclcpp_lifecycle::State &previous_state) override;
+class CanopenSystem : public hardware_interface::SystemInterface
+{
+public:
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  ~CanopenSystem();
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::CallbackReturn on_init(
+    const hardware_interface::HardwareInfo & info) override;
 
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		hardware_interface::CallbackReturn on_activate(
-			const rclcpp_lifecycle::State &previous_state) override;
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		hardware_interface::CallbackReturn on_deactivate(
-			const rclcpp_lifecycle::State &previous_state) override;
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		hardware_interface::return_type read(
-			const rclcpp::Time &time, const rclcpp::Duration &period) override;
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::CallbackReturn on_configure(
+    const rclcpp_lifecycle::State & previous_state) override;
 
-		CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
-		hardware_interface::return_type write(
-			const rclcpp::Time &time, const rclcpp::Duration &period) override;
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::CallbackReturn on_cleanup(
+          const rclcpp_lifecycle::State & previous_state) override;
 
-	private:
-		std::vector<double> hw_commands_;
-		std::vector<double> hw_states_;
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::CallbackReturn on_shutdown(
+          const rclcpp_lifecycle::State & previous_state) override;
 
-		std::shared_ptr<ros2_canopen::DeviceContainer> device_container_;
-		std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
-		std::shared_ptr<rclcpp_components::ComponentManager> component_manager_;
-		std::shared_ptr<rclcpp::Node> node_;
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::CallbackReturn on_activate(
+    const rclcpp_lifecycle::State & previous_state) override;
 
-		// can stuff
-		std::map<uint, CanopenNodeData> canopen_data_;
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::CallbackReturn on_deactivate(
+    const rclcpp_lifecycle::State & previous_state) override;
 
-		std::unique_ptr<std::thread> spin_thread_;
-		std::unique_ptr<std::thread> init_thread_;
-		void spin();
-		void initDeviceContainer();
-		void clean();
-	};
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::return_type read(
+    const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
-} // namespace canopen_ros2_control
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  hardware_interface::return_type write(
+    const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
-#endif // CANOPEN_ROS2_CONTROL__CANOPEN_SYSTEM_HPP_
+private:
+  std::vector<double> hw_commands_;
+  std::vector<double> hw_states_;
+
+  std::shared_ptr<ros2_canopen::DeviceContainer> device_container_;
+  std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
+  std::shared_ptr<rclcpp_components::ComponentManager> component_manager_;
+  std::shared_ptr<rclcpp::Node> node_;
+
+  // can stuff
+  std::map<uint, CanopenNodeData> canopen_data_;
+
+  std::unique_ptr<std::thread> spin_thread_;
+  std::unique_ptr<std::thread> init_thread_;
+  void spin();
+  void initDeviceContainer();
+  void clean();
+};
+
+}  // namespace canopen_ros2_control
+
+#endif  // CANOPEN_ROS2_CONTROL__CANOPEN_SYSTEM_HPP_
