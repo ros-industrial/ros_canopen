@@ -35,9 +35,6 @@ TEST(NodeCanopenBasicMaster, test_good_sequence_advanced)
   node->set_parameter(timeout);
   node->set_parameter(config);
   EXPECT_NO_THROW(iface->configure());
-  EXPECT_NO_THROW(iface->activate());
-  EXPECT_NO_THROW(iface->deactivate());
-  EXPECT_NO_THROW(iface->cleanup());
   rclcpp::shutdown();
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   if(spinner.joinable())
@@ -79,9 +76,6 @@ TEST(NodeCanopenBasicLifecycleMaster, test_good_sequence_advanced)
   node->set_parameter(timeout);
   node->set_parameter(config);
   EXPECT_NO_THROW(iface->configure());
-  EXPECT_NO_THROW(iface->activate());
-  EXPECT_NO_THROW(iface->deactivate());
-  EXPECT_NO_THROW(iface->cleanup());
   rclcpp::shutdown();
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   if(spinner.joinable())
