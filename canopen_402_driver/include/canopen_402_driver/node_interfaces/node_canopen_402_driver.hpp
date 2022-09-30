@@ -48,6 +48,16 @@ namespace ros2_canopen
             virtual void deactivate(bool called_from_base) override;
             virtual void add_to_master() override;
 
+            virtual double get_speed()
+            {
+                this->mc_driver_->get_speed();
+            }
+            
+            virtual double get_position()
+            {
+                this->mc_driver_->get_position();
+            }
+
             /**
              * @brief Service Callback to initialise device
              *
