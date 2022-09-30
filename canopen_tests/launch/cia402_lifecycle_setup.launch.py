@@ -39,7 +39,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [
                 os.path.join(get_package_share_directory("canopen_core"), "launch"),
-                "/canopen_lifecycle.launch.py",
+                "/canopen.launch.py",
             ]
         ),
         launch_arguments={

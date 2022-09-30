@@ -1,14 +1,14 @@
 master:
   node_id: 1
-  driver: "ros2_canopen::MasterNode"
-  package: "canopen_core"
+  driver: "ros2_canopen::MasterDriver"
+  package: "canopen_master_driver"
   sync_period: 20000
 
 cia402_device_1:
   node_id: 2
   dcf: "cia402_slave.eds"
   dcf_path: "install/canopen_tests/share/canopen_tests/config/cia402"
-  driver: "ros2_canopen::MotionControllerDriver"
+  driver: "ros2_canopen::Cia402Driver"
   package: "canopen_402_driver"
   period: 20
   enable_lazy_load: false
