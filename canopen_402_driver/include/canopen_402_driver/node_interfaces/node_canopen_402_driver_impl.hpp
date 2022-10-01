@@ -22,7 +22,7 @@ template <>
 void NodeCanopen402Driver<rclcpp::Node>::init(bool called_from_base)
 {
 	NodeCanopenProxyDriver<rclcpp::Node>::init(false);
-	publish_joint_state = this->node_->create_publisher<sensor_msgs::msg::JointState>("~/joint_state", 10);
+	publish_joint_state = this->node_->create_publisher<sensor_msgs::msg::JointState>("~/joint_states", 1);
 	handle_init_service = this->node_->create_service<std_srvs::srv::Trigger>(
 		std::string(this->node_->get_name()).append("/init").c_str(),
 		std::bind(&NodeCanopen402Driver<rclcpp::Node>::handle_init, this, _1, _2));

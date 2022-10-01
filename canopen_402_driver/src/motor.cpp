@@ -589,7 +589,7 @@ bool Motor402::handleInit()
     if (!m)
     {
         std::cout << "Homeing mode not supported" << std::endl;
-        return false; // homing not supported
+        return true;// homing not supported
     }
 
     HomingMode *homing = dynamic_cast<HomingMode *>(m.get());
