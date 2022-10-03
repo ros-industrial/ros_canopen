@@ -177,25 +177,16 @@ public:
   hardware_interface::return_type write(
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
-  std::shared_ptr<DeviceManager> get_device_manager(){
-      return device_manager_;
-  }
-
-  std::map<uint, CanopenNodeData> get_canopen_data(){
-      return canopen_data_;
-  }
-
-
+protected:
+    std::shared_ptr<ros2_canopen::DeviceContainer> device_container_;
+    // can stuff
+    std::map<uint, CanopenNodeData> canopen_data_;
 
 private:
   std::vector<double> hw_commands_;
   std::vector<double> hw_states_;
 
-  std::shared_ptr<ros2_canopen::DeviceContainer> device_container_;
   std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
-
-  // can stuff
-  std::map<uint, CanopenNodeData> canopen_data_;
 
   std::unique_ptr<std::thread> spin_thread_;
   std::unique_ptr<std::thread> init_thread_;

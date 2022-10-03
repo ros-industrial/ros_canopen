@@ -164,11 +164,11 @@ hardware_interface::return_type Cia402System::read(
 
    auto ret_val = CanopenSystem::read(time, period);
 
-   auto data = get_canopen_data();
+   auto data = canopen_data_;
 
     for(auto it = data.begin(); it!=data.end(); ++it) {
         auto motion_controller_driver = std::static_pointer_cast<ros2_canopen::MotionControllerDriver>(
-                get_device_manager()->get_node(it->first));
+                device_container_->get_node(it->first));
 
         // get position
         motor_data_[it->first].actual_position = motion_controller_driver->get_position();
