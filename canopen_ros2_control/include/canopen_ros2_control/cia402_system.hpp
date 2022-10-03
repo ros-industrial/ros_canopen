@@ -69,31 +69,31 @@ class Cia402System : public CanopenSystem
 {
 public:
 
-    TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     ~Cia402System();
-    TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     hardware_interface::CallbackReturn on_init(
             const hardware_interface::HardwareInfo & info);
 
-    TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     std::vector<hardware_interface::StateInterface> export_state_interfaces();
 
-    TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     std::vector<hardware_interface::CommandInterface> export_command_interfaces();
 
-    TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     hardware_interface::CallbackReturn on_activate(
             const rclcpp_lifecycle::State & previous_state);
 
-    TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     hardware_interface::CallbackReturn on_deactivate(
             const rclcpp_lifecycle::State & previous_state);
 
-    TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     hardware_interface::return_type read(
             const rclcpp::Time & time, const rclcpp::Duration & period);
 
-    TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     hardware_interface::return_type write(
             const rclcpp::Time & time, const rclcpp::Duration & period);
 

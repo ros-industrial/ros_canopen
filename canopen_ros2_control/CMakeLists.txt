@@ -13,10 +13,10 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   canopen_402_driver
   hardware_interface
   pluginlib
-  rclcpp
   rclcpp_components
   rclcpp_lifecycle
   std_srvs
+  sensor_msgs
 )
 
 find_package(ros2_control_test_assets)
