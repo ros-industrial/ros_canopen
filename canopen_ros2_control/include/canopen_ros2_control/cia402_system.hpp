@@ -97,6 +97,7 @@ public:
     hardware_interface::return_type write(
             const rclcpp::Time & time, const rclcpp::Duration & period);
 
+protected:
     // can stuff
     std::map<uint, MotorNodeData> motor_data_;
 
