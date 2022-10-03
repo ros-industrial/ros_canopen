@@ -28,7 +28,7 @@
 
 
 #include "canopen_ros2_control/canopen_system.hpp"
-
+#include "canopen_402_driver/cia402_driver.hpp"
 
 namespace canopen_ros2_control
 {

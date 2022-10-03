@@ -24,7 +24,6 @@
 
 
 #include "canopen_ros2_control/cia402_system.hpp"
-#include "canopen_402_driver/canopen_402_driver.hpp" // for MotionControllerDriver
 
 namespace {
     auto const kLogger = rclcpp::get_logger("Cia402System");
@@ -166,9 +165,10 @@ hardware_interface::return_type Cia402System::read(
 
    auto data = canopen_data_;
 
-    for(auto it = data.begin(); it!=data.end(); ++it) {
-        auto motion_controller_driver = std::static_pointer_cast<ros2_canopen::MotionControllerDriver>(
-                device_container_->get_node(it->first));
+    auto drivers = device_container_->get_registered_drivers();
+
+    for(auto it = canopen_data_.begin(); it != canopen_data_.end(); ++it){
+        auto motion_controller_driver = std::static_pointer_cast<ros2_canopen::Cia402Driver>(drivers[it->first]);
 
         // get position
         motor_data_[it->first].actual_position = motion_controller_driver->get_position();
