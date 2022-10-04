@@ -76,6 +76,43 @@ namespace ros2_canopen
     {
       return node_canopen_402_driver_->get_position();
     }
+
+    bool set_target(double target){
+        return node_canopen_402_driver_->set_target(target);
+    }
+
+    bool init_motor(){
+        return node_canopen_402_driver_->init_motor();
+    }
+
+    bool recover_motor(){
+      return node_canopen_402_driver_->recover_motor();
+    }
+
+    bool halt_motor(){
+      return node_canopen_402_driver_->halt_motor();
+    }
+
+    bool set_mode_position(){
+        return node_canopen_402_driver_->set_mode_position();
+    }
+
+    bool set_mode_velocity(){
+        return node_canopen_402_driver_->set_mode_velocity();
+    }
+
+    bool set_mode_cyclic_position(){
+        return node_canopen_402_driver_->set_mode_cyclic_position();
+    }
+
+    bool set_mode_cyclic_velocity(){
+        return node_canopen_402_driver_->set_mode_cyclic_velocity();
+    }
+
+    bool set_mode_torque(){
+        return node_canopen_402_driver_->set_mode_torque();
+    }
+
   };
 } // namespace ros2_canopen
 

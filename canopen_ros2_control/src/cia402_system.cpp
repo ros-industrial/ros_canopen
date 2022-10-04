@@ -190,7 +190,10 @@ hardware_interface::return_type Cia402System::write(
     auto drivers = device_container_->get_registered_drivers();
 
     for(auto it = canopen_data_.begin(); it != canopen_data_.end(); ++it){
+        //TODO(livanov93): check casting
         auto motion_controller_driver = std::static_pointer_cast<ros2_canopen::Cia402Driver>(drivers[it->first]);
+
+        // motion_controller_driver->set_target(0.0);
 
     }
 
