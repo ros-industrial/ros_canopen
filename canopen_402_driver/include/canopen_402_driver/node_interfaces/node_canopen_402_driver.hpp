@@ -72,6 +72,19 @@ namespace ros2_canopen
                 std_srvs::srv::Trigger::Response::SharedPtr response);
 
             /**
+             * @brief Method to initialise device
+             *
+             * Calls Motor402::handleInit function. Brings motor to enabled
+             * state and homes it.
+             *
+             * @param [in] void
+             *
+             * @return  bool
+             * Indicates initialisation procedure result
+             */
+            bool init_motor();
+
+            /**
              * @brief Service Callback to recover device
              *
              * Calls Motor402::handleRecover function. Resets faults and brings
@@ -83,6 +96,18 @@ namespace ros2_canopen
             void handle_recover(
                 const std_srvs::srv::Trigger::Request::SharedPtr request,
                 std_srvs::srv::Trigger::Response::SharedPtr response);
+
+            /**
+             * @brief Method to recover device
+             *
+             * Calls Motor402::handleRecover function. Resets faults and brings
+             * motor to enabled state.
+             *
+             * @param [in] void
+             *
+             * @return bool
+             */
+            bool recover_motor();
 
             /**
              * @brief Service Callback to halt device
@@ -99,6 +124,19 @@ namespace ros2_canopen
                 std_srvs::srv::Trigger::Response::SharedPtr response);
 
             /**
+             * @brief Method to halt device
+             *
+             * Calls Motor402::handleHalt function. Calls Quickstop. Resulting
+             * Motor state depends on devices configuration specifically object
+             * 0x605A.
+             *
+             * @param [in] void
+             *
+             * @return bool
+             */
+            bool halt_motor();
+
+            /**
              * @brief Service Callback to set profiled position mode
              *
              * Calls Motor402::enterModeAndWait with Profiled Position Mode as
@@ -111,6 +149,19 @@ namespace ros2_canopen
             void handle_set_mode_position(
                 const std_srvs::srv::Trigger::Request::SharedPtr request,
                 std_srvs::srv::Trigger::Response::SharedPtr response);
+
+            /**
+             * @brief Method to set profiled position mode
+             *
+             * Calls Motor402::enterModeAndWait with Profiled Position Mode as
+             * Target Operation Mode. If successful, the motor was transitioned
+             * to Profiled Position Mode.
+             *
+             * @param [in] void
+             *
+             * @return bool
+             */
+            bool set_mode_position();
 
             /**
              * @brief Service Callback to set profiled velocity mode
@@ -127,6 +178,19 @@ namespace ros2_canopen
                 std_srvs::srv::Trigger::Response::SharedPtr response);
 
             /**
+             * @brief Method to set profiled velocity mode
+             *
+             * Calls Motor402::enterModeAndWait with Profiled Velocity Mode as
+             * Target Operation Mode. If successful, the motor was transitioned
+             * to Profiled Velocity Mode.
+             *
+             * @param [in] void
+             *
+             * @return bool
+             */
+             bool set_mode_velocity();
+
+            /**
              * @brief Service Callback to set cyclic position mode
              *
              * Calls Motor402::enterModeAndWait with Cyclic Position Mode as
@@ -139,6 +203,19 @@ namespace ros2_canopen
             void handle_set_mode_cyclic_position(
                 const std_srvs::srv::Trigger::Request::SharedPtr request,
                 std_srvs::srv::Trigger::Response::SharedPtr response);
+
+            /**
+             * @brief Method to set cyclic position mode
+             *
+             * Calls Motor402::enterModeAndWait with Cyclic Position Mode as
+             * Target Operation Mode. If successful, the motor was transitioned
+             * to Cyclic Position Mode.
+             *
+             * @param [in] void
+             *
+             * @return bool
+             */
+             bool set_mode_cyclic_position();
 
             /**
              * @brief Service Callback to set cyclic velocity mode
@@ -155,6 +232,19 @@ namespace ros2_canopen
                 std_srvs::srv::Trigger::Response::SharedPtr response);
 
             /**
+             * @brief Method to set cyclic velocity mode
+             *
+             * Calls Motor402::enterModeAndWait with Cyclic Velocity Mode as
+             * Target Operation Mode. If successful, the motor was transitioned
+             * to Cyclic Velocity Mode.
+             *
+             * @param [in] void
+             *
+             * @return bool
+             */
+             bool set_mode_cyclic_velocity();
+
+            /**
              * @brief Service Callback to set profiled torque mode
              *
              * Calls Motor402::enterModeAndWait with Profiled Torque Mode as
@@ -169,6 +259,19 @@ namespace ros2_canopen
                 std_srvs::srv::Trigger::Response::SharedPtr response);
 
             /**
+             * @brief Method to set profiled torque mode
+             *
+             * Calls Motor402::enterModeAndWait with Profiled Torque Mode as
+             * Target Operation Mode. If successful, the motor was transitioned
+             * to Profiled Torque Mode.
+             *
+             * @param [in] void
+             *
+             * @return bool
+             */
+             bool set_mode_torque();
+
+            /**
              * @brief Service Callback to set target
              *
              * Calls Motor402::setTarget and sets the requested target value. Note
@@ -181,6 +284,19 @@ namespace ros2_canopen
             void handle_set_target(
                 const canopen_interfaces::srv::COTargetDouble::Request::SharedPtr request,
                 canopen_interfaces::srv::COTargetDouble::Response::SharedPtr response);
+
+            /**
+             * @brief Method to set target
+             *
+             * Calls Motor402::setTarget and sets the requested target value. Note
+             * that the resulting movement is dependent on the Operation Mode and the
+             * drives state.
+             *
+             * @param [in] double target value
+             *
+             * @return bool
+             */
+             bool set_target(double target);
         };
     }
 }
