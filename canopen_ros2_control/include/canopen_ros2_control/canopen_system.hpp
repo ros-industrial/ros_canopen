@@ -74,7 +74,7 @@ namespace canopen_ros2_control
         bool write_command(){
             bool ret_val;
             // store ret value
-            ret_val = (one_shot != std::numeric_limits<double>::quiet_NaN());
+            ret_val = !std::isnan(one_shot);
             // reset the existing active command if one exists
             one_shot = std::numeric_limits<double>::quiet_NaN();
             return ret_val;
@@ -101,7 +101,7 @@ namespace canopen_ros2_control
         bool reset_command(){
             bool ret_val;
             // store ret value
-            ret_val = (reset_ons != std::numeric_limits<double>::quiet_NaN());
+            ret_val = !std::isnan(reset_ons);
             // reset the existing active command if one exists
             reset_ons = std::numeric_limits<double>::quiet_NaN();
             return ret_val;
@@ -110,7 +110,7 @@ namespace canopen_ros2_control
         bool start_command(){
             bool ret_val;
             // store ret value
-            ret_val = (start_ons != std::numeric_limits<double>::quiet_NaN());
+            ret_val = !std::isnan(start_ons);
             // reset the existing active command if one exists
             start_ons = std::numeric_limits<double>::quiet_NaN();
             return ret_val;
@@ -137,6 +137,8 @@ namespace canopen_ros2_control
 class CanopenSystem : public hardware_interface::SystemInterface
 {
 public:
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  CanopenSystem();
   CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
   ~CanopenSystem();
   CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
@@ -179,21 +181,19 @@ public:
 
 protected:
     std::shared_ptr<ros2_canopen::DeviceContainer> device_container_;
+    std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
     // can stuff
     std::map<uint, CanopenNodeData> canopen_data_;
+    // threads
+    std::unique_ptr<std::thread> spin_thread_;
+    std::unique_ptr<std::thread> init_thread_;
+
+    void spin();
+    void clean();
 
 private:
-  std::vector<double> hw_commands_;
-  std::vector<double> hw_states_;
 
-  std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
-
-  std::unique_ptr<std::thread> spin_thread_;
-  std::unique_ptr<std::thread> init_thread_;
-
-  void spin();
   void initDeviceContainer();
-  void clean();
 };
 
 }  // namespace canopen_ros2_control

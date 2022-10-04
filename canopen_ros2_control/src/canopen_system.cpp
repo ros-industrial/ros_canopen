@@ -36,6 +36,8 @@ auto const kLogger = rclcpp::get_logger("CanopenSystem");
 namespace canopen_ros2_control
 {
 
+CanopenSystem::CanopenSystem() {}
+
 void CanopenSystem::clean() {
   executor_->cancel();
   printf("Joining...");
@@ -62,9 +64,6 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
   if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
-
-  hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
-  hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
   RCLCPP_INFO(kLogger, "bus_config: '%s'", info_.hardware_parameters["bus_config"].c_str());
   RCLCPP_INFO(kLogger, "master_config: '%s'", info_.hardware_parameters["master_config"].c_str());
@@ -154,9 +153,6 @@ std::vector<hardware_interface::StateInterface> CanopenSystem::export_state_inte
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
   for (uint i = 0; i < info_.joints.size(); i++) {
-    state_interfaces.emplace_back(hardware_interface::StateInterface(
-      // TODO(anyone): insert correct interfaces
-      info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
 
       if(info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
       {
@@ -190,9 +186,6 @@ std::vector<hardware_interface::CommandInterface> CanopenSystem::export_command_
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
   for (uint i = 0; i < info_.joints.size(); i++) {
-    command_interfaces.emplace_back(hardware_interface::CommandInterface(
-      // TODO(anyone): insert correct interfaces
-      info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
 
       if(info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
       {

@@ -145,7 +145,7 @@ def launch_setup(context, *args, **kwargs):
         PythonLaunchDescriptionSource(slave_launch),
         launch_arguments={
             "node_id": "2", 
-            "node_name": "slave_node",
+            "node_name": "slave_node_2",
             "slave_config": slave_config,
             }.items(),
     )
@@ -154,7 +154,7 @@ def launch_setup(context, *args, **kwargs):
         PythonLaunchDescriptionSource(slave_launch),
         launch_arguments={
             "node_id": "3", 
-            "node_name": "slave_node",
+            "node_name": "slave_node_3",
             "slave_config": slave_config,
             }.items(),
     )
