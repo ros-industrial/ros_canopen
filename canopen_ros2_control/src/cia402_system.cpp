@@ -23,6 +23,7 @@
 //----------------------------------------------------------------------
 
 
+#include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include "canopen_ros2_control/cia402_system.hpp"
 
 namespace {
@@ -67,11 +68,13 @@ std::vector<hardware_interface::StateInterface> Cia402System::export_state_inter
       const uint8_t node_id = static_cast<uint8_t >(std::stoi(info_.joints[i].parameters["node_id"]));
 
       // actual position
-      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "actual_position",
+      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name,
+                                                                       hardware_interface::HW_IF_POSITION,
                                                                        &motor_data_[node_id].actual_position));
       // actual speed
-      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "actual_speed",
-              &motor_data_[node_id].actual_speed));
+      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name,
+                                                                       hardware_interface::HW_IF_VELOCITY,
+                                                                       &motor_data_[node_id].actual_speed));
   }
 
   return state_interfaces;
