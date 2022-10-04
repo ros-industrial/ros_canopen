@@ -39,7 +39,9 @@ namespace canopen_ros2_control
     };
 
     struct MotorTarget : public  MotorTriggerCommand{
-        double value;
+        double position_value;
+        double velocity_value;
+        double torque_value;
     };
 
     struct MotorNodeData{
@@ -68,12 +70,17 @@ using namespace ros2_canopen;
 class Cia402System : public CanopenSystem
 {
 public:
-
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+    Cia402System();
     CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     ~Cia402System();
     CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     hardware_interface::CallbackReturn on_init(
             const hardware_interface::HardwareInfo & info);
+
+    CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+    hardware_interface::CallbackReturn on_configure(
+            const rclcpp_lifecycle::State & previous_state);
 
     CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
     std::vector<hardware_interface::StateInterface> export_state_interfaces();
