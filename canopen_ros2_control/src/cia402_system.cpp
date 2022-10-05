@@ -274,6 +274,18 @@ hardware_interface::return_type Cia402System::write(
             motion_controller_driver->tpdo_transmit(it->second.tpdo_data.original_data);
         }
 
+        // initialisation
+        handleInit(it->first, motion_controller_driver);
+
+        // halt
+        handleHalt(it->first, motion_controller_driver);
+
+        // recover
+        handleRecover(it->first, motion_controller_driver);
+
+        // mode switching
+        switchModes(it->first, motion_controller_driver);
+
         const uint16_t & mode = motion_controller_driver->get_mode();
 
         switch (mode) {
@@ -294,15 +306,58 @@ hardware_interface::return_type Cia402System::write(
             case MotorBase::Profiled_Torque:
                 motion_controller_driver->set_target(motor_data_[it->first].target.torque_value);
                 break;
-            case MotorBase::Cyclic_Synchronous_Torque:
-                motion_controller_driver->set_target(motor_data_[it->first].target.torque_value);
-                break;
             default:
                 RCLCPP_INFO(kLogger, "Mode not supported");
         }
+
+
+
+
+
     }
 
     return ret_val;
+}
+
+void Cia402System::switchModes(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> & driver) {
+
+    if (motor_data_[id].position_mode.is_commanded()){
+        motor_data_[id].position_mode.set_response(driver->set_mode_position());
+    }
+
+    if (motor_data_[id].cyclic_position_mode.is_commanded()){
+        motor_data_[id].cyclic_position_mode.set_response(driver->set_mode_cyclic_position());
+    }
+
+    if (motor_data_[id].velocity_mode.is_commanded()){
+        motor_data_[id].velocity_mode.set_response(driver->set_mode_velocity());
+    }
+
+    if (motor_data_[id].cyclic_velocity_mode.is_commanded()){
+        motor_data_[id].cyclic_velocity_mode.set_response(driver->set_mode_cyclic_velocity());
+    }
+
+    if (motor_data_[id].torque_mode.is_commanded()){
+        motor_data_[id].torque_mode.set_response(driver->set_mode_torque());
+    }
+}
+
+void Cia402System::handleInit(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> &driver) {
+    if (motor_data_[id].init.is_commanded()){
+        motor_data_[id].init.set_response(driver->init_motor());
+    }
+}
+
+void Cia402System::handleRecover(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> &driver) {
+    if (motor_data_[id].recover.is_commanded()){
+        motor_data_[id].recover.set_response(driver->recover_motor());
+    }
+}
+
+void Cia402System::handleHalt(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> &driver) {
+    if (motor_data_[id].halt.is_commanded()){
+        motor_data_[id].halt.set_response(driver->halt_motor());
+    }
 }
 
 }  // namespace canopen_ros2_control

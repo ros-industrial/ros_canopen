@@ -36,6 +36,16 @@ namespace canopen_ros2_control
     struct MotorTriggerCommand{
         double ons_cmd{std::numeric_limits<double>::quiet_NaN()};
         double resp;
+
+        bool is_commanded(){
+            bool tmp = !std::isnan(ons_cmd);
+            ons_cmd = std::numeric_limits<double>::quiet_NaN();
+            return tmp;
+        }
+
+        void set_response(bool response){
+            resp = static_cast<double>(response);
+        }
     };
 
     struct MotorTarget : public  MotorTriggerCommand{
@@ -109,6 +119,14 @@ protected:
     std::map<uint, MotorNodeData> motor_data_;
 
 private:
+
+    void switchModes(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> & driver);
+
+    void handleInit(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> & driver);
+
+    void handleRecover(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> & driver);
+
+    void handleHalt(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> & driver);
 
     void initDeviceContainer();
 };
