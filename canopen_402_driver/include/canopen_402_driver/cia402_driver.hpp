@@ -113,6 +113,10 @@ namespace ros2_canopen
         return node_canopen_402_driver_->set_mode_torque();
     }
 
+    uint16_t get_mode(){
+        return node_canopen_402_driver_->get_mode();
+    }
+
   };
 } // namespace ros2_canopen
 

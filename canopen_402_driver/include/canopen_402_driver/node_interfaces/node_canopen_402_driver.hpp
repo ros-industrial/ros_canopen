@@ -58,6 +58,10 @@ namespace ros2_canopen
                 return this->mc_driver_->get_position();
             }
 
+            virtual uint16_t get_mode(){
+                return motor_->getMode();
+            }
+
             /**
              * @brief Service Callback to initialise device
              *

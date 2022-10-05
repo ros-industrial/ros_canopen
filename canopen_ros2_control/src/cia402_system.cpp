@@ -274,8 +274,32 @@ hardware_interface::return_type Cia402System::write(
             motion_controller_driver->tpdo_transmit(it->second.tpdo_data.original_data);
         }
 
-        //TODO(livanov93) check the mode and set target accordingly
-         motion_controller_driver->set_target(motor_data_[it->first].target.position_value);
+        const uint16_t & mode = motion_controller_driver->get_mode();
+
+        switch (mode) {
+            case MotorBase::No_Mode:
+                break;
+            case MotorBase::Profiled_Position:
+                motion_controller_driver->set_target(motor_data_[it->first].target.position_value);
+                break;
+            case MotorBase::Cyclic_Synchronous_Position:
+                motion_controller_driver->set_target(motor_data_[it->first].target.position_value);
+                break;
+            case MotorBase::Profiled_Velocity:
+                motion_controller_driver->set_target(motor_data_[it->first].target.velocity_value);
+                break;
+            case MotorBase::Cyclic_Synchronous_Velocity:
+                motion_controller_driver->set_target(motor_data_[it->first].target.velocity_value);
+                break;
+            case MotorBase::Profiled_Torque:
+                motion_controller_driver->set_target(motor_data_[it->first].target.torque_value);
+                break;
+            case MotorBase::Cyclic_Synchronous_Torque:
+                motion_controller_driver->set_target(motor_data_[it->first].target.torque_value);
+                break;
+            default:
+                RCLCPP_INFO(kLogger, "Mode not supported");
+        }
     }
 
     return ret_val;
