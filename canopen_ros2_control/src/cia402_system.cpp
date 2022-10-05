@@ -35,8 +35,6 @@ namespace canopen_ros2_control
 
 Cia402System::Cia402System(): CanopenSystem(){}
 
-Cia402System::~Cia402System() {}
-
 hardware_interface::CallbackReturn Cia402System::on_init(
   const hardware_interface::HardwareInfo & info)
 {
@@ -47,9 +45,69 @@ hardware_interface::CallbackReturn Cia402System::on_init(
   return CallbackReturn::SUCCESS;
 }
 
+void Cia402System::initDeviceContainer() {
+
+    std::string tmp_master_bin  = (info_.hardware_parameters["master_bin"] == "\"\"" ) ? "" : info_.hardware_parameters["master_bin"];
+
+    device_container_->init(info_.hardware_parameters["can_interface"],
+                            info_.hardware_parameters["master_config"],
+                            info_.hardware_parameters["bus_config"],
+                            tmp_master_bin);
+    auto drivers = device_container_->get_registered_drivers();
+    RCLCPP_INFO(kLogger, "Number of registered drivers: '%zu'", device_container_->count_drivers());
+    for (auto it = drivers.begin(); it != drivers.end(); it++){
+        auto driver = std::static_pointer_cast<ros2_canopen::Cia402Driver>(it->second);
+
+        auto nmt_state_cb = [&](canopen::NmtState nmt_state, uint8_t id){
+            canopen_data_[id].nmt_state.set_state(nmt_state);
+        };
+        // register callback
+        driver->register_nmt_state_cb(nmt_state_cb);
+
+        auto rpdo_cb = [&](ros2_canopen::COData data, uint8_t id){
+            canopen_data_[id].rpdo_data.set_data(data);
+        };
+        // register callback
+        driver->register_rpdo_cb(rpdo_cb);
+
+        RCLCPP_INFO(kLogger, "\nRegistered driver:\n    name: '%s'\n    node_id: '%u'", it->second->get_node_base_interface()->get_name(), it->first);
+    }
+
+    RCLCPP_INFO(device_container_->get_logger(), "Initialisation successful.");
+}
+
 hardware_interface::CallbackReturn Cia402System::on_configure(
-        const rclcpp_lifecycle::State &previous_state) {
-    return CanopenSystem::on_configure(previous_state);
+    const rclcpp_lifecycle::State &previous_state) {
+
+    executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+    device_container_ = std::make_shared<ros2_canopen::DeviceContainer>(executor_);
+    executor_->add_node(device_container_);
+
+    // threads
+    spin_thread_ = std::make_unique<std::thread>(&Cia402System::spin, this);
+    init_thread_ = std::make_unique<std::thread>(&Cia402System::initDeviceContainer, this);
+
+    // actually wait for init phase to end
+    if (init_thread_->joinable())
+    {
+        init_thread_->join();
+
+        // TODO(livanov93): see how to handle configure once LifecycleCia402Driver is introuduced
+        /*
+        auto drivers = device_container_->get_registered_drivers();
+        for (auto it = drivers.begin(); it != drivers.end(); it++) {
+            auto d = std::static_pointer_cast<ros2_canopen::LifecycleCia402Driver>(it->second);
+            d->configure();
+        }
+        */
+
+    }
+    else
+    {
+        RCLCPP_ERROR(kLogger, "Could not join init thread!");
+        return CallbackReturn::ERROR;
+    }
+    return CallbackReturn::SUCCESS;
 }
 
 std::vector<hardware_interface::StateInterface> Cia402System::export_state_interfaces()
@@ -199,9 +257,25 @@ hardware_interface::return_type Cia402System::write(
     for(auto it = canopen_data_.begin(); it != canopen_data_.end(); ++it){
         //TODO(livanov93): check casting
         auto motion_controller_driver = std::static_pointer_cast<ros2_canopen::Cia402Driver>(drivers[it->first]);
+        // do same as in proxy system first - handle nmt, tpdo, rpdo
+        // reset node nmt
+        if(it->second.nmt_state.reset_command()){
+            motion_controller_driver->reset_node_nmt_command();
+        }
+
+        // start nmt
+        if(it->second.nmt_state.start_command()){
+            motion_controller_driver->start_node_nmt_command();
+        }
+
+        // tpdo data one shot mechanism
+        if(it->second.tpdo_data.write_command()){
+            it->second.tpdo_data.prepare_data();
+            motion_controller_driver->tpdo_transmit(it->second.tpdo_data.original_data);
+        }
+
         //TODO(livanov93) check the mode and set target accordingly
          motion_controller_driver->set_target(motor_data_[it->first].target.position_value);
-
     }
 
     return ret_val;
