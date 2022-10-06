@@ -45,6 +45,7 @@ enum CommandInterfaces
   NMT_RESET_FBK,
   NMT_START,
   NMT_START_FBK,
+  LAST_COMMAND_AUX,
 };
 
 enum StateInterfaces
@@ -54,6 +55,7 @@ enum StateInterfaces
   RPDO_TYPE,
   RPDO_DATA,
   NMT_STATE,
+  LAST_STATE_AUX,
 };
 
 }  // namespace
