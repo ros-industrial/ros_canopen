@@ -28,7 +28,6 @@ static constexpr double kCommandValue = 1.0;
 namespace
 {  // utility
 
-
 using ControllerCommandMsg = canopen_ros2_controllers::CanopenProxyController::ControllerCommandMsg;
 
 // called from RT control loop
@@ -41,7 +40,7 @@ void reset_controller_command_msg(
 
 namespace canopen_ros2_controllers
 {
-Cia402DeviceController::Cia402DeviceController() {
+Cia402DeviceController::Cia402DeviceController(): canopen_ros2_controllers::CanopenProxyController() {
 }
 
 controller_interface::CallbackReturn Cia402DeviceController::on_init() {
@@ -51,13 +50,28 @@ controller_interface::CallbackReturn Cia402DeviceController::on_init() {
 
 controller_interface::InterfaceConfiguration Cia402DeviceController::command_interface_configuration() const {
     auto command_interfaces_config = CanopenProxyController::command_interface_configuration();
-    command_interfaces_config.names.emplace_back("/");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "init_cmd");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "init_fbk");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "halt_cmd");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "halt_fbk");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "recover_cmd");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "recover_fbk");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "position_mode_cmd");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "position_mode_fbk");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "velocity_mode_cmd");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "velocity_mode_fbk");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "cyclic_velocity_mode_cmd");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "cyclic_velocity_mode_fbk");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "cyclic_position_mode_cmd");
+    command_interfaces_config.names.push_back(joint_name_ + "/" + "cyclic_position_mode_fbk");
     return command_interfaces_config;
 }
 
 controller_interface::InterfaceConfiguration Cia402DeviceController::state_interface_configuration() const {
     auto state_interfaces_config = CanopenProxyController::state_interface_configuration();
-    state_interfaces_config.names.emplace_back("/");
+    // no new state interfaces for this controller - additional state interfaces in cia402_system
+    // are position and velocity which are claimed by joint_state_broadcaster and
+    // feedback based controllers
     return state_interfaces_config;
 }
 
