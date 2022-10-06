@@ -42,7 +42,9 @@ enum CommandInterfaces
   TPDO_DATA,
   TPDO_ONS,
   NMT_RESET,
+  NMT_RESET_FBK,
   NMT_START,
+  NMT_START_FBK,
 };
 
 enum StateInterfaces
@@ -108,6 +110,7 @@ protected:
   using ControllerNmtStateRTPublisher = realtime_tools::RealtimePublisher<ControllerNMTStateMsg>;
   rclcpp::Publisher<ControllerNMTStateMsg>::SharedPtr nmt_state_pub_;
   std::unique_ptr<ControllerNmtStateRTPublisher> nmt_state_rt_publisher_;
+  std::string nmt_state_actual_ = "BOOTUP";
 
   // RPDO publisher
   using ControllerRPDOPRTublisher = realtime_tools::RealtimePublisher<ControllerCommandMsg>;

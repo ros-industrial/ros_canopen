@@ -90,7 +90,11 @@ namespace canopen_ros2_control
     };
     struct Ros2ControlNmtState{
 
-        Ros2ControlNmtState(): reset_ons(std::numeric_limits<double>::quiet_NaN()), start_ons(std::numeric_limits<double>::quiet_NaN()){}
+        Ros2ControlNmtState():
+        reset_ons(std::numeric_limits<double>::quiet_NaN()),
+        reset_fbk(std::numeric_limits<double>::quiet_NaN()),
+        start_ons(std::numeric_limits<double>::quiet_NaN()),
+        start_fbk(std::numeric_limits<double>::quiet_NaN()){}
 
 
         void set_state(canopen::NmtState s){
@@ -121,7 +125,9 @@ namespace canopen_ros2_control
 
         // basic commands
         double reset_ons; // write-only
+        double reset_fbk;
         double start_ons; // write-only
+        double start_fbk;
 
     };
 

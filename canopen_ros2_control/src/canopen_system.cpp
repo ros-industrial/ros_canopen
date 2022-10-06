@@ -212,9 +212,13 @@ std::vector<hardware_interface::CommandInterface> CanopenSystem::export_command_
 
       command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/reset",
                                                                          &canopen_data_[node_id].nmt_state.reset_ons));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/reset_fbk",
+                                                                           &canopen_data_[node_id].nmt_state.reset_fbk));
 
       command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/start",
                                                                          &canopen_data_[node_id].nmt_state.start_ons));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/start_fbk",
+                                                                           &canopen_data_[node_id].nmt_state.start_fbk));
   }
 
   return command_interfaces;
@@ -260,12 +264,12 @@ hardware_interface::return_type CanopenSystem::write(
 
       // reset node nmt
       if(it->second.nmt_state.reset_command()){
-          proxy_driver->reset_node_nmt_command();
+          it->second.nmt_state.reset_fbk = static_cast<double>(proxy_driver->reset_node_nmt_command());
       }
 
       // start nmt
       if(it->second.nmt_state.start_command()){
-        proxy_driver->start_node_nmt_command();
+          it->second.nmt_state.start_fbk = static_cast<double>(proxy_driver->start_node_nmt_command());
       }
 
       // tpdo data one shot mechanism
