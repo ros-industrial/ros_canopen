@@ -25,8 +25,6 @@
 
 #include <limits>
 #include <vector>
-
-#include "canopen_proxy_driver/canopen_proxy_driver.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
@@ -70,7 +68,7 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
 
   RCLCPP_INFO(kLogger, "bus_config: '%s'", info_.hardware_parameters["bus_config"].c_str());
   RCLCPP_INFO(kLogger, "master_config: '%s'", info_.hardware_parameters["master_config"].c_str());
-  RCLCPP_INFO(kLogger, "can_interface_name: '%s'", info_.hardware_parameters["can_interface_name"].c_str());
+  RCLCPP_INFO(kLogger, "can_interface_name_name: '%s'", info_.hardware_parameters["can_interface_name_name"].c_str());
   RCLCPP_INFO(kLogger, "master_bin: '%s'", info_.hardware_parameters["master_bin"].c_str());
 
   return CallbackReturn::SUCCESS;
@@ -80,11 +78,12 @@ hardware_interface::CallbackReturn CanopenSystem::on_configure(
   const rclcpp_lifecycle::State &previous_state)
 {
   executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
-  device_container_ = std::make_shared<DeviceContainerNode>(executor_);
+  device_container_ = std::make_shared<ros2_canopen::DeviceContainer>(executor_);
   executor_->add_node(device_container_);
 
   // threads
-  init_thread_ = std::make_unique<std::thread>(&CanopenSystem::initDeviceContainer, this);
+    spin_thread_ = std::make_unique<std::thread>(&CanopenSystem::spin, this);
+    init_thread_ = std::make_unique<std::thread>(&CanopenSystem::initDeviceContainer, this);
 
   // actually wait for init phase to end
   if (init_thread_->joinable())
@@ -96,9 +95,6 @@ hardware_interface::CallbackReturn CanopenSystem::on_configure(
     RCLCPP_ERROR(kLogger, "Could not join init thread!");
     return CallbackReturn::ERROR;
   }
-
-  spin_thread_ = std::make_unique<std::thread>(&CanopenSystem::spin, this);
-
   return CallbackReturn::SUCCESS;
 }
 
@@ -127,61 +123,32 @@ void CanopenSystem::spin() {
 void CanopenSystem::initDeviceContainer() {
     std::string tmp_master_bin  = (info_.hardware_parameters["master_bin"] == "\"\"" ) ? "" : info_.hardware_parameters["master_bin"];
 
-    if(device_container_->init(info_.hardware_parameters["can_interface_name"],
-                             info_.hardware_parameters["master_config"],
-                             info_.hardware_parameters["bus_config"],
-                             tmp_master_bin))
-    {
-        auto node_map = device_container_->get_node_instance_wrapper_map();
-        RCLCPP_INFO(kLogger, "Number of nodes: '%zu'", node_map.size());
+  device_container_->init(info_.hardware_parameters["can_interface_name"],
+                            info_.hardware_parameters["master_config"],
+                            info_.hardware_parameters["bus_config"],
+                            tmp_master_bin);
+  auto drivers = device_container_->get_registered_drivers();
+  RCLCPP_INFO(kLogger, "Number of registered drivers: '%zu'", device_container_->count_drivers());
+  for (auto it = drivers.begin(); it != drivers.end(); it++){
+    auto proxy_driver = std::static_pointer_cast<ros2_canopen::ProxyDriver>(it->second);
 
-        auto reg_dr = device_container_->get_registered_drivers();
-        RCLCPP_INFO(kLogger, "Number of registered drivers: '%zu'", reg_dr.size());
-        for(auto it = reg_dr.begin(); it != reg_dr.end(); it++){
-            auto proxy_driver =  std::static_pointer_cast<ros2_canopen::ProxyDriver>(device_container_->get_node(it->second.first));
+    auto nmt_state_cb = [&](canopen::NmtState nmt_state, uint8_t id){
+      canopen_data_[id].nmt_state.set_state(nmt_state);
+    };
+    // register callback
+    proxy_driver->register_nmt_state_cb(nmt_state_cb);
 
-            auto nmt_state_cb = [&](canopen::NmtState nmt_state, uint8_t id){
-//                RCLCPP_INFO(
-//                        kLogger,
-//                        "Slave %u: Switched NMT state to %u",
-//                        id,
-//                        nmt_state);
+    auto rpdo_cb = [&](ros2_canopen::COData data, uint8_t id){
+      canopen_data_[id].rpdo_data.set_data(data);
+    };
+    // register callback
+    proxy_driver->register_rpdo_cb(rpdo_cb);
 
-                // store into map
-                canopen_data_[id].nmt_state.set_state(nmt_state);
-            };
-            // register callback
-            proxy_driver->register_nmt_state_cb(nmt_state_cb);
-
-            auto rpdo_cb = [&](ros2_canopen::COData data, uint8_t id){
-//                RCLCPP_INFO(kLogger,
-//                        "slave: '%u',"
-//                        " data: '%u',"
-//                        " index: '%u', "
-//                        "subindex: '%u',"
-//                        " type: '%u',",
-//                        id, data.data_, data.index_, data.subindex_, data.type_);
-                canopen_data_[id].rpdo_data.set_data(data);
-            };
-            // register callback
-            proxy_driver->register_rpdo_cb(rpdo_cb);
-
-            RCLCPP_INFO(kLogger, "\nRegistered driver:\n    name: '%s'\n    node_id: '%u'\n    driver: '%s'", it->first.c_str(), it->second.first, it->second.second.c_str());
-
-        }
-
-        auto act_dr = device_container_->get_active_drivers();
-        RCLCPP_INFO(kLogger, "Number of active drivers: '%zu'", act_dr.size());
-        for(auto it = act_dr.begin(); it != act_dr.end(); it++){
-            RCLCPP_INFO(kLogger, "\nActive driver:\n    name: '%s'\n    node_id: '%u'\n    driver: '%s'", it->first.c_str(), it->second.first, it->second.second.c_str());
-        }
-        RCLCPP_INFO(device_container_->get_logger(), "Initialisation successful.");
+    RCLCPP_INFO(kLogger, "\nRegistered driver:\n    name: '%s'\n    node_id: '%u'", it->second->get_node_base_interface()->get_name(), it->first);
     }
-    else
-    {
-        RCLCPP_INFO(device_container_->get_logger(), "Initialisation failed.");
-    }
-}
+
+    RCLCPP_INFO(device_container_->get_logger(), "Initialisation successful.");
+  }
 
 std::vector<hardware_interface::StateInterface> CanopenSystem::export_state_interfaces()
 {
@@ -294,9 +261,9 @@ hardware_interface::return_type CanopenSystem::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   // TODO(anyone): write robot's commands'
-
-  for(auto it = canopen_data_.begin(); it!=canopen_data_.end(); ++it){
-      auto proxy_driver =  std::static_pointer_cast<ros2_canopen::ProxyDriver>(device_container_->get_node(it->first));
+  auto drivers = device_container_->get_registered_drivers();
+  for(auto it = canopen_data_.begin(); it != canopen_data_.end(); ++it){
+    auto proxy_driver = std::static_pointer_cast<ros2_canopen::ProxyDriver>(drivers[it->first]);
 
       // reset node nmt
       if(it->second.nmt_state.reset_command()){
@@ -305,7 +272,7 @@ hardware_interface::return_type CanopenSystem::write(
 
       // start nmt
       if(it->second.nmt_state.start_command()){
-          proxy_driver->start_nmt_command();
+        proxy_driver->start_node_nmt_command();
       }
 
       // tpdo data one shot mechanism

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 //----------------------------------------------------------------------
 /*!\file
  *
@@ -28,7 +27,8 @@
 #include <string>
 #include <vector>
 
-#include "canopen_core/device_container_node.hpp"
+#include "canopen_core/device_container.hpp"
+#include "canopen_proxy_driver/proxy_driver.hpp"
 #include "canopen_ros2_control/visibility_control.h"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/handle.hpp"
@@ -181,7 +181,7 @@ private:
   std::vector<double> hw_commands_;
   std::vector<double> hw_states_;
 
-  std::shared_ptr<DeviceContainerNode> device_container_;
+  std::shared_ptr<ros2_canopen::DeviceContainer> device_container_;
   std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
   std::shared_ptr<rclcpp_components::ComponentManager> component_manager_;
   std::shared_ptr<rclcpp::Node> node_;

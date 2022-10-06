@@ -32,11 +32,11 @@ def generate_launch_description():
 
     master_bin_arg = DeclareLaunchArgument(
       'master_bin', 
-      default_value=TextSubstitution(text='2'), 
+      default_value=TextSubstitution(text=''), 
       description="Path to the master configuration to use (bin)."
     )
 
-    can_interface_arg = DeclareLaunchArgument(
+    can_interface_name_arg = DeclareLaunchArgument(
       'can_interface_name', 
       default_value=TextSubstitution(text="vcan0"), 
       description="CAN interface used by master and drivers."
@@ -76,7 +76,7 @@ def generate_launch_description():
     ld.add_action(bus_conf_arg)
     ld.add_action(master_conf_arg)
     ld.add_action(master_bin_arg)
-    ld.add_action(can_interface_arg)
+    ld.add_action(can_interface_name_arg)
     ld.add_action(logging)
     ld.add_action(lifecycle_device_container_node)
 

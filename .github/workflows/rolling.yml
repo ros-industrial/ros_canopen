@@ -29,5 +29,6 @@ jobs:
       - uses: 'ros-industrial/industrial_ci@master'
         env:
           BEFORE_INSTALL_TARGET_DEPENDENCIES: 'sudo apt-get update'
+          AFTER_BUILD_TARGET_WORKSPACE: 'set +u && COLCON_TRACE=0 AMENT_TRACE_SETUP_FILES=0 source /root/target_ws/install/setup.bash && set -u'
           ROS_DISTRO: ${{ matrix.ROS_DISTRO }}
           ROS_REPO: ${{ matrix.ROS_REPO }}

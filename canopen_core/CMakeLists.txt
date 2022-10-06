@@ -12,7 +12,7 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  #add_compile_options(-Wall -Wextra)# -Wpedantic)
+  add_compile_options(-Wall -Wpedantic -Wextra -Wno-unused-parameter)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
@@ -21,12 +21,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
-
 find_package(lely_core_libraries REQUIRED)
 find_package(canopen_interfaces REQUIRED)
 
@@ -38,139 +39,93 @@ set (dependencies
   rclcpp_lifecycle
   lifecycle_msgs
   canopen_interfaces
+  rclcpp_components
 )
 
-add_library(configuration_manager
+
+add_library(node_canopen_driver
   SHARED
-  src/configuration_manager.cpp
+  src/node_interfaces/node_canopen_driver.cpp
+  src/driver_error.cpp
+  src/driver_node.cpp
 )
-target_compile_features(configuration_manager  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_include_directories(configuration_manager PUBLIC
+target_compile_features(node_canopen_driver  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_options(node_canopen_driver PUBLIC -fPIC -Wl,--no-undefined)
+target_include_directories(node_canopen_driver PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   )
-ament_target_dependencies(configuration_manager 
+ament_target_dependencies(node_canopen_driver 
   rclcpp
+  rclcpp_lifecycle
+  lely_core_libraries
   yaml_cpp_vendor
+  canopen_interfaces
 )
 
-add_library(master_node
+add_library(node_canopen_master
   SHARED
+  src/node_interfaces/node_canopen_master.cpp
+  src/master_error.cpp
   src/master_node.cpp
-  src/lely_master_bridge.cpp
-  )
-
-target_compile_features(master_node  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_include_directories(master_node  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-ament_target_dependencies(
-  master_node
-  "rclcpp"
-  "rclcpp_components"
-  "canopen_interfaces"
-  "lely_core_libraries"
-  "yaml_cpp_vendor"
-  "rclcpp_lifecycle"
-  "lifecycle_msgs"
 )
-rclcpp_components_register_nodes(master_node  "ros2_canopen::MasterNode")
-set(node_plugins "${node_plugins}ros2_canopen::MasterNode;$<TARGET_FILE:master_node >\n")
+target_compile_features(node_canopen_master  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_options(node_canopen_master PUBLIC -fPIC -Wl,--no-undefined)
+target_include_directories(node_canopen_master PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  )
+ament_target_dependencies(node_canopen_master 
+  rclcpp
+  rclcpp_lifecycle
+  lely_core_libraries
+  yaml_cpp_vendor
+  canopen_interfaces
+)
 
-add_library(lifecycle_master_node
+
+add_library(device_container
   SHARED
-  src/lifecycle_master_node.cpp
-  src/lely_master_bridge.cpp
-  )
-
-target_compile_features(lifecycle_master_node  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_include_directories(lifecycle_master_node  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-ament_target_dependencies(
-  lifecycle_master_node
-  "rclcpp"
-  "rclcpp_components"
-  "canopen_interfaces"
-  "lely_core_libraries"
-  "yaml_cpp_vendor"
-  "rclcpp_lifecycle"
-  "lifecycle_msgs"
+  src/device_container.cpp
+  src/configuration_manager.cpp
+  src/device_container_error.cpp
+  src/lifecycle_manager.cpp
 )
-rclcpp_components_register_nodes(lifecycle_master_node  "ros2_canopen::LifecycleMasterNode")
-set(node_plugins "${node_plugins}ros2_canopen::LifecycleMasterNode;$<TARGET_FILE:lifecycle_master_node >\n")
-
-
-# device manager node
-add_library(lifecycle_device_manager_node
-  SHARED
-  src/lifecycle_device_manager_node.cpp
-  )
-
-target_compile_features(lifecycle_device_manager_node  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_include_directories(lifecycle_device_manager_node  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-
-target_link_libraries(lifecycle_device_manager_node
-  configuration_manager)
-
-ament_target_dependencies(
-  lifecycle_device_manager_node
-  "rclcpp"
-  "rclcpp_components"
-  "canopen_interfaces"
-  "rclcpp_lifecycle"
-  "lifecycle_msgs"
-  "std_srvs"
-)
-rclcpp_components_register_nodes(lifecycle_device_manager_node  "ros2_canopen::LifecycleDeviceManagerNode")
-set(node_plugins "${node_plugins}ros2_canopen::LifecycleDeviceManagerNode;$<TARGET_FILE:lifecycle_device_manager_node >\n")
-
-# device container node
-add_executable(lifecycle_device_container_node 
-  src/lifecycle_device_container_node.cpp
-  )
-target_link_libraries(lifecycle_device_container_node
-  configuration_manager
-  lifecycle_device_manager_node
-  lifecycle_master_node
-)
-ament_target_dependencies(lifecycle_device_container_node
-  ${dependencies}
-)
-target_include_directories(lifecycle_device_container_node PUBLIC
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>"
-  ${rclcpp_INCLUDE_DIRS}
-)
-
-# device container (manager)
-add_library(device_container src/device_container_node.cpp src/lely_master_bridge.cpp)
-target_compile_features(device_container PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(device_container  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_options(device_container PUBLIC -fPIC -Wl,--no-undefined)
 target_include_directories(device_container PUBLIC
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>"
-  ${rclcpp_INCLUDE_DIRS}
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  )
+ament_target_dependencies(device_container 
+  rclcpp
+  rclcpp_lifecycle
+  lely_core_libraries
+  yaml_cpp_vendor
+  canopen_interfaces
+  rclcpp_components
 )
 target_link_libraries(device_container
-  configuration_manager
+  node_canopen_master
+  node_canopen_driver
 )
-ament_target_dependencies(device_container
+
+add_executable(device_container_node
+  src/device_container_node.cpp
+  )
+target_link_libraries(device_container_node
+  device_container
+  node_canopen_master
+  node_canopen_driver
+)
+ament_target_dependencies(device_container_node
   ${dependencies}
 )
-target_include_directories(device_container PUBLIC
+target_include_directories(device_container_node PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include>"
   ${rclcpp_INCLUDE_DIRS}
 )
-
-# device container node
-add_executable(device_container_node
-  src/device_container_executable_node.cpp
-  )
-target_link_libraries(device_container_node device_container)
 
 install(
   DIRECTORY include/
@@ -178,69 +133,27 @@ install(
 )
 
 install(
-  TARGETS configuration_manager
-  EXPORT export_configuration_manager
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  DIRECTORY launch/
+  DESTINATION share/${PROJECT_NAME}/launch/
 )
 
 install(
-  TARGETS master_node
-  EXPORT export_master_node
+  TARGETS node_canopen_driver node_canopen_master device_container
+  EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
-install(
-  TARGETS lifecycle_master_node
-  EXPORT export_lifecycle_master_node
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
 
-install(
-  TARGETS lifecycle_device_manager_node
-  EXPORT export_lifecycle_device_manager_node
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-install(
-  TARGETS device_container
-  EXPORT export_device_container
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-install(TARGETS lifecycle_device_container_node
-  DESTINATION lib/${PROJECT_NAME}
-)
 
 install(TARGETS device_container_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(DIRECTORY
-  launch/
-  DESTINATION share/${PROJECT_NAME}/launch/
-)
-
 if(BUILD_TESTING)
-  #find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
-  #ament_lint_auto_find_test_dependencies()
-  #find_package(launch_testing_ament_cmake)
-  #add_launch_test(tests/test_device_up.py)
+  find_package(ament_cmake_gtest REQUIRED)
+  add_subdirectory(test)
 endif()
 
 ament_export_include_directories(
@@ -248,25 +161,21 @@ ament_export_include_directories(
 )
 
 ament_export_libraries(
-  configuration_manager
-  master_node
-  lifecycle_master_node
-  lifecycle_device_manager_node
-  device_container
+  node_canopen_driver
+  node_canopen_master
 )
+
 ament_export_targets(
-  export_configuration_manager
-  export_master_node
-  export_lifecycle_master_node
-  export_lifecycle_device_manager_node
-  export_device_container
+  export_${PROJECT_NAME}
 )
 
 ament_export_dependencies(
   canopen_interfaces
   lely_core_libraries
   yaml_cpp_vendor
+  rclcpp
   rclcpp_lifecycle
+  rclcpp_components
   lifecycle_msgs
 )
 

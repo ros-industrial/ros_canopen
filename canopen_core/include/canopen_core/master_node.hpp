@@ -1,113 +1,99 @@
-//    Copyright 2022 Harshavadan Deshpande
-//                   Christoph Hellmann Santos
-// 
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//        http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
-#ifndef MASTER_NODE_HPP
-#define MASTER_NODE_HPP
+#ifndef MASTER_NODE_HPP_
+#define MASTER_NODE_HPP_
 
-#include <memory>
-#include <thread>
+#include <rclcpp/rclcpp.hpp>
+#include "canopen_core/node_interfaces/node_canopen_master.hpp"
 
-
-#include "canopen_core/exchange.hpp"
-#include "canopen_core/device.hpp"
-#include "canopen_core/lely_master_bridge.hpp"
-#include "canopen_interfaces/srv/co_write_id.hpp"
-#include "canopen_interfaces/srv/co_read_id.hpp"
 namespace ros2_canopen
 {
-    class MasterNode : public MasterInterface
+
+    class CanopenMasterInterface
     {
-    protected:
-        std::shared_ptr<LelyMasterBridge> master_;
-        std::unique_ptr<lely::io::IoGuard> io_guard_;
-        std::unique_ptr<lely::io::Context> ctx_;
-        std::unique_ptr<lely::io::Poll> poll_;
-        std::unique_ptr<lely::ev::Loop> loop_;
-        std::shared_ptr<lely::ev::Executor> exec_;
-        std::unique_ptr<lely::io::Timer> timer_;
-        std::unique_ptr<lely::io::CanController> ctrl_;
-        std::unique_ptr<lely::io::CanChannel> chan_;
-        std::unique_ptr<lely::io::SignalSet> sigset_;
-        std::thread spinner_;
-
-        rclcpp::Service<canopen_interfaces::srv::COReadID>::SharedPtr sdo_read_service;
-        rclcpp::Service<canopen_interfaces::srv::COWriteID>::SharedPtr sdo_write_service;
-
     public:
-        MasterNode(
-            const rclcpp::NodeOptions &node_options
-            ) : MasterInterface("master", node_options)
+        virtual void init() = 0;
+        virtual void shutdown() = 0;
+        virtual std::shared_ptr<lely::canopen::AsyncMaster> get_master() = 0;
+        virtual std::shared_ptr<lely::ev::Executor> get_executor() = 0;
+        virtual rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() = 0;
+
+        virtual bool is_lifecycle() = 0;
+    };
+
+    class CanopenMaster : public CanopenMasterInterface, public rclcpp::Node 
+    {
+    public:
+        std::shared_ptr<node_interfaces::NodeCanopenMasterInterface> node_canopen_master_;
+        explicit CanopenMaster(
+            const rclcpp::NodeOptions &node_options = rclcpp::NodeOptions())
+            : rclcpp::Node("canopen_master", node_options)
         {
+            //node_canopen_master_ = std::make_shared<node_interfaces::NodeCanopenMaster<rclcpp::Node>>(this);
         }
 
-        /**
-         * @brief Initialize master
-         * 
-         * @param [in] dcf_txt              Path to the DCF file
-         * @param [in] dcf_bin              Path to the DCF Bin file
-         * @param [in] can_interface_name   Name of the can interface
-         * @param [in] nodeid               CANopen node id
-         * @param [in] config               Pointer to the Configuration Manager
-         */
-        void init(std::string dcf_txt, std::string dcf_bin, std::string can_interface_name, uint8_t nodeid, 
-                    std::shared_ptr<ConfigurationManager> config) override;
+        virtual void init() override;
+        virtual void shutdown() override;
 
-        /**
-         * @brief Add a driver to the master
-         * 
-         * @param [in] node_instance        Instance of the driver to add
-         * @param [in] node_id              CANopen node id of the target device
-         */
-        void add_driver(std::shared_ptr<ros2_canopen::DriverInterface> node_instance, uint8_t node_id) override;
+        virtual std::shared_ptr<lely::canopen::AsyncMaster> get_master() override;
 
-        /**
-         * @brief Remove a driver from the master
-         * 
-         * @param [in] node_instance        Instance of the driver to add
-         * @param [in] node_id              CANopen node id of the target device
-         */
-        void remove_driver(std::shared_ptr<ros2_canopen::DriverInterface> node_instance, uint8_t node_id) override;
+        virtual std::shared_ptr<lely::ev::Executor> get_executor() override;
 
-        /**
-         * @brief Read Service Data Object
-         * 
-         * This Service is only available when the node is in active lifecycle state.
-         * It will return with success false in any other lifecycle state and log an
-         * RCLCPP_ERROR.
-         * 
-         * @param request 
-         * @param response 
-         */
-        void on_sdo_read(
-            const std::shared_ptr<canopen_interfaces::srv::COReadID::Request> request,
-            std::shared_ptr<canopen_interfaces::srv::COReadID::Response> response);
+        virtual rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() override
+        {
+            return rclcpp::Node::get_node_base_interface();
+        }
 
-        /**
-         * @brief Write Service Data Object
-         * 
-         * This service is only available when the node is in active lifecycle state.
-         * It will return with success false in any other lifecycle state and log an
-         * RCLCPP_ERROR.
-         * 
-         * @param request 
-         * @param response 
-         */
-        void on_sdo_write(
-            const std::shared_ptr<canopen_interfaces::srv::COWriteID::Request> request,
-            std::shared_ptr<canopen_interfaces::srv::COWriteID::Response> response);
+        virtual bool is_lifecycle()
+        {
+            return false;
+        }
     };
-}
 
+    class LifecycleCanopenMaster : public CanopenMasterInterface, public rclcpp_lifecycle::LifecycleNode
+    {
+    protected:
+        std::shared_ptr<node_interfaces::NodeCanopenMasterInterface> node_canopen_master_;
+
+    public:
+        LifecycleCanopenMaster(
+            const rclcpp::NodeOptions &node_options = rclcpp::NodeOptions())
+            : rclcpp_lifecycle::LifecycleNode("lifecycle_canopen_master", node_options)
+        {
+            node_canopen_master_ = std::make_shared<node_interfaces::NodeCanopenMaster<rclcpp_lifecycle::LifecycleNode>>(this);
+        }
+
+        virtual void init() override;
+        virtual void shutdown() override;
+
+        virtual std::shared_ptr<lely::canopen::AsyncMaster> get_master() override;
+
+        virtual std::shared_ptr<lely::ev::Executor> get_executor() override;
+
+        rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+        on_configure(const rclcpp_lifecycle::State &state);
+
+        rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+        on_activate(const rclcpp_lifecycle::State &state);
+
+        rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+        on_deactivate(const rclcpp_lifecycle::State &state);
+
+        rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+        on_cleanup(const rclcpp_lifecycle::State &state);
+
+        rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+        on_shutdown(const rclcpp_lifecycle::State &state);
+
+        virtual rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() override
+        {
+            return rclcpp_lifecycle::LifecycleNode::get_node_base_interface();
+        }
+        
+        virtual bool is_lifecycle()
+        {
+            return true;
+        }
+    };
+
+}
 
 #endif
