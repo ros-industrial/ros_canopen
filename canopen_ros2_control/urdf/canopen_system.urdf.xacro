@@ -7,7 +7,7 @@
 
     <xacro:arg name="bus_config" default="$(find canopen_proxy_driver)/config/pdo_test/pdo.yml"/>
     <xacro:arg name="master_config" default="$(find canopen_proxy_driver)/config/pdo_test/master.dcf"/>
-    <xacro:arg name="can_interface" default="vcan0"/>
+    <xacro:arg name="can_interface_name" default="vcan0"/>
     <xacro:arg name="master_bin" default=""/>
 
 
@@ -19,7 +19,7 @@
       prefix="$(arg prefix)"
       bus_config="$(arg bus_config)"
       master_config="$(arg master_config)"
-      can_interface="$(arg can_interface)"
+      can_interface_name="$(arg can_interface_name)"
       master_bin="$(arg master_bin)"
     />
 

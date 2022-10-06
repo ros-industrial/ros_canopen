@@ -132,10 +132,10 @@ bool DeviceContainer::load_component(
 
 void DeviceContainer::configure()
 {
-    if (!this->get_parameter("can_interface", can_interface_))
+    if (!this->get_parameter("can_interface_name", can_interface_name_))
     {
         throw DeviceContainerException("Fatal: Getting Parameter failed.");
-        RCLCPP_ERROR(this->get_logger(), "Parameter can_interface could not be read.");
+        RCLCPP_ERROR(this->get_logger(), "Parameter can_interface_name could not be read.");
     }
     if (!this->get_parameter("master_config", dcf_txt_))
     {
@@ -187,7 +187,7 @@ bool DeviceContainer::load_master()
             params.push_back(rclcpp::Parameter("container_name", this->get_fully_qualified_name()));
             params.push_back(rclcpp::Parameter("master_dcf", this->dcf_txt_));
             params.push_back(rclcpp::Parameter("master_bin", this->dcf_bin_));
-            params.push_back(rclcpp::Parameter("can_interface", this->can_interface_));
+            params.push_back(rclcpp::Parameter("can_interface_name", this->can_interface_name_));
             params.push_back(rclcpp::Parameter("node_id", (int)node_id.value()));
             params.push_back(rclcpp::Parameter("non_transmit_timeout", 100));
             params.push_back(rclcpp::Parameter("config", config_->dump_device(*it)));
@@ -318,12 +318,12 @@ void DeviceContainer::init()
 }
 
 void DeviceContainer::init(
-    const std::string &can_interface,
+    const std::string &can_interface_name,
     const std::string &master_config,
     const std::string &bus_config,
     const std::string &master_bin)
 {
-    can_interface_ = can_interface;
+    can_interface_name_ = can_interface_name;
     dcf_txt_ = master_config;
     dcf_bin_ = master_bin;
     bus_config_ = bus_config;

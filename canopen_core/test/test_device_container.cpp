@@ -13,7 +13,7 @@ TEST(ComponentLoad, test_device_container_configure)
 
     device_container->set_parameter(Parameter("bus_config", "bus.yml"));
     device_container->set_parameter(Parameter("master_config", "master.dcf"));
-    device_container->set_parameter(Parameter("can_interface", "can0"));
+    device_container->set_parameter(Parameter("can_interface_name", "can0"));
 
     exec->spin_some(100ms);
 
@@ -39,7 +39,7 @@ TEST(ComponentLoad, test_load_master)
 
     device_container->set_parameter(Parameter("bus_config", "bus.yml"));
     device_container->set_parameter(Parameter("master_config", "master.dcf"));
-    device_container->set_parameter(Parameter("can_interface", "vcan0"));
+    device_container->set_parameter(Parameter("can_interface_name", "vcan0"));
 
     exec->spin_some(100ms);
 
@@ -70,7 +70,7 @@ TEST(ComponentLoad, test_load_master)
 
 //     device_container->set_parameter(Parameter("bus_config", "bus.yml"));
 //     device_container->set_parameter(Parameter("master_config", "master.dcf"));
-//     device_container->set_parameter(Parameter("can_interface", "vcan0"));
+//     device_container->set_parameter(Parameter("can_interface_name", "vcan0"));
 
     
 

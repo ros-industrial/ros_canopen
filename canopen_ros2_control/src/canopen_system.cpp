@@ -68,7 +68,7 @@ hardware_interface::CallbackReturn CanopenSystem::on_init(
 
   RCLCPP_INFO(kLogger, "bus_config: '%s'", info_.hardware_parameters["bus_config"].c_str());
   RCLCPP_INFO(kLogger, "master_config: '%s'", info_.hardware_parameters["master_config"].c_str());
-  RCLCPP_INFO(kLogger, "can_interface_name: '%s'", info_.hardware_parameters["can_interface_name"].c_str());
+  RCLCPP_INFO(kLogger, "can_interface_name_name: '%s'", info_.hardware_parameters["can_interface_name_name"].c_str());
   RCLCPP_INFO(kLogger, "master_bin: '%s'", info_.hardware_parameters["master_bin"].c_str());
 
   return CallbackReturn::SUCCESS;
@@ -123,7 +123,7 @@ void CanopenSystem::spin() {
 void CanopenSystem::initDeviceContainer() {
     std::string tmp_master_bin  = (info_.hardware_parameters["master_bin"] == "\"\"" ) ? "" : info_.hardware_parameters["master_bin"];
 
-  device_container_->init(info_.hardware_parameters["can_interface"],
+  device_container_->init(info_.hardware_parameters["can_interface_name"],
                             info_.hardware_parameters["master_config"],
                             info_.hardware_parameters["bus_config"],
                             tmp_master_bin);

@@ -32,8 +32,8 @@ def generate_launch_description():
       description="Path to eds file to be used for the slave."
     )
 
-    can_interface_arg = DeclareLaunchArgument(
-      'can_interface', 
+    can_interface_name_arg = DeclareLaunchArgument(
+      'can_interface_name', 
       default_value=TextSubstitution(text="vcan0"), 
       description="CAN interface to be used by mock slave."
     )
@@ -54,7 +54,7 @@ def generate_launch_description():
                 {
                     "slave_config": LaunchConfiguration("slave_config"),
                     "node_id": LaunchConfiguration("node_id"),
-                    "can_interface": LaunchConfiguration("can_interface")
+                    "can_interface_name": LaunchConfiguration("can_interface_name")
                 }
             ],
     )
@@ -86,7 +86,7 @@ def generate_launch_description():
     ld = launch.LaunchDescription()
     ld.add_action(node_id_arg)
     ld.add_action(slave_config_arg)
-    ld.add_action(can_interface_arg)
+    ld.add_action(can_interface_name_arg)
     ld.add_action(node_name_arg)
     ld.add_action(slave_inactive_state_handler)
     ld.add_action(slave_node)

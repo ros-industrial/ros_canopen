@@ -70,7 +70,7 @@ def generate_launch_description():
                 "simple_lifecycle",
                 "bus.yml",
             ),
-            "can_interface": "vcan0",
+            "can_interface_name": "vcan0",
         }.items(),
     )
 

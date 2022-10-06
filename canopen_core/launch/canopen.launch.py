@@ -36,8 +36,8 @@ def generate_launch_description():
       description="Path to the master configuration to use (bin)."
     )
 
-    can_interface_arg = DeclareLaunchArgument(
-      'can_interface', 
+    can_interface_name_arg = DeclareLaunchArgument(
+      'can_interface_name', 
       default_value=TextSubstitution(text="vcan0"), 
       description="CAN interface used by master and drivers."
     )
@@ -48,7 +48,7 @@ def generate_launch_description():
         launch.actions.LogInfo(msg=LaunchConfiguration("bus_config")),
         launch.actions.LogInfo(msg=LaunchConfiguration("master_config")),
         launch.actions.LogInfo(msg=LaunchConfiguration("master_bin")),
-        launch.actions.LogInfo(msg=LaunchConfiguration("can_interface")),
+        launch.actions.LogInfo(msg=LaunchConfiguration("can_interface_name")),
       ]
     )
     lifecycle_device_container_node = launch_ros.actions.LifecycleNode(
@@ -68,7 +68,7 @@ def generate_launch_description():
                 "master_bin": LaunchConfiguration("master_bin")
             },
             {
-                "can_interface": LaunchConfiguration("can_interface")
+                "can_interface_name": LaunchConfiguration("can_interface_name")
             },
         ],
     )
@@ -76,7 +76,7 @@ def generate_launch_description():
     ld.add_action(bus_conf_arg)
     ld.add_action(master_conf_arg)
     ld.add_action(master_bin_arg)
-    ld.add_action(can_interface_arg)
+    ld.add_action(can_interface_name_arg)
     ld.add_action(logging)
     ld.add_action(lifecycle_device_container_node)
 

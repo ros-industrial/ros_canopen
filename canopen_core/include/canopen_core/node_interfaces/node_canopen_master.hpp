@@ -59,7 +59,7 @@ namespace ros2_canopen
             std::string container_name_;
             std::string master_dcf_;
             std::string master_bin_;
-            std::string can_interface_;
+            std::string can_interface_name_;
 
             std::thread spinner_;
 
@@ -94,7 +94,7 @@ namespace ros2_canopen
                 node_->declare_parameter("container_name", "");
                 node_->declare_parameter("master_dcf", "");
                 node_->declare_parameter("master_bin", "");
-                node_->declare_parameter("can_interface", "vcan0");
+                node_->declare_parameter("can_interface_name", "vcan0");
                 node_->declare_parameter("node_id", 0);
                 node_->declare_parameter("non_transmit_timeout", 100);
                 node_->declare_parameter("config", "");
@@ -134,7 +134,7 @@ namespace ros2_canopen
                 node_->get_parameter("container_name", container_name_);
                 node_->get_parameter("master_dcf", master_dcf_);
                 node_->get_parameter("master_bin", master_bin_);
-                node_->get_parameter("can_interface", can_interface_);
+                node_->get_parameter("can_interface_name", can_interface_name_);
                 node_->get_parameter("node_id", node_id_);
                 node_->get_parameter("non_transmit_timeout", non_transmit_timeout);
                 node_->get_parameter("config", config);
@@ -180,7 +180,7 @@ namespace ros2_canopen
 
                 exec_ = std::make_shared<lely::ev::Executor>(loop_->get_executor());
                 timer_ = std::make_unique<lely::io::Timer>(*poll_, *exec_, CLOCK_MONOTONIC);
-                ctrl_ = std::make_unique<lely::io::CanController>(can_interface_.c_str());
+                ctrl_ = std::make_unique<lely::io::CanController>(can_interface_name_.c_str());
                 chan_ = std::make_unique<lely::io::CanChannel>(*poll_, *exec_);
                 chan_->open(*ctrl_);
 

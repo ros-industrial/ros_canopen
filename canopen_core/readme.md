@@ -46,7 +46,7 @@ In order to use the package for your CANopen network, you need to create a netwo
           ros__parameters:
             dcf_path: [Absolute path to your master dcf]
             yaml_path: [Absolute path to your bus yaml]
-            can_interface: [interface name]
+            can_interface_name: [interface name]
 
 
 
@@ -61,7 +61,7 @@ sh
 
         ros2 param set /canopen_master/dcf_path [path to dcf]
         ros2 param set /canopen_master/yaml_path [path to yaml]
-        ros2 param set /canopen_master/can_interface [if_name]
+        ros2 param set /canopen_master/can_interface_name [if_name]
 
 3. Now you can configure the canopen_master via lifecycle management. The master will now load the configuration files and spawn the necessary driver nodes for each device on the network. You can check the new nodes with ros2 node command.
 

@@ -66,7 +66,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # can interface name
-    can_interface = LaunchConfiguration("can_interface")
+    can_interface_name = LaunchConfiguration("can_interface_name")
 
     # robot description stuff
     description_package = LaunchConfiguration("description_package")
@@ -89,8 +89,8 @@ def launch_setup(context, *args, **kwargs):
             "master_config:=",
             master_config,
             " ",
-            "can_interface:=",
-            can_interface,
+            "can_interface_name:=",
+            can_interface_name,
             " ",
         ]
     )
@@ -268,7 +268,7 @@ def generate_launch_description():
 
     declared_arguments.append(
         DeclareLaunchArgument(
-            "can_interface",
+            "can_interface_name",
             default_value="vcan0",
             description="Interface name for can",
         )

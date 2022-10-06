@@ -615,7 +615,7 @@ namespace ros2_canopen
             ev::Loop loop(poll.get_poll());
             auto exec = loop.get_executor();
             io::Timer timer(poll, exec, CLOCK_MONOTONIC);
-            io::CanController ctrl(can_interface_.c_str());
+            io::CanController ctrl(can_interface_name_.c_str());
             io::CanChannel chan(poll, exec);
             chan.open(ctrl);
             ros2_canopen::CIA402MockSlave slave(timer, chan, slave_config_.c_str(), "", node_id_);
