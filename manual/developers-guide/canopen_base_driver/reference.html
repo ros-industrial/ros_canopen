@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base Driver API Reference &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Proxy Driver API Reference" href="../canopen_proxy_driver/reference.html" />
+    <link rel="prev" title="Core API Reference" href="../canopen_core/reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/configuration.html">Creating a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/operation.html">Starting a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/configuration/configuration.html">Bus Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/service-based/overview.html">Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/lifecycle-service-based/overview.html">Lifecycled Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/ros2-control/overview.html">ROS2 Control System Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/proxy-driver.html">Proxy Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user-guide/motion-controller-driver.html">Motion Controller Driver</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../design-objectives.html">Design Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../new-master.html">Creating a new master</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../canopen_core/reference.html">Core API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Base Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../canopen_proxy_driver/reference.html">Proxy Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Base Driver API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/developers-guide/canopen_base_driver/reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="base-driver-api-reference">
+<h1>Base Driver API Reference<a class="headerlink" href="#base-driver-api-reference" title="Permalink to this headline"></a></h1>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen10BaseDriverE">
+<span id="_CPPv3N12ros2_canopen10BaseDriverE"></span><span id="_CPPv2N12ros2_canopen10BaseDriverE"></span><span id="ros2_canopen::BaseDriver"></span><span class="target" id="classros2__canopen_1_1_base_driver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BaseDriver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen13CanopenDriverE" title="ros2_canopen::CanopenDriver"><span class="n"><span class="pre">CanopenDriver</span></span></a><a class="headerlink" href="#_CPPv4N12ros2_canopen10BaseDriverE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#base__driver_8hpp"><span class="std std-ref">base_driver.hpp</span></a>&gt;</em></div>
+<p>Abstract Class for a CANopen Device Node. </p>
+<p>This class provides the base functionality for creating a CANopen device node. It provides callbacks for nmt and rpdo. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen10BaseDriver10BaseDriverEN6rclcpp11NodeOptionsE">
+<span id="_CPPv3N12ros2_canopen10BaseDriver10BaseDriverEN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N12ros2_canopen10BaseDriver10BaseDriverEN6rclcpp11NodeOptionsE"></span><span id="ros2_canopen::BaseDriver::BaseDriver__rclcpp::NodeOptions"></span><span class="target" id="classros2__canopen_1_1_base_driver_1a0dc39a225173c227027853815fe24d53"></span><span class="sig-name descname"><span class="n"><span class="pre">BaseDriver</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node_options</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen10BaseDriver10BaseDriverEN6rclcpp11NodeOptionsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen10BaseDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE">
+<span id="_CPPv3N12ros2_canopen10BaseDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE"></span><span id="_CPPv2N12ros2_canopen10BaseDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE"></span><span class="target" id="classros2__canopen_1_1_base_driver_1a88e17a0fcafdca9ed0386e06b918c59c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_nmt_state_cb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nmt_state_cb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen10BaseDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen10BaseDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE">
+<span id="_CPPv3N12ros2_canopen10BaseDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE"></span><span id="_CPPv2N12ros2_canopen10BaseDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE"></span><span class="target" id="classros2__canopen_1_1_base_driver_1a2a0865f7127dd75c57d6e441d2b4fb7a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_rpdo_cb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rpdo_cb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen10BaseDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen10BaseDriver25node_canopen_base_driver_E">
+<span id="_CPPv3N12ros2_canopen10BaseDriver25node_canopen_base_driver_E"></span><span id="_CPPv2N12ros2_canopen10BaseDriver25node_canopen_base_driver_E"></span><span id="ros2_canopen::BaseDriver::node_canopen_base_driver___std::shared_ptr:node_interfaces::NodeCanopenBaseDriver:rclcpp::Node::"></span><span class="target" id="classros2__canopen_1_1_base_driver_1a17c2e0dacc48ab4d535bca778b44c01c"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeCanopenBaseDriver</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Node</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node_canopen_base_driver_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen10BaseDriver25node_canopen_base_driver_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4IENSt18is_error_code_enumIN12ros2_canopen14LelyBridgeErrcEEE">
+<span id="_CPPv3IENSt18is_error_code_enumIN12ros2_canopen14LelyBridgeErrcEEE"></span><span id="_CPPv2IENSt18is_error_code_enumIN12ros2_canopen14LelyBridgeErrcEEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structstd_1_1is__error__code__enum_3_01ros2__canopen_1_1_lely_bridge_errc_01_4"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_error_code_enum</span></span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../canopen_402_driver/reference.html#_CPPv412ros2_canopen" title="ros2_canopen"><span class="n"><span class="pre">ros2_canopen</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N12ros2_canopen14LelyBridgeErrcE" title="ros2_canopen::LelyBridgeErrc"><span class="n"><span class="pre">LelyBridgeErrc</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">true_type</span></span><a class="headerlink" href="#_CPPv4IENSt18is_error_code_enumIN12ros2_canopen14LelyBridgeErrcEEE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen21LelyBridgeErrCategoryE">
+<span id="_CPPv3N12ros2_canopen21LelyBridgeErrCategoryE"></span><span id="_CPPv2N12ros2_canopen21LelyBridgeErrCategoryE"></span><span id="ros2_canopen::LelyBridgeErrCategory"></span><span class="target" id="structros2__canopen_1_1_lely_bridge_err_category"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LelyBridgeErrCategory</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">error_category</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen21LelyBridgeErrCategoryE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK12ros2_canopen21LelyBridgeErrCategory4nameEv">
+<span id="_CPPv3NK12ros2_canopen21LelyBridgeErrCategory4nameEv"></span><span id="_CPPv2NK12ros2_canopen21LelyBridgeErrCategory4nameEv"></span><span id="ros2_canopen::LelyBridgeErrCategory::nameC"></span><span class="target" id="structros2__canopen_1_1_lely_bridge_err_category_1ab15217967b80e013bb7a7fdfe6e34206"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK12ros2_canopen21LelyBridgeErrCategory4nameEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK12ros2_canopen21LelyBridgeErrCategory7messageEi">
+<span id="_CPPv3NK12ros2_canopen21LelyBridgeErrCategory7messageEi"></span><span id="_CPPv2NK12ros2_canopen21LelyBridgeErrCategory7messageEi"></span><span id="ros2_canopen::LelyBridgeErrCategory::message__iC"></span><span class="target" id="structros2__canopen_1_1_lely_bridge_err_category_1a406836a7e1408a21a8bee0ce9f23480a"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">message</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ev</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK12ros2_canopen21LelyBridgeErrCategory7messageEi" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridgeE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridgeE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridgeE"></span><span id="ros2_canopen::LelyDriverBridge"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LelyDriverBridge</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">FiberDriver</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridgeE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#lely__driver__bridge_8hpp"><span class="std std-ref">lely_driver_bridge.hpp</span></a>&gt;</em></div>
+<p>Lely Driver Bridge. </p>
+<p>This class provides functionalities for bridging between Lelycore drivers and standard C++ functions. This means it provides async and sync functions for interacting with CANopen devices using synchronisation functionalities from C++ standard library. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge16LelyDriverBridgeEP9ev_exec_tRN7canopen11AsyncMasterE7uint8_tNSt6stringE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge16LelyDriverBridgeEP9ev_exec_tRN7canopen11AsyncMasterE7uint8_tNSt6stringE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge16LelyDriverBridgeEP9ev_exec_tRN7canopen11AsyncMasterE7uint8_tNSt6stringE"></span><span id="ros2_canopen::LelyDriverBridge::LelyDriverBridge__ev_exec_tP.canopen::AsyncMasterR.uint8_t.ss"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a415d9e90846591ab99f9b3e164d5b6c6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LelyDriverBridge</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ev_exec_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exec</span></span>, <span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">AsyncMaster</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">master</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge16LelyDriverBridgeEP9ev_exec_tRN7canopen11AsyncMasterE7uint8_tNSt6stringE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Construct a new Lely Bridge object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exec</strong> – <strong>[in]</strong> Executor to use </p></li>
+<li><p><strong>master</strong> – <strong>[in]</strong> Master to use </p></li>
+<li><p><strong>id</strong> – <strong>[in]</strong> NodeId to connect to </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge15async_sdo_writeE6COData">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge15async_sdo_writeE6COData"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge15async_sdo_writeE6COData"></span><span id="ros2_canopen::LelyDriverBridge::async_sdo_write__COData"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1ab0c6920f6e2b3c64b04553f2857d3daf"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_sdo_write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge15async_sdo_writeE6COData" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Asynchronous SDO Write. </p>
+<p>Writes the data passed to the function via SDO to the connected device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – <strong>[in]</strong> Data to written.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>std::future&lt;bool&gt; Returns an std::future&lt;bool&gt; that is fulfilled when the write request was done. An error is stored when the write request was unsuccesful. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge14async_sdo_readE6COData">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge14async_sdo_readE6COData"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge14async_sdo_readE6COData"></span><span id="ros2_canopen::LelyDriverBridge::async_sdo_read__COData"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1ac41fcb002b23ff3b8e495c0296609076"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_sdo_read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge14async_sdo_readE6COData" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Aynchronous SDO Read. </p>
+<p>Reads the indicated SDO object from the connected device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – <strong>[in]</strong> Data to be read, the data entry is not used. </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>std::future&lt;COData&gt; Returns an std::future&lt;COData&gt; that is fulfilled when the read request was done. The result of the request is stored in the future. An error is stored when the read request was unsuccesful. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge17async_request_nmtEv">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge17async_request_nmtEv"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge17async_request_nmtEv"></span><span id="ros2_canopen::LelyDriverBridge::async_request_nmt"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a34f0b14f8c5170ec47e38157050288ef"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_request_nmt</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge17async_request_nmtEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Asynchronous request for NMT. </p>
+<p>Waits for an NMT state change to occur. The new state is stored in the future returned by the function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>std::future&lt;canopen::NmtState&gt; The returned future is set when NMT State changes. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge18async_request_rpdoEv">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge18async_request_rpdoEv"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge18async_request_rpdoEv"></span><span id="ros2_canopen::LelyDriverBridge::async_request_rpdo"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1aef15d86e3cea07fbf4c3ec732e9eaf28"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_request_rpdo</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge18async_request_rpdoEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Asynchronous request for RPDO. </p>
+<p>Waits for an RPDO write request to be received from the slave. The content of the request are stored in the returned future.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>std::future&lt;COData&gt; The returned future is set when an RPDO event is detected. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge13tpdo_transmitE6COData">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge13tpdo_transmitE6COData"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge13tpdo_transmitE6COData"></span><span id="ros2_canopen::LelyDriverBridge::tpdo_transmit__COData"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1ae81768ed4a61e0b9e137cbb16c26d1a0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tpdo_transmit</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge13tpdo_transmitE6COData" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Executes a TPDO transmission. </p>
+<p>This funciton executes a TPDO transmission. The object specified in the input data is sent if it is registered as a TPDO with the master.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – <strong>[in]</strong> Object and data to be written </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge11nmt_commandEN7canopen10NmtCommandE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge11nmt_commandEN7canopen10NmtCommandE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge11nmt_commandEN7canopen10NmtCommandE"></span><span id="ros2_canopen::LelyDriverBridge::nmt_command__canopen::NmtCommand"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a74f1911891d2c59bfcf912e30d40fdab"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_command</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtCommand</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">command</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge11nmt_commandEN7canopen10NmtCommandE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Executes a NMT Command. </p>
+<p>This function sends the NMT command specified as parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>command</strong> – <strong>[in]</strong> NMT Command to execute </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge6get_idEv">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge6get_idEv"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge6get_idEv"></span><span id="ros2_canopen::LelyDriverBridge::get_id"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1aa82419345fa45a3e42a8c7e21f713f74"></span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_id</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge6get_idEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Get the nodeid. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>uint8_t </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge13wait_for_bootEv">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge13wait_for_bootEv"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge13wait_for_bootEv"></span><span id="ros2_canopen::LelyDriverBridge::wait_for_boot"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1acbca8f80755f46e1f4dd89af125263aa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wait_for_boot</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge13wait_for_bootEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Wait for device to be booted. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>false </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge4BootEv">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge4BootEv"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge4BootEv"></span><span id="ros2_canopen::LelyDriverBridge::Boot"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1ac3ef3c3688a3eb0c321b8b554f16ba51"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Boot</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge4BootEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Request master to boot device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge9is_bootedEv">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge9is_bootedEv"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge9is_bootedEv"></span><span id="ros2_canopen::LelyDriverBridge::is_booted"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a10b43f728a74c8cea7cbba5be4d4b0c7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_booted</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge9is_bootedEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Indicates if Device is booted. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>false </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge7OnStateEN7canopen8NmtStateE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge7OnStateEN7canopen8NmtStateE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge7OnStateEN7canopen8NmtStateE"></span><span id="ros2_canopen::LelyDriverBridge::OnState__canopen::NmtState"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1affa3700f0a4a4640eabeec41e59621a9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge7OnStateEN7canopen8NmtStateE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>OnState Callback. </p>
+<p>This callback function is called when an Nmt state change is detected on the connected device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> – <strong>[in]</strong> NMT State </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge6OnBootEN7canopen8NmtStateEcRKNSt6stringE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge6OnBootEN7canopen8NmtStateEcRKNSt6stringE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge6OnBootEN7canopen8NmtStateEcRKNSt6stringE"></span><span id="ros2_canopen::LelyDriverBridge::OnBoot__canopen::NmtState.c.std::stringCR"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a74185fae4f72f2cdcabfef533ca72254"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnBoot</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">es</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">what</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge6OnBootEN7canopen8NmtStateEcRKNSt6stringE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>OnBoot Callback This callback is called when the Boot process of the slave that was initiated by the master has been success fully finished. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>st</strong> – </p></li>
+<li><p><strong>es</strong> – </p></li>
+<li><p><strong>what</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge11OnRpdoWriteE8uint16_t7uint8_t">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge11OnRpdoWriteE8uint16_t7uint8_t"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge11OnRpdoWriteE8uint16_t7uint8_t"></span><span id="ros2_canopen::LelyDriverBridge::OnRpdoWrite__uint16_t.uint8_t"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a694f5e335166e7d3ccbf8d75da8440ca"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnRpdoWrite</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subidx</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge11OnRpdoWriteE8uint16_t7uint8_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>OnRpdoWrite Callback. </p>
+<p>This callback function is called when an RPDO write request is received from the connected device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idx</strong> – <strong>[in]</strong> Object Index </p></li>
+<li><p><strong>subidx</strong> – <strong>[in]</strong> Object Subindex </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge21sdo_read_data_promiseE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge21sdo_read_data_promiseE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge21sdo_read_data_promiseE"></span><span id="ros2_canopen::LelyDriverBridge::sdo_read_data_promise__std::shared_ptr:std::promise:COData::"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1adec567161d251cd39a4dfd9440408b51"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">promise</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_read_data_promise</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge21sdo_read_data_promiseE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge22sdo_write_data_promiseE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge22sdo_write_data_promiseE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge22sdo_write_data_promiseE"></span><span id="ros2_canopen::LelyDriverBridge::sdo_write_data_promise__std::shared_ptr:std::promise:b::"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a3164e09064f5c099b040e3db185cf8d0"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">promise</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_write_data_promise</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge22sdo_write_data_promiseE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge9sdo_mutexE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge9sdo_mutexE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge9sdo_mutexE"></span><span id="ros2_canopen::LelyDriverBridge::sdo_mutex__std::mutex"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a0564f8199205fad4ad68256992cf797b"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_mutex</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge9sdo_mutexE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge7runningE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge7runningE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge7runningE"></span><span id="ros2_canopen::LelyDriverBridge::running__b"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a2c7562f6c1e17e36949f78a58c607676"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">running</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge7runningE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge8sdo_condE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge8sdo_condE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge8sdo_condE"></span><span id="ros2_canopen::LelyDriverBridge::sdo_cond__std::condition_variable"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a5dd9d016fb217739c670a21d4a2c6861"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">condition_variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sdo_cond</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge8sdo_condE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge17nmt_state_promiseE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge17nmt_state_promiseE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge17nmt_state_promiseE"></span><span id="ros2_canopen::LelyDriverBridge::nmt_state_promise__std::promise:canopen::NmtState:"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a903fc498ef6de0fc97a0e990cf6010cd"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">promise</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_state_promise</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge17nmt_state_promiseE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge16nmt_state_is_setE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge16nmt_state_is_setE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge16nmt_state_is_setE"></span><span id="ros2_canopen::LelyDriverBridge::nmt_state_is_set__std::atomic:b:"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1aa1d768ca00fde47d2c8e881e875a71e5"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">atomic</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_state_is_set</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge16nmt_state_is_setE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge8nmt_mtexE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge8nmt_mtexE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge8nmt_mtexE"></span><span id="ros2_canopen::LelyDriverBridge::nmt_mtex__std::mutex"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a8a5a155908367175234b6d7ed460168a"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nmt_mtex</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge8nmt_mtexE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge12rpdo_promiseE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge12rpdo_promiseE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge12rpdo_promiseE"></span><span id="ros2_canopen::LelyDriverBridge::rpdo_promise__std::promise:COData:"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a2b8224a676fc806ce2d0b884d6a4cf52"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">promise</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rpdo_promise</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge12rpdo_promiseE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge11rpdo_is_setE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge11rpdo_is_setE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge11rpdo_is_setE"></span><span id="ros2_canopen::LelyDriverBridge::rpdo_is_set__std::atomic:b:"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a5d02e3513530f7497a83571d90472b00"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">atomic</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rpdo_is_set</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge11rpdo_is_setE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge8pdo_mtexE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge8pdo_mtexE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge8pdo_mtexE"></span><span id="ros2_canopen::LelyDriverBridge::pdo_mtex__std::mutex"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1ac0f1478930363b496bf4ab8ddf8a1e27"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pdo_mtex</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge8pdo_mtexE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge6bootedE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge6bootedE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge6bootedE"></span><span id="ros2_canopen::LelyDriverBridge::booted__std::atomic:b:"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1adc23957de6e302d6dec4bfabfe426133"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">atomic</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">booted</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge6bootedE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge11boot_statusE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge11boot_statusE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge11boot_statusE"></span><span id="ros2_canopen::LelyDriverBridge::boot_status__c"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1aedf37290d8854316efa0f319378fec0a"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boot_status</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge11boot_statusE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge9boot_whatE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge9boot_whatE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge9boot_whatE"></span><span id="ros2_canopen::LelyDriverBridge::boot_what__ss"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a7da385a93a34528bbe6b1e57a76ee684"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boot_what</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge9boot_whatE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge10boot_stateE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge10boot_stateE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge10boot_stateE"></span><span id="ros2_canopen::LelyDriverBridge::boot_state__canopen::NmtState"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1af691b9c8ac5cf331f692770267533754"></span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boot_state</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge10boot_stateE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge9boot_condE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge9boot_condE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge9boot_condE"></span><span id="ros2_canopen::LelyDriverBridge::boot_cond__std::condition_variable"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1ae1a124ca99ee3d1571ee0bd594acd684"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">condition_variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boot_cond</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge9boot_condE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge9boot_mtexE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge9boot_mtexE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge9boot_mtexE"></span><span id="ros2_canopen::LelyDriverBridge::boot_mtex__std::mutex"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a15ab371cf46052d5028bc2a8804440ee"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boot_mtex</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge9boot_mtexE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge10tpdo_tasksE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge10tpdo_tasksE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge10tpdo_tasksE"></span><span id="ros2_canopen::LelyDriverBridge::tpdo_tasks__std::vector:std::shared_ptr:TPDOWriteTask::"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1a7eccede1a4a223b08493cd429b34a0ff"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTaskE" title="ros2_canopen::LelyDriverBridge::TPDOWriteTask"><span class="n"><span class="pre">TPDOWriteTask</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tpdo_tasks</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge10tpdo_tasksE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge6nodeidE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge6nodeidE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge6nodeidE"></span><span id="ros2_canopen::LelyDriverBridge::nodeid__uint8_t"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1afb2119c15d6781425ea66714e3fd1c38"></span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nodeid</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge6nodeidE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge5name_E">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge5name_E"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge5name_E"></span><span id="ros2_canopen::LelyDriverBridge::name___ss"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1afbd744c730f8e4721a85d3f59250be5e"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">name_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge5name_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleBaseDriverE">
+<span id="_CPPv3N12ros2_canopen19LifecycleBaseDriverE"></span><span id="_CPPv2N12ros2_canopen19LifecycleBaseDriverE"></span><span id="ros2_canopen::LifecycleBaseDriver"></span><span class="target" id="classros2__canopen_1_1_lifecycle_base_driver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleBaseDriver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen22LifecycleCanopenDriverE" title="ros2_canopen::LifecycleCanopenDriver"><span class="n"><span class="pre">LifecycleCanopenDriver</span></span></a><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleBaseDriverE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#lifecycle__base__driver_8hpp"><span class="std std-ref">lifecycle_base_driver.hpp</span></a>&gt;</em></div>
+<p>Lifecycle Base Driver. </p>
+<p>A very basic driver without any functionality. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleBaseDriver19LifecycleBaseDriverEN6rclcpp11NodeOptionsE">
+<span id="_CPPv3N12ros2_canopen19LifecycleBaseDriver19LifecycleBaseDriverEN6rclcpp11NodeOptionsE"></span><span id="_CPPv2N12ros2_canopen19LifecycleBaseDriver19LifecycleBaseDriverEN6rclcpp11NodeOptionsE"></span><span id="ros2_canopen::LifecycleBaseDriver::LifecycleBaseDriver__rclcpp::NodeOptions"></span><span class="target" id="classros2__canopen_1_1_lifecycle_base_driver_1a54362c872e07cc54fbf73ca44c077e24"></span><span class="sig-name descname"><span class="n"><span class="pre">LifecycleBaseDriver</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node_options</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">rclcpp</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeOptions</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleBaseDriver19LifecycleBaseDriverEN6rclcpp11NodeOptionsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleBaseDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE">
+<span id="_CPPv3N12ros2_canopen19LifecycleBaseDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE"></span><span id="_CPPv2N12ros2_canopen19LifecycleBaseDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE"></span><span class="target" id="classros2__canopen_1_1_lifecycle_base_driver_1a9ba63a02e353fb9f821e3a701cb47473"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_nmt_state_cb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">canopen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NmtState</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nmt_state_cb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleBaseDriver21register_nmt_state_cbENSt8functionIFvN7canopen8NmtStateE7uint8_tEEE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleBaseDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE">
+<span id="_CPPv3N12ros2_canopen19LifecycleBaseDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE"></span><span id="_CPPv2N12ros2_canopen19LifecycleBaseDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE"></span><span class="target" id="classros2__canopen_1_1_lifecycle_base_driver_1a86c8f53a5c4511854dae3322e8b86ef9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_rpdo_cb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rpdo_cb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleBaseDriver16register_rpdo_cbENSt8functionIFv6COData7uint8_tEEE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen19LifecycleBaseDriver25node_canopen_base_driver_E">
+<span id="_CPPv3N12ros2_canopen19LifecycleBaseDriver25node_canopen_base_driver_E"></span><span id="_CPPv2N12ros2_canopen19LifecycleBaseDriver25node_canopen_base_driver_E"></span><span id="ros2_canopen::LifecycleBaseDriver::node_canopen_base_driver___std::shared_ptr:node_interfaces::NodeCanopenBaseDriver:rclcpp_lifecycle::LifecycleNode::"></span><span class="target" id="classros2__canopen_1_1_lifecycle_base_driver_1a7b541b2e57f9358fe2e7976d17353fd9"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">node_interfaces</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">NodeCanopenBaseDriver</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rclcpp_lifecycle</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">LifecycleNode</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node_canopen_base_driver_</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen19LifecycleBaseDriver25node_canopen_base_driver_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTaskE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge13TPDOWriteTaskE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge13TPDOWriteTaskE"></span><span id="ros2_canopen::LelyDriverBridge::TPDOWriteTask"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1_1_t_p_d_o_write_task"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPDOWriteTask</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">CoTask</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTaskE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTask13TPDOWriteTaskEP9ev_exec_t">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge13TPDOWriteTask13TPDOWriteTaskEP9ev_exec_t"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge13TPDOWriteTask13TPDOWriteTaskEP9ev_exec_t"></span><span id="ros2_canopen::LelyDriverBridge::TPDOWriteTask::TPDOWriteTask__ev_exec_tP"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1_1_t_p_d_o_write_task_1ac8a597e753f6cb773832e4b48072b24b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPDOWriteTask</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ev_exec_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">exec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTask13TPDOWriteTaskEP9ev_exec_t" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTaskclEv">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge13TPDOWriteTaskclEv"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge13TPDOWriteTaskclEv"></span><span id="ros2_canopen::LelyDriverBridge::TPDOWriteTask::call-operator"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1_1_t_p_d_o_write_task_1a5541299dc9c57b497e2d26d8105576ad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTaskclEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTask4dataE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge13TPDOWriteTask4dataE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge13TPDOWriteTask4dataE"></span><span id="ros2_canopen::LelyDriverBridge::TPDOWriteTask::data__COData"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1_1_t_p_d_o_write_task_1a7a312dcdf8185c979e9ed3b782acd20a"></span><a class="reference internal" href="../canopen_core/reference.html#_CPPv4N12ros2_canopen6CODataE" title="ros2_canopen::COData"><span class="n"><span class="pre">COData</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTask4dataE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTask6driverE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge13TPDOWriteTask6driverE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge13TPDOWriteTask6driverE"></span><span id="ros2_canopen::LelyDriverBridge::TPDOWriteTask::driver__LelyDriverBridgeP"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1_1_t_p_d_o_write_task_1a89012ea21572244c8e98cf4426a64db7"></span><a class="reference internal" href="#_CPPv4N12ros2_canopen16LelyDriverBridgeE" title="ros2_canopen::LelyDriverBridge"><span class="n"><span class="pre">LelyDriverBridge</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">driver</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTask6driverE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTask3mtxE">
+<span id="_CPPv3N12ros2_canopen16LelyDriverBridge13TPDOWriteTask3mtxE"></span><span id="_CPPv2N12ros2_canopen16LelyDriverBridge13TPDOWriteTask3mtxE"></span><span id="ros2_canopen::LelyDriverBridge::TPDOWriteTask::mtx__std::mutex"></span><span class="target" id="classros2__canopen_1_1_lely_driver_bridge_1_1_t_p_d_o_write_task_1a0f4db26782c8a4c2fd41136b420c82e4"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mtx</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen16LelyDriverBridge13TPDOWriteTask3mtxE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv44lely">
+<span id="_CPPv34lely"></span><span id="_CPPv24lely"></span><span id="lely"></span><span class="target" id="namespacelely"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lely</span></span></span><a class="headerlink" href="#_CPPv44lely" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv412ros2_canopen">
+<span id="_CPPv312ros2_canopen"></span><span id="_CPPv212ros2_canopen"></span><span id="ros2_canopen"></span><span class="target" id="namespaceros2__canopen"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ros2_canopen</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-enums">Enums</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrcE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrcE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrcE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LelyBridgeErrc</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrcE" title="Permalink to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc15NotListedDeviceE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc15NotListedDeviceE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc15NotListedDeviceE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a9c2b54a378c51fcc1170d96afe72cceb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NotListedDevice</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc15NotListedDeviceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc22NoResponseOnDeviceTypeE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc22NoResponseOnDeviceTypeE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc22NoResponseOnDeviceTypeE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a5ad9f67ca8a718a183e75963ce52b7c2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NoResponseOnDeviceType</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc22NoResponseOnDeviceTypeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc20DeviceTypeDifferenceE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc20DeviceTypeDifferenceE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc20DeviceTypeDifferenceE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a71862821f6eff557b9668b41704f2c48"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceTypeDifference</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc20DeviceTypeDifferenceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc18VendorIdDifferenceE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc18VendorIdDifferenceE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc18VendorIdDifferenceE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a4bc2752f0ec365c9f0b4f722e611b111"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VendorIdDifference</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc18VendorIdDifferenceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc14HeartbeatIssueE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc14HeartbeatIssueE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc14HeartbeatIssueE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a44b95edec97c27117756393ad1a463dc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HeartbeatIssue</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc14HeartbeatIssueE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc17NodeGuardingIssueE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc17NodeGuardingIssueE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc17NodeGuardingIssueE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a92b051bef638a514878fc1b20288077c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeGuardingIssue</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc17NodeGuardingIssueE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc27InconsistentProgramDownloadE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc27InconsistentProgramDownloadE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc27InconsistentProgramDownloadE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a0864abeaa27dc3a5ff8ca97394a41ec8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InconsistentProgramDownload</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc27InconsistentProgramDownloadE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc22SoftwareUpdateRequiredE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc22SoftwareUpdateRequiredE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc22SoftwareUpdateRequiredE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a1edeb17aad08f676079cb3a85c79100b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SoftwareUpdateRequired</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc22SoftwareUpdateRequiredE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc22SoftwareDownloadFailedE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc22SoftwareDownloadFailedE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc22SoftwareDownloadFailedE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a71c1db687edd6a5080f9b82fea75f4ac"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SoftwareDownloadFailed</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc22SoftwareDownloadFailedE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc27ConfigurationDownloadFailedE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc27ConfigurationDownloadFailedE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc27ConfigurationDownloadFailedE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a695b58c7acd7550a8813ec72fe1b53fe"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConfigurationDownloadFailed</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc27ConfigurationDownloadFailedE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc23StartErrorControlFailedE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc23StartErrorControlFailedE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc23StartErrorControlFailedE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a80e5d28733d4b021b9d09c4cdcd99497"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StartErrorControlFailed</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc23StartErrorControlFailedE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc28NmtSlaveInitiallyOperationalE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc28NmtSlaveInitiallyOperationalE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc28NmtSlaveInitiallyOperationalE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a9a8145f39c59c499994550af42acb3d1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NmtSlaveInitiallyOperational</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc28NmtSlaveInitiallyOperationalE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc21ProductCodeDifferenceE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc21ProductCodeDifferenceE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc21ProductCodeDifferenceE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a40773e7d459e30762d26b9f9df6cf500"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProductCodeDifference</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc21ProductCodeDifferenceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc22RevisionCodeDifferenceE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc22RevisionCodeDifferenceE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc22RevisionCodeDifferenceE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9aec808d704b382bcda4df997c5e1ac372"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RevisionCodeDifference</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc22RevisionCodeDifferenceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N12ros2_canopen14LelyBridgeErrc22SerialNumberDifferenceE">
+<span id="_CPPv3N12ros2_canopen14LelyBridgeErrc22SerialNumberDifferenceE"></span><span id="_CPPv2N12ros2_canopen14LelyBridgeErrc22SerialNumberDifferenceE"></span><span class="target" id="lely__driver__bridge_8hpp_1a8d79337d5c37bb1ceccafdd8a291f4d9a841a2be9d9dc91096f6783847ac4ee9f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SerialNumberDifference</span></span></span><a class="headerlink" href="#_CPPv4N12ros2_canopen14LelyBridgeErrc22SerialNumberDifferenceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4St">
+<span id="_CPPv3St"></span><span id="_CPPv2St"></span><span id="std"></span><span class="target" id="namespacestd"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">std</span></span></span><a class="headerlink" href="#_CPPv4St" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NSt15make_error_codeEN12ros2_canopen14LelyBridgeErrcE">
+<span id="_CPPv3NSt15make_error_codeEN12ros2_canopen14LelyBridgeErrcE"></span><span id="_CPPv2NSt15make_error_codeEN12ros2_canopen14LelyBridgeErrcE"></span><span id="std::make_error_code__ros2_canopen::LelyBridgeErrc"></span><span class="target" id="lely__driver__bridge_8hpp_1a23c633b1cb9f4fff3650f3502c4498f7"></span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">error_code</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">make_error_code</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../canopen_402_driver/reference.html#_CPPv412ros2_canopen" title="ros2_canopen"><span class="n"><span class="pre">ros2_canopen</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N12ros2_canopen14LelyBridgeErrcE" title="ros2_canopen::LelyBridgeErrc"><span class="n"><span class="pre">LelyBridgeErrc</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4NSt15make_error_codeEN12ros2_canopen14LelyBridgeErrcE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4NSt15chrono_literalsE">
+<span id="_CPPv3NSt15chrono_literalsE"></span><span id="_CPPv2NSt15chrono_literalsE"></span><span id="std::chrono_literals"></span><span class="target" id="namespacestd_1_1chrono__literals"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">chrono_literals</span></span></span><a class="headerlink" href="#_CPPv4NSt15chrono_literalsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="base__driver_8hpp"></span><em><span class="pre">file</span></em> <span class="sig-name descname"><span class="pre">base_driver.hpp</span></span></dt>
+<dd><div class="docutils container">
+<em>#include “canopen_base_driver/node_interfaces/node_canopen_base_driver.hpp”</em></div>
+<div class="docutils container">
+<em>#include “canopen_core/driver_node.hpp”</em></div>
+</dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="lely__driver__bridge_8hpp"></span><em><span class="pre">file</span></em> <span class="sig-name descname"><span class="pre">lely_driver_bridge.hpp</span></span></dt>
+<dd><div class="docutils container">
+<em>#include &lt;lely/coapp/fiber_driver.hpp&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;lely/coapp/master.hpp&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;lely/ev/future.hpp&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;lely/ev/co_task.hpp&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;memory&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;mutex&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;atomic&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;future&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;thread&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;vector&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;condition_variable&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;system_error&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;rclcpp/rclcpp.hpp&gt;</em></div>
+<div class="docutils container">
+<em>#include “canopen_core/exchange.hpp”</em></div>
+</dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="lifecycle__base__driver_8hpp"></span><em><span class="pre">file</span></em> <span class="sig-name descname"><span class="pre">lifecycle_base_driver.hpp</span></span></dt>
+<dd><div class="docutils container">
+<em>#include “canopen_base_driver/node_interfaces/node_canopen_base_driver.hpp”</em></div>
+<div class="docutils container">
+<em>#include “canopen_core/driver_node.hpp”</em></div>
+</dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="dir_4c144211a4133b38e2210250ee22a6cb"></span><em><span class="pre">dir</span></em> <span class="sig-name descname"><span class="pre">/home/runner/work/ros2_canopen/ros2_canopen/canopen_base_driver</span></span></dt>
+<dd></dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="dir_6d41f9fd769998c45993db620ce0fce3"></span><em><span class="pre">dir</span></em> <span class="sig-name descname"><span class="pre">/home/runner/work/ros2_canopen/ros2_canopen/canopen_base_driver/include/canopen_base_driver</span></span></dt>
+<dd></dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="dir_4c0ba9677f819a7e42aead458bc90622"></span><em><span class="pre">dir</span></em> <span class="sig-name descname"><span class="pre">/home/runner/work/ros2_canopen/ros2_canopen/canopen_base_driver/include</span></span></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../canopen_core/reference.html" class="btn btn-neutral float-left" title="Core API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../canopen_proxy_driver/reference.html" class="btn btn-neutral float-right" title="Proxy Driver API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
