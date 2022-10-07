@@ -7,7 +7,7 @@ void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp::Node>::demand_set_
     RCLCPP_DEBUG(node_->get_logger(), "demand_set_master_start");
     if (!configured_.load())
     {
-        throw ros2_canopen::DriverException(DriverErrorCode::DriverNotConfigured, "Set Master");
+        throw ros2_canopen::DriverException("Set Master: driver is not configured");
     }
     std::string init_service_name = container_name_ + "/init_driver";
     RCLCPP_DEBUG(node_->get_logger(), "Service: %s", init_service_name.c_str());
@@ -41,7 +41,7 @@ void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp::Node>::demand_set_
     else
     {
         RCLCPP_ERROR(node_->get_logger(), "Could not get result.");
-        throw DriverException(DriverManual, "Could not get result.");
+        throw DriverException("Could not get result.");
     }
 }
 
@@ -51,7 +51,7 @@ void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp_lifecycle::Lifecycl
     RCLCPP_DEBUG(node_->get_logger(), "demand_set_master_start");
     if (!configured_.load())
     {
-        throw ros2_canopen::DriverException(DriverErrorCode::DriverNotConfigured, "Set Master");
+        throw ros2_canopen::DriverException("Set Master: driver is not configured");
     }
     std::string init_service_name = container_name_ + "/init_driver";
     rclcpp::Client<canopen_interfaces::srv::CONode>::SharedPtr demand_set_master_client;
@@ -84,7 +84,7 @@ void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp_lifecycle::Lifecycl
     else
     {
         RCLCPP_ERROR(node_->get_logger(), "Could not get result.");
-        throw DriverException(DriverManual, "Could not get result.");
+        throw DriverException("Could not get result.");
     }
 }
 

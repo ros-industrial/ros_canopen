@@ -1,0 +1,4 @@
+---
+master:
+  driver: "ros2_canopen::CanopenMaster"
+  package: "canopen_core"

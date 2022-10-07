@@ -54,7 +54,7 @@ namespace ros2_canopen
         DeviceContainer(
             std::weak_ptr<rclcpp::Executor> executor =
                 std::weak_ptr<rclcpp::executors::MultiThreadedExecutor>(),
-            std::string node_name = "lifecycle_device_container_node",
+            std::string node_name = "device_container",
             const rclcpp::NodeOptions &node_options = rclcpp::NodeOptions()) : rclcpp_components::ComponentManager(executor, node_name, node_options)
         {
 
@@ -96,41 +96,73 @@ namespace ros2_canopen
                   const std::string &bus_config,
                   const std::string &master_bin = "");
 
-        void configure();
+        virtual void configure();
         /**
          * @brief Loads drivers from configuration
          *
          * @return true
          * @return false
          */
-        bool load_drivers();
+        virtual bool load_drivers();
         /**
          * @brief Loads master from configuration
          *
          * @return true
          * @return false
          */
-        bool load_master();
+        virtual bool load_master();
         /**
          * @brief Loads the device manager
          *
          * @return true
          * @return false
          */
-        bool load_manager();
+        virtual bool load_manager();
+
+        /**
+         * @brief Load a component
+         *
+         * @param [in] package_name     Name of the package
+         * @param [in] driver_name      Name of the driver class to load
+         * @param [in] node_id          CANopen node id of the target device
+         * @param [in] node_name        Node name of the ROS node
+         * @return true
+         * @return false
+         */
+        virtual bool load_component(
+            std::string &package_name,
+            std::string &driver_name,
+            uint16_t node_id,
+            std::string &node_name,
+            std::vector<rclcpp::Parameter> &params);
 
         /**
          * @brief Shutdown all devices.
          *
          */
-        void shutdown()
+        virtual void shutdown()
         {
             for (auto it = registered_drivers_.begin(); it != registered_drivers_.end(); ++it)
             {
-                it->second->shutdown();
-                break;
+                try
+                {
+                    it->second->shutdown();
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
             }
-            can_master_->shutdown();
+            try
+            {
+                can_master_->shutdown();
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+            }
+            
+            
         }
         /**
          * @brief Callback for the listing service
@@ -150,7 +182,7 @@ namespace ros2_canopen
          *
          * @return std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>>
          */
-        std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>> get_registered_drivers()
+        virtual std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>> get_registered_drivers()
         {
             return registered_drivers_;
         }
@@ -160,7 +192,7 @@ namespace ros2_canopen
          *
          * @return size_t
          */
-        size_t count_drivers()
+        virtual size_t count_drivers()
         {
             return registered_drivers_.size();
         }
@@ -271,22 +303,7 @@ namespace ros2_canopen
             response->success = init_driver(request->nodeid);
         }
 
-        /**
-         * @brief Load a component
-         *
-         * @param [in] package_name     Name of the package
-         * @param [in] driver_name      Name of the driver class to load
-         * @param [in] node_id          CANopen node id of the target device
-         * @param [in] node_name        Node name of the ROS node
-         * @return true
-         * @return false
-         */
-        bool load_component(
-            std::string &package_name,
-            std::string &driver_name,
-            uint16_t node_id,
-            std::string &node_name,
-            std::vector<rclcpp::Parameter> &params);
+
 
         /**
          * @brief Returns a list of components
@@ -302,7 +319,7 @@ namespace ros2_canopen
          * @param [in] node_id      CANopen node id of the target device
          * @param [in] node_name    Node name
          */
-        void add_node_to_executor(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_interface)
+        virtual void add_node_to_executor(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_interface)
         {
             if (auto exec = executor_.lock())
             {

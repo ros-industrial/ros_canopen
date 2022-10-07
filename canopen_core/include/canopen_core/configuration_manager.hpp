@@ -21,6 +21,7 @@
 #include <map>
 #include <vector>
 #include <optional>
+#include <rclcpp/rclcpp.hpp>
 #include "yaml-cpp/yaml.h"
 
 namespace ros2_canopen
@@ -65,7 +66,7 @@ namespace ros2_canopen
             }
             catch (const std::exception &e)
             {
-                std::cerr << e.what() << '\n';
+                RCLCPP_INFO(rclcpp::get_logger("yaml-cpp"), "Failed to load entry \"%s\" for device \"%s\" ", entry_name.c_str(), device_name.c_str());
             }
 
             return std::nullopt;

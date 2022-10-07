@@ -157,7 +157,7 @@ namespace ros2_canopen
         uint8_t master_id_;             ///< Stores master id
         std::string container_name_;    ///< Stores name of the associated device_container
 
-    private:
+    protected:
         template <typename FutureT, typename WaitTimeT>
         std::future_status
         wait_for_result(
@@ -187,8 +187,8 @@ namespace ros2_canopen
          * @param [in] time_out 
          * @return unsigned int 
          */
-        unsigned int
-        get_state(uint8_t node_id, std::chrono::seconds time_out = 3s);
+        virtual unsigned int
+        get_state(uint8_t node_id, std::chrono::seconds time_out);
 
         /**
          * @brief Change the lifecycle state of a driver node
@@ -199,8 +199,8 @@ namespace ros2_canopen
          * @return true 
          * @return false 
          */
-        bool
-        change_state(uint8_t node_id, uint8_t transition, std::chrono::seconds time_out = 3s);
+        virtual bool
+        change_state(uint8_t node_id, uint8_t transition, std::chrono::seconds time_out);
 
         /**
          * @brief Brings up master and all drivers
@@ -211,7 +211,7 @@ namespace ros2_canopen
          * @return true
          * @return false
          */
-        bool
+        virtual bool
         bring_up_all();
 
         /**
@@ -223,7 +223,7 @@ namespace ros2_canopen
          * @return true
          * @return false
          */
-        bool
+        virtual bool
         bring_down_all();
 
         /**
@@ -236,7 +236,7 @@ namespace ros2_canopen
          * @return true
          * @return false
          */
-        bool
+        virtual bool
         bring_up_master();
 
         /**
@@ -249,7 +249,7 @@ namespace ros2_canopen
          * @return true
          * @return false
          */
-        bool
+        virtual bool
         bring_down_master();
 
         /**
@@ -264,7 +264,7 @@ namespace ros2_canopen
          * @return true
          * @return false
          */
-        bool
+        virtual bool
         bring_up_driver(std::string device_name);
 
         /**
@@ -279,7 +279,7 @@ namespace ros2_canopen
          * @return true
          * @return false
          */
-        bool
+        virtual bool
         bring_down_driver(std::string device_name);
 
         /**
@@ -291,7 +291,7 @@ namespace ros2_canopen
          * @return true
          * @return false
          */
-        bool
+        virtual bool
         load_from_config();
     };
 }

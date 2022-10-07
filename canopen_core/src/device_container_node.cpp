@@ -29,5 +29,7 @@ int main(int argc, char const *argv[])
     exec->add_node(device_container);
     exec->spin();
     spinThread.join();
+    device_container->shutdown();
+    rclcpp::shutdown();
     return 0;
 }

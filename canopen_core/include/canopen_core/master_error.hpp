@@ -6,29 +6,15 @@
 namespace ros2_canopen
 {
 
-  enum MasterErrorCode
-  {
-    MasterNotMasterSet = 1,
-    MasterNotInitialised = 2,
-    MasterNotConfigured = 3,
-    MasterNotActivated = 4,
-    MasterAlreadyMasterSet = 5,
-    MasterAlreadyInitialised = 6,
-    MasterAlreadyConfigured = 7,
-    MasterAlreadyActivated = 8,
-  };
-
   class MasterException : public std::exception
   {
   private:
-    std::string where_;
-    MasterErrorCode code_;
+    std::string what_;
 
   public:
-    MasterException(MasterErrorCode code, std::string where)
+    MasterException(std::string what)
     {
-      where_ = where;
-      code_ = code;
+      what_ = what;
     }
 
     char *what();

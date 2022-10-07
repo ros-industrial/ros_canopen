@@ -65,7 +65,7 @@ void NodeCanopenBaseDriver<NODETYPE>::add_to_master()
 	if (future_status != std::future_status::ready)
 	{
 		RCLCPP_ERROR(this->node_->get_logger(), "Adding timed out.");
-		throw DriverException(DriverErrorCode::DriverFailedAddingToMaster, "add_to_master");
+		throw DriverException("add_to_master: adding timed out");
 	}
 	this->lely_driver_ = f.get();
 	this->driver_ = std::static_pointer_cast<lely::canopen::BasicDriver>(this->lely_driver_);
@@ -98,7 +98,7 @@ void NodeCanopenBaseDriver<NODETYPE>::remove_from_master()
 	auto future_status = f.wait_for(this->non_transmit_timeout_);
 	if (future_status != std::future_status::ready)
 	{
-		throw DriverException(DriverErrorCode::DriverFailedRemovnigFromMaster, "remove_from_master");
+		throw DriverException("remove_from_master: removing timed out");
 	}
 }
 template <class NODETYPE>
@@ -116,12 +116,18 @@ void NodeCanopenBaseDriver<NODETYPE>::nmt_listener()
 			if (!this->activated_.load())
 				return;
 		}
-		auto state = f.get();
-		if (nmt_state_cb_)
-		{
-			nmt_state_cb_(state, this->lely_driver_->get_id());
+		try{
+			auto state = f.get();
+			if (nmt_state_cb_)
+			{
+				nmt_state_cb_(state, this->lely_driver_->get_id());
+			}
+			on_nmt(state);
 		}
-		on_nmt(state);
+		catch (const std::future_error &e)
+		{
+			break;
+		}
 	}
 }
 template <class NODETYPE>
@@ -150,12 +156,21 @@ void NodeCanopenBaseDriver<NODETYPE>::rdpo_listener()
 			if (!this->activated_.load())
 				return;
 		}
-		auto rpdo = f.get();
-		if (rpdo_cb_)
+		try
 		{
-			rpdo_cb_(rpdo, this->lely_driver_->get_id());
+			auto rpdo = f.get();
+			if (rpdo_cb_)
+			{
+				rpdo_cb_(rpdo, this->lely_driver_->get_id());
+			}
+			on_rpdo(f.get());
 		}
-		on_rpdo(f.get());
+		catch(const std::future_error& e)
+		{
+			break;
+		}
+		
+
 	}
 }
 

@@ -82,11 +82,11 @@ namespace ros2_canopen
                 RCLCPP_DEBUG(node_->get_logger(), "set_master_start");
                 if (!configured_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotConfigured, "Set Master");
+                    throw DriverException("Set Master: driver is not configured");
                 }
                 if (activated_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Set Master");
+                    throw DriverException("Set Master: driver is not activated");
                 }
                 this->exec_ = exec;
                 this->master_ = master;
@@ -106,11 +106,11 @@ namespace ros2_canopen
                 RCLCPP_DEBUG(node_->get_logger(), "init_start");
                 if (configured_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverAlreadyConfigured, "Init");
+                    throw DriverException("Init: Driver is already configured");
                 }
                 if (activated_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Init");
+                    throw DriverException("Init: Driver is already activated");
                 }
                 client_cbg_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
                 timer_cbg_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
@@ -140,15 +140,15 @@ namespace ros2_canopen
                 RCLCPP_DEBUG(node_->get_logger(), "configure_start");
                 if (!initialised_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotInitialised, "Configure");
+                    throw DriverException("Configure: driver is not initialised");
                 }
                 if (configured_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverAlreadyConfigured, "Configure");
+                    throw DriverException("Configure: driver is already configured");
                 }
                 if (activated_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Configure");
+                    throw DriverException("Configure: driver is already activated");
                 }
                 int non_transmit_timeout;
                 std::string config;
@@ -179,19 +179,19 @@ namespace ros2_canopen
                 RCLCPP_DEBUG(node_->get_logger(), "activate_start");
                 if (!master_set_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotMasterSet, "Activate");
+                    throw DriverException("Activate: master is not set");
                 }
                 if (!initialised_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotInitialised, "Activate");
+                    throw DriverException("Activate: driver is not initialised");
                 }
                 if (!configured_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotConfigured, "Activate");
+                    throw DriverException("Activate: driver is not configured");
                 }
                 if (activated_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Activate");
+                    throw DriverException("Activate: driver is already activated");
                 }
                 this->add_to_master();
                 this->activate(true);
@@ -213,21 +213,25 @@ namespace ros2_canopen
             void deactivate()
             {
                 RCLCPP_DEBUG(node_->get_logger(), "deactivate_start");
+                if (!master_set_.load())
+                {
+                    throw DriverException("Activate: master is not set");
+                }
                 if (!initialised_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotInitialised, "Deactivate");
+                    throw DriverException("Deactivate: driver is not intialised");
                 }
                 if (!configured_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotConfigured, "Deactivate");
+                    throw DriverException("Deactivate: driver is not configured");
                 }
                 if (!activated_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotActivated, "Deactivate");
+                    throw DriverException("Deactivate: driver is not activated");
                 }
+                this->activated_.store(false);
                 this->remove_from_master();
                 this->deactivate(true);
-                this->activated_.store(false);
                 RCLCPP_DEBUG(node_->get_logger(), "deactivate_end");
             }
 
@@ -246,15 +250,15 @@ namespace ros2_canopen
             {
                 if (!initialised_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotInitialised, "Cleanup");
+                    throw DriverException("Cleanup: driver is not intialised");
                 }
                 if (!configured_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverNotConfigured, "Cleanup");
+                    throw DriverException("Cleanup: driver is not configured");
                 }
                 if (activated_.load())
                 {
-                    throw DriverException(DriverErrorCode::DriverAlreadyActivated, "Cleanup");
+                    throw DriverException("Cleanup: driver is still activated");
                 }
                 this->configured_.store(false);
             }
@@ -300,7 +304,7 @@ namespace ros2_canopen
              */
             virtual void add_to_master()
             {
-                throw DriverException(DriverManual, "Add to master not implemented.");
+                throw DriverException("Add to master not implemented.");
             }
 
             /**
@@ -309,7 +313,7 @@ namespace ros2_canopen
              */
             virtual void remove_from_master()
             {
-                throw DriverException(DriverManual, "Remove from master not implemented.");
+                throw DriverException("Remove from master not implemented.");
             }
         };
     }

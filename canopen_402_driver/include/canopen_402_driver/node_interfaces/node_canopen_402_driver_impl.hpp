@@ -175,7 +175,7 @@ void NodeCanopen402Driver<NODETYPE>::add_to_master()
 	if (future_status != std::future_status::ready)
 	{
 		RCLCPP_ERROR(this->node_->get_logger(), "Adding timed out.");
-		throw DriverException(DriverErrorCode::DriverFailedAddingToMaster, "add_to_master");
+		throw DriverException("add_to_master: Adding timed out.");
 	}
 	this->mc_driver_ = f.get();
 	this->motor_ = std::make_shared<Motor402>(mc_driver_);
@@ -191,7 +191,10 @@ void NodeCanopen402Driver<NODETYPE>::add_to_master()
 		catch (const std::exception &e)
 		{
 			RCLCPP_ERROR(this->node_->get_logger(), e.what());
-			throw DriverException(DriverErrorCode::DriverFailedAddingToMaster, "add_to_master");
+			std::string msg;
+			msg.append("add_to_master: ");
+			msg.append(e.what());
+			throw DriverException(msg);
 		}
 	}
 	RCLCPP_INFO(this->node_->get_logger(), "Driver booted and ready.");

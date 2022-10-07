@@ -38,12 +38,13 @@ bool DeviceContainer::load_component(
     std::vector<rclcpp::Parameter> &params)
 {
     ComponentResource component;
-    std::vector<ComponentResource> components = this->get_component_resources(package_name);
+    std::string resource_index("rclcpp_components");
+    std::vector<ComponentResource> components = this->get_component_resources(package_name, resource_index);
     for (auto it = components.begin(); it != components.end(); ++it)
     {
         if (it->first.compare(driver_name) == 0)
         {
-            auto factory_node = this->create_component_factory(*it);
+            std::shared_ptr<rclcpp_components::NodeFactory> factory_node = this->create_component_factory(*it);
             rclcpp::NodeOptions opts;
             opts.use_global_arguments(false);
             std::vector<std::string> remap_rules;
@@ -80,7 +81,7 @@ bool DeviceContainer::load_component(
                             execption_string.append(driver_name);
                             execption_string.append(" for device ");
                             execption_string.append(node_name);
-                            execption_string.append("is not a lifecycle driver while the master is.");
+                            execption_string.append(" is not a lifecycle driver while the master is.");
                             RCLCPP_ERROR(this->get_logger(), execption_string.c_str());
                             throw DeviceContainerException(execption_string);
                         }
@@ -99,7 +100,7 @@ bool DeviceContainer::load_component(
                             execption_string.append(driver_name);
                             execption_string.append(" for device ");
                             execption_string.append(node_name);
-                            execption_string.append("is a lifecycle driver while the master is not.");
+                            execption_string.append(" is a lifecycle driver while the master is not.");
                             RCLCPP_ERROR(this->get_logger(), execption_string.c_str());
                             throw DeviceContainerException(execption_string);
                         }
@@ -114,14 +115,14 @@ bool DeviceContainer::load_component(
             {
                 // In the case that the component constructor throws an exception,
                 // rethrow into the following catch block.
-                throw rclcpp_components::ComponentManagerException(
+                throw DeviceContainerException(
                     "Component constructor threw an exception: " + std::string(ex.what()));
             }
             catch (...)
             {
                 // In the case that the component constructor throws an exception,
                 // rethrow into the following catch block.
-                throw rclcpp_components::ComponentManagerException("Component constructor threw an exception");
+                throw DeviceContainerException("Component constructor threw an exception");
             }
 
             return true;
@@ -154,12 +155,40 @@ void DeviceContainer::configure()
         RCLCPP_ERROR(this->get_logger(), "Parameter bus_config could not be read.");
     }
 
+    if(can_interface_name_.length() == 0)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Parameter can_interface_name was not set.");
+        throw DeviceContainerException("Fatal: Getting Parameter failed.");
+    }
+
+    if(dcf_txt_.length() == 0)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Parameter master_config was not set.");
+        throw DeviceContainerException("Fatal: Getting Parameter failed.");
+    }
+
+    if(bus_config_.length() == 0)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Parameter bus_config was not set.");
+        throw DeviceContainerException("Fatal: Getting Parameter failed.");
+    }
+    
     RCLCPP_INFO(this->get_logger(), "Starting Device Container with:");
     RCLCPP_INFO(this->get_logger(), "\t master_config %s", dcf_txt_.c_str());
     RCLCPP_INFO(this->get_logger(), "\t bus_config %s", bus_config_.c_str());
+    RCLCPP_INFO(this->get_logger(), "\t can_interface_name %s", can_interface_name_.c_str());
 
-    this->config_ = std::make_unique<ros2_canopen::ConfigurationManager>(bus_config_);
-    this->config_->init_config();
+    try
+    {
+        this->config_ = std::make_unique<ros2_canopen::ConfigurationManager>(bus_config_);
+        this->config_->init_config();
+
+    }
+    catch(const std::exception& e)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Loading bus configuration %s failed", bus_config_.c_str());
+        throw DeviceContainerException("Fatal: Loading bus configuration " + bus_config_ + " failed.");
+    }
 }
 
 bool DeviceContainer::load_master()
@@ -219,12 +248,6 @@ bool DeviceContainer::load_drivers()
     RCLCPP_INFO(this->get_logger(), "Loading Driver Configuration.");
     std::vector<std::string> devices;
     uint32_t count = this->config_->get_all_devices(devices);
-    std::sort(devices.begin(), devices.end());
-    auto it = std::unique(devices.begin(), devices.end());
-    if (it != devices.end())
-    {
-        RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has dublicate device names.");
-    }
 
     for (auto it = devices.begin(); it != devices.end(); it++)
     {
@@ -236,23 +259,23 @@ bool DeviceContainer::load_drivers()
             if (!node_id.has_value() || !driver_name.has_value() || !package_name.has_value())
             {
                 RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has uncomplete configuration for %s", it->c_str());
-                throw DeviceContainerException("Error: Bus Configuration has uncomplete configuration.");
+                return false;
             }
 
             if (node_id.value() == can_master_id_)
             {
                 RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has duplicate entry for node id %i", node_id.value());
-                throw DeviceContainerException("Error: Bus Configuration has duplicate entry.");
+                return false;
             }
 
             if (registered_drivers_.count(node_id.value()) != 0)
             {
                 RCLCPP_ERROR(this->get_logger(), "Error: Bus Configuration has duplicate entry for node id %i", node_id.value());
-                throw DeviceContainerException("Error: Bus Configuration has duplicate entry.");
+                return false;
             }
 
             RCLCPP_INFO(this->get_logger(), "Found device %s with driver %s", it->c_str(), driver_name.value().c_str());
-
+            
             std::vector<rclcpp::Parameter> params;
             params.push_back(rclcpp::Parameter("container_name", this->get_fully_qualified_name()));
             params.push_back(rclcpp::Parameter("node_id", (int)node_id.value()));
@@ -261,8 +284,12 @@ bool DeviceContainer::load_drivers()
 
             if (!this->load_component(package_name.value(), driver_name.value(), node_id.value(), *it, params))
             {
-                RCLCPP_ERROR(this->get_logger(), "Error: Loading driver failed.");
-                throw DeviceContainerException("Error: Loading driver failed.");
+                RCLCPP_ERROR(this->get_logger(), "Loading driver failed: node_id(%hu), node_name(%s), driver(%s), driver_package(%s)",
+                    node_id.value(),
+                    it->c_str(),
+                    driver_name.value().c_str(),
+                    package_name.value().c_str());
+                return false;
             }
             add_node_to_executor(registered_drivers_[node_id.value()]->get_node_base_interface());
             registered_drivers_[node_id.value()]->init();
@@ -358,7 +385,8 @@ void DeviceContainer::on_list_nodes(
     auto components = list_components();
     for (auto it = components.begin(); it != components.end(); ++it)
     {
-        response->unique_ids.push_back(it->first);
+        RCLCPP_INFO(this->get_logger(), "%hu - %s", it->first, it->second.c_str());
+        response->unique_ids.push_back((uint64_t)it->first);
         response->full_node_names.push_back(it->second);
     }
 }
@@ -370,8 +398,11 @@ std::map<uint16_t, std::string> DeviceContainer::list_components()
     components[can_master_id_] =
         can_master_->get_node_base_interface()->get_fully_qualified_name();
 
-    // components[256] =
-    //     lifecycle_manager->get_fully_qualitfied_name();
+    if(this->lifecycle_operation_)
+    {
+        components[256] =
+            lifecycle_manager_->get_node_base_interface()->get_fully_qualified_name();
+    }
 
     for (auto &driver : registered_drivers_)
     {
