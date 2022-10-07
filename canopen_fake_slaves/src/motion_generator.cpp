@@ -1,4 +1,4 @@
-#include "canopen_mock_slave/motion_generator.hpp"
+#include "canopen_fake_slaves/motion_generator.hpp"
 #include <cmath>
 #include <iostream>
 

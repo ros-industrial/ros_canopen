@@ -26,7 +26,7 @@ def generate_test_description():
         PythonLaunchDescriptionSource(
             [
                 os.path.join(get_package_share_directory("canopen_tests"), "launch"),
-                "/proxy_setup.launch.py",
+                "/proxy_lifecycle_setup.launch.py",
             ]
         )
     )
@@ -64,6 +64,10 @@ class TestLifecycle(unittest.TestCase):
         self.x.join()
 
 
+    def test_01_to_active(self):
+        assert self.node.checkTransition("lifecycle_manager", State.PRIMARY_STATE_UNCONFIGURED, Transition.TRANSITION_CONFIGURE), "Could not configure device manager"
+        assert self.node.checkTransition("lifecycle_manager", State.PRIMARY_STATE_INACTIVE, Transition.TRANSITION_ACTIVATE), "Could not configure device manager"
+    
     def test_02_nmt(self):
         assert self.node.checkTrigger("proxy_device_1", "nmt_reset_node")
         assert self.node.checkTrigger("proxy_device_2", "nmt_reset_node")
@@ -88,3 +92,8 @@ class TestLifecycle(unittest.TestCase):
         assert self.node.checkSDOWriteID(node_id=3, index=0x4000, subindex=0, type=32, data=999)        
         assert self.node.checkSDOReadID(node_id=2, index=0x4000, subindex=0, type=32, data=999)
         assert self.node.checkSDOReadID(node_id=3, index=0x4000, subindex=0, type=32, data=999)
+
+    def test_07_to_unconfigured(self):
+        assert self.node.checkTransition("lifecycle_manager", State.PRIMARY_STATE_ACTIVE, Transition.TRANSITION_DEACTIVATE), "Could not configure device manager"
+        assert self.node.checkTransition("lifecycle_manager", State.PRIMARY_STATE_INACTIVE, Transition.TRANSITION_CLEANUP), "Could not configure device manager"
+    

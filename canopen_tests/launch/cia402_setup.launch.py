@@ -15,7 +15,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [
                 os.path.join(
-                    get_package_share_directory("canopen_mock_slave"), "launch"
+                    get_package_share_directory("canopen_fake_slaves"), "launch"
                 ),
                 "/cia402_slave.launch.py",
             ]

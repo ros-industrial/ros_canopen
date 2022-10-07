@@ -14,8 +14,8 @@
 #include <mutex>
 
 #include "lifecycle_msgs/msg/state.hpp"
-#include "canopen_mock_slave/base_slave.hpp"
-#include "canopen_mock_slave/motion_generator.hpp"
+#include "canopen_fake_slaves/base_slave.hpp"
+#include "canopen_fake_slaves/motion_generator.hpp"
 
 using namespace lely;
 using namespace std::chrono_literals;

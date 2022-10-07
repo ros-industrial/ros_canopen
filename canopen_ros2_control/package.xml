@@ -22,7 +22,7 @@
   <depend>xacro</depend>
   <depend>joint_state_broadcaster</depend>
 
-  <exec_depend>canopen_mock_slave</exec_depend>
+  <exec_depend>canopen_fake_slaves</exec_depend>
   <exec_depend>canopen_tests</exec_depend>
 
   <test_depend>ament_cmake_gmock</test_depend>

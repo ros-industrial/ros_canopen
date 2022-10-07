@@ -28,7 +28,7 @@ def generate_launch_description():
 
     slave_config_arg = DeclareLaunchArgument(
       'slave_config', 
-      default_value=TextSubstitution(text=os.path.join(path_to_test, ".." , "config" , "simple_slave.eds")), 
+      default_value=TextSubstitution(text=os.path.join(path_to_test, ".." , "config" , "cia402_slave.eds")), 
       description="Path to eds file to be used for the slave."
     )
 
@@ -47,9 +47,9 @@ def generate_launch_description():
     slave_node = launch_ros.actions.LifecycleNode(
         name=LaunchConfiguration("node_name"), 
         namespace="", 
-        package="canopen_mock_slave", 
+        package="canopen_fake_slaves", 
         output="screen", 
-        executable="basic_slave_node",
+        executable="cia402_slave_node",
         parameters=[
                 {
                     "slave_config": LaunchConfiguration("slave_config"),

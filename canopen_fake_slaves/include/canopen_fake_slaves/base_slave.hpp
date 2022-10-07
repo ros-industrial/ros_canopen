@@ -19,6 +19,14 @@ namespace ros2_canopen
             this->activated.store(false);
         }
 
+        virtual ~BaseSlave()
+        {
+            if(this->run_thread.joinable())
+            {
+                run_thread.join();
+            }
+        }
+
         virtual void run() = 0;
 
     protected:
@@ -66,6 +74,12 @@ namespace ros2_canopen
             this->activated.store(false);
             RCLCPP_INFO(this->get_logger(), "Reaching unconfigured state.");
             return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+        }
+
+        rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+        on_shutdown(const rclcpp_lifecycle::State &)
+        {
+            RCLCPP_INFO(this->get_logger(), "Shutdown");
         }
     };
 }
