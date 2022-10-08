@@ -12,11 +12,15 @@ Devices are loaded based on the Bus Configuration File (bus.yml). It provides th
 
     device manager concept
 
-The device manager will uses the bus description file to identify the correct drivers for each devices.
+The device manager uses the bus description file to identify the correct drivers for each devices.
 On launch it will load the CANopen master node and pass the generated DCF files to configure the CANopen master
-correctly for you bus configuration. Once a CANopen Node comes online (i.e. sends the boot indication) the CANopen master
+correctly for you bus configuration. It will the enable the master. Once the master is enabled it will 
+sequentially load and enable all drivers in the bus configuration.
+
+Once a CANopen Node comes online (i.e. sends the boot indication) the CANopen master
 will configure the node with the parameters and commands specified in the bus configuration for that device.
-The device manager will then go on loading the drivers specified in the bus configuration file.
+When the configuration of the device is done, all data send by the device is forwarded
+to the appropriate driver.
 
 All loaded nodes are added to the device manager's executor.
 
@@ -33,9 +37,9 @@ non lifecycle drivers.
 .. csv-table:: Available Driver Components
    :header: "Package", "Component"
 
-    canopen_core, ros2_canopen::MasterNode
+    canopen_core, ros2_canopen::MasterDriver
     canopen_proxy_driver, ros2_canopen::ProxyDriver
-    canopen_402_driver, ros2_canopen::MotionControllerDriver
+    canopen_402_driver, ros2_canopen::Cia402Driver
 
 Launching
 """""""""""""

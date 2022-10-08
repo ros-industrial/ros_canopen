@@ -1,7 +1,7 @@
-Motion Controller Driver
+Cia402 Driver
 ========================
 
-The Motion Controller Driver implements the CIA402 profile and enables setting
+The Cia402 Driver implements the CIA402 profile for motion controllers and enables setting
 the drive status, operation mode and sending target values to the motion controller.
 
 
@@ -63,12 +63,9 @@ Publishers
   * - Publishers
     - Type
     - Description
-  * - ~/actual_position 
-    - Float64
-    - Actual position received from motion controller. Units are the units defined on the device.
-  * - ~/actual_speed
-    - Float64
-    - Actual speed received from motion controller. Units are the units defined on the device.
+  * - ~/joint_states
+    - sensor_msgs/msg/JointState
+    - Joint states of the drive
 
 
 Subscribers
