@@ -119,6 +119,28 @@ is that the device container loads only master and driver components specified i
 configuration (bus.yml). It does not have services for loading components online. All components
 that are connected or will be connected to the CANopen Bus need to be known and specified in
 the bus.yml before starting the device container.</p>
+<p class="plantuml">
+<img src="../_images/plantuml-94c93e72704b1a7f17a8c8cc32b34eea0426dcea.png" alt="rclcpp::ComponentManager &lt;|-- ros2_canopen::DeviceContainer
+
+class rclcpp::ComponentManager
+{
+  std::weak_ptr&lt;rclcpp::Executor&gt; executor_
+  std::vector&lt;ComponentResource&gt; get_component_resources(std::string package_name)
+  std::shared_ptr&lt;NodeFactory&gt; create_component_factory(ComponentResource resource)
+  void on_list_nodes(...)
+  virtual void set_executor(const std::weak_ptr&lt;rclcpp::Executor&gt; executor)
+}
+
+
+class ros2_canopen::DeviceContainer
+{
+  std::shared_ptr&lt;CanopenMasterInterface&gt; can_master_
+  std::shared_ptr&lt;LifecycleManager&gt; lifecycle_manager_
+  std::map&lt;uint16_t, std::shared_ptr&lt;CanopenDriverInterface&gt;&gt; drivers_
+  void on_list_nodes(...) override
+  virtual void set_executor(const std::weak_ptr&lt;rclcpp::Executor&gt; executor) override
+}"/>
+</p>
 <p>The device container will first load the master specified in the bus configuration. Then
 it will load the drivers specified in the bus configuration. If the master and drivers
 specified in the bus configuration are managed nodes it will as well load the ros2_canopen::LifecycleManager.</p>
@@ -138,6 +160,36 @@ that should be inherited from and implements the ros2_canopen::CanopenMasterInte
 <p>The third class is the class that wraps the functionality class in a rclcpp_lifecycle::LifecycleNode. This class should implement the
 ros2_canopen::CanopenMasterInterface. The canopen_core package provides a convenience class ros2_canopen::LifecycleCanopenMaster
 that should be inherited from and implements the ros2_canopen::CanopenMasterInterface.</p>
+<p class="plantuml">
+<img src="../_images/plantuml-29b867adc6edd0e705fbe5e68f92e206f37d3446.png" alt="package &quot;canopen_core&quot; {
+  interface ros2_canopen::CanopenMasterInterface
+  interface ros2_canopen::node_interfaces::NodeCanopenMasterInterface
+  abstract ros2_canopen::LifecycleCanopenMaster
+  abstract ros2_canopen::node_interfaces::NodeCanopenMaster
+  abstract ros2_canopen::CanopenMaster
+
+
+  ros2_canopen::node_interfaces::NodeCanopenMasterInterface - ros2_canopen::CanopenMaster : &lt; has
+  ros2_canopen::LifecycleCanopenMaster - ros2_canopen::node_interfaces::NodeCanopenMasterInterface : &gt; has
+
+  ros2_canopen::CanopenMasterInterface &lt;|-- ros2_canopen::LifecycleCanopenMaster
+  ros2_canopen::node_interfaces::NodeCanopenMasterInterface &lt;|-- ros2_canopen::node_interfaces::NodeCanopenMaster
+  ros2_canopen::CanopenMasterInterface &lt;|-- ros2_canopen::CanopenMaster
+
+}
+
+package &quot;canopen_master_driver&quot; {
+
+  class ros2_canopen::LifecycleMasterDriver &lt;&lt; (C, blue) Component&gt;&gt;
+  class ros2_canopen::node_interfaces::NodeCanopenBasicMaster
+  class ros2_canopen::MasterDriver &lt;&lt; (C, blue) Component&gt;&gt;
+  ros2_canopen::LifecycleMasterDriver - ros2_canopen::node_interfaces::NodeCanopenBasicMaster: &gt; has
+  ros2_canopen::node_interfaces::NodeCanopenBasicMaster - ros2_canopen::MasterDriver : &lt; has
+  ros2_canopen::LifecycleCanopenMaster &lt;|-- ros2_canopen::LifecycleMasterDriver
+  ros2_canopen::node_interfaces::NodeCanopenMaster &lt;|-- ros2_canopen::node_interfaces::NodeCanopenBasicMaster
+  ros2_canopen::CanopenMaster &lt;|-- ros2_canopen::MasterDriver
+}"/>
+</p>
 </section>
 <section id="canopen-device-driver-architecture">
 <h2>CANopen Device Driver Architecture<a class="headerlink" href="#canopen-device-driver-architecture" title="Permalink to this headline"></a></h2>
@@ -155,6 +207,59 @@ that should be inherited from and implements the ros2_canopen::CanopenDriverInte
 <p>The third class is the class that wraps the functionality class in a rclcpp_lifecycle::LifecycleNode. This class should implement the
 ros2_canopen::CanopenDriverInterface. The canopen_core package provides a convenience class ros2_canopen::LifecycleCanopenDriver
 that should be inherited from and implements the ros2_canopen::CanopenDriverInterface.</p>
+<p class="plantuml">
+<img src="../_images/plantuml-0f71861add1ddd6ba6517df97460f50a05db4fb1.png" alt="package &quot;canopen_core&quot; {
+  interface ros2_canopen::CanopenDriverInterface
+  interface ros2_canopen::node_interfaces::NodeCanopenDriverInterface
+  abstract ros2_canopen::LifecycleCanopenDriver
+  abstract ros2_canopen::node_interfaces::NodeCanopenDriver
+  abstract ros2_canopen::CanopenDriver
+
+
+  ros2_canopen::node_interfaces::NodeCanopenDriverInterface - ros2_canopen::CanopenDriver : &lt; has
+  ros2_canopen::LifecycleCanopenDriver - ros2_canopen::node_interfaces::NodeCanopenDriverInterface : &gt; has
+
+  ros2_canopen::CanopenDriverInterface &lt;|-- ros2_canopen::LifecycleCanopenDriver
+  ros2_canopen::node_interfaces::NodeCanopenDriverInterface &lt;|-- ros2_canopen::node_interfaces::NodeCanopenDriver
+  ros2_canopen::CanopenDriverInterface &lt;|-- ros2_canopen::CanopenDriver
+
+}
+
+
+package &quot;canopen_base_driver&quot; {
+
+  class ros2_canopen::LifecycleBaseDriver &lt;&lt; (C, blue) Component&gt;&gt;
+  class ros2_canopen::node_interfaces::NodeCanopenBaseDriver
+  class ros2_canopen::BaseDriver &lt;&lt; (C, blue) Component&gt;&gt;
+  ros2_canopen::LifecycleBaseDriver - ros2_canopen::node_interfaces::NodeCanopenBaseDriver: &gt; has
+  ros2_canopen::node_interfaces::NodeCanopenBaseDriver - ros2_canopen::BaseDriver : &lt; has
+  ros2_canopen::LifecycleCanopenDriver &lt;|-- ros2_canopen::LifecycleBaseDriver
+  ros2_canopen::node_interfaces::NodeCanopenDriver &lt;|-- ros2_canopen::node_interfaces::NodeCanopenBaseDriver
+  ros2_canopen::CanopenDriver &lt;|-- ros2_canopen::BaseDriver
+}
+
+package &quot;canopen_proxy_driver&quot; {
+  class ros2_canopen::LifecycleProxyDriver &lt;&lt; (C, blue) Component&gt;&gt;
+  class ros2_canopen::node_interfaces::NodeCanopenProxyDriver
+  class ros2_canopen::ProxyDriver &lt;&lt; (C, blue) Component&gt;&gt;
+  ros2_canopen::LifecycleProxyDriver - ros2_canopen::node_interfaces::NodeCanopenProxyDriver: &gt; has
+  ros2_canopen::node_interfaces::NodeCanopenProxyDriver - ros2_canopen::ProxyDriver : &lt; has
+  ros2_canopen::LifecycleCanopenDriver &lt;|-- ros2_canopen::LifecycleProxyDriver
+  ros2_canopen::node_interfaces::NodeCanopenBaseDriver &lt;|-- ros2_canopen::node_interfaces::NodeCanopenProxyDriver
+  ros2_canopen::CanopenDriver &lt;|-- ros2_canopen::ProxyDriver
+}
+
+package &quot;canopen_402_driver&quot; {
+  class ros2_canopen::LifecycleCia402Driver &lt;&lt; (C, blue) Component&gt;&gt;
+  class ros2_canopen::node_interfaces::NodeCanopen402Driver
+  class ros2_canopen::Cia402Driver &lt;&lt; (C, blue) Component&gt;&gt;
+  ros2_canopen::LifecycleCia402Driver - ros2_canopen::node_interfaces::NodeCanopen402Driver: &gt; has
+  ros2_canopen::node_interfaces::NodeCanopen402Driver - ros2_canopen::Cia402Driver : &lt; has
+  ros2_canopen::LifecycleCanopenDriver &lt;|-- ros2_canopen::LifecycleCia402Driver
+  ros2_canopen::node_interfaces::NodeCanopenProxyDriver &lt;|-- ros2_canopen::node_interfaces::NodeCanopen402Driver
+  ros2_canopen::CanopenDriver &lt;|-- ros2_canopen::Cia402Driver
+}"/>
+</p>
 </section>
 </section>
 
