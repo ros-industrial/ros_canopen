@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architecture &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Creating a new device driver" href="new-driver.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ros2_canopen
+            <img src="../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/configuration.html">Creating a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/operation.html">Starting a Configuration Package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/configuration/configuration.html">Bus Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/operation.html">Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/service-interface.html">Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/managed-service-interface.html">Managed Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/ros2-control-interface.html">ROS2 Control System Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/master.html">Master Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/proxy-driver.html">Proxy Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/cia402-driver.html">Cia402 Driver</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design-objectives.html">Design Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#device-container">Device Container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#canopen-master-driver-architecture">CANopen Master Driver Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#canopen-device-driver-architecture">CANopen Device Driver Architecture</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="new-master.html">Creating a new master</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ros-industrial.github.io/ros2_canopen/api/">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html#proxy-driver-test">Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Architecture</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developers-guide/architecture.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="architecture">
+<h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline"></a></h1>
+<p>The architecture of the ROS2 CANopen stack is based on the composition
+concept of ROS2. In ROS2 components are dynamically loadable ROS2 nodes
+which are loaded by a component manager.</p>
+<section id="device-container">
+<h2>Device Container<a class="headerlink" href="#device-container" title="Permalink to this headline"></a></h2>
+<p>The core of the ROS2 CANopen stack is the ros2_canopen::DeviceContainer which implements
+the rclcpp::ComponentManager class. The DeviceContainer enables loading drivers for the
+CANopen master and the devices on the bus, that have been exported as rclcpp_components.
+CANopen Master drivers need to implement the ros2_canopen::CanopenMasterInterface, CANopen
+Device drivers need to implement the ros2_canopen::CanopenDriverInterface.</p>
+<p>The difference between the ros2_canopen::DeviceContainer and the rclcpp::ComponentContainer
+is that the device container loads only master and driver components specified in the bus
+configuration (bus.yml). It does not have services for loading components online. All components
+that are connected or will be connected to the CANopen Bus need to be known and specified in
+the bus.yml before starting the device container.</p>
+<p>The device container will first load the master specified in the bus configuration. Then
+it will load the drivers specified in the bus configuration. If the master and drivers
+specified in the bus configuration are managed nodes it will as well load the ros2_canopen::LifecycleManager.</p>
+</section>
+<section id="canopen-master-driver-architecture">
+<h2>CANopen Master Driver Architecture<a class="headerlink" href="#canopen-master-driver-architecture" title="Permalink to this headline"></a></h2>
+<p>The architecture for CANopen master drivers looks as depicted in the class diagram. All master drivers
+consist of three main classes.</p>
+<p>The first class is the functionality class that contains the drivers functionailities independently of
+the ROS2 node type. This class needs to implement the ros2_canopen::node_interfaces::NodeCanopenMasterInterface.
+ros2_canopen::node_interfaces::NodeCanopenMaster is an abstract class that provides some useful functionality and
+implements the ros2_canopen::node_interfaces::NodeCanopenMasterInterface. Usually, master drivers will inherit from
+ros2_canopen::node_interfaces::NodeCanopenMaster.</p>
+<p>The second class is the class that wraps the functionality class in a rclcpp::Node. This class should implement the
+ros2_canopen::CanopenMasterInterface. The canopen_core package provides a convenience class ros2_canopen::CanopenMaster
+that should be inherited from and implements the ros2_canopen::CanopenMasterInterface.</p>
+<p>The third class is the class that wraps the functionality class in a rclcpp_lifecycle::LifecycleNode. This class should implement the
+ros2_canopen::CanopenMasterInterface. The canopen_core package provides a convenience class ros2_canopen::LifecycleCanopenMaster
+that should be inherited from and implements the ros2_canopen::CanopenMasterInterface.</p>
+</section>
+<section id="canopen-device-driver-architecture">
+<h2>CANopen Device Driver Architecture<a class="headerlink" href="#canopen-device-driver-architecture" title="Permalink to this headline"></a></h2>
+<p>The architecture for CANopen device drivers looks as depicted in the class diagram. All device drivers
+consist of three main classes.</p>
+<p>The first class is the functionality class that contains the drivers functionailities independently of
+the ROS2 node type. This class needs to implement the ros2_canopen::node_interfaces::NodeCanopenDriverInterface.
+ros2_canopen::node_interfaces::NodeCanopenDriver is an abstract class that provides some useful functionality and
+implements the ros2_canopen::node_interfaces::NodeCanopenDriverInterface. If you plan to write a driver from scratch
+based on Lely Core library, your functionality class should inherit from ros2_canopen::node_interfaces::NodeCanopenDriver.
+If you want to use the existing lely_driver_bridge, your functionality class should inherit from ros2_canopen::NodeCanopenBaseDriver.</p>
+<p>The second class is the class that wraps the functionality class in a rclcpp::Node. This class should implement the
+ros2_canopen::CanopenDriverInterface. The canopen_core package provides a convenience class ros2_canopen::CanopenDriver
+that should be inherited from and implements the ros2_canopen::CanopenDriverInterface.</p>
+<p>The third class is the class that wraps the functionality class in a rclcpp_lifecycle::LifecycleNode. This class should implement the
+ros2_canopen::CanopenDriverInterface. The canopen_core package provides a convenience class ros2_canopen::LifecycleCanopenDriver
+that should be inherited from and implements the ros2_canopen::CanopenDriverInterface.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="new-driver.html" class="btn btn-neutral float-right" title="Creating a new device driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

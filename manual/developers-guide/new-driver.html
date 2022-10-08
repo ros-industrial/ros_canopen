@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Creating a new master" href="new-master.html" />
-    <link rel="prev" title="Overview" href="overview.html" /> 
+    <link rel="prev" title="Architecture" href="architecture.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,32 +49,43 @@
 <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/configuration/configuration.html">Bus Configuration Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/service-based/overview.html">Service Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/lifecycle-service-based/overview.html">Lifecycled Service Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/ros2-control/overview.html">ROS2 Control System Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/operation.html">Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/service-interface.html">Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/managed-service-interface.html">Managed Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/ros2-control-interface.html">ROS2 Control System Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/master.html">Master Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/proxy-driver.html">Proxy Driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/motion-controller-driver.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/cia402-driver.html">Cia402 Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="design-objectives.html">Design Objectives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Creating a new device driver</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#option-1-from-basedriver">Option 1: From BaseDriver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#option-2-from-proxydriver">Option 2: From ProxyDriver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#option-3-from-scratch">Option 3: From scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-you-need-to-do">What you need to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-you-do-it">How you do it</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-the-package">Create the package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-the-functionality-class">Create the functionality class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#canopen-functionality">CANopen functionality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ros2-functionality">ROS2 functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#create-the-ros2-wrapper-classes">Create the ROS2 wrapper classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adapt-the-cmakelists-txt">Adapt the CMakeLists.txt</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="new-master.html">Creating a new master</a></li>
-<li class="toctree-l1"><a class="reference internal" href="canopen_core/reference.html">Core API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="canopen_base_driver/reference.html">Base Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="canopen_proxy_driver/reference.html">Proxy Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ros-industrial.github.io/ros2_canopen/api/">API Reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html#proxy-driver-test">Proxy Driver Test</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
 </ul>
 
@@ -105,40 +116,303 @@
   <section id="creating-a-new-device-driver">
 <h1>Creating a new device driver<a class="headerlink" href="#creating-a-new-device-driver" title="Permalink to this headline"></a></h1>
 <p>Creating your own device driver is fairly easy in ros2_canopen. You should do this if you
-need to create a driver for a specific device or a specific device profile. If you create
+need to create a driver for a specific device or a specific device profile that is not yet supported. If you create
 a driver for a device profile we are happy to integrate the package into this repository - simply create
 a PR.</p>
-<section id="option-1-from-basedriver">
-<h2>Option 1: From BaseDriver<a class="headerlink" href="#option-1-from-basedriver" title="Permalink to this headline"></a></h2>
-<p>Derive your driver from BaseDriver, which has callbacks for rpdo and nmt changes, but no ros services
-whatsoever.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenclass: Unable to find project ‘ros2_canopen’ in breathe_projects dictionary</p>
+<section id="what-you-need-to-do">
+<h2>What you need to do<a class="headerlink" href="#what-you-need-to-do" title="Permalink to this headline"></a></h2>
+<p>To create a new driver you need to implement at least two classes. One being the functional class,
+that contains your drivers functionalities. The other being a ROS2 wrapper node. Generally we recommend
+creating one ROS2 wrapper node and another ROS2 lifecycle wrapper node.</p>
+</section>
+<section id="how-you-do-it">
+<h2>How you do it<a class="headerlink" href="#how-you-do-it" title="Permalink to this headline"></a></h2>
+<p>First you need to decide from which extension point you want to start. Usually, this is either the core interface, the base driver
+or the proxy driver. Base driver provides you with all necessary callbacks for CANopen functionalities but does
+not come with any ROS2 interface. Proxy driver has a simple forwarding ROS2 interface that is useful for any driver.
+The core interface comes without any functionality, you need to implement everything on your own.
+We recommend creating you driver based on Proxy driver, this will be explained here.</p>
+<section id="create-the-package">
+<h3>Create the package<a class="headerlink" href="#create-the-package" title="Permalink to this headline"></a></h3>
+<p>Create your new package using the standard ros2 pkg commands. Make sure you add the following dependencies:</p>
+<ul class="simple">
+<li><p>rclcpp</p></li>
+<li><p>rclcpp_components</p></li>
+<li><p>rclcpp_lifecycle</p></li>
+<li><p>lifecycle_msgs</p></li>
+<li><p>canopen_core</p></li>
+<li><p>canopen_interfaces</p></li>
+<li><p>canopen_base_driver</p></li>
+<li><p>canopen_proxy_driver</p></li>
+<li><p>lely_core_libraries</p></li>
+<li><p>std_msgs</p></li>
+<li><p>std_srvs</p></li>
+</ul>
+<p>Once done add a subfolder <code class="docutils literal notranslate"><span class="pre">node_interfaces</span></code> in the <code class="docutils literal notranslate"><span class="pre">src/</span></code> and the <code class="docutils literal notranslate"><span class="pre">include/[pacakge_name]/</span></code> folders.</p>
+</section>
+<section id="create-the-functionality-class">
+<h3>Create the functionality class<a class="headerlink" href="#create-the-functionality-class" title="Permalink to this headline"></a></h3>
+<p>The functionality class is stuctured similar to a LifecycleNode. The functionality class
+has the following callback functions that are related to lifecycle which you can override:</p>
+<ul class="simple">
+<li><p>void configure(bool called_from_base)</p></li>
+<li><p>void activate(bool called_from_base)</p></li>
+<li><p>void deactivate(bool called_from_base)</p></li>
+<li><p>void cleanup(bool called_from_base)</p></li>
+<li><p>void shutdown(bool called_from_base)</p></li>
+</ul>
+<section id="canopen-functionality">
+<h4>CANopen functionality<a class="headerlink" href="#canopen-functionality" title="Permalink to this headline"></a></h4>
+<p>In addition to the functions there are callbacks for CANopen functionality that you can
+override:</p>
+<ul class="simple">
+<li><p>void on_rpdo(COData data)</p></li>
+<li><p>void on_nmt(NmtState nmt_state)</p></li>
+</ul>
+<p>To interact with the CANopen device you can use the ros2_canopen::LelyDriverBridge object,
+that is stored in the functionality class (this-&gt;driver_). The ros2_canopen::LelyDriverBridge
+provides the follwing functions you should use in your driver:</p>
+<ul class="simple">
+<li><p>void nmt_command(NmtState nmt_state)</p></li>
+<li><p>void tpdo_transmit(COData data)</p></li>
+<li><p>std::future&lt;bool&gt;async_sdo_write(COData data)</p></li>
+<li><p>std::future&lt;COData&gt;async_sdo_read(COData data)</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The CANopen related functionality can only be used in the activate function or timers/threads that
+were started by the activate function. If you start timers or threads in the activate function, that
+use CANopen functionality, these have to be stopped in the deactivate function.</p>
 </div>
 </section>
-<section id="option-2-from-proxydriver">
-<h2>Option 2: From ProxyDriver<a class="headerlink" href="#option-2-from-proxydriver" title="Permalink to this headline"></a></h2>
-<p>Derive your driver from ProxyDriver, which has services for nmt, sdo and publishers and subscribers for pdo included.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenclass: Unable to find project ‘ros2_canopen’ in breathe_projects dictionary</p>
+<section id="ros2-functionality">
+<h4>ROS2 functionality<a class="headerlink" href="#ros2-functionality" title="Permalink to this headline"></a></h4>
+<p>ROS2 functionlity is available via the <code class="docutils literal notranslate"><span class="pre">node_</span></code> object of the funcitonality class. This
+object has a tempated type and can either be a <code class="docutils literal notranslate"><span class="pre">rclcpp::Node</span></code> or <code class="docutils literal notranslate"><span class="pre">rclcpp_lifecycle::LifecycleNode</span></code>.
+You can use the standard functions like create_timer, create_publisher etc.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently it seems, that when you use template functions i.e. <code class="docutils literal notranslate"><span class="pre">node_-&gt;create_publisher&lt;xyz&gt;(...)</span></code> you
+need to create a template specialisation.</p>
+</div>
+<p>Your class declaration should look like this:</p>
+<div class="highlight-C++ notranslate" id="node-interfaces-node-canopen-xxx-driver-hpp"><div class="highlight"><pre><span></span><span class="n">node_interfaces</span><span class="o">/</span><span class="n">node_canopen_xxx_driver</span><span class="p">.</span><span class="n">hpp</span><span class="o">:</span><span class="w"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;canopen_proxy_driver/node_interfaces/node_canopen_proxy_driver.hpp&gt;</span><span class="cp"></span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">NODETYPE</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NodeCanopenXXXDriver</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">NodeCanopenProxyDriver</span><span class="o">&lt;</span><span class="n">NODETYPE</span><span class="o">&gt;</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="k">static_assert</span><span class="p">(</span><span class="w"></span>
+<span class="w">         </span><span class="n">std</span><span class="o">::</span><span class="n">is_base_of</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="p">,</span><span class="w"> </span><span class="n">NODETYPE</span><span class="o">&gt;::</span><span class="n">value</span><span class="w"> </span><span class="o">||</span><span class="w"></span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">is_base_of</span><span class="o">&lt;</span><span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">LifecycleNode</span><span class="p">,</span><span class="w"> </span><span class="n">NODETYPE</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="s">&quot;NODETYPE must derive from rclcpp::Node or rclcpp_lifecycle::LifecycleNode&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">   </span><span class="n">NodeCanopenXXXDriver</span><span class="p">(</span><span class="n">NODETYPE</span><span class="w"> </span><span class="o">*</span><span class="n">node</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">   </span><span class="cm">/*Your overrides etc. go here*/</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Your member definitions go here:</p>
+<div class="highlight-C++ notranslate" id="node-interfaces-node-canopen-xxx-driver-impl-hpp"><div class="highlight"><pre><span></span><span class="n">node_interfaces</span><span class="o">/</span><span class="n">node_canopen_xxx_driver</span><span class="p">.</span><span class="n">hpp</span><span class="o">:</span><span class="w"></span>
+
+<span class="cp">#include node_interfaces/node_canopen_xxx_driver.hpp</span>
+
+<span class="cm">/*Your function definitions go here.*/</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Your explicit template instantiations go here:</p>
+<div class="highlight-C++ notranslate" id="node-interfaces-node-canopen-xxx-driver-cpp"><div class="highlight"><pre><span></span><span class="n">node_interfaces</span><span class="o">/</span><span class="n">node_canopen_xxx_driver</span><span class="p">.</span><span class="n">cpp</span><span class="o">:</span><span class="w"></span>
+
+<span class="cp">#include node_interfaces/node_canopen_xxx_driver.hpp</span>
+<span class="cp">#include node_interfaces/node_canopen_xxx_driver_impl.hpp</span>
+
+<span class="k">template</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">&gt;::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">NodeCanopenXXXDriver</span><span class="o">&lt;</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="o">&gt;</span><span class="p">;</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="o">&lt;</span><span class="n">ros2_canopen</span><span class="o">&gt;::</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">NodeCanopenXXXDriver</span><span class="o">&lt;</span><span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">LifecycleNode</span><span class="o">&gt;</span><span class="p">;</span><span class="w"></span>
+</pre></div>
 </div>
 </section>
-<section id="option-3-from-scratch">
-<h2>Option 3: From scratch<a class="headerlink" href="#option-3-from-scratch" title="Permalink to this headline"></a></h2>
-<p>All ros2_canopen drivers need to implement the DriverInterface. This makes them a ROS2 Node that we are
-able to load using plugin lib.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenclass: Unable to find project ‘ros2_canopen’ in breathe_projects dictionary</p>
+</section>
+<section id="create-the-ros2-wrapper-classes">
+<h3>Create the ROS2 wrapper classes<a class="headerlink" href="#create-the-ros2-wrapper-classes" title="Permalink to this headline"></a></h3>
+<p>The ROS2 wrapper classes are fairly easy to create once you wrote the functionality
+class. The wrappers simply use the functionality class to provide the functionality.
+The ROS2 wrapper class should always be derived from <code class="docutils literal notranslate"><span class="pre">ros2_canopen::CanopenDriver``or</span>
+<span class="pre">``ros2_canopen::LifecycleCanopenDriver</span></code>.</p>
+<p>The declaration should look like this:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">lifecycle_xxx_driver</span><span class="p">.</span><span class="n">hpp</span><span class="o">:</span><span class="w"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;canopen_xxx_driver/node_interfaces/node_canopen_xxx_driver.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;canopen_core/driver_node.hpp&quot;</span><span class="cp"></span>
+
+<span class="cm">/**</span>
+<span class="cm">   * @brief Lifecycle Proxy Driver</span>
+<span class="cm">   *</span>
+<span class="cm">   * A very basic driver without any functionality.</span>
+<span class="cm">   *</span>
+<span class="cm">   */</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LifecycleXXXDriver</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">LifecycleCanopenDriver</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">NodeCanopenXXXDriver</span><span class="o">&lt;</span><span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">LifecycleNode</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">node_canopen_xxx_driver_</span><span class="p">;</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">   </span><span class="n">LifecycleXXXDriver</span><span class="p">(</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span><span class="w"> </span><span class="n">node_options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span><span class="p">());</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</pre></div>
 </div>
-<p>For implementation of your driver you can use the LelyBridge Class which implements a lely-driver that
-is easy to use from a ROS node. Or write a similar Class yourself, for example using lely’s LoopDriver.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenclass: Unable to find project ‘ros2_canopen’ in breathe_projects dictionary</p>
+<p>The definitions should look like this:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;canopen_xxx_driver/lifecycle_proxy_driver.hpp&quot;</span><span class="cp"></span>
+
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">ros2_canopen</span><span class="p">;</span><span class="w"></span>
+
+
+<span class="n">LifecycleXXXDriver</span><span class="o">::</span><span class="n">LifecycleXXXDriver</span><span class="p">(</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">NodeOptions</span><span class="w"> </span><span class="n">node_options</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LifecycleCanopenDriver</span><span class="p">(</span><span class="n">node_options</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="n">node_canopen_xxx_driver_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">NodeCanopenXXXDriver</span><span class="o">&lt;</span><span class="n">rclcpp_lifecycle</span><span class="o">::</span><span class="n">LifecycleNode</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w"></span>
+<span class="n">node_canopen_proxy_driver_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">static_pointer_cast</span><span class="o">&lt;</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">NodeCanopenProxyDriver</span><span class="o">&gt;</span><span class="p">(</span><span class="n">node_canopen_xxx_driver_</span><span class="p">);</span><span class="w"></span>
+<span class="n">node_canopen_driver_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">static_pointer_cast</span><span class="o">&lt;</span><span class="n">node_interfaces</span><span class="o">::</span><span class="n">NodeCanopenDriverInterface</span><span class="o">&gt;</span><span class="p">(</span><span class="n">node_canopen_xxx_driver_</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;rclcpp_components/register_node_macro.hpp&quot;</span><span class="cp"></span>
+<span class="n">RCLCPP_COMPONENTS_REGISTER_NODE</span><span class="p">(</span><span class="n">ros2_canopen</span><span class="o">::</span><span class="n">LifecycleXXXDriver</span><span class="p">)</span><span class="w"></span>
+</pre></div>
 </div>
+<section id="adapt-the-cmakelists-txt">
+<h4>Adapt the CMakeLists.txt<a class="headerlink" href="#adapt-the-cmakelists-txt" title="Permalink to this headline"></a></h4>
+<p>The CMakeLists.txt file should look like this:</p>
+<div class="highlight-CMAKE notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.8</span><span class="p">)</span>
+<span class="nb">project</span><span class="p">(</span><span class="s">canopen_xxx_driver</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="p">(</span><span class="s">CMAKE_COMPILER_IS_GNUCXX</span><span class="w"> </span><span class="s">OR</span><span class="w"> </span><span class="s">CMAKE_CXX_COMPILER_ID</span><span class="w"> </span><span class="s">MATCHES</span><span class="w"> </span><span class="s2">&quot;Clang&quot;</span><span class="p">)</span>
+<span class="nb">add_compile_options</span><span class="p">(</span><span class="s">-Wall</span><span class="w"> </span><span class="s">-Wpedantic</span><span class="w"> </span><span class="s">-Wextra</span><span class="w"> </span><span class="s">-Wno-unused-parameter</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="c"># find dependencies</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">ament_cmake</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">ament_cmake_ros</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">rclcpp</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">rclcpp_lifecycle</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">rclcpp_components</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_core</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_interfaces</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_base_driver</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">canopen_proxy_driver</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">lely_core_libraries</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">std_msgs</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">std_srvs</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">dependencies</span>
+<span class="s">rclcpp</span>
+<span class="s">rclcpp_components</span>
+<span class="s">rclcpp_lifecycle</span>
+<span class="s">lifecycle_msgs</span>
+<span class="s">canopen_core</span>
+<span class="s">canopen_interfaces</span>
+<span class="s">canopen_base_driver</span>
+<span class="s">canopen_proxy_driver</span>
+<span class="s">lely_core_libraries</span>
+<span class="s">std_msgs</span>
+<span class="s">std_srvs</span>
+<span class="p">)</span>
+
+<span class="c"># Functionality library</span>
+<span class="nb">add_library</span><span class="p">(</span><span class="s">node_canopen_xxx_driver</span>
+<span class="s">src/node_interfaces/node_canopen_xxx_driver.cpp</span>
+<span class="p">)</span>
+<span class="nb">target_compile_features</span><span class="p">(</span><span class="s">node_canopen_xxx_driver</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">c_std_99</span><span class="w"> </span><span class="s">cxx_std_17</span><span class="p">)</span><span class="w">  </span><span class="c"># Require C99 and C++17</span>
+<span class="nb">target_compile_options</span><span class="p">(</span><span class="s">node_canopen_xxx_driver</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">-Wl,--no-undefined</span><span class="p">)</span>
+<span class="nb">target_include_directories</span><span class="p">(</span><span class="s">node_canopen_xxx_driver</span><span class="w"> </span><span class="s">PUBLIC</span>
+<span class="o">$&lt;</span><span class="nv">BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include</span><span class="o">&gt;</span>
+<span class="o">$&lt;</span><span class="nv">INSTALL_INTERFACE:include</span><span class="o">&gt;</span><span class="p">)</span>
+
+<span class="nb">ament_target_dependencies</span><span class="p">(</span>
+<span class="s">node_canopen_xxx_driver</span>
+<span class="o">${</span><span class="nv">dependencies</span><span class="o">}</span>
+<span class="p">)</span>
+
+<span class="c"># Lifecycle driver</span>
+<span class="nb">add_library</span><span class="p">(</span><span class="s">lifecycle_xxx_driver</span>
+<span class="s">src/lifecycle_xxx_driver.cpp</span>
+<span class="p">)</span>
+<span class="nb">target_compile_features</span><span class="p">(</span><span class="s">lifecycle_xxx_driver</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">c_std_99</span><span class="w"> </span><span class="s">cxx_std_17</span><span class="p">)</span><span class="w">  </span><span class="c"># Require C99 and C++17</span>
+<span class="nb">target_compile_options</span><span class="p">(</span><span class="s">lifecycle_xxx_driver</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">-Wl,--no-undefined</span><span class="p">)</span>
+<span class="nb">target_include_directories</span><span class="p">(</span><span class="s">lifecycle_xxx_driver</span><span class="w"> </span><span class="s">PUBLIC</span>
+<span class="o">$&lt;</span><span class="nv">BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include</span><span class="o">&gt;</span>
+<span class="o">$&lt;</span><span class="nv">INSTALL_INTERFACE:include</span><span class="o">&gt;</span><span class="p">)</span>
+
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">lifecycle_xxx_driver</span>
+<span class="s">node_canopen_xxx_driver</span>
+<span class="p">)</span>
+<span class="nb">ament_target_dependencies</span><span class="p">(</span>
+<span class="s">lifecycle_xxx_driver</span>
+<span class="o">${</span><span class="nv">dependencies</span><span class="o">}</span>
+<span class="p">)</span>
+<span class="c"># Causes the visibility macros to use dllexport rather than dllimport,</span>
+<span class="c"># which is appropriate when building the dll but not consuming it.</span>
+<span class="nb">target_compile_definitions</span><span class="p">(</span><span class="s">lifecycle_xxx_driver</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s2">&quot;CANOPEN_XXX_DRIVER_BUILDING_LIBRARY&quot;</span><span class="p">)</span>
+
+<span class="nb">rclcpp_components_register_nodes</span><span class="p">(</span><span class="s">lifecycle_xxx_driver</span><span class="w"> </span><span class="s2">&quot;ros2_canopen::LifecycleXXXDriver&quot;</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">node_plugins</span><span class="w"> </span><span class="s2">&quot;${node_plugins}ros2_canopen::LifecycleXXXDriver;$&lt;TARGET_FILE:lifecycle_xxx_driver &gt;\n&quot;</span><span class="p">)</span>
+
+
+<span class="c"># Non lifecycle driver</span>
+<span class="nb">add_library</span><span class="p">(</span><span class="s">xxx_driver</span>
+<span class="s">src/xxx_driver.cpp</span>
+<span class="p">)</span>
+<span class="nb">target_compile_features</span><span class="p">(</span><span class="s">xxx_driver</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">c_std_99</span><span class="w"> </span><span class="s">cxx_std_17</span><span class="p">)</span><span class="w">  </span><span class="c"># Require C99 and C++17</span>
+<span class="nb">target_compile_options</span><span class="p">(</span><span class="s">xxx_driver</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">-Wl,--no-undefined</span><span class="p">)</span>
+<span class="nb">target_include_directories</span><span class="p">(</span><span class="s">xxx_driver</span><span class="w"> </span><span class="s">PUBLIC</span>
+<span class="o">$&lt;</span><span class="nv">BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include</span><span class="o">&gt;</span>
+<span class="o">$&lt;</span><span class="nv">INSTALL_INTERFACE:include</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">xxx_driver</span>
+<span class="s">node_canopen_xxx_driver</span>
+<span class="p">)</span>
+
+<span class="nb">ament_target_dependencies</span><span class="p">(</span>
+<span class="s">xxx_driver</span>
+<span class="o">${</span><span class="nv">dependencies</span><span class="o">}</span>
+<span class="p">)</span>
+
+<span class="c"># Causes the visibility macros to use dllexport rather than dllimport,</span>
+<span class="c"># which is appropriate when building the dll but not consuming it.</span>
+<span class="nb">target_compile_definitions</span><span class="p">(</span><span class="s">xxx_driver</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s2">&quot;CANOPEN_XXX_DRIVER_BUILDING_LIBRARY&quot;</span><span class="p">)</span>
+
+<span class="nb">rclcpp_components_register_nodes</span><span class="p">(</span><span class="s">xxx_driver</span><span class="w"> </span><span class="s2">&quot;ros2_canopen::XXXDriver&quot;</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">node_plugins</span><span class="w"> </span><span class="s2">&quot;${node_plugins}ros2_canopen::XXXDriver;$&lt;TARGET_FILE:xxx_driver &gt;\n&quot;</span><span class="p">)</span>
+
+<span class="nb">install</span><span class="p">(</span>
+<span class="s">DIRECTORY</span><span class="w"> </span><span class="s">include/</span>
+<span class="s">DESTINATION</span><span class="w"> </span><span class="s">include</span>
+<span class="p">)</span>
+
+<span class="nb">install</span><span class="p">(</span>
+<span class="s">TARGETS</span><span class="w"> </span><span class="s">lifecycle_xxx_driver</span><span class="w"> </span><span class="s">xxx_driver</span><span class="w"> </span><span class="s">node_canopen_xxx_driver</span>
+<span class="s">EXPORT</span><span class="w"> </span><span class="s">export_</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span>
+<span class="s">ARCHIVE</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="s">lib</span>
+<span class="s">LIBRARY</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="s">lib</span>
+<span class="s">RUNTIME</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="s">bin</span>
+<span class="p">)</span>
+
+<span class="nb">if</span><span class="p">(</span><span class="s">BUILD_TESTING</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="nb">ament_export_include_directories</span><span class="p">(</span>
+<span class="s">include</span>
+<span class="p">)</span>
+<span class="nb">ament_export_libraries</span><span class="p">(</span>
+<span class="s">lifecycle_xxx_driver</span>
+<span class="s">xxx_driver</span>
+<span class="s">node_canopen_xxx_driver</span>
+<span class="p">)</span>
+<span class="nb">ament_export_targets</span><span class="p">(</span>
+<span class="s">export_</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span>
+<span class="p">)</span>
+
+<span class="nb">ament_package</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 </section>
 
@@ -146,7 +420,7 @@ is easy to use from a ROS node. Or write a similar Class yourself, for example u
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="architecture.html" class="btn btn-neutral float-left" title="Architecture" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="new-master.html" class="btn btn-neutral float-right" title="Creating a new master" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

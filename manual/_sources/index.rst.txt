@@ -18,12 +18,13 @@ This is the documentation of the ROS2 CANopen stack.
   :glob:
 
   user-guide/configuration/configuration
-  user-guide/service-based/overview
-  user-guide/lifecycle-service-based/overview
-  user-guide/ros2-control/overview
+  user-guide/operation/operation
+  user-guide/operation/service-interface
+  user-guide/operation/managed-service-interface
+  user-guide/operation/ros2-control-interface
   user-guide/master 
   user-guide/proxy-driver
-  user-guide/motion-controller-driver
+  user-guide/cia402-driver
 
 
 .. toctree:: 
@@ -33,12 +34,10 @@ This is the documentation of the ROS2 CANopen stack.
 
   developers-guide/design-objectives
   developers-guide/overview
+  developers-guide/architecture
   developers-guide/new-driver
   developers-guide/new-master
-  developers-guide/canopen_core/*
-  developers-guide/canopen_base_driver/*
-  developers-guide/canopen_proxy_driver/*
-  developers-guide/canopen_402_driver/*
+  API Reference <https://ros-industrial.github.io/ros2_canopen/api/>
 
 .. toctree:: 
   :maxdepth: 1

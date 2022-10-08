@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Master Node &mdash; ros2_canopen 0.0.1 documentation</title>
+  <title>Master Driver &mdash; ros2_canopen 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Proxy Driver" href="proxy-driver.html" />
-    <link rel="prev" title="ROS2 Control System Interface" href="ros2-control/overview.html" /> 
+    <link rel="prev" title="ROS2 Control System Interface" href="operation/ros2-control-interface.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,30 +49,30 @@
 <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="configuration/configuration.html">Bus Configuration Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="service-based/overview.html">Service Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lifecycle-service-based/overview.html">Lifecycled Service Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ros2-control/overview.html">ROS2 Control System Interface</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Master Node</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="operation/operation.html">Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operation/service-interface.html">Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operation/managed-service-interface.html">Managed Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operation/ros2-control-interface.html">ROS2 Control System Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Master Driver</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#services">Services</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="proxy-driver.html">Proxy Driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="motion-controller-driver.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cia402-driver.html">Cia402 Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../developers-guide/design-objectives.html">Design Objectives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developers-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers-guide/architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developers-guide/new-driver.html">Creating a new device driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developers-guide/new-master.html">Creating a new master</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_core/reference.html">Core API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_base_driver/reference.html">Base Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_proxy_driver/reference.html">Proxy Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ros-industrial.github.io/ros2_canopen/api/">API Reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html#proxy-driver-test">Proxy Driver Test</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
 </ul>
 
@@ -90,7 +90,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Master Node</li>
+      <li>Master Driver</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/user-guide/master.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -100,8 +100,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="master-node">
-<h1>Master Node<a class="headerlink" href="#master-node" title="Permalink to this headline"></a></h1>
+  <section id="master-driver">
+<h1>Master Driver<a class="headerlink" href="#master-driver" title="Permalink to this headline"></a></h1>
 <p>The master node handles the creation of the necessary can interface and sets up a canopen event loop which drivers can hook onto. In addition, the node offers services for communicating with nodes via nmt and sdo. The device manager will automatically spawn a master node on start-up. The master node is configured by the provided dcf file.</p>
 <section id="services">
 <h2>Services<a class="headerlink" href="#services" title="Permalink to this headline"></a></h2>
@@ -118,19 +118,19 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>/canopen_master/read_sdo</p></td>
+<tr class="row-even"><td><p>~/read_sdo</p></td>
 <td><p>COReadID</p></td>
 <td><p>Reads an SDO object specified by Index, Subindex and Datatype of the device with the specified nodeid.</p></td>
 </tr>
-<tr class="row-odd"><td><p>/canopen_master/write_sdo</p></td>
+<tr class="row-odd"><td><p>~/write_sdo</p></td>
 <td><p>COWriteID</p></td>
 <td><p>Writes Data to an SDO object specified by Index, Subindex and Datatype on the device with the specified nodeid.</p></td>
 </tr>
-<tr class="row-even"><td><p>/canopen_master/set_heartbeat</p></td>
+<tr class="row-even"><td><p>~/set_heartbeat</p></td>
 <td><p>COHeartbeatID</p></td>
 <td><p>Sets the heartbeat of the device with the specified nodeid to the heartbeat value (ms)</p></td>
 </tr>
-<tr class="row-odd"><td><p>/canopen_master/set_nmt</p></td>
+<tr class="row-odd"><td><p>~/set_nmt</p></td>
 <td><p>CONmtID</p></td>
 <td><p>Sends the NMT command to the device with the specified nodeid</p></td>
 </tr>
@@ -143,7 +143,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ros2-control/overview.html" class="btn btn-neutral float-left" title="ROS2 Control System Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="operation/ros2-control-interface.html" class="btn btn-neutral float-left" title="ROS2 Control System Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="proxy-driver.html" class="btn btn-neutral float-right" title="Proxy Driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

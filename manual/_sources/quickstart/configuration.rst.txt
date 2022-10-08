@@ -111,7 +111,7 @@ Bus configuration creation
       master:
         node_id: [node id]
         package: [ros2 package where to find the master driver (usually canopen_core)] 
-        driver: [component type of the driver (ros2_canopen::MasterNode or ros2_canopen::LifecycleMasterNode)]
+        driver: [component type of the driver (ros2_canopen::MasterDriver or ros2_canopen::LifecycleMasterDriver)]
     
     Make sure, that you specify a lifecycle master if you use the lifecycled version of ros2_canopen.
     And add other configuration data as necessary. A documentation of configuration options
@@ -156,7 +156,7 @@ Add the following code:
             PythonLaunchDescriptionSource(
                 [
                     os.path.join(get_package_share_directory("canopen_core"), "launch"),
-                    "/canopen.launch.py", # if lifecycled operation canope_lifecycle.launch.py
+                    "/canopen.launch.py", 
                 ]
             ),
             launch_arguments={

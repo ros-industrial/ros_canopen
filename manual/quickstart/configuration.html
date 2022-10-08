@@ -55,27 +55,27 @@
 <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/configuration/configuration.html">Bus Configuration Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/service-based/overview.html">Service Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/lifecycle-service-based/overview.html">Lifecycled Service Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/ros2-control/overview.html">ROS2 Control System Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/master.html">Master Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/operation.html">Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/service-interface.html">Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/managed-service-interface.html">Managed Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/operation/ros2-control-interface.html">ROS2 Control System Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/master.html">Master Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide/proxy-driver.html">Proxy Driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide/motion-controller-driver.html">Motion Controller Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/cia402-driver.html">Cia402 Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../developers-guide/design-objectives.html">Design Objectives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developers-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers-guide/architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developers-guide/new-driver.html">Creating a new device driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developers-guide/new-master.html">Creating a new master</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_core/reference.html">Core API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_base_driver/reference.html">Base Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_proxy_driver/reference.html">Proxy Driver API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers-guide/canopen_402_driver/reference.html">CIA402 Driver API Reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ros-industrial.github.io/ros2_canopen/api/">API Reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software-tests/proxy-driver-test.html#proxy-driver-test">Proxy Driver Test</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
 </ul>
 
@@ -204,7 +204,7 @@ build from source.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">master</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">node id</span><span class="p p-Indicator">]</span><span class="w"></span>
 <span class="w">  </span><span class="nt">package</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ros2 package where to find the master driver (usually canopen_core)</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">  </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">component type of the driver (ros2_canopen</span><span class="p p-Indicator">::</span><span class="nv">MasterNode or ros2_canopen</span><span class="p p-Indicator">::</span><span class="nv">LifecycleMasterNode)</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">component type of the driver (ros2_canopen</span><span class="p p-Indicator">::</span><span class="nv">MasterDriver or ros2_canopen</span><span class="p p-Indicator">::</span><span class="nv">LifecycleMasterDriver)</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Make sure, that you specify a lifecycle master if you use the lifecycled version of ros2_canopen.
@@ -244,7 +244,7 @@ The slave name is the node name that will be assigned to the driver.</p>
           <span class="n">PythonLaunchDescriptionSource</span><span class="p">(</span>
               <span class="p">[</span>
                   <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_package_share_directory</span><span class="p">(</span><span class="s2">&quot;canopen_core&quot;</span><span class="p">),</span> <span class="s2">&quot;launch&quot;</span><span class="p">),</span>
-                  <span class="s2">&quot;/canopen.launch.py&quot;</span><span class="p">,</span> <span class="c1"># if lifecycled operation canope_lifecycle.launch.py</span>
+                  <span class="s2">&quot;/canopen.launch.py&quot;</span><span class="p">,</span>
               <span class="p">]</span>
           <span class="p">),</span>
           <span class="n">launch_arguments</span><span class="o">=</span><span class="p">{</span>

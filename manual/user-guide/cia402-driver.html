@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proxy Driver &mdash; ros2_canopen 0.0.1 documentation</title>
+  <title>Cia402 Driver &mdash; ros2_canopen 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Cia402 Driver" href="cia402-driver.html" />
-    <link rel="prev" title="Master Driver" href="master.html" /> 
+    <link rel="next" title="Design Objectives" href="../developers-guide/design-objectives.html" />
+    <link rel="prev" title="Proxy Driver" href="proxy-driver.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,13 +54,14 @@
 <li class="toctree-l1"><a class="reference internal" href="operation/managed-service-interface.html">Managed Service Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="operation/ros2-control-interface.html">ROS2 Control System Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="master.html">Master Driver</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Proxy Driver</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="proxy-driver.html">Proxy Driver</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cia402 Driver</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#services">Services</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#publishers">Publishers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#subscribers">Subscribers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bus-configuration-parameters">Bus Configuration Parameters</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cia402-driver.html">Cia402 Driver</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul>
@@ -92,9 +93,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Proxy Driver</li>
+      <li>Cia402 Driver</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/user-guide/proxy-driver.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/user-guide/cia402-driver.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -102,9 +103,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="proxy-driver">
-<h1>Proxy Driver<a class="headerlink" href="#proxy-driver" title="Permalink to this headline"></a></h1>
-<p>A proxy driver which simply forwards CANopen functionality for a specific device via ROS2 services and messages.</p>
+  <section id="cia402-driver">
+<h1>Cia402 Driver<a class="headerlink" href="#cia402-driver" title="Permalink to this headline"></a></h1>
+<p>The Cia402 Driver implements the CIA402 profile for motion controllers and enables setting
+the drive status, operation mode and sending target values to the motion controller.</p>
 <section id="services">
 <h2>Services<a class="headerlink" href="#services" title="Permalink to this headline"></a></h2>
 <table class="colwidths-given docutils align-left">
@@ -132,6 +134,42 @@
 <td><p>COWrite</p></td>
 <td><p>Writes data to an SDO object on the specified index, subindex and datatype of the remote device.</p></td>
 </tr>
+<tr class="row-odd"><td><p>~/init</p></td>
+<td><p>Trigger</p></td>
+<td><p>Initialises motion controller including referencing</p></td>
+</tr>
+<tr class="row-even"><td><p>~/recover</p></td>
+<td><p>Trigger</p></td>
+<td><p>Recovers motion controller</p></td>
+</tr>
+<tr class="row-odd"><td><p>~/halt</p></td>
+<td><p>Trigger</p></td>
+<td><p>Stops motion controller</p></td>
+</tr>
+<tr class="row-even"><td><p>~/position_mode</p></td>
+<td><p>Trigger</p></td>
+<td><p>Switches to profiled position mode</p></td>
+</tr>
+<tr class="row-odd"><td><p>~/velocity_mode</p></td>
+<td><p>Trigger</p></td>
+<td><p>Switches to profiled velocity mode</p></td>
+</tr>
+<tr class="row-even"><td><p>~/torque_mode</p></td>
+<td><p>Trigger</p></td>
+<td><p>Switches to profiled torque mode</p></td>
+</tr>
+<tr class="row-odd"><td><p>~/cyclic_position_mode</p></td>
+<td><p>Trigger</p></td>
+<td><p>Switches to cyclic position mode</p></td>
+</tr>
+<tr class="row-even"><td><p>~/cyclic_velocity_mode</p></td>
+<td><p>Trigger</p></td>
+<td><p>Switches to cyclic velocity mode</p></td>
+</tr>
+<tr class="row-odd"><td><p>~/target</p></td>
+<td><p>CODouble</p></td>
+<td><p>Sets the target value. Only accepted when an operation mode is set.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -144,19 +182,15 @@
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Topic</p></th>
+<tr class="row-odd"><th class="head"><p>Publishers</p></th>
 <th class="head"><p>Type</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>~/nmt_state</p></td>
-<td><p>String</p></td>
-<td><p>Publishes NMT state on change</p></td>
-</tr>
-<tr class="row-odd"><td><p>~/rpdo</p></td>
-<td><p>COData</p></td>
-<td><p>Publishes received PDO objects on reception</p></td>
+<tr class="row-even"><td><p>~/joint_states</p></td>
+<td><p>sensor_msgs/msg/JointState</p></td>
+<td><p>Joint states of the drive</p></td>
 </tr>
 </tbody>
 </table>
@@ -176,9 +210,31 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>~/tpdo</p></td>
-<td><p>COData</p></td>
-<td><p>Writes received data to remote device if the specified object is RPDO mapped on remote device.</p></td>
+<tr class="row-even"><td><p>~/target</p></td>
+<td><p>COTargetDouble</p></td>
+<td><p>Sets target value.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="bus-configuration-parameters">
+<h2>Bus Configuration Parameters<a class="headerlink" href="#bus-configuration-parameters" title="Permalink to this headline"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 20%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>period</p></td>
+<td><p>Milliseconds</p></td>
+<td><p>Refresh period for 402 state machine. Should be similar to sync period of master.</p></td>
 </tr>
 </tbody>
 </table>
@@ -189,8 +245,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="master.html" class="btn btn-neutral float-left" title="Master Driver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="cia402-driver.html" class="btn btn-neutral float-right" title="Cia402 Driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="proxy-driver.html" class="btn btn-neutral float-left" title="Proxy Driver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../developers-guide/design-objectives.html" class="btn btn-neutral float-right" title="Design Objectives" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
