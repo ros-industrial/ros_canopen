@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
             sudo apt-get update -qq
-            sudo apt-get install -y -qq doxygen graphviz
+            sudo apt-get install -y -qq doxygen graphviz plantuml
             pip install sphinx-rtd-theme
             pip install sphinxcontrib-plantuml
             pip install sphinx-mdinclude
