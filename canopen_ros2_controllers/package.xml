@@ -23,6 +23,7 @@
   <depend>canopen_core</depend>
   <depend>canopen_proxy_driver</depend>
   <depend>canopen_interfaces</depend>
+  <depend>canopen_402_driver</depend>
   <depend>rclcpp_components</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
