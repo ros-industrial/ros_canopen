@@ -22,9 +22,6 @@
 #include "controller_interface/helpers.hpp"
 #include "canopen_402_driver/node_interfaces/node_canopen_402_driver.hpp"
 
-static constexpr int kLoopPeriodMS = 100;
-static constexpr double kCommandValue = 1.0;
-
 namespace
 {  // utility
 
@@ -44,8 +41,46 @@ Cia402DeviceController::Cia402DeviceController(): canopen_ros2_controllers::Cano
 }
 
 controller_interface::CallbackReturn Cia402DeviceController::on_init() {
-    auto ret_val =  CanopenProxyController::on_init();
-    return ret_val;
+    if (CanopenProxyController::on_init() != controller_interface::CallbackReturn::SUCCESS)
+        return controller_interface::CallbackReturn::ERROR;
+
+
+    handle_init_service_ = createTriggerSrv("~/init",
+                                            Cia402CommandInterfaces::INIT_CMD,
+                                            Cia402CommandInterfaces::INIT_FBK);
+
+    handle_halt_service_ = createTriggerSrv("~/halt",
+                                            Cia402CommandInterfaces::HALT_CMD,
+                                            Cia402CommandInterfaces::HALT_FBK);
+
+    handle_recover_service_ = createTriggerSrv("~/recover",
+                                               Cia402CommandInterfaces::RECOVER_CMD,
+                                               Cia402CommandInterfaces::RECOVER_FBK);
+
+    handle_set_mode_position_service_ = createTriggerSrv("~/position_mode",
+                                                         Cia402CommandInterfaces::POSITION_MODE_CMD,
+                                                         Cia402CommandInterfaces::POSITION_MODE_FBK);
+
+    handle_set_mode_velocity_service_ = createTriggerSrv("~/velocity_mode",
+                                                         Cia402CommandInterfaces::VELOCITY_MODE_CMD,
+                                                         Cia402CommandInterfaces::VELOCITY_MODE_FBK);
+
+    handle_set_mode_velocity_service_ = createTriggerSrv("~/cyclic_velocity_mode",
+                                                         Cia402CommandInterfaces::CYCLIC_VELOCITY_MODE_CMD,
+                                                         Cia402CommandInterfaces::CYCLIC_VELOCITY_MODE_FBK);
+
+    handle_set_mode_cyclic_position_service_ = createTriggerSrv("~/cyclic_position_mode",
+                                                                Cia402CommandInterfaces::CYCLIC_POSITION_MODE_CMD,
+                                                                Cia402CommandInterfaces::CYCLIC_POSITION_MODE_FBK);
+
+    /*
+    handle_set_mode_torque_service_ = createTriggerSrv("~/torque_mode",
+                                                               Cia402CommandInterfaces::,
+                                                               Cia402CommandInterfaces::);
+
+    handle_set_target_service_ = createTriggerSrv("~/target", Cia402CommandInterfaces::,
+                                                 Cia402CommandInterfaces::);
+    */
 }
 
 controller_interface::InterfaceConfiguration Cia402DeviceController::command_interface_configuration() const {

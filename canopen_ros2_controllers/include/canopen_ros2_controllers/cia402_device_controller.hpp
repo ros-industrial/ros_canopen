@@ -16,6 +16,10 @@
 #define CANOPEN_ROS2_CONTROLLERS__CANOPEN_CIA402_CONTROLLER_HPP_
 
 #include "canopen_ros2_controllers/canopen_proxy_controller.hpp"
+#include "canopen_interfaces/srv/co_target_double.hpp"
+
+static constexpr int kLoopPeriodMS = 100;
+static constexpr double kCommandValue = 1.0;
 
 namespace
 {
@@ -80,6 +84,45 @@ public:
 
 
 protected:
+
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr createTriggerSrv(const std::string& service,
+                                                                        Cia402CommandInterfaces cmd,
+                                                                        Cia402CommandInterfaces fbk){
+
+        // define service profile
+        auto service_profile = rmw_qos_profile_services_default;
+        service_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+        service_profile.depth = 1;
+
+        auto callback = [&](const std_srvs::srv::Trigger::Request::SharedPtr request,
+                               std_srvs::srv::Trigger::Response::SharedPtr response) {
+
+            command_interfaces_[cmd].set_value(kCommandValue);
+
+            while (!std::isnan(command_interfaces_[cmd].get_value()))
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(kLoopPeriodMS));
+            }
+
+            // report success
+            response->success = static_cast<bool>(command_interfaces_[fbk].get_value());
+            // reset to nan
+            command_interfaces_[fbk].set_value(std::numeric_limits<double>::quiet_NaN());
+        };
+
+        return get_node()->create_service<std_srvs::srv::Trigger>(service, callback, service_profile);
+    }
+
+
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_init_service_;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_halt_service_;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_recover_service_;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_position_service_;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_torque_service_;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_velocity_service_;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_velocity_service_;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_position_service_;
+    rclcpp::Service<canopen_interfaces::srv::COTargetDouble>::SharedPtr handle_set_target_service_;
 
 };
 
