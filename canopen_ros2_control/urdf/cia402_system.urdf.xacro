@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="$(arg name)">
+
+    <xacro:arg name="name" default="cia402_test_system"/>
+
+    <xacro:arg name="prefix" default="" />
+
+    <xacro:arg name="bus_config" default="$(find canopen_tests)/config/cia402/bus.yml"/>
+    <xacro:arg name="master_config" default="$(find canopen_tests)/config/cia402/master.dcf"/>
+    <xacro:arg name="can_interface" default="vcan0"/>
+    <xacro:arg name="master_bin" default=""/>
+
+
+    <!-- ros2 control include -->
+    <xacro:include filename="$(find canopen_ros2_control)/urdf/cia402_system.ros2_control.xacro"/>
+
+    <xacro:cia402_ros2_control_test
+      name="$(arg name)"
+      prefix="$(arg prefix)"
+      bus_config="$(arg bus_config)"
+      master_config="$(arg master_config)"
+      can_interface="$(arg can_interface)"
+      master_bin="$(arg master_bin)"
+    />
+
+    <link name="$(arg prefix)base_link"/>
+    <link name="$(arg prefix)node_1_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.1" length="1.0"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.1" length="1.0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="$(arg prefix)node_1" type="revolute">
+        <parent link="$(arg prefix)base_link" />
+        <child link="$(arg prefix)node_1_link" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
+        <limit lower="${-2*pi}" upper="${2*pi}" effort="10.0" velocity="0.5"/>
+    </joint>
+
+</robot>
