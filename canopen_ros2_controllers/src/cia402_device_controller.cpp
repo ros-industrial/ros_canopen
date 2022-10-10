@@ -81,6 +81,8 @@ controller_interface::CallbackReturn Cia402DeviceController::on_init() {
     handle_set_target_service_ = createTriggerSrv("~/target", Cia402CommandInterfaces::,
                                                  Cia402CommandInterfaces::);
     */
+
+    return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::InterfaceConfiguration Cia402DeviceController::command_interface_configuration() const {
@@ -112,26 +114,35 @@ controller_interface::InterfaceConfiguration Cia402DeviceController::state_inter
 
 controller_interface::CallbackReturn
 Cia402DeviceController::on_configure(const rclcpp_lifecycle::State &previous_state) {
-    auto ret_val = CanopenProxyController::on_configure(previous_state);
-    return ret_val;
+    if(CanopenProxyController::on_configure(previous_state) != CallbackReturn::SUCCESS)
+        return CallbackReturn::ERROR;
+
+    return CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
 Cia402DeviceController::on_activate(const rclcpp_lifecycle::State &previous_state) {
-    auto ret_val = CanopenProxyController::on_activate(previous_state);
-    return ret_val;
+    if(CanopenProxyController::on_activate(previous_state) != CallbackReturn::SUCCESS)
+        return CallbackReturn::ERROR;
+
+    return CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
 Cia402DeviceController::on_deactivate(const rclcpp_lifecycle::State &previous_state) {
-    auto ret_val = CanopenProxyController::on_deactivate(previous_state);
-    return ret_val;
+    if(CanopenProxyController::on_deactivate(previous_state) != CallbackReturn::SUCCESS)
+        return CallbackReturn::ERROR;
+
+    return CallbackReturn::SUCCESS;
 }
 
 controller_interface::return_type
 Cia402DeviceController::update(const rclcpp::Time &time, const rclcpp::Duration &period) {
-    auto ret_val = CanopenProxyController::update(time, period);
-    return ret_val;
+    if(CanopenProxyController::update(time, period) !=  controller_interface::return_type::OK)
+        return controller_interface::return_type::ERROR;
+
+    return controller_interface::return_type::OK;
+
 }
 
 }  // namespace canopen_ros2_controllers
