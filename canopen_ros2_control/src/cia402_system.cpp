@@ -92,7 +92,7 @@ hardware_interface::CallbackReturn Cia402System::on_configure(
     {
         init_thread_->join();
 
-        // TODO(livanov93): see how to handle configure once LifecycleCia402Driver is introuduced
+        // TODO(livanov93): see how to handle configure once LifecycleCia402Driver is introduced
         /*
         auto drivers = device_container_->get_registered_drivers();
         for (auto it = drivers.begin(); it != drivers.end(); it++) {
@@ -239,9 +239,9 @@ hardware_interface::return_type Cia402System::read(
    for(auto it = canopen_data_.begin(); it != canopen_data_.end(); ++it){
        auto motion_controller_driver = std::static_pointer_cast<ros2_canopen::Cia402Driver>(drivers[it->first]);
         // get position
-       motor_data_[it->first].actual_position = motion_controller_driver->get_position();
+       motor_data_[it->first].actual_position = motion_controller_driver->get_position() / 1000;
        // get speed
-       motor_data_[it->first].actual_speed = motion_controller_driver->get_speed();
+       motor_data_[it->first].actual_speed = motion_controller_driver->get_speed() / 1000;
    }
 
     return ret_val;
@@ -250,8 +250,6 @@ hardware_interface::return_type Cia402System::read(
 hardware_interface::return_type Cia402System::write(
   const rclcpp::Time & time, const rclcpp::Duration & period)
 {
-    auto ret_val = CanopenSystem::write(time, period);
-
     auto drivers = device_container_->get_registered_drivers();
 
     for(auto it = canopen_data_.begin(); it != canopen_data_.end(); ++it){
@@ -316,21 +314,27 @@ hardware_interface::return_type Cia402System::write(
 
     }
 
-    return ret_val;
+    return hardware_interface::return_type::OK;
 }
 
 void Cia402System::switchModes(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> & driver) {
 
     if (motor_data_[id].position_mode.is_commanded()){
         motor_data_[id].position_mode.set_response(driver->set_mode_position());
+        RCLCPP_INFO(kLogger, "position_mode is commanded");
+
     }
 
     if (motor_data_[id].cyclic_position_mode.is_commanded()){
         motor_data_[id].cyclic_position_mode.set_response(driver->set_mode_cyclic_position());
+        RCLCPP_INFO(kLogger, "cyclic_position_mode is commanded");
+
     }
 
     if (motor_data_[id].velocity_mode.is_commanded()){
         motor_data_[id].velocity_mode.set_response(driver->set_mode_velocity());
+        RCLCPP_INFO(kLogger, "velocity_mode is commanded");
+
     }
 
     if (motor_data_[id].cyclic_velocity_mode.is_commanded()){
@@ -338,24 +342,31 @@ void Cia402System::switchModes(uint id, const std::shared_ptr<ros2_canopen::Cia4
     }
 
     if (motor_data_[id].torque_mode.is_commanded()){
+        RCLCPP_INFO(kLogger, "torque_mode is commanded");
+
         motor_data_[id].torque_mode.set_response(driver->set_mode_torque());
     }
 }
 
 void Cia402System::handleInit(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> &driver) {
     if (motor_data_[id].init.is_commanded()){
+        RCLCPP_INFO(kLogger, "init is commanded");
         motor_data_[id].init.set_response(driver->init_motor());
     }
 }
 
 void Cia402System::handleRecover(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> &driver) {
     if (motor_data_[id].recover.is_commanded()){
+        RCLCPP_INFO(kLogger, "recover is commanded");
+
         motor_data_[id].recover.set_response(driver->recover_motor());
     }
 }
 
 void Cia402System::handleHalt(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> &driver) {
     if (motor_data_[id].halt.is_commanded()){
+        RCLCPP_INFO(kLogger, "halt is commanded");
+
         motor_data_[id].halt.set_response(driver->halt_motor());
     }
 }

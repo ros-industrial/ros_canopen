@@ -85,7 +85,7 @@ public:
 
 protected:
 
-    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr createTriggerSrv(const std::string& service,
+    inline rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr createTriggerSrv(const std::string& service,
                                                                         Cia402CommandInterfaces cmd,
                                                                         Cia402CommandInterfaces fbk){
 
@@ -93,24 +93,30 @@ protected:
         auto service_profile = rmw_qos_profile_services_default;
         service_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
         service_profile.depth = 1;
+        RCLCPP_INFO(get_node()->get_logger(), "Creating service '%s'", service.c_str());
 
-        auto callback = [&](const std_srvs::srv::Trigger::Request::SharedPtr request,
-                               std_srvs::srv::Trigger::Response::SharedPtr response) {
+        rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv =
+                get_node()->create_service<std_srvs::srv::Trigger>(
+                        service,
+               [&, cmd, fbk](const std_srvs::srv::Trigger::Request::SharedPtr request,
+                             std_srvs::srv::Trigger::Response::SharedPtr response) {
 
-            command_interfaces_[cmd].set_value(kCommandValue);
+                           command_interfaces_[cmd].set_value(kCommandValue);
 
-            while (!std::isnan(command_interfaces_[cmd].get_value()))
-            {
-                std::this_thread::sleep_for(std::chrono::milliseconds(kLoopPeriodMS));
-            }
+                           while (!std::isnan(command_interfaces_[cmd].get_value()))
+                           {
+                               std::this_thread::sleep_for(std::chrono::milliseconds(kLoopPeriodMS));
+                           }
 
-            // report success
-            response->success = static_cast<bool>(command_interfaces_[fbk].get_value());
-            // reset to nan
-            command_interfaces_[fbk].set_value(std::numeric_limits<double>::quiet_NaN());
-        };
+                           // report success
+                           response->success = static_cast<bool>(command_interfaces_[fbk].get_value());
+                           // reset to nan
+                           command_interfaces_[fbk].set_value(std::numeric_limits<double>::quiet_NaN());
 
-        return get_node()->create_service<std_srvs::srv::Trigger>(service, callback, service_profile);
+                        },
+               service_profile);
+
+        return srv;
     }
 
 
