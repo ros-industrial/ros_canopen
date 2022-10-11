@@ -230,7 +230,9 @@ protected:
     "tpdo/data",
     "tpdo/ons",
     "nmt/reset",
-    "nmt/start"};
+    "nmt/reset_fbk",
+    "nmt/start",
+    "nmt/start_fbk"};
 
   std::vector<std::string> state_interface_names_ = {"rpdo/index",
     "rpdo/subindex",
@@ -242,7 +244,11 @@ protected:
   std::array<double, 5> joint_state_values_ = {0, 0, 0, 0, 0};
   // see CommandInterfaces in canopen_proxy_controller.hpp for correct order;
   std::array<double,
-    7> joint_command_values_ = {101.101, 101.101, 101.101, 101.101, 101.101, 101.101, 101.101};
+    9> joint_command_values_ = {101.101, 101.101,
+                                101.101, 101.101,
+                                101.101, 101.101,
+                                101.101, 101.101,
+                                101.101};
 
   std::vector<hardware_interface::StateInterface> state_itfs_;
   std::vector<hardware_interface::CommandInterface> command_itfs_;
