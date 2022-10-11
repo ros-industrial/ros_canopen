@@ -30,12 +30,15 @@
 #include "canopen_ros2_control/canopen_system.hpp"
 #include "canopen_402_driver/cia402_driver.hpp"
 
+constexpr double kResponseOk = 1.0;
+constexpr double kResponseFail = 0.0;
+
 namespace canopen_ros2_control
 {
 
     struct MotorTriggerCommand{
         double ons_cmd{std::numeric_limits<double>::quiet_NaN()};
-        double resp;
+        double resp{std::numeric_limits<double>::quiet_NaN()};
 
         bool is_commanded(){
             bool tmp = !std::isnan(ons_cmd);
@@ -44,7 +47,7 @@ namespace canopen_ros2_control
         }
 
         void set_response(bool response){
-            resp = static_cast<double>(response);
+            resp = response ? kResponseOk : kResponseFail;
         }
     };
 

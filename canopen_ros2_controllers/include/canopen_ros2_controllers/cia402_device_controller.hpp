@@ -93,7 +93,6 @@ protected:
         auto service_profile = rmw_qos_profile_services_default;
         service_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
         service_profile.depth = 1;
-        RCLCPP_INFO(get_node()->get_logger(), "Creating service '%s'", service.c_str());
 
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv =
                 get_node()->create_service<std_srvs::srv::Trigger>(
@@ -103,7 +102,7 @@ protected:
 
                            command_interfaces_[cmd].set_value(kCommandValue);
 
-                           while (!std::isnan(command_interfaces_[cmd].get_value()))
+                           while (std::isnan(command_interfaces_[fbk].get_value()) && rclcpp::ok())
                            {
                                std::this_thread::sleep_for(std::chrono::milliseconds(kLoopPeriodMS));
                            }
@@ -112,6 +111,7 @@ protected:
                            response->success = static_cast<bool>(command_interfaces_[fbk].get_value());
                            // reset to nan
                            command_interfaces_[fbk].set_value(std::numeric_limits<double>::quiet_NaN());
+                           command_interfaces_[cmd].set_value(std::numeric_limits<double>::quiet_NaN());
 
                         },
                service_profile);

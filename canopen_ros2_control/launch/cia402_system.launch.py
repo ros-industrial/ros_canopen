@@ -145,7 +145,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     slave_launch = PathJoinSubstitution(
-        [FindPackageShare("canopen_mock_slave"), "launch", "cia402_slave.launch.py"]
+        [FindPackageShare("canopen_fake_slaves"), "launch", "cia402_slave.launch.py"]
     )
     slave_node_1 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(slave_launch),

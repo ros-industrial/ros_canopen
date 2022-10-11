@@ -307,11 +307,6 @@ hardware_interface::return_type Cia402System::write(
             default:
                 RCLCPP_INFO(kLogger, "Mode not supported");
         }
-
-
-
-
-
     }
 
     return hardware_interface::return_type::OK;
@@ -321,20 +316,14 @@ void Cia402System::switchModes(uint id, const std::shared_ptr<ros2_canopen::Cia4
 
     if (motor_data_[id].position_mode.is_commanded()){
         motor_data_[id].position_mode.set_response(driver->set_mode_position());
-        RCLCPP_INFO(kLogger, "position_mode is commanded");
-
     }
 
     if (motor_data_[id].cyclic_position_mode.is_commanded()){
         motor_data_[id].cyclic_position_mode.set_response(driver->set_mode_cyclic_position());
-        RCLCPP_INFO(kLogger, "cyclic_position_mode is commanded");
-
     }
 
     if (motor_data_[id].velocity_mode.is_commanded()){
         motor_data_[id].velocity_mode.set_response(driver->set_mode_velocity());
-        RCLCPP_INFO(kLogger, "velocity_mode is commanded");
-
     }
 
     if (motor_data_[id].cyclic_velocity_mode.is_commanded()){
@@ -342,31 +331,24 @@ void Cia402System::switchModes(uint id, const std::shared_ptr<ros2_canopen::Cia4
     }
 
     if (motor_data_[id].torque_mode.is_commanded()){
-        RCLCPP_INFO(kLogger, "torque_mode is commanded");
-
         motor_data_[id].torque_mode.set_response(driver->set_mode_torque());
     }
 }
 
 void Cia402System::handleInit(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> &driver) {
     if (motor_data_[id].init.is_commanded()){
-        RCLCPP_INFO(kLogger, "init is commanded");
         motor_data_[id].init.set_response(driver->init_motor());
     }
 }
 
 void Cia402System::handleRecover(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> &driver) {
     if (motor_data_[id].recover.is_commanded()){
-        RCLCPP_INFO(kLogger, "recover is commanded");
-
         motor_data_[id].recover.set_response(driver->recover_motor());
     }
 }
 
 void Cia402System::handleHalt(uint id, const std::shared_ptr<ros2_canopen::Cia402Driver> &driver) {
     if (motor_data_[id].halt.is_commanded()){
-        RCLCPP_INFO(kLogger, "halt is commanded");
-
         motor_data_[id].halt.set_response(driver->halt_motor());
     }
 }
