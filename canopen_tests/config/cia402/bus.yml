@@ -16,6 +16,8 @@ cia402_device_1:
   sdo:
     - {index: 0x60C2, sub_index: 1, value: 50} # Set interpolation time for cyclic modes to 50 ms
     - {index: 0x60C2, sub_index: 2, value: -3} # Set base 10-3s
+    - {index: 0x6081, sub_index: 0, value: 1000}
+    - {index: 0x6083, sub_index: 0, value: 2000}
   tpdo: # TPDO needed statusword, actual velocity, actual position, mode of operation
     1:
       enabled: true

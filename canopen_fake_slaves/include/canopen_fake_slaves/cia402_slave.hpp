@@ -367,7 +367,7 @@ namespace ros2_canopen
             }
             if (is_faul_reset())
             {
-                return;
+                set_ready_to_switch_on();
             }
         }
 

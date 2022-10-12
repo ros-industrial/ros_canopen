@@ -47,6 +47,7 @@ bool DeviceContainer::load_component(
             std::shared_ptr<rclcpp_components::NodeFactory> factory_node = this->create_component_factory(*it);
             rclcpp::NodeOptions opts;
             opts.use_global_arguments(false);
+            opts.use_intra_process_comms(true);
             std::vector<std::string> remap_rules;
             remap_rules.push_back("--ros-args");
             //remap_rules.push_back("--log-level");
