@@ -49,7 +49,7 @@ template<typename WrappedInterface> class ThreadedInterface : public WrappedInte
         }
     }
 public:
-    [[deprecated("provide settings explicitly")]] virtual bool init(const std::string &device, bool loopback) override {
+    [[deprecated("provide settings explicitly")]] bool init(const std::string &device, bool loopback) override {
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
         if(!thread_ && WrappedInterface::init(device, loopback)){
@@ -60,7 +60,7 @@ public:
         return WrappedInterface::getState().isReady();
         #pragma GCC diagnostic pop
     }
-    virtual bool init(const std::string &device, bool loopback, SettingsConstSharedPtr settings) override {
+    bool init(const std::string &device, bool loopback, SettingsConstSharedPtr settings) override {
         if(!thread_ && WrappedInterface::init(device, loopback, settings)){
             StateWaiter waiter(this);
             thread_.reset(new boost::thread(&ThreadedInterface::run_thread, this));
@@ -69,7 +69,7 @@ public:
         return WrappedInterface::getState().isReady();
     }
 
-    virtual void shutdown(){
+    void shutdown() override{
         WrappedInterface::shutdown();
         shutdown_internal();
     }
