@@ -30,7 +30,17 @@ namespace ros2_canopen
 {
     namespace node_interfaces
     {
-
+        /**
+         * @brief Node Canopen Driver
+         * 
+         * This class implements the NodeCanopenDriverInterface. It provides
+         * core functionality and logic for CanopenDriver, indepentently of the
+         * ROS node type. Currently rclcpp::Node and rclcpp_lifecycle::LifecycleNode
+         * and derived classes are supported. Other node types will lead to compile 
+         * time error.
+         * 
+         * @tparam NODETYPE 
+         */
         template <class NODETYPE>
         class NodeCanopenDriver : public NodeCanopenDriverInterface
         {
@@ -124,6 +134,18 @@ namespace ros2_canopen
                 RCLCPP_DEBUG(node_->get_logger(), "init_end");
             }
 
+            /**
+             * @brief Initialises the driver
+             * 
+             * This does not do anything, it is an empty function. it
+             * should be overridden by derived classes.
+             * 
+             * @todo
+             * Potentially make this an abstract function. This is mainly
+             * for debugging purposes.
+             * 
+             * @param called_from_base 
+             */
             virtual void init(bool called_from_base)
             {
             }
@@ -133,6 +155,10 @@ namespace ros2_canopen
              *
              * This function should contain the configuration related things,
              * such as reading parameter data or configuration data from files.
+             * 
+             * This function reads the parameters container_name, non_transmit_timeout,
+             * node_id and config. Once done it will call the configure(bool) function
+             * that should be over
              *
              */
             void configure()
@@ -162,7 +188,13 @@ namespace ros2_canopen
                 this->configured_.store(true);
                 RCLCPP_DEBUG(node_->get_logger(), "configure_end");
             }
-
+            /**
+             * @brief Configure the driver
+             * 
+             * This function should be overridden by derived classes.
+             * 
+             * @param called_from_base 
+             */
             virtual void configure(bool called_from_base)
             {
             }
@@ -199,6 +231,14 @@ namespace ros2_canopen
                 RCLCPP_DEBUG(node_->get_logger(), "activate_end");
             }
 
+            /**
+             * @brief Activates the driver.
+             * 
+             * This function should be overriden by derived
+             * classes.
+             * 
+             * @param called_from_base 
+             */
             virtual void activate(bool called_from_base)
             {
             }
@@ -234,7 +274,13 @@ namespace ros2_canopen
                 this->deactivate(true);
                 RCLCPP_DEBUG(node_->get_logger(), "deactivate_end");
             }
-
+            /**
+             * @brief Deactivates the driver
+             * 
+             * This function should be overridden by derived classes.
+             * 
+             * @param called_from_base 
+             */
             virtual void deactivate(bool called_from_base)
             {
             }
@@ -263,6 +309,13 @@ namespace ros2_canopen
                 this->configured_.store(false);
             }
 
+            /**
+             * @brief Cleanup the driver
+             * 
+             * This function should be overridden by derived classes.
+             * 
+             * @param called_from_base 
+             */
             virtual void cleanup(bool called_from_base)
             {
             }
@@ -290,7 +343,13 @@ namespace ros2_canopen
                 this->configured_.store(false);
                 this->activated_.store(false);
             }
-
+            /**
+             * @brief Shuts down the driver
+             * 
+             * This function should be overriden by derived classes.
+             * 
+             * @param called_from_base 
+             */
             virtual void shutdown(bool called_from_base)
             {
             }

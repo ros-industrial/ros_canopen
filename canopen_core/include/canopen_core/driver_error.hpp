@@ -6,7 +6,13 @@
 
 namespace ros2_canopen
 {
-
+  /**
+   * @brief Driver Exception
+   * 
+   * This exception is used, when a driver
+   * fails.
+   * 
+   */
   class DriverException : public std::exception
   {
   private:

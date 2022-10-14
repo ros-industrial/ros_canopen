@@ -22,6 +22,17 @@ namespace ros2_canopen
 {
     namespace node_interfaces
     {
+        /**
+         * @brief Node Canopen Master
+         * 
+         * This class implements the NodeCanopenMasterInterface. It provides
+         * core functionality and logic for CanopenMaster, indepentently of the
+         * ROS node type. Currently rclcpp::Node and rclcpp_lifecycle::LifecycleNode
+         * and derived classes are supported. Other node types will lead to compile 
+         * time error.
+         * 
+         * @tparam NODETYPE 
+         */
         template <class NODETYPE>
         class NodeCanopenMaster : public NodeCanopenMasterInterface
         {
