@@ -76,17 +76,20 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Canopen Driver.  
+ <a href="classros2__canopen_1_1CanopenDriver.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="driver__node_8hpp_source.html">driver_node.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for ros2_canopen::CanopenDriver:</div>
 <div class="dyncontent">
 <div class="center"><img src="classros2__canopen_1_1CanopenDriver__inherit__graph.png" border="0" usemap="#ros2__canopen_1_1CanopenDriver_inherit__map" alt="Inheritance graph"/></div>
 <map name="ros2__canopen_1_1CanopenDriver_inherit__map" id="ros2__canopen_1_1CanopenDriver_inherit__map">
-<area shape="rect" title=" " alt="" coords="215,95,433,121"/>
+<area shape="rect" title="Canopen Driver." alt="" coords="215,95,433,121"/>
 <area shape="rect" href="classros2__canopen_1_1BaseDriver.html" title="Abstract Class for a CANopen Device Node." alt="" coords="5,169,197,196"/>
 <area shape="rect" href="classros2__canopen_1_1Cia402Driver.html" title="Abstract Class for a CANopen Device Node." alt="" coords="221,169,427,196"/>
 <area shape="rect" href="classros2__canopen_1_1ProxyDriver.html" title="Abstract Class for a CANopen Device Node." alt="" coords="451,169,648,196"/>
-<area shape="rect" href="classros2__canopen_1_1CanopenDriverInterface.html" title=" " alt="" coords="135,5,353,47"/>
+<area shape="rect" href="classros2__canopen_1_1CanopenDriverInterface.html" title="Canopen Driver Interface." alt="" coords="135,5,353,47"/>
 <area shape="rect" title=" " alt="" coords="377,13,433,39"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -95,8 +98,8 @@ Collaboration diagram for ros2_canopen::CanopenDriver:</div>
 <div class="dyncontent">
 <div class="center"><img src="classros2__canopen_1_1CanopenDriver__coll__graph.png" border="0" usemap="#ros2__canopen_1_1CanopenDriver_coll__map" alt="Collaboration graph"/></div>
 <map name="ros2__canopen_1_1CanopenDriver_coll__map" id="ros2__canopen_1_1CanopenDriver_coll__map">
-<area shape="rect" title=" " alt="" coords="85,95,303,121"/>
-<area shape="rect" href="classros2__canopen_1_1CanopenDriverInterface.html" title=" " alt="" coords="5,5,223,47"/>
+<area shape="rect" title="Canopen Driver." alt="" coords="85,95,303,121"/>
+<area shape="rect" href="classros2__canopen_1_1CanopenDriverInterface.html" title="Canopen Driver Interface." alt="" coords="5,5,223,47"/>
 <area shape="rect" title=" " alt="" coords="247,13,303,39"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -129,7 +132,10 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a037dfe6737b06c4090fbe49538bd03ca"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriverInterface.html">node_interfaces::NodeCanopenDriverInterface</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1CanopenDriver.html#a037dfe6737b06c4090fbe49538bd03ca">node_canopen_driver_</a></td></tr>
 <tr class="separator:a037dfe6737b06c4090fbe49538bd03ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Canopen Driver. </p>
+<p>This provides a class, that driver nodes that are based on rclcpp::Node should be derived of. This class implements the <a class="el" href="classros2__canopen_1_1CanopenDriverInterface.html" title="Canopen Driver Interface.">ros2_canopen::CanopenDriverInterface</a>. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a680abec1795a60e36c992d419325be21"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a680abec1795a60e36c992d419325be21">&#9670;&nbsp;</a></span>CanopenDriver()</h2>
 
@@ -181,7 +187,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Initialise the driver. </p>
-<p>This function will initialise the drivers functionalities. It will be called by the device_container when the node has been added to the executor. </p>
+<p>This function will activate the driver using the instantiated node_canopen_driver_. It will call the init, configure, demand_set_master and activate of the NodeCanopenDriverInterface. If the function finishes without exception, the driver is activated and ready for use. </p>
 
 <p>Implements <a class="el" href="classros2__canopen_1_1CanopenDriverInterface.html#a46156f4178735c1ddcc9184be696b655">ros2_canopen::CanopenDriverInterface</a>.</p>
 
@@ -290,7 +296,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Shutdown the driver. </p>
-<p>This function will shutdown the driver and will especially join all threads to enable a clean shutdown. </p>
+<p>This function will shutdown the driver by calling the <a class="el" href="classros2__canopen_1_1CanopenDriver.html#a82612646365c98ac16bae1260c0af832" title="Shutdown the driver.">shutdown()</a> function of node_canopen_driver_. </p>
 
 <p>Implements <a class="el" href="classros2__canopen_1_1CanopenDriverInterface.html#a074922182395c2aa9ab44b051fdbfda7">ros2_canopen::CanopenDriverInterface</a>.</p>
 
@@ -320,10 +326,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Check whether this is a LifecycleNode. </p>
-<p>This function provides runtime information on whether the driver is a lifecycle driver or not.</p>
-<dl class="section return"><dt>Returns</dt><dd>true </dd>
-<dd>
-false </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>false </dd></dl>
 
 <p>Implements <a class="el" href="classros2__canopen_1_1CanopenDriverInterface.html#a611e0ad1d4daf0fb5e3cc9a227fd07d5">ros2_canopen::CanopenDriverInterface</a>.</p>
 

@@ -109,6 +109,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a48a1ce51ba016c39ad6273ba88123388"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the intialisation.  <a href="classros2__canopen_1_1DeviceContainer.html#a48a1ce51ba016c39ad6273ba88123388">More...</a><br /></td></tr>
 <tr class="separator:a48a1ce51ba016c39ad6273ba88123388"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea35a92885440798e92604b6c12feb00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DeviceContainer.html#aea35a92885440798e92604b6c12feb00">init</a> (const std::string &amp;can_interface_name, const std::string &amp;master_config, const std::string &amp;bus_config, const std::string &amp;master_bin=&quot;&quot;)</td></tr>
+<tr class="memdesc:aea35a92885440798e92604b6c12feb00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the intialisation.  <a href="classros2__canopen_1_1DeviceContainer.html#aea35a92885440798e92604b6c12feb00">More...</a><br /></td></tr>
 <tr class="separator:aea35a92885440798e92604b6c12feb00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f53ae676bb67689aa31fb94114d0b66"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DeviceContainer.html#a4f53ae676bb67689aa31fb94114d0b66">configure</a> ()</td></tr>
 <tr class="separator:a4f53ae676bb67689aa31fb94114d0b66"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,21 +138,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1d18addece67e601d1788282f35bdc74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of registered drivers.  <a href="classros2__canopen_1_1DeviceContainer.html#a1d18addece67e601d1788282f35bdc74">More...</a><br /></td></tr>
 <tr class="separator:a1d18addece67e601d1788282f35bdc74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f27b6f0dab3c86073ecfbbb74ade7b2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint16_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DeviceContainer.html#a9f27b6f0dab3c86073ecfbbb74ade7b2">get_ids_of_drivers_with_type</a> (std::string type)</td></tr>
-<tr class="memdesc:a9f27b6f0dab3c86073ecfbbb74ade7b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ids of drivers with type object.  <a href="classros2__canopen_1_1DeviceContainer.html#a9f27b6f0dab3c86073ecfbbb74ade7b2">More...</a><br /></td></tr>
+<tr class="memdesc:a9f27b6f0dab3c86073ecfbbb74ade7b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get node ids of all drivers with type.  <a href="classros2__canopen_1_1DeviceContainer.html#a9f27b6f0dab3c86073ecfbbb74ade7b2">More...</a><br /></td></tr>
 <tr class="separator:a9f27b6f0dab3c86073ecfbbb74ade7b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecd7b71cb6438c44e44f6f77e2e1bbc3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DeviceContainer.html#aecd7b71cb6438c44e44f6f77e2e1bbc3">get_driver_type</a> (uint16_t id)</td></tr>
+<tr class="memdesc:aecd7b71cb6438c44e44f6f77e2e1bbc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the type of driver by node id.  <a href="classros2__canopen_1_1DeviceContainer.html#aecd7b71cb6438c44e44f6f77e2e1bbc3">More...</a><br /></td></tr>
 <tr class="separator:aecd7b71cb6438c44e44f6f77e2e1bbc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a5ec258a39cc560bb7d182641d3eef0e9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DeviceContainer.html#a5ec258a39cc560bb7d182641d3eef0e9">init_device_manager</a> (uint16_t node_id)</td></tr>
-<tr class="memdesc:a5ec258a39cc560bb7d182641d3eef0e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the device manager.  <a href="classros2__canopen_1_1DeviceContainer.html#a5ec258a39cc560bb7d182641d3eef0e9">More...</a><br /></td></tr>
-<tr class="separator:a5ec258a39cc560bb7d182641d3eef0e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad899507d242c742b06adbe8221aaebc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DeviceContainer.html#ad899507d242c742b06adbe8221aaebc9">set_executor</a> (const std::weak_ptr&lt; rclcpp::Executor &gt; executor)</td></tr>
 <tr class="memdesc:ad899507d242c742b06adbe8221aaebc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the ROS executor object.  <a href="classros2__canopen_1_1DeviceContainer.html#ad899507d242c742b06adbe8221aaebc9">More...</a><br /></td></tr>
 <tr class="separator:ad899507d242c742b06adbe8221aaebc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2eb90273c7aa0fe3f2f1005eca6ff933"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DeviceContainer.html#a2eb90273c7aa0fe3f2f1005eca6ff933">init_driver</a> (uint16_t node_id)</td></tr>
-<tr class="memdesc:a2eb90273c7aa0fe3f2f1005eca6ff933"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds driver to master.  <a href="classros2__canopen_1_1DeviceContainer.html#a2eb90273c7aa0fe3f2f1005eca6ff933">More...</a><br /></td></tr>
+<tr class="memdesc:a2eb90273c7aa0fe3f2f1005eca6ff933"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialises a driver.  <a href="classros2__canopen_1_1DeviceContainer.html#a2eb90273c7aa0fe3f2f1005eca6ff933">More...</a><br /></td></tr>
 <tr class="separator:a2eb90273c7aa0fe3f2f1005eca6ff933"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dfe9359ecaf2c2417893db7aa25d699"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DeviceContainer.html#a4dfe9359ecaf2c2417893db7aa25d699">on_init_driver</a> (const canopen_interfaces::srv::CONode::Request::SharedPtr request, canopen_interfaces::srv::CONode::Response::SharedPtr response)</td></tr>
 <tr class="memdesc:a4dfe9359ecaf2c2417893db7aa25d699"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for init driver service.  <a href="classros2__canopen_1_1DeviceContainer.html#a4dfe9359ecaf2c2417893db7aa25d699">More...</a><br /></td></tr>
@@ -160,7 +159,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a2b5e83604ef29b25c4cc58cc1eb03617"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of components.  <a href="classros2__canopen_1_1DeviceContainer.html#a2b5e83604ef29b25c4cc58cc1eb03617">More...</a><br /></td></tr>
 <tr class="separator:a2b5e83604ef29b25c4cc58cc1eb03617"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ba06ec27a2d34a713c4ca8f14fb6cc8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DeviceContainer.html#a1ba06ec27a2d34a713c4ca8f14fb6cc8">add_node_to_executor</a> (rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_interface)</td></tr>
-<tr class="memdesc:a1ba06ec27a2d34a713c4ca8f14fb6cc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add driver to executor.  <a href="classros2__canopen_1_1DeviceContainer.html#a1ba06ec27a2d34a713c4ca8f14fb6cc8">More...</a><br /></td></tr>
+<tr class="memdesc:a1ba06ec27a2d34a713c4ca8f14fb6cc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add node to executor.  <a href="classros2__canopen_1_1DeviceContainer.html#a1ba06ec27a2d34a713c4ca8f14fb6cc8">More...</a><br /></td></tr>
 <tr class="separator:a1ba06ec27a2d34a713c4ca8f14fb6cc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
@@ -319,6 +318,18 @@ false </dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Executes the intialisation. </p>
+<p>Same as <a class="el" href="classros2__canopen_1_1DeviceContainer.html#a48a1ce51ba016c39ad6273ba88123388" title="Executes the intialisation.">init()</a> only that ros parameters are not used.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">can_interface_name</td><td></td></tr>
+    <tr><td class="paramname">master_config</td><td></td></tr>
+    <tr><td class="paramname">bus_config</td><td></td></tr>
+    <tr><td class="paramname">master_bin</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -529,6 +540,7 @@ false </dd></dl>
 </div><div class="memdoc">
 
 <p>Shutdown all devices. </p>
+<p>This function will shutdown all devices that were created. The function calls the shutdown function of each created device. </p>
 
 </div>
 </div>
@@ -608,6 +620,7 @@ false </dd></dl>
 </div><div class="memdoc">
 
 <p>Get the registered drivers object. </p>
+<p>This function will return a map of all driver objects that were created. The returned map can be queried by node id.</p>
 <dl class="section return"><dt>Returns</dt><dd>std::map&lt;uint16_t, std::shared_ptr&lt;CanopenDriverInterface&gt;&gt; </dd></dl>
 
 </div>
@@ -664,14 +677,15 @@ false </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p>Get the ids of drivers with type object. </p>
+<p>Get node ids of all drivers with type. </p>
+<p>This function gets the ids of all drivers that have the passed in type. The type must be the fully qualified class name of the driver as string.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">type</td><td></td></tr>
-    <tr><td class="paramname">ids</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;uint16_t&gt; </dd></dl>
 
 </div>
 </div>
@@ -699,42 +713,15 @@ false </dd></dl>
 </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="a5ec258a39cc560bb7d182641d3eef0e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ec258a39cc560bb7d182641d3eef0e9">&#9670;&nbsp;</a></span>init_device_manager()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool ros2_canopen::DeviceContainer::init_device_manager </td>
-          <td>(</td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>node_id</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Initialize the device manager. </p>
+<p>Get the type of driver by node id. </p>
+<p>This function will return the type of the driver that is registered for the passed node ids.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">node_id</td><td>CANopen node id of the device manager </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">id</td><td></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true </dd>
-<dd>
-false </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>std::string </dd></dl>
 
 </div>
 </div>
@@ -796,8 +783,8 @@ false </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p>Adds driver to master. </p>
-<p>This function needs to be called to add the driver to the CANopen master loop, so that it has access to CANopen events and can send messages.</p>
+<p>Initialises a driver. </p>
+<p>This function needs to be called before a driver can be added to the CANopen Master Event Loop. It sets the master and executor, the driver will be added to.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">node_id</td><td>CANopen node id of the target device</td></tr>
@@ -907,12 +894,10 @@ false </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p>Add driver to executor. </p>
+<p>Add node to executor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">driver_name</td><td>Name of the driver </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">node_id</td><td>CANopen node id of the target device </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">node_name</td><td>Node name </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">node_interface</td><td>NodeBaseInterface of the node that should be added to the executor. </td></tr>
   </table>
   </dd>
 </dl>

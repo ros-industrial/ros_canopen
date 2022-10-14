@@ -1,5 +1,5 @@
 <map id="ros2_canopen::CanopenMasterInterface" name="ros2_canopen::CanopenMasterInterface">
-<area shape="rect" id="node1" title=" " alt="" coords="131,5,353,47"/>
-<area shape="rect" id="node2" href="$classros2__canopen_1_1CanopenMaster.html" title=" " alt="" coords="5,102,228,129"/>
+<area shape="rect" id="node1" title="Canopen Master Interface." alt="" coords="131,5,353,47"/>
+<area shape="rect" id="node2" href="$classros2__canopen_1_1CanopenMaster.html" title="Canopen Master." alt="" coords="5,102,228,129"/>
 <area shape="rect" id="node3" href="$classros2__canopen_1_1LifecycleCanopenMaster.html" title=" " alt="" coords="251,95,486,136"/>
 </map>

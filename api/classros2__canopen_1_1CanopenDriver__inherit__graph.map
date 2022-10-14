@@ -1,8 +1,8 @@
 <map id="ros2_canopen::CanopenDriver" name="ros2_canopen::CanopenDriver">
-<area shape="rect" id="node1" title=" " alt="" coords="215,95,433,121"/>
+<area shape="rect" id="node1" title="Canopen Driver." alt="" coords="215,95,433,121"/>
 <area shape="rect" id="node4" href="$classros2__canopen_1_1BaseDriver.html" title="Abstract Class for a CANopen Device Node." alt="" coords="5,169,197,196"/>
 <area shape="rect" id="node5" href="$classros2__canopen_1_1Cia402Driver.html" title="Abstract Class for a CANopen Device Node." alt="" coords="221,169,427,196"/>
 <area shape="rect" id="node6" href="$classros2__canopen_1_1ProxyDriver.html" title="Abstract Class for a CANopen Device Node." alt="" coords="451,169,648,196"/>
-<area shape="rect" id="node2" href="$classros2__canopen_1_1CanopenDriverInterface.html" title=" " alt="" coords="135,5,353,47"/>
+<area shape="rect" id="node2" href="$classros2__canopen_1_1CanopenDriverInterface.html" title="Canopen Driver Interface." alt="" coords="135,5,353,47"/>
 <area shape="rect" id="node3" title=" " alt="" coords="377,13,433,39"/>
 </map>
