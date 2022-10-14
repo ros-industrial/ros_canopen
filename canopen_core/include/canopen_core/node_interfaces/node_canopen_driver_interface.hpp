@@ -8,6 +8,13 @@ namespace ros2_canopen
 {
     namespace node_interfaces
     {
+        /**
+         * @brief Node Canopen Driver Interface
+         * 
+         * This node provides the interface for NodeCanopenDriver classes
+         * that provide ROS node independent CANopen functionality.
+         * 
+         */
         class NodeCanopenDriverInterface
         {
             public:

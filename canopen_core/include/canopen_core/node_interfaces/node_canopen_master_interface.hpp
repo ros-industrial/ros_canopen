@@ -9,6 +9,13 @@ namespace ros2_canopen
 {
     namespace node_interfaces
     {
+        /**
+         * @brief Node Canopen Master Interface
+         * 
+         * This node provides the interface for NodeCanopenMaster classes
+         * that provide ROS node independent CANopen functionality.
+         * 
+         */
         class NodeCanopenMasterInterface
         {
         public:

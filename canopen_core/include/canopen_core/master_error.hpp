@@ -5,7 +5,13 @@
 
 namespace ros2_canopen
 {
-
+  /**
+   * @brief Master Exception
+   * 
+   * This exception is used, when a master
+   * fails.
+   * 
+   */
   class MasterException : public std::exception
   {
   private:

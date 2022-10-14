@@ -91,6 +91,16 @@ namespace ros2_canopen
          */
         void init();
 
+        /**
+         * @brief Executes the intialisation
+         * 
+         * Same as init() only that ros parameters are not used.
+         * 
+         * @param can_interface_name 
+         * @param master_config 
+         * @param bus_config 
+         * @param master_bin 
+         */
         void init(const std::string &can_interface_name,
                   const std::string &master_config,
                   const std::string &bus_config,
@@ -138,6 +148,10 @@ namespace ros2_canopen
 
         /**
          * @brief Shutdown all devices.
+         * 
+         * This function will shutdown all devices that were created.
+         * The function calls the shutdown function of each created 
+         * device.
          *
          */
         virtual void shutdown()
@@ -179,6 +193,9 @@ namespace ros2_canopen
 
         /**
          * @brief Get the registered drivers object
+         * 
+         * This function will return a map of all driver objects that were created.
+         * The returned map can be queried by node id.
          *
          * @return std::map<uint16_t, std::shared_ptr<CanopenDriverInterface>>
          */
@@ -198,10 +215,14 @@ namespace ros2_canopen
         }
 
         /**
-         * @brief Get the ids of drivers with type object
-         *
-         * @param type
-         * @param ids
+         * @brief Get node ids of all drivers with type
+         * 
+         * This function gets the ids of all drivers that have the passed
+         * in type. The type must be the fully qualified class name of the
+         * driver as string.
+         * 
+         * @param [in] type 
+         * @return std::vector<uint16_t> 
          */
         std::vector<uint16_t> get_ids_of_drivers_with_type(std::string type)
         {
@@ -224,7 +245,15 @@ namespace ros2_canopen
             }
             return ids;
         }
-
+        /**
+         * @brief Get the type of driver by node id
+         * 
+         * This function will return the type of the driver that is registered
+         * for the passed node ids.
+         * 
+         * @param [in] id 
+         * @return std::string 
+         */
         std::string get_driver_type(uint16_t id)
         {
             std::vector<std::string> devices;
@@ -261,15 +290,6 @@ namespace ros2_canopen
         rclcpp::CallbackGroup::SharedPtr client_cbg_;                                     ///< Callback group for services
 
         /**
-         * @brief Initialize the device manager
-         *
-         * @param [in] node_id  CANopen node id of the device manager
-         * @return true
-         * @return false
-         */
-        bool init_device_manager(uint16_t node_id);
-
-        /**
          * @brief Set the ROS executor object
          *
          * @param [in] executor     Pointer to the Executor
@@ -277,11 +297,11 @@ namespace ros2_canopen
         void set_executor(const std::weak_ptr<rclcpp::Executor> executor);
 
         /**
-         * @brief Adds driver to master
+         * @brief Initialises a driver
          *
-         * This function needs to be called to add the driver to the
-         * CANopen master loop, so that it has access to CANopen events
-         * and can send messages.
+         * This function needs to be called before a driver can be added
+         * to the CANopen Master Event Loop. It sets the master and executor,
+         * the driver will be added to.
          *
          * @param node_id       CANopen node id of the target device
          *
@@ -313,11 +333,9 @@ namespace ros2_canopen
         std::map<uint16_t, std::string> list_components();
 
         /**
-         * @brief Add driver to executor
+         * @brief Add node to executor
          *
-         * @param [in] driver_name  Name of the driver
-         * @param [in] node_id      CANopen node id of the target device
-         * @param [in] node_name    Node name
+         * @param [in] node_interface  NodeBaseInterface of the node that should be added to the executor.
          */
         virtual void add_node_to_executor(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_interface)
         {
@@ -333,8 +351,6 @@ namespace ros2_canopen
                 RCLCPP_ERROR(this->get_logger(), "Failed to add component %s", node_interface->get_fully_qualified_name());
             }
         }
-
-        // bool set_remote_paramter(std::string node_name, rclcpp::Parameter& param);
     };
 
 }

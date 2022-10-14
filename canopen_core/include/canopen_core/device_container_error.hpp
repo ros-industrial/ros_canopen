@@ -7,6 +7,13 @@
 namespace ros2_canopen
 {
 
+  /**
+   * @brief Device Container Exception
+   * 
+   * This exception is used, when the device container
+   * fails.
+   * 
+   */
   class DeviceContainerException : public std::exception
   {
   private:

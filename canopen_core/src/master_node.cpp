@@ -4,7 +4,6 @@ using namespace ros2_canopen;
 
 void CanopenMaster::init()
 {
-    RCLCPP_INFO(this->get_logger(), "INIT");
     node_canopen_master_->init();
     node_canopen_master_->configure();
     node_canopen_master_->activate();
