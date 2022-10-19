@@ -322,4 +322,122 @@ void NodeCanopen402Driver<NODETYPE>::handle_set_target(
     }
 }
 
+template<class NODETYPE>
+bool NodeCanopen402Driver<NODETYPE>::init_motor() {
+    if (this->activated_.load())
+    {
+        bool temp = motor_->handleInit();
+        mc_driver_->validate_objs();
+        return temp;
+    }else{
+        RCLCPP_INFO(this->node_->get_logger(), "Initialisation failed.");
+        return false;
+    }
+
+}
+
+template<class NODETYPE>
+bool NodeCanopen402Driver<NODETYPE>::recover_motor() {
+    if (this->activated_.load())
+    {
+        return motor_->handleRecover();
+    }else{
+        return false;
+    }
+}
+
+template<class NODETYPE>
+bool NodeCanopen402Driver<NODETYPE>::halt_motor() {
+    if (this->activated_.load())
+    {
+        return motor_->handleHalt();
+    }else{
+        return false;
+    }
+}
+
+template<class NODETYPE>
+bool NodeCanopen402Driver<NODETYPE>::set_mode_position() {
+    if (this->activated_.load())
+    {
+        if (motor_->getMode() != MotorBase::Profiled_Position)
+        {
+            return motor_->enterModeAndWait(MotorBase::Profiled_Position);
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+}
+
+template<class NODETYPE>
+bool NodeCanopen402Driver<NODETYPE>::set_mode_velocity() {
+    if (this->activated_.load())
+    {
+        if (motor_->getMode() != MotorBase::Velocity)
+        {
+            return motor_->enterModeAndWait(MotorBase::Velocity);
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+}
+
+template<class NODETYPE>
+bool NodeCanopen402Driver<NODETYPE>::set_mode_cyclic_position() {
+    if (this->activated_.load())
+    {
+        if (motor_->getMode() != MotorBase::Cyclic_Synchronous_Position)
+        {
+            return motor_->enterModeAndWait(MotorBase::Cyclic_Synchronous_Position);
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+}
+
+template<class NODETYPE>
+bool NodeCanopen402Driver<NODETYPE>::set_mode_cyclic_velocity() {
+    if (this->activated_.load())
+    {
+        if (motor_->getMode() != MotorBase::Cyclic_Synchronous_Velocity)
+        {
+            return motor_->enterModeAndWait(MotorBase::Cyclic_Synchronous_Velocity);
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+}
+
+template<class NODETYPE>
+bool NodeCanopen402Driver<NODETYPE>::set_mode_torque() {
+    if (this->activated_.load())
+    {
+        if (motor_->getMode() != MotorBase::Profiled_Torque)
+        {
+            return motor_->enterModeAndWait(MotorBase::Profiled_Torque);
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }}
+
+template<class NODETYPE>
+bool NodeCanopen402Driver<NODETYPE>::set_target(double target) {
+    if (this->activated_.load())
+    {
+        return motor_->setTarget(target * 1000);
+    }else{
+        return false;
+    }
+}
+
 #endif

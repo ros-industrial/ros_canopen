@@ -2,7 +2,13 @@
   <class name="canopen_ros2_controllers/CanopenProxyController"
          type="canopen_ros2_controllers::CanopenProxyController" base_class_type="controller_interface::ControllerInterface">
   <description>
-    Generic controller for Canopen devices providing service interfaces through ros2_control stack to the can devices. The controller is not meant for production, but as deveopment and debugging tool. It is always recommended to write specific controller for you concrete use-case. You can ofcourse use this controller as inspriration for it or even inherit from it.
+    Generic controller for Canopen devices providing service interfaces through ros2_control stack to the can devices.
   </description>
+  </class>
+  <class name="canopen_ros2_controllers/Cia402DeviceController"
+         type="canopen_ros2_controllers::Cia402DeviceController" base_class_type="controller_interface::ControllerInterface">
+    <description>
+      Generic controller for Canopen 402 devices providing service interfaces through ros2_control stack to the can devices.
+    </description>
   </class>
 </library>

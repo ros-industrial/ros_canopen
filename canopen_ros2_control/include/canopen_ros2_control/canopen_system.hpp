@@ -66,7 +66,7 @@ namespace canopen_ros2_control
 
     struct WORos2ControlCoData: public Ros2ControlCOData{
 
-        WORos2ControlCoData(): one_shot(std::numeric_limits<double>::infinity()){}
+        WORos2ControlCoData(): one_shot(std::numeric_limits<double>::quiet_NaN()){}
 
         // needed internally for write-only data
         double one_shot;
@@ -74,9 +74,9 @@ namespace canopen_ros2_control
         bool write_command(){
             bool ret_val;
             // store ret value
-            ret_val = (one_shot != std::numeric_limits<double>::infinity());
+            ret_val = !std::isnan(one_shot);
             // reset the existing active command if one exists
-            one_shot = std::numeric_limits<double>::infinity();
+            one_shot = std::numeric_limits<double>::quiet_NaN();
             return ret_val;
         }
 
@@ -90,7 +90,11 @@ namespace canopen_ros2_control
     };
     struct Ros2ControlNmtState{
 
-        Ros2ControlNmtState(): reset_ons(std::numeric_limits<double>::infinity()), start_ons(std::numeric_limits<double>::infinity()){}
+        Ros2ControlNmtState():
+        reset_ons(std::numeric_limits<double>::quiet_NaN()),
+        reset_fbk(std::numeric_limits<double>::quiet_NaN()),
+        start_ons(std::numeric_limits<double>::quiet_NaN()),
+        start_fbk(std::numeric_limits<double>::quiet_NaN()){}
 
 
         void set_state(canopen::NmtState s){
@@ -101,18 +105,18 @@ namespace canopen_ros2_control
         bool reset_command(){
             bool ret_val;
             // store ret value
-            ret_val = (reset_ons != std::numeric_limits<double>::infinity());
+            ret_val = !std::isnan(reset_ons);
             // reset the existing active command if one exists
-            reset_ons = std::numeric_limits<double>::infinity();
+            reset_ons = std::numeric_limits<double>::quiet_NaN();
             return ret_val;
         }
 
         bool start_command(){
             bool ret_val;
             // store ret value
-            ret_val = (start_ons != std::numeric_limits<double>::infinity());
+            ret_val = !std::isnan(start_ons);
             // reset the existing active command if one exists
-            start_ons = std::numeric_limits<double>::infinity();
+            start_ons = std::numeric_limits<double>::quiet_NaN();
             return ret_val;
         }
         canopen::NmtState original_state;
@@ -121,7 +125,9 @@ namespace canopen_ros2_control
 
         // basic commands
         double reset_ons; // write-only
+        double reset_fbk;
         double start_ons; // write-only
+        double start_fbk;
 
     };
 
@@ -137,6 +143,8 @@ namespace canopen_ros2_control
 class CanopenSystem : public hardware_interface::SystemInterface
 {
 public:
+  CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
+  CanopenSystem();
   CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
   ~CanopenSystem();
   CANOPEN_ROS2_CONTROL__VISIBILITY_PUBLIC
@@ -177,23 +185,21 @@ public:
   hardware_interface::return_type write(
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
+protected:
+    std::shared_ptr<ros2_canopen::DeviceContainer> device_container_;
+    std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
+    // can stuff
+    std::map<uint, CanopenNodeData> canopen_data_;
+    // threads
+    std::unique_ptr<std::thread> spin_thread_;
+    std::unique_ptr<std::thread> init_thread_;
+
+    void spin();
+    void clean();
+
 private:
-  std::vector<double> hw_commands_;
-  std::vector<double> hw_states_;
 
-  std::shared_ptr<ros2_canopen::DeviceContainer> device_container_;
-  std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
-  std::shared_ptr<rclcpp_components::ComponentManager> component_manager_;
-  std::shared_ptr<rclcpp::Node> node_;
-
-  // can stuff
-  std::map<uint, CanopenNodeData> canopen_data_;
-
-  std::unique_ptr<std::thread> spin_thread_;
-  std::unique_ptr<std::thread> init_thread_;
-  void spin();
   void initDeviceContainer();
-  void clean();
 };
 
 }  // namespace canopen_ros2_control

@@ -66,7 +66,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # can interface name
-    can_interface_name = LaunchConfiguration("can_interface_name")
+    can_interface = LaunchConfiguration("can_interface")
 
     # robot description stuff
     description_package = LaunchConfiguration("description_package")
@@ -89,8 +89,8 @@ def launch_setup(context, *args, **kwargs):
             "master_config:=",
             master_config,
             " ",
-            "can_interface_name:=",
-            can_interface_name,
+            "can_interface:=",
+            can_interface,
             " ",
         ]
     )
@@ -120,10 +120,16 @@ def launch_setup(context, *args, **kwargs):
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
-    canopen_proxy_controller_spawner = Node(
+    cia402_device_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["node_1_controller", "--controller-manager", "/controller_manager"],
+        arguments=["cia402_device_1_controller", "--controller-manager", "/controller_manager"],
+    )
+
+    forward_position_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["forward_position_controller", "--controller-manager", "/controller_manager"],
     )
 
     robot_state_publisher_node = Node(
@@ -135,26 +141,17 @@ def launch_setup(context, *args, **kwargs):
 
     # hardcoded slave configuration form test package
     slave_config = PathJoinSubstitution(
-        [FindPackageShare(master_config_package), master_config_directory, "simple.eds"]
+        [FindPackageShare("canopen_tests"), "config/cia402", "cia402_slave.eds"]
     )
 
     slave_launch = PathJoinSubstitution(
-        [FindPackageShare("canopen_fake_slaves"), "launch", "basic_slave.launch.py"]
+        [FindPackageShare("canopen_fake_slaves"), "launch", "cia402_slave.launch.py"]
     )
     slave_node_1 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(slave_launch),
         launch_arguments={
-            "node_id": "2", 
-            "node_name": "slave_node_2",
-            "slave_config": slave_config,
-            }.items(),
-    )
-
-    slave_node_2 = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(slave_launch),
-        launch_arguments={
-            "node_id": "3", 
-            "node_name": "slave_node_3",
+            "node_id": "2",
+            "node_name": "cia402_node_1",
             "slave_config": slave_config,
             }.items(),
     )
@@ -164,8 +161,8 @@ def launch_setup(context, *args, **kwargs):
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         slave_node_1,
-        slave_node_2,
-        canopen_proxy_controller_spawner,
+        cia402_device_controller_spawner,
+        forward_position_controller,
     ]
 
     return nodes_to_start
@@ -199,7 +196,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "description_file",
             description="Name of the urdf file.",
-            default_value="canopen_system.urdf.xacro"
+            default_value="cia402_system.urdf.xacro"
         )
     )
     declared_arguments.append(
@@ -219,7 +216,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "ros2_control_config_file",
-            default_value="ros2_control.yaml",
+            default_value="cia402_ros2_control.yaml",
             description="Path to ros2_control configuration.",
         )
     )
@@ -233,7 +230,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "bus_config_directory",
-            default_value="config/simple",
+            default_value="config/cia402",
             description="Path to bus configuration.",
         )
     )
@@ -254,7 +251,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "master_config_directory",
-            default_value="config/simple",
+            default_value="config/cia402",
             description="Path to master configuration file (*.dcf)",
         )
     )
@@ -268,7 +265,7 @@ def generate_launch_description():
 
     declared_arguments.append(
         DeclareLaunchArgument(
-            "can_interface_name",
+            "can_interface",
             default_value="vcan0",
             description="Interface name for can",
         )

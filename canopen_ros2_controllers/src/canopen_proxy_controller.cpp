@@ -21,6 +21,11 @@
 
 #include "controller_interface/helpers.hpp"
 
+#include "canopen_proxy_driver/node_interfaces/node_canopen_proxy_driver.hpp"
+
+static constexpr int kLoopPeriodMS = 100;
+static constexpr double kCommandValue = 1.0;
+
 namespace
 {  // utility
 
@@ -144,17 +149,17 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
   auto on_nmt_state_reset = [&](const std_srvs::srv::Trigger::Request::SharedPtr request,
       std_srvs::srv::Trigger::Response::SharedPtr response) {
 
-      command_interfaces_[CommandInterfaces::NMT_RESET].set_value(1.0);
+      command_interfaces_[CommandInterfaces::NMT_RESET].set_value(kCommandValue);
 
-      while (command_interfaces_[CommandInterfaces::NMT_RESET].get_value() !=
-        std::numeric_limits<double>::quiet_NaN() )
+      while (!std::isnan(command_interfaces_[CommandInterfaces::NMT_RESET].get_value()))
       {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(kLoopPeriodMS));
       }
 
       // report success
-      response->success = true;
-
+      response->success = static_cast<bool>(command_interfaces_[CommandInterfaces::NMT_RESET_FBK].get_value());
+      // reset to nan
+      command_interfaces_[CommandInterfaces::NMT_RESET_FBK].set_value(std::numeric_limits<double>::quiet_NaN());
     };
 
   auto service_profile = rmw_qos_profile_services_default;
@@ -168,18 +173,17 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
   auto on_nmt_state_start = [&](const std_srvs::srv::Trigger::Request::SharedPtr request,
       std_srvs::srv::Trigger::Response::SharedPtr response) {
 
-      command_interfaces_[CommandInterfaces::NMT_START].set_value(1.0);
+      command_interfaces_[CommandInterfaces::NMT_START].set_value(kCommandValue);
 
-      while (command_interfaces_[CommandInterfaces::NMT_START].get_value() !=
-        std::numeric_limits<double>::quiet_NaN() )
+      while (!std::isnan(command_interfaces_[CommandInterfaces::NMT_START].get_value()))
       {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(kLoopPeriodMS));
       }
 
       // report success
-      response->success = true;
-
-
+      response->success = static_cast<bool>(command_interfaces_[CommandInterfaces::NMT_START_FBK].get_value());
+      // reset to nan
+      command_interfaces_[CommandInterfaces::NMT_START_FBK].set_value(std::numeric_limits<double>::quiet_NaN());
     };
   nmt_state_start_service_ = get_node()->create_service<ControllerStartResetSrvType>(
     "~/nmt_start_node", on_nmt_state_start,
@@ -215,14 +219,16 @@ const
   controller_interface::InterfaceConfiguration command_interfaces_config;
   command_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-  command_interfaces_config.names.reserve(7);
+  command_interfaces_config.names.reserve(9);
   command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/index");
   command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/subindex");
   command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/type");
   command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/data");
   command_interfaces_config.names.push_back(joint_name_ + "/" + "tpdo/ons");
   command_interfaces_config.names.push_back(joint_name_ + "/" + "nmt/reset");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "nmt/reset_fbk");
   command_interfaces_config.names.push_back(joint_name_ + "/" + "nmt/start");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "nmt/start_fbk");
 
   return command_interfaces_config;
 }
@@ -267,11 +273,46 @@ controller_interface::return_type CanopenProxyController::update(
   const rclcpp::Time & time, const rclcpp::Duration & /*period*/)
 {
   // nmt state is retrieved in SystemInterface via cb and is exposed here
-  if (nmt_state_rt_publisher_ && nmt_state_rt_publisher_->trylock()) {
-    nmt_state_rt_publisher_->msg_.data = std::to_string(
-      state_interfaces_[StateInterfaces::NMT_STATE].get_value());
+  if (nmt_state_rt_publisher_) {
 
-    nmt_state_rt_publisher_->unlockAndPublish();
+      auto message = std_msgs::msg::String();
+      auto nmt_state =  static_cast<int>(state_interfaces_[StateInterfaces::NMT_STATE].get_value());
+
+      switch (static_cast<canopen::NmtState>(nmt_state))
+      {
+          case canopen::NmtState::BOOTUP:
+              message.data = "BOOTUP";
+              break;
+          case canopen::NmtState::PREOP:
+              message.data = "PREOP";
+              break;
+          case canopen::NmtState::RESET_COMM:
+              message.data = "RESET_COMM";
+              break;
+          case canopen::NmtState::RESET_NODE:
+              message.data = "RESET_NODE";
+              break;
+          case canopen::NmtState::START:
+              message.data = "START";
+              break;
+          case canopen::NmtState::STOP:
+              message.data = "STOP";
+              break;
+          case canopen::NmtState::TOGGLE:
+              message.data = "TOGGLE";
+              break;
+          default:
+              RCLCPP_ERROR(get_node()->get_logger(), "Unknown NMT State.");
+              message.data = "ERROR";
+              break;
+      }
+
+      if (nmt_state_actual_ != message.data && nmt_state_rt_publisher_->trylock()){
+          // publish on change only
+          nmt_state_actual_ = std::string(message.data);
+          nmt_state_rt_publisher_->msg_.data = nmt_state_actual_;
+          nmt_state_rt_publisher_->unlockAndPublish();
+      }
   }
 
   // exposing rpdo data via real-time publisher
@@ -298,7 +339,7 @@ controller_interface::return_type CanopenProxyController::update(
     command_interfaces_[CommandInterfaces::TPDO_TYPE].set_value((*current_cmd)->type);
     command_interfaces_[CommandInterfaces::TPDO_DATA].set_value((*current_cmd)->data);
     // tpdo data one shot mechanism
-    command_interfaces_[CommandInterfaces::TPDO_ONS].set_value(1.0);
+    command_interfaces_[CommandInterfaces::TPDO_ONS].set_value(kCommandValue);
   }
 
   return controller_interface::return_type::OK;

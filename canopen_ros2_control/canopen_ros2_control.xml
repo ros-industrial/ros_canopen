@@ -6,4 +6,11 @@
       ros2_control hardware interface.
     </description>
   </class>
+  <class name="canopen_ros2_control/Cia402System"
+         type="canopen_ros2_control::Cia402System"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control hardware interface.
+    </description>
+  </class>
 </library>
