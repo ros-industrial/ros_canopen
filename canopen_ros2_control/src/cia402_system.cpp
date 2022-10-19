@@ -239,9 +239,9 @@ hardware_interface::return_type Cia402System::read(
    for(auto it = canopen_data_.begin(); it != canopen_data_.end(); ++it){
        auto motion_controller_driver = std::static_pointer_cast<ros2_canopen::Cia402Driver>(drivers[it->first]);
         // get position
-       motor_data_[it->first].actual_position = motion_controller_driver->get_position() / 1000;
+       motor_data_[it->first].actual_position = motion_controller_driver->get_position();
        // get speed
-       motor_data_[it->first].actual_speed = motion_controller_driver->get_speed() / 1000;
+       motor_data_[it->first].actual_speed = motion_controller_driver->get_speed();
    }
 
     return ret_val;
