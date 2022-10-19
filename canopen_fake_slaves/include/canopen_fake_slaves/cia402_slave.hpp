@@ -37,6 +37,20 @@ namespace ros2_canopen
             actual_position = 0.0;
         }
 
+        virtual ~CIA402MockSlave()
+        {
+            if(profiled_position_mode.joinable())
+            {
+                RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Joined profiled_position_mode thread.");
+                profiled_position_mode.join();
+            }
+            if(cyclic_position_mode.joinable())
+            {
+                RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Joined cyclic_position_mode thread.");
+                cyclic_position_mode.join();
+            }
+        }
+
     protected:
         enum InternalState
         {
@@ -414,6 +428,17 @@ namespace ros2_canopen
 
             if (old_operation_mode.load() != operation_mode.load())
             {
+                
+                if(profiled_position_mode.joinable())
+                {
+                    RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Joined profiled_position_mode thread.");
+                    profiled_position_mode.join();
+                }
+                if(cyclic_position_mode.joinable())
+                {
+                    RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Joined cyclic_position_mode thread.");
+                    cyclic_position_mode.join();
+                }
                 old_operation_mode.store(operation_mode.load());
                 switch (operation_mode.load())
                 {
@@ -618,6 +643,24 @@ namespace ros2_canopen
             io::CanController ctrl(can_interface_name_.c_str());
             io::CanChannel chan(poll, exec);
             chan.open(ctrl);
+            
+            auto sigset_ = lely::io::SignalSet(poll, exec);
+            // Watch for Ctrl+C or process termination.
+            sigset_.insert(SIGHUP);
+            sigset_.insert(SIGINT);
+            sigset_.insert(SIGTERM);
+
+            sigset_.submit_wait(
+                [&](int /*signo*/)
+                {
+                    // If the signal is raised again, terminate immediately.
+                    sigset_.clear();
+
+                    // Perform a clean shutdown.
+                    ctx.shutdown();
+                });
+
+
             ros2_canopen::CIA402MockSlave slave(timer, chan, slave_config_.c_str(), "", node_id_);
             slave.Reset();
 
@@ -626,6 +669,7 @@ namespace ros2_canopen
             loop.run();
             ctx.shutdown();
             RCLCPP_INFO(this->get_logger(), "Stopped CANopen Event Loop.");
+            rclcpp::shutdown();
         }
     };
 }
