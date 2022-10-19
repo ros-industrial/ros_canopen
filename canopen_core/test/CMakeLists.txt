@@ -32,7 +32,8 @@ target_link_libraries(test_node_canopen_master
     node_canopen_master
 )
 
-
+# Temporary fixing ci build stability
+if(DEVICE_CONTAINER_TESTING)
 ament_add_gmock(test_device_container
   test_device_container.cpp
 )
@@ -47,6 +48,7 @@ target_link_libraries(test_device_container
     node_canopen_driver
     device_container
 )
+endif()
 FILE(COPY bus_configs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 ament_add_gmock(test_canopen_driver
