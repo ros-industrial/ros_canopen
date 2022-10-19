@@ -35,6 +35,10 @@ namespace ros2_canopen
             rclcpp::Service<canopen_interfaces::srv::COTargetDouble>::SharedPtr handle_set_target_service;
             rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr publish_joint_state;
             uint32_t period_ms_;
+            double scale_pos_to_dev_;
+            double scale_pos_from_dev_;
+            double scale_vel_to_dev_;
+            double scale_vel_from_dev_;
 
             void publish();
             void run();
@@ -50,12 +54,12 @@ namespace ros2_canopen
 
             virtual double get_speed()
             {
-                return this->mc_driver_->get_speed();
+                return this->mc_driver_->get_speed() * scale_pos_from_dev_;
             }
             
             virtual double get_position()
             {
-                return this->mc_driver_->get_position();
+                return this->mc_driver_->get_position() * scale_vel_from_dev_;
             }
 
             virtual uint16_t get_mode(){

@@ -4,6 +4,8 @@
 #include "canopen_402_driver/node_interfaces/node_canopen_402_driver.hpp"
 #include "canopen_core/driver_error.hpp"
 
+#include <optional>
+
 using namespace ros2_canopen::node_interfaces;
 using namespace std::placeholders;
 
@@ -107,6 +109,51 @@ void NodeCanopen402Driver<rclcpp_lifecycle::LifecycleNode>::configure(bool calle
 {
 	NodeCanopenProxyDriver<rclcpp_lifecycle::LifecycleNode>::configure(false);
 	auto period = this->config_["period"].as<uint32_t>();
+    std::optional<double> scale_pos_to_dev;
+    std::optional<double> scale_pos_from_dev;
+    std::optional<double> scale_vel_to_dev;
+    std::optional<double> scale_vel_from_dev;
+    try
+    {
+        scale_pos_to_dev = std::optional(this->config_["scale_pos_to_dev"].as<double>());
+    }
+    catch (...)
+    {
+    }
+    try
+    {
+        scale_pos_from_dev = std::optional(this->config_["scale_pos_from_dev"].as<double>());
+    }
+    catch (...)
+    {
+    }
+    try
+    {
+        scale_vel_to_dev = std::optional(this->config_["scale_vel_to_dev"].as<double>());
+    }
+    catch (...)
+    {
+    }
+    try
+    {
+        scale_vel_from_dev = std::optional(this->config_["scale_vel_from_dev"].as<double>());
+    }
+    catch (...)
+    {
+    }
+
+    // auto period = this->config_["scale_eff_to_dev"].as<double>();
+    // auto period = this->config_["scale_eff_from_dev"].as<double>();
+    scale_pos_to_dev_ = scale_pos_to_dev.value_or(1000.0);
+    scale_pos_from_dev_ = scale_pos_from_dev.value_or(0.001);
+    scale_vel_to_dev_ = scale_vel_to_dev.value_or(1000.0);
+    scale_vel_from_dev_ = scale_vel_from_dev.value_or(0.001);
+    RCLCPP_INFO(this->node_->get_logger(), "scale_pos_to_dev_ %f\nscale_pos_from_dev_ %f\nscale_vel_to_dev_ %f\nscale_vel_from_dev_ %f\n",
+        scale_pos_to_dev_,
+        scale_pos_from_dev_,
+        scale_vel_to_dev_,
+        scale_vel_from_dev_
+    );
 	period_ms_ = period;
 }
 
@@ -115,6 +162,51 @@ void NodeCanopen402Driver<rclcpp::Node>::configure(bool called_from_base)
 {
 	NodeCanopenProxyDriver<rclcpp::Node>::configure(false);
 	auto period = this->config_["period"].as<uint32_t>();
+    std::optional<double> scale_pos_to_dev;
+    std::optional<double> scale_pos_from_dev;
+    std::optional<double> scale_vel_to_dev;
+    std::optional<double> scale_vel_from_dev;
+    try
+    {
+        scale_pos_to_dev = std::optional(this->config_["scale_pos_to_dev"].as<double>());
+    }
+    catch (...)
+    {
+    }
+    try
+    {
+        scale_pos_from_dev = std::optional(this->config_["scale_pos_from_dev"].as<double>());
+    }
+    catch (...)
+    {
+    }
+    try
+    {
+        scale_vel_to_dev = std::optional(this->config_["scale_vel_to_dev"].as<double>());
+    }
+    catch (...)
+    {
+    }
+    try
+    {
+        scale_vel_from_dev = std::optional(this->config_["scale_vel_from_dev"].as<double>());
+    }
+    catch (...)
+    {
+    }
+
+    // auto period = this->config_["scale_eff_to_dev"].as<double>();
+    // auto period = this->config_["scale_eff_from_dev"].as<double>();
+    scale_pos_to_dev_ = scale_pos_to_dev.value_or(1000.0);
+    scale_pos_from_dev_ = scale_pos_from_dev.value_or(0.001);
+    scale_vel_to_dev_ = scale_vel_to_dev.value_or(1000.0);
+    scale_vel_from_dev_ = scale_vel_from_dev.value_or(0.001);
+    RCLCPP_INFO(this->node_->get_logger(), "scale_pos_to_dev_ %f\nscale_pos_from_dev_ %f\nscale_vel_to_dev_ %f\nscale_vel_from_dev_ %f\n",
+        scale_pos_to_dev_,
+        scale_pos_from_dev_,
+        scale_vel_to_dev_,
+        scale_vel_from_dev_
+    );
 	period_ms_ = period;
 }
 
@@ -151,8 +243,8 @@ void NodeCanopen402Driver<NODETYPE>::publish()
 {
 	sensor_msgs::msg::JointState js_msg;
 	js_msg.name.push_back(this->node_->get_name());
-	js_msg.position.push_back(mc_driver_->get_position() / 1000);
-	js_msg.velocity.push_back(mc_driver_->get_speed() / 1000);
+	js_msg.position.push_back(mc_driver_->get_position() * scale_pos_from_dev_);
+	js_msg.velocity.push_back(mc_driver_->get_speed() * scale_vel_from_dev_);
 	js_msg.effort.push_back(0.0);
 	publish_joint_state->publish(js_msg);
 }
@@ -317,7 +409,28 @@ void NodeCanopen402Driver<NODETYPE>::handle_set_target(
 {
     if (this->activated_.load())
     {
-        double target = request->target * 1000;
+        auto mode = motor_->getMode();
+        double target;
+        if (
+            (mode == MotorBase::Profiled_Position) or 
+            (mode == MotorBase::Cyclic_Synchronous_Position)
+        )
+        {
+            target = request->target * scale_pos_to_dev_;
+        }
+        else if(
+            (mode == MotorBase::Velocity) or
+            (mode == MotorBase::Profiled_Velocity) or
+            (mode == MotorBase::Cyclic_Synchronous_Velocity)
+        )
+        {
+            target = request->target * scale_vel_to_dev_;
+        }
+        else
+        {
+            target = request->target;
+        }
+
         response->success = motor_->setTarget(target);
     }
 }
@@ -434,8 +547,32 @@ template<class NODETYPE>
 bool NodeCanopen402Driver<NODETYPE>::set_target(double target) {
     if (this->activated_.load())
     {
-        return motor_->setTarget(target * 1000);
-    }else{
+        auto mode = motor_->getMode();
+        double scaled_target;
+        if (
+            (mode == MotorBase::Profiled_Position) or 
+            (mode == MotorBase::Cyclic_Synchronous_Position)
+        )
+        {
+            scaled_target = target * scale_pos_to_dev_;
+        }
+        else if(
+            (mode == MotorBase::Velocity) or
+            (mode == MotorBase::Profiled_Velocity) or
+            (mode == MotorBase::Cyclic_Synchronous_Velocity)
+        )
+        {
+            scaled_target = target * scale_vel_to_dev_;
+        }
+        else
+        {
+            scaled_target = target;
+        }
+        //RCLCPP_INFO(this->node_->get_logger(), "Scaled target %f", scaled_target);
+        return motor_->setTarget(scaled_target);
+    }
+    else
+    {
         return false;
     }
 }
