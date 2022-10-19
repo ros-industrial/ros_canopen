@@ -5,7 +5,25 @@ void CanopenDriver::init()
 {
     node_canopen_driver_->init();
     node_canopen_driver_->configure();
-    node_canopen_driver_->demand_set_master();
+    bool success = false;
+    for(int i = 0; i < 5; i++)
+    {
+        try 
+        {
+            node_canopen_driver_->demand_set_master();
+            success = true;
+            break;
+        }
+        catch(std::exception &e)
+        {
+            RCLCPP_WARN(this->get_logger(), "Failed to get demand set master result becauss %s. Retrying.", e.what());
+        }
+    }
+    if(!success)
+    {
+        RCLCPP_WARN(this->get_logger(), "Failed to get demand set master result. Exiting...");
+        throw DriverException("Failed to get demand set master result. Exiting...");
+    }
     node_canopen_driver_->activate();
 }
 
@@ -43,7 +61,25 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 LifecycleCanopenDriver::on_configure(const rclcpp_lifecycle::State &state)
 {
     node_canopen_driver_->configure();
-    node_canopen_driver_->demand_set_master();
+    bool success = false;
+    for(int i = 0; i < 5; i++)
+    {
+        try 
+        {
+            node_canopen_driver_->demand_set_master();
+            success = true;
+            break;
+        }
+        catch(std::exception &e)
+        {
+            RCLCPP_WARN(this->get_logger(), "Failed to get demand set master result becauss %s. Retrying.", e.what());
+        }
+    }
+    if(!success)
+    {
+        RCLCPP_WARN(this->get_logger(), "Failed to get demand set master result. Exiting...");
+        throw DriverException("Failed to get demand set master result. Exiting...");
+    }
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 

@@ -31,7 +31,7 @@ void ros2_canopen::node_interfaces::NodeCanopenDriver<rclcpp::Node>::demand_set_
 
     auto future_result = demand_set_master_client->async_send_request(request);
 
-    auto future_status = future_result.wait_for(10s);
+    auto future_status = future_result.wait_for(non_transmit_timeout_);
     RCLCPP_DEBUG(node_->get_logger(), "demand_set_master end");
 
     if (future_status == std::future_status::ready)
