@@ -84,9 +84,9 @@ public:
             thread_->join();
         }
     }
-    virtual void recover(){
+    virtual bool recover(){
         shutdown();
-        init(device_,loopback_,settings_);
+        return init(device_,loopback_,settings_);
         }
     virtual ~ThreadedInterface() {
         shutdown_internal();
