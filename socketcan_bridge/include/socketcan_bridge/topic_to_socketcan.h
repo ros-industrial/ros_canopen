@@ -45,9 +45,11 @@ class TopicToSocketCAN
     can::DriverInterfaceSharedPtr driver_;
 
     can::StateListenerConstSharedPtr state_listener_;
+    ros::Timer timer;
 
     void msgCallback(const can_msgs::Frame::ConstPtr& msg);
     void stateCallback(const can::State & s);
+    void timerCallback(const ros::TimerEvent& Event );
 };
 
 void convertMessageToSocketCAN(const can_msgs::Frame& m, can::Frame& f)
