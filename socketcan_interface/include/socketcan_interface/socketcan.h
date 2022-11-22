@@ -47,7 +47,7 @@ public:
     : loopback_(false), sc_(-1), error_mask_(0), fatal_error_mask_(0)
     {}
 
-    virtual bool doesLoopBack() const{
+    bool doesLoopBack() const override{
         return loopback_;
     }
 
@@ -82,14 +82,14 @@ public:
       return init(device, loopback, error_mask, fatal_error_mask);
     }
 
-    virtual bool recover(){
+    bool recover() override{
         if(!getState().isReady()){
             shutdown();
             return init(device_, loopback_, error_mask_, fatal_error_mask_);
         }
         return getState().isReady();
     }
-    virtual bool translateError(unsigned int internal_error, std::string & str){
+    bool translateError(unsigned int internal_error, std::string & str) override{
 
         bool ret = false;
         if(!internal_error){
@@ -205,12 +205,12 @@ protected:
         return getState().isReady();
     }
 
-    virtual void triggerReadSome(){
+    void triggerReadSome() override{
         boost::mutex::scoped_lock lock(send_mutex_);
         socket_.async_read_some(boost::asio::buffer(&frame_, sizeof(frame_)), boost::bind( &SocketCANInterface::readFrame,this, boost::asio::placeholders::error));
     }
 
-    virtual bool enqueue(const Frame & msg){
+    bool enqueue(const Frame & msg) override{
         boost::mutex::scoped_lock lock(send_mutex_); //TODO: timed try lock
 
         can_frame frame = {0};

@@ -7,7 +7,12 @@
 #include <atomic>
 #include <functional>
 #include <boost/thread/mutex.hpp>
+#include <ros/common.h>  // for ROS_VERSION_MINIMUM
+#if ROS_VERSION_MINIMUM(1, 15, 0)
+#include <filters/filter_chain.hpp>
+#else
 #include <filters/filter_chain.h>
+#endif
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <joint_limits_interface/joint_limits_interface.h>
