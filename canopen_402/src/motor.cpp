@@ -242,6 +242,61 @@ bool DefaultHomingMode::executeHoming(canopen::LayerStatus &status) {
     return error(status, "something went wrong while homing");
 }
 
+bool DefaultHomingMode::executeHoming(canopen::LayerStatus &status, const boost::chrono::seconds &homing_timeout) {
+    if(!homing_method_.valid()){
+        return error(status, "homing method entry is not valid");
+    }
+
+    if(homing_method_.get_cached() == 0){
+        return true;
+    }
+
+    time_point prepare_time = get_abs_time(boost::chrono::seconds(1));
+    // ensure homing is not running
+    boost::mutex::scoped_lock lock(mutex_);
+    if(!cond_.wait_until(lock, prepare_time, masked_status_not_equal<MASK_Error | MASK_Reached, 0> (status_))){
+        return error(status, "could not prepare homing");
+    }
+    if(status_ & MASK_Error){
+        return error(status, "homing error before start");
+    }
+
+    execute_ = true;
+
+    // ensure start
+    if(!cond_.wait_until(lock, prepare_time, masked_status_not_equal<MASK_Error | MASK_Attained | MASK_Reached, MASK_Reached> (status_))){
+        return error(status, "homing did not start");
+    }
+    if(status_ & MASK_Error){
+        return error(status, "homing error at start");
+    }
+
+    time_point finish_time = get_abs_time(homing_timeout); //
+
+    // wait for attained
+    if(!cond_.wait_until(lock, finish_time, masked_status_not_equal<MASK_Error | MASK_Attained, 0> (status_))){
+        return error(status, "homing not attained");
+    }
+    if(status_ & MASK_Error){
+        return error(status, "homing error during process");
+    }
+
+    // wait for motion stop
+    if(!cond_.wait_until(lock, finish_time, masked_status_not_equal<MASK_Error | MASK_Reached, 0> (status_))){
+        return error(status, "homing did not stop");
+    }
+    if(status_ & MASK_Error){
+        return error(status, "homing error during stop");
+    }
+
+    if((status_ & MASK_Reached) && (status_ & MASK_Attained)){
+        execute_ = false;
+        return true;
+    }
+
+    return error(status, "something went wrong while homing");
+}
+
 bool Motor402::setTarget(double val){
     if(state_handler_.getState() == State402::Operation_Enable){
         boost::mutex::scoped_lock lock(mode_mutex_);
@@ -504,7 +559,7 @@ void Motor402::handleInit(LayerStatus &status){
         return;
     }
 
-    if(!homing->executeHoming(status)){
+    if(!homing->executeHoming(status, homing_timeout_)){
         status.error("Homing failed");
         return;
     }
