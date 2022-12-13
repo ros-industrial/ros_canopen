@@ -20,13 +20,16 @@ macro(
 
     add_custom_command(
         TARGET ${TARGET} POST_BUILD
-        COMMAND dcfgen -d ${CMAKE_BINARY_DIR}/config/${TARGET}/ -rS bus.yml
+        COMMAND sed 's|@BUS_CONFIG_PATH@|${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/config/${TARGET}|g'
+            ${CMAKE_CURRENT_SOURCE_DIR}/config/${TARGET}/bus.yml > ${CMAKE_BINARY_DIR}/config/${TARGET}/bus.yml
+        COMMAND dcfgen -v -d ${CMAKE_BINARY_DIR}/config/${TARGET}/ -rS ${CMAKE_BINARY_DIR}/config/${TARGET}/bus.yml
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/config/${TARGET}/
     )
 
     install(DIRECTORY
         ${CMAKE_CURRENT_SOURCE_DIR}/config/${TARGET}/
         DESTINATION share/${PROJECT_NAME}/config/${TARGET}/
+        PATTERN "bus.yml" EXCLUDE
     )
   
     install(DIRECTORY
