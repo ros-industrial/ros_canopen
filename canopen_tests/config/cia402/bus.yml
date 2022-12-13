@@ -7,7 +7,7 @@ master:
 cia402_device_1:
   node_id: 2
   dcf: "cia402_slave.eds"
-  dcf_path: "install/canopen_tests/share/canopen_tests/config/cia402"
+  dcf_path: "@BUS_CONFIG_PATH@"
   driver: "ros2_canopen::Cia402Driver"
   package: "canopen_402_driver"
   period: 20
