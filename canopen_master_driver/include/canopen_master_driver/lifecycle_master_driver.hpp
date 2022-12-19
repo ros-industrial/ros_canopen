@@ -15,32 +15,32 @@
 #ifndef LIFECYCLE_MASTER_DRIVER_HPP
 #define LIFECYCLE_MASTER_DRIVER_HPP
 
+#include <atomic>
 #include <memory>
 #include <thread>
-#include <atomic>
 
 #include "canopen_core/master_node.hpp"
 #include "canopen_master_driver/node_interfaces/node_canopen_basic_master.hpp"
 
 namespace ros2_canopen
 {
-    /**
-     * @brief Lifecycle Master Node
-     *
-     * This class implements the Lifecycle master interface.
-     * It uses the Lely Master Bridge and exposes a ROS node
-     * interface.
-     *
-     */
-    class LifecycleMasterDriver : public ros2_canopen::LifecycleCanopenMaster
-    {
-        std::shared_ptr<node_interfaces::NodeCanopenBasicMaster<rclcpp_lifecycle::LifecycleNode>> node_canopen_basic_master_;
-    public:
-        explicit LifecycleMasterDriver(
-            const rclcpp::NodeOptions &node_options);
-    };
+/**
+ * @brief Lifecycle Master Node
+ *
+ * This class implements the Lifecycle master interface.
+ * It uses the Lely Master Bridge and exposes a ROS node
+ * interface.
+ *
+ */
+class LifecycleMasterDriver : public ros2_canopen::LifecycleCanopenMaster
+{
+  std::shared_ptr<node_interfaces::NodeCanopenBasicMaster<rclcpp_lifecycle::LifecycleNode>>
+    node_canopen_basic_master_;
 
-}
+public:
+  explicit LifecycleMasterDriver(const rclcpp::NodeOptions & node_options);
+};
 
+}  // namespace ros2_canopen
 
 #endif

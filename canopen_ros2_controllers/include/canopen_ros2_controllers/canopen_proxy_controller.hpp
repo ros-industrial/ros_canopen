@@ -20,10 +20,10 @@
 #include <vector>
 
 #include "canopen_interfaces/msg/co_data.hpp"
-#include "canopen_interfaces/srv/co_write.hpp"
 #include "canopen_interfaces/srv/co_read.hpp"
-#include "controller_interface/controller_interface.hpp"
+#include "canopen_interfaces/srv/co_write.hpp"
 #include "canopen_ros2_controllers/visibility_control.h"
+#include "controller_interface/controller_interface.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "realtime_tools/realtime_buffer.h"

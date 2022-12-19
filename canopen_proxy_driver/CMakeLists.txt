@@ -74,7 +74,7 @@ set(node_plugins "${node_plugins}ros2_canopen::LifecycleProxyDriver;$<TARGET_FIL
 
 
 
-add_library(proxy_driver 
+add_library(proxy_driver
   src/proxy_driver.cpp
   )
 target_compile_features(proxy_driver PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17

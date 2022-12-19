@@ -1,11 +1,11 @@
 name: foxy
 
-on: 
+on:
   push:
-    branches: [ foxy ] 
+    branches: [ foxy ]
   pull_request:
     branches: [ foxy ]
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   industrial_ci:

@@ -4,4 +4,5 @@
 using namespace ros2_canopen::node_interfaces;
 
 template class ros2_canopen::node_interfaces::NodeCanopenProxyDriver<rclcpp::Node>;
-template class ros2_canopen::node_interfaces::NodeCanopenProxyDriver<rclcpp_lifecycle::LifecycleNode>;
+template class ros2_canopen::node_interfaces::NodeCanopenProxyDriver<
+  rclcpp_lifecycle::LifecycleNode>;

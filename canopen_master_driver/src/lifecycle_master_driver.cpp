@@ -3,14 +3,15 @@
 namespace ros2_canopen
 {
 
-    ros2_canopen::LifecycleMasterDriver::LifecycleMasterDriver(
-        const rclcpp::NodeOptions &node_options) :
-        LifecycleCanopenMaster(node_options)
-    {
-        node_canopen_master_ = std::make_shared<node_interfaces::NodeCanopenBasicMaster<rclcpp_lifecycle::LifecycleNode>>(this);
-    }
-
+ros2_canopen::LifecycleMasterDriver::LifecycleMasterDriver(const rclcpp::NodeOptions & node_options)
+: LifecycleCanopenMaster(node_options)
+{
+  node_canopen_master_ =
+    std::make_shared<node_interfaces::NodeCanopenBasicMaster<rclcpp_lifecycle::LifecycleNode>>(
+      this);
 }
+
+}  // namespace ros2_canopen
 
 #include "rclcpp_components/register_node_macro.hpp"
 RCLCPP_COMPONENTS_REGISTER_NODE(ros2_canopen::LifecycleMasterDriver)

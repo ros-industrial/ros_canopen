@@ -1,11 +1,11 @@
 name: humble
 
-on: 
+on:
   push:
-    branches: [ humble ] 
+    branches: [ humble ]
   pull_request:
     branches: [ humble ]
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   industrial_ci:

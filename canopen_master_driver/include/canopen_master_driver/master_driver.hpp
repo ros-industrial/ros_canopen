@@ -20,23 +20,22 @@
 
 namespace ros2_canopen
 {
-    /**
-     * @brief Master Node
-     *
-     * This class implements the Lifecycle master interface.
-     * It uses the Lely Master Bridge and exposes a ROS node
-     * interface.
-     *
-     */
-    class MasterDriver : public ros2_canopen::CanopenMaster
-    {
-        std::shared_ptr<node_interfaces::NodeCanopenBasicMaster<rclcpp::Node>> node_canopen_basic_master_;
-    public:
-        explicit MasterDriver(
-            const rclcpp::NodeOptions &node_options);
+/**
+ * @brief Master Node
+ *
+ * This class implements the Lifecycle master interface.
+ * It uses the Lely Master Bridge and exposes a ROS node
+ * interface.
+ *
+ */
+class MasterDriver : public ros2_canopen::CanopenMaster
+{
+  std::shared_ptr<node_interfaces::NodeCanopenBasicMaster<rclcpp::Node>> node_canopen_basic_master_;
 
-    };
+public:
+  explicit MasterDriver(const rclcpp::NodeOptions & node_options);
+};
 
-}
+}  // namespace ros2_canopen
 
 #endif

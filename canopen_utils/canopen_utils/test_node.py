@@ -4,19 +4,14 @@ from lifecycle_msgs.msg import State, Transition
 from std_srvs.srv import Trigger
 from canopen_interfaces.srv import CORead, COWrite, COReadID, COWriteID
 
-class TestNode(Node):
 
+class TestNode(Node):
     def __init__(self, name="test_node"):
         super().__init__(name)
 
-
     def checkTransition(self, node_name: str, state: int, tranisition: int) -> bool:
-        get_state_client = self.create_client(
-            GetState, node_name + "/get_state"
-        )
-        change_state_client = self.create_client(
-            ChangeState, node_name + "/change_state"
-        )
+        get_state_client = self.create_client(GetState, node_name + "/get_state")
+        change_state_client = self.create_client(ChangeState, node_name + "/change_state")
         if not get_state_client.wait_for_service(timeout_sec=3.0):
             get_state_client.destroy()
             change_state_client.destroy()
@@ -81,7 +76,9 @@ class TestNode(Node):
             return True
         return False
 
-    def checkSDOReadID(self, node_id: int, index: int, subindex: int, type: int, data: int) -> bool:
+    def checkSDOReadID(
+        self, node_id: int, index: int, subindex: int, type: int, data: int
+    ) -> bool:
         client = self.create_client(COReadID, "/master/sdo_read")
         if not client.wait_for_service(timeout_sec=3.0):
             return False
@@ -96,7 +93,9 @@ class TestNode(Node):
             return True
         return False
 
-    def checkSDOWriteID(self, node_id: int, index: int, subindex: int, type: int, data: int) -> bool:
+    def checkSDOWriteID(
+        self, node_id: int, index: int, subindex: int, type: int, data: int
+    ) -> bool:
         client = self.create_client(COWriteID, "/master/sdo_write")
         if not client.wait_for_service(timeout_sec=3.0):
             return False
@@ -111,4 +110,3 @@ class TestNode(Node):
         if result.success:
             return True
         return False
-    

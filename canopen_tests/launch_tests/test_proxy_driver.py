@@ -43,7 +43,6 @@ class TestLifecycle(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         print("SetupClass")
-        
 
     @classmethod
     def tearDownClass(cls):
@@ -63,21 +62,28 @@ class TestLifecycle(unittest.TestCase):
         self.node.destroy_node()
         self.x.join()
 
-
     def test_02_nmt(self):
         assert self.node.checkTrigger("proxy_device_1", "nmt_reset_node")
         assert self.node.checkTrigger("proxy_device_2", "nmt_reset_node")
         sleep(1.0)
-        
+
     def test_03_sdo_read(self):
         assert self.node.checkSDORead("proxy_device_1", index=0x1000, subindex=0, type=32, data=0)
         assert self.node.checkSDORead("proxy_device_2", index=0x1000, subindex=0, type=32, data=0)
 
     def test_04_sdo_write(self):
-        assert self.node.checkSDOWrite("proxy_device_1", index=0x4000, subindex=0, type=32, data=100)
-        assert self.node.checkSDOWrite("proxy_device_2", index=0x4000, subindex=0, type=32, data=100)
-        assert self.node.checkSDORead("proxy_device_1", index=0x4000, subindex=0, type=32, data=100)
-        assert self.node.checkSDORead("proxy_device_2", index=0x4000, subindex=0, type=32, data=100)
+        assert self.node.checkSDOWrite(
+            "proxy_device_1", index=0x4000, subindex=0, type=32, data=100
+        )
+        assert self.node.checkSDOWrite(
+            "proxy_device_2", index=0x4000, subindex=0, type=32, data=100
+        )
+        assert self.node.checkSDORead(
+            "proxy_device_1", index=0x4000, subindex=0, type=32, data=100
+        )
+        assert self.node.checkSDORead(
+            "proxy_device_2", index=0x4000, subindex=0, type=32, data=100
+        )
 
     def test_05_sdo_read_id(self):
         assert self.node.checkSDOReadID(node_id=2, index=0x4000, subindex=0, type=32, data=100)
@@ -85,6 +91,6 @@ class TestLifecycle(unittest.TestCase):
 
     def test_06_sdo_write_id(self):
         assert self.node.checkSDOWriteID(node_id=2, index=0x4000, subindex=0, type=32, data=999)
-        assert self.node.checkSDOWriteID(node_id=3, index=0x4000, subindex=0, type=32, data=999)        
+        assert self.node.checkSDOWriteID(node_id=3, index=0x4000, subindex=0, type=32, data=999)
         assert self.node.checkSDOReadID(node_id=2, index=0x4000, subindex=0, type=32, data=999)
         assert self.node.checkSDOReadID(node_id=3, index=0x4000, subindex=0, type=32, data=999)

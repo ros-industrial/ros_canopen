@@ -14,7 +14,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(canopen_core REQUIRED)
 find_package(canopen_interfaces REQUIRED)
 
-set(dependencies 
+set(dependencies
   rclcpp
   rclcpp_components
   rclcpp_lifecycle
@@ -87,7 +87,7 @@ set(node_plugins "${node_plugins}ros2_canopen::LifecycleMasterDriver;$<TARGET_FI
 
 
 
-add_library(master_driver 
+add_library(master_driver
   src/master_driver.cpp
   )
 target_compile_features(master_driver PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17

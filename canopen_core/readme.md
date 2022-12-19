@@ -3,7 +3,7 @@
 Welcome to the ROS2 canopen documentation.
 
 ## About
-ROS2 CANopen is being developed and maintainted by the [ROS-Industrial Consortium](rosindustrial.org). The package heavily builds ontop of [Lely's canopen stack](https://opensource.lely.com/canopen/).
+ROS2 CANopen is being developed and maintainted by the [ROS-Industrial Consortium](rosindustrial.org). The package heavily builds on top of [Lely's canopen stack](https://opensource.lely.com/canopen/).
 
 
 ## Getting started
@@ -33,7 +33,7 @@ In order to use the package for your CANopen network, you need to create a netwo
         motioncontroller_1:
         node_id: 2
         dcf: "simple.eds"
-        driver: "BasicDevice" 
+        driver: "BasicDevice"
 
 
 3. Generate a master.dcf file using Lely CANopen's dcfgen tool. This outputs a master.dcf.
@@ -51,7 +51,7 @@ In order to use the package for your CANopen network, you need to create a netwo
 
 
 ## ROS2 canopen (preliminary)
-1. 
+1.
 
         ros2 launch bring_up_master.launch.py parameter_file_path:=[Path to your config yaml]
 
@@ -74,9 +74,3 @@ sh
 5. Activate canopen_master node and then all driver nodes.
 
 6. The system should now be running and you should be able to use the driver nodes to communicate with your devices.
-
-
-
-
-
-

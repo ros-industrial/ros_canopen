@@ -1,11 +1,11 @@
 name: galactic
 
-on: 
+on:
   push:
-    branches: [ galactic ] 
+    branches: [ galactic ]
   pull_request:
     branches: [ galactic ]
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   industrial_ci:
