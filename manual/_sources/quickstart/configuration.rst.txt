@@ -15,7 +15,7 @@ you need to have (usually one per CAN interface) and which slaves you have.
 | **package_name**: Name of the package
 | **bus_config_name**: Name of the the bus configuration (you can have multiple)
 
-You can use `ros2 pkg create` command to create your package.
+You can use ``ros2 pkg create`` command to create your package.
 
 .. code-block:: console
 
@@ -41,14 +41,15 @@ Now your package directory should look like this.
 Bus configuration creation
 ------------------------------
 
-#. **Bus configuration decisions** 
+#. **Bus configuration decisions**
     Decide how many bus configurations you need. Add one subfolder for each
     bus configuration in your `config`-folder.
 
     .. code-block:: bash
+
       $ mkdir -p {bus_config_name}
 
-#. **Add device information to bus configurations** 
+#. **Add device information to bus configurations**
     Once you created the folders for your bus configurations add the .eds files
     for the devices that are in the bus configuration to the respective folder.
 
@@ -68,10 +69,10 @@ Bus configuration creation
           ├── CMakeLists.txt
           └── package.xml
 
-#. **Create the bus configuration specifications** 
+#. **Create the bus configuration specifications**
     To specify the bus configuration ros2_canopen uses the a YAML-file called
     bus.yml. Create the file in the respective bus configuration folder.
-    
+
     .. code-block:: console
 
       $ touch bus.yml
@@ -93,26 +94,26 @@ Bus configuration creation
           ├── CMakeLists.txt
           └── package.xml
 
-#. **Edit the bus configuration specifications** 
+#. **Edit the bus configuration specifications**
     You need to modify each bus.yml file according to your needs.
     First you need to define where these files and generated files will be
     found at runtime. This is usually the following if you use colcon to
     build from source.
 
     .. code-block:: yaml
-    
+
       options:
         dcf_path: install/{package_name}/share/{package_name}/config/{bus_config_name}
 
     Then you need to define your master.
-    
+
     .. code-block:: yaml
-    
+
       master:
         node_id: [node id]
-        package: [ros2 package where to find the master driver (usually canopen_core)] 
+        package: [ros2 package where to find the master driver (usually canopen_core)]
         driver: [component type of the driver (ros2_canopen::MasterDriver or ros2_canopen::LifecycleMasterDriver)]
-    
+
     Make sure, that you specify a lifecycle master if you use the lifecycled version of ros2_canopen.
     And add other configuration data as necessary. A documentation of configuration options
     available can be found in the :doc:`configuration` documentation.
@@ -125,7 +126,7 @@ Bus configuration creation
 
       [unique slave name]:
         node_id: [node id]
-        package: [ros2 package where to find the driver] 
+        package: [ros2 package where to find the driver]
         driver: [qualified name of the driver]
 
     Make sure you use a lifecycle slave if you use the lifecycled version of ros2_canopen.
@@ -156,7 +157,7 @@ Add the following code:
             PythonLaunchDescriptionSource(
                 [
                     os.path.join(get_package_share_directory("canopen_core"), "launch"),
-                    "/canopen.launch.py", 
+                    "/canopen.launch.py",
                 ]
             ),
             launch_arguments={
@@ -236,9 +237,3 @@ Finally we need to adjust the CMakeLists.txt file to pick everything up correctl
   endif()
 
   ament_package()
-
-
-
-
-
-

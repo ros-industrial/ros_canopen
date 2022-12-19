@@ -1,4 +1,4 @@
 <map id="ros2_canopen::DeviceContainer" name="ros2_canopen::DeviceContainer">
-<area shape="rect" id="node1" title="Lifecyle Device Container for CANopen." alt="" coords="5,95,233,121"/>
+<area shape="rect" id="node1" title="Lifecycle Device Container for CANopen." alt="" coords="5,95,233,121"/>
 <area shape="rect" id="node2" title=" " alt="" coords="41,5,197,47"/>
 </map>

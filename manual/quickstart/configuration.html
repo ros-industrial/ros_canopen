@@ -92,8 +92,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Creating a Configuration Package</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Creating a Configuration Package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/quickstart/configuration.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -118,7 +118,7 @@ you need to have (usually one per CAN interface) and which slaves you have.</p>
 <div class="line"><strong>package_name</strong>: Name of the package</div>
 <div class="line"><strong>bus_config_name</strong>: Name of the the bus configuration (you can have multiple)</div>
 </div>
-<p>You can use <cite>ros2 pkg create</cite> command to create your package.</p>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">pkg</span> <span class="pre">create</span></code> command to create your package.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2 pkg create --dependencies ros2_canopen lely_core_libraries --build-type ament_cmake <span class="o">{</span>package_name<span class="o">}</span>
 <span class="gp">$ </span><span class="nb">cd</span> <span class="o">{</span>package_name<span class="o">}</span>
 <span class="gp">$ </span>rm -rf src
@@ -139,9 +139,12 @@ you need to have (usually one per CAN interface) and which slaves you have.</p>
 <section id="bus-configuration-creation">
 <h2>Bus configuration creation<a class="headerlink" href="#bus-configuration-creation" title="Permalink to this headline"></a></h2>
 <ol class="arabic">
-<li><dl class="simple">
+<li><dl>
 <dt><strong>Bus configuration decisions</strong></dt><dd><p>Decide how many bus configurations you need. Add one subfolder for each
 bus configuration in your <cite>config</cite>-folder.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mkdir -p <span class="o">{</span>bus_config_name<span class="o">}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </li>

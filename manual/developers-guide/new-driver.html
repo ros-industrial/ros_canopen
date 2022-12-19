@@ -102,8 +102,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Creating a new device driver</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Creating a new device driver</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/developers-guide/new-driver.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -152,7 +152,7 @@ We recommend creating you driver based on Proxy driver, this will be explained h
 </section>
 <section id="create-the-functionality-class">
 <h3>Create the functionality class<a class="headerlink" href="#create-the-functionality-class" title="Permalink to this headline"></a></h3>
-<p>The functionality class is stuctured similar to a LifecycleNode. The functionality class
+<p>The functionality class is structured similar to a LifecycleNode. The functionality class
 has the following callback functions that are related to lifecycle which you can override:</p>
 <ul class="simple">
 <li><p>void configure(bool called_from_base)</p></li>
@@ -171,7 +171,7 @@ override:</p>
 </ul>
 <p>To interact with the CANopen device you can use the ros2_canopen::LelyDriverBridge object,
 that is stored in the functionality class (this-&gt;driver_). The ros2_canopen::LelyDriverBridge
-provides the follwing functions you should use in your driver:</p>
+provides the following functions you should use in your driver:</p>
 <ul class="simple">
 <li><p>void nmt_command(NmtState nmt_state)</p></li>
 <li><p>void tpdo_transmit(COData data)</p></li>
@@ -187,8 +187,8 @@ use CANopen functionality, these have to be stopped in the deactivate function.<
 </section>
 <section id="ros2-functionality">
 <h4>ROS2 functionality<a class="headerlink" href="#ros2-functionality" title="Permalink to this headline"></a></h4>
-<p>ROS2 functionlity is available via the <code class="docutils literal notranslate"><span class="pre">node_</span></code> object of the funcitonality class. This
-object has a tempated type and can either be a <code class="docutils literal notranslate"><span class="pre">rclcpp::Node</span></code> or <code class="docutils literal notranslate"><span class="pre">rclcpp_lifecycle::LifecycleNode</span></code>.
+<p>ROS2 functionlity is available via the <code class="docutils literal notranslate"><span class="pre">node_</span></code> object of the functionality class. This
+object has a templated type and can either be a <code class="docutils literal notranslate"><span class="pre">rclcpp::Node</span></code> or <code class="docutils literal notranslate"><span class="pre">rclcpp_lifecycle::LifecycleNode</span></code>.
 You can use the standard functions like create_timer, create_publisher etc.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -238,8 +238,8 @@ need to create a template specialisation.</p>
 <h3>Create the ROS2 wrapper classes<a class="headerlink" href="#create-the-ros2-wrapper-classes" title="Permalink to this headline"></a></h3>
 <p>The ROS2 wrapper classes are fairly easy to create once you wrote the functionality
 class. The wrappers simply use the functionality class to provide the functionality.
-The ROS2 wrapper class should always be derived from <code class="docutils literal notranslate"><span class="pre">ros2_canopen::CanopenDriver``or</span>
-<span class="pre">``ros2_canopen::LifecycleCanopenDriver</span></code>.</p>
+The ROS2 wrapper class should always be derived from <code class="docutils literal notranslate"><span class="pre">ros2_canopen::CanopenDriver</span></code> or
+<code class="docutils literal notranslate"><span class="pre">ros2_canopen::LifecycleCanopenDriver</span></code> .</p>
 <p>The declaration should look like this:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">lifecycle_xxx_driver</span><span class="p">.</span><span class="n">hpp</span><span class="o">:</span><span class="w"></span>
 

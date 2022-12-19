@@ -3,7 +3,7 @@ Architecture
 
 The architecture of the ROS2 CANopen stack is based on the composition
 concept of ROS2. In ROS2 components are dynamically loadable ROS2 nodes
-which are loaded by a component manager. 
+which are loaded by a component manager.
 
 Device Container
 """"""""""""""""""
@@ -19,7 +19,7 @@ configuration (bus.yml). It does not have services for loading components online
 that are connected or will be connected to the CANopen Bus need to be known and specified in
 the bus.yml before starting the device container.
 
-.. uml:: 
+.. uml::
 
   rclcpp::ComponentManager <|-- ros2_canopen::DeviceContainer
 
@@ -33,7 +33,7 @@ the bus.yml before starting the device container.
   }
 
 
-  class ros2_canopen::DeviceContainer 
+  class ros2_canopen::DeviceContainer
   {
     std::shared_ptr<CanopenMasterInterface> can_master_
     std::shared_ptr<LifecycleManager> lifecycle_manager_
@@ -43,7 +43,7 @@ the bus.yml before starting the device container.
   }
 
 The device container will first load the master specified in the bus configuration. Then
-it will load the drivers specified in the bus configuration. If the master and drivers 
+it will load the drivers specified in the bus configuration. If the master and drivers
 specified in the bus configuration are managed nodes it will as well load the ros2_canopen::LifecycleManager.
 
 
@@ -51,7 +51,7 @@ CANopen Master Driver Architecture
 """""""""""""""""""""""""""""""""""
 
 The architecture for CANopen master drivers looks as depicted in the class diagram. All master drivers
-consist of three main classes. 
+consist of three main classes.
 
 The first class is the functionality class that contains the drivers functionailities independently of
 the ROS2 node type. This class needs to implement the ros2_canopen::node_interfaces::NodeCanopenMasterInterface.
@@ -67,7 +67,7 @@ The third class is the class that wraps the functionality class in a rclcpp_life
 ros2_canopen::CanopenMasterInterface. The canopen_core package provides a convenience class ros2_canopen::LifecycleCanopenMaster
 that should be inherited from and implements the ros2_canopen::CanopenMasterInterface.
 
-.. uml:: 
+.. uml::
 
 
   package "canopen_core" {
@@ -76,7 +76,7 @@ that should be inherited from and implements the ros2_canopen::CanopenMasterInte
     abstract ros2_canopen::LifecycleCanopenMaster
     abstract ros2_canopen::node_interfaces::NodeCanopenMaster
     abstract ros2_canopen::CanopenMaster
-    
+
 
     ros2_canopen::node_interfaces::NodeCanopenMasterInterface - ros2_canopen::CanopenMaster : < has
     ros2_canopen::LifecycleCanopenMaster - ros2_canopen::node_interfaces::NodeCanopenMasterInterface : > has
@@ -84,11 +84,11 @@ that should be inherited from and implements the ros2_canopen::CanopenMasterInte
     ros2_canopen::CanopenMasterInterface <|-- ros2_canopen::LifecycleCanopenMaster
     ros2_canopen::node_interfaces::NodeCanopenMasterInterface <|-- ros2_canopen::node_interfaces::NodeCanopenMaster
     ros2_canopen::CanopenMasterInterface <|-- ros2_canopen::CanopenMaster
-    
+
   }
 
   package "canopen_master_driver" {
-    
+
     class ros2_canopen::LifecycleMasterDriver << (C, blue) Component>>
     class ros2_canopen::node_interfaces::NodeCanopenBasicMaster
     class ros2_canopen::MasterDriver << (C, blue) Component>>
@@ -104,7 +104,7 @@ CANopen Device Driver Architecture
 """""""""""""""""""""""""""""""""""
 
 The architecture for CANopen device drivers looks as depicted in the class diagram. All device drivers
-consist of three main classes. 
+consist of three main classes.
 
 The first class is the functionality class that contains the drivers functionailities independently of
 the ROS2 node type. This class needs to implement the ros2_canopen::node_interfaces::NodeCanopenDriverInterface.
@@ -129,7 +129,7 @@ that should be inherited from and implements the ros2_canopen::CanopenDriverInte
     abstract ros2_canopen::LifecycleCanopenDriver
     abstract ros2_canopen::node_interfaces::NodeCanopenDriver
     abstract ros2_canopen::CanopenDriver
-    
+
 
     ros2_canopen::node_interfaces::NodeCanopenDriverInterface - ros2_canopen::CanopenDriver : < has
     ros2_canopen::LifecycleCanopenDriver - ros2_canopen::node_interfaces::NodeCanopenDriverInterface : > has
@@ -137,12 +137,12 @@ that should be inherited from and implements the ros2_canopen::CanopenDriverInte
     ros2_canopen::CanopenDriverInterface <|-- ros2_canopen::LifecycleCanopenDriver
     ros2_canopen::node_interfaces::NodeCanopenDriverInterface <|-- ros2_canopen::node_interfaces::NodeCanopenDriver
     ros2_canopen::CanopenDriverInterface <|-- ros2_canopen::CanopenDriver
-    
+
   }
 
-  
+
   package "canopen_base_driver" {
-    
+
     class ros2_canopen::LifecycleBaseDriver << (C, blue) Component>>
     class ros2_canopen::node_interfaces::NodeCanopenBaseDriver
     class ros2_canopen::BaseDriver << (C, blue) Component>>
@@ -174,6 +174,3 @@ that should be inherited from and implements the ros2_canopen::CanopenDriverInte
     ros2_canopen::node_interfaces::NodeCanopenProxyDriver <|-- ros2_canopen::node_interfaces::NodeCanopen402Driver
     ros2_canopen::CanopenDriver <|-- ros2_canopen::Cia402Driver
   }
-
-
-

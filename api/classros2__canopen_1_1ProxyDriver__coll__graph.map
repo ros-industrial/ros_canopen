@@ -1,6 +1,6 @@
 <map id="ros2_canopen::ProxyDriver" name="ros2_canopen::ProxyDriver">
-<area shape="rect" id="node1" title="Abstract Class for a CANopen Device Node." alt="" coords="95,169,293,196"/>
-<area shape="rect" id="node2" href="$classros2__canopen_1_1CanopenDriver.html" title="Canopen Driver." alt="" coords="85,95,303,121"/>
+<area shape="rect" id="node1" title="Abstract Class for a CANopen Device Node." alt="" coords="107,169,305,196"/>
+<area shape="rect" id="node2" href="$classros2__canopen_1_1CanopenDriver.html" title="Canopen Driver." alt="" coords="97,95,315,121"/>
 <area shape="rect" id="node3" href="$classros2__canopen_1_1CanopenDriverInterface.html" title="Canopen Driver Interface." alt="" coords="5,5,223,47"/>
-<area shape="rect" id="node4" title=" " alt="" coords="247,13,303,39"/>
+<area shape="rect" id="node4" title=" " alt="" coords="247,13,349,39"/>
 </map>
