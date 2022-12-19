@@ -14,7 +14,7 @@ Service interface
 The service interface has a very simple service interface that enables
 using the ros2_canopen stack. Drivers used in this mode cannot be managed
 drivers (have Lifecycle in their name). The service interface was developed
-for low control frequency and debug purposes. It is not thought for high 
+for low control frequency and debug purposes. It is not thought for high
 freuqency usage.
 
 Managed service interface
@@ -29,4 +29,4 @@ ros2_control system interface
 """"""""""""""""""""""""""""""
 The ros2_control system interface provides access to the ros2_canopen stack
 via the ros2_control infrastructure. This interface is thought for high frequency
-applications. 
+applications.

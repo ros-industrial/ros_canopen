@@ -1,11 +1,11 @@
 name: rolling
 
-on: 
+on:
   push:
-    branches: [ master ] 
+    branches: [ master ]
   pull_request:
     branches: [ master ]
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   industrial_ci:

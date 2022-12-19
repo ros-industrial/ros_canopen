@@ -2,8 +2,9 @@
 
 using namespace ros2_canopen;
 
-LelyMotionControllerBridge::LelyMotionControllerBridge(ev_exec_t *exec, canopen::AsyncMaster &master, uint8_t id, std::string name)
-    : LelyDriverBridge(exec, master, id, name)
+LelyMotionControllerBridge::LelyMotionControllerBridge(
+  ev_exec_t * exec, canopen::AsyncMaster & master, uint8_t id, std::string name)
+: LelyDriverBridge(exec, master, id, name)
 {
-    sync = true;
+  sync = true;
 }

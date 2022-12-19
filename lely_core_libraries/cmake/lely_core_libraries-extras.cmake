@@ -3,10 +3,10 @@
 # in your package. Inside that folder there needs to be the bus.yml
 # file to use for generation.
 macro(
-    generate_dcf 
+    generate_dcf
     TARGET)
     add_custom_target(
-        ${TARGET}_prepare ALL 
+        ${TARGET}_prepare ALL
         COMMAND rm -rf ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/config/${TARGET}/*
         COMMAND rm -rf ${CMAKE_BINARY_DIR}/config/${TARGET}/*
         COMMAND mkdir -p ${CMAKE_BINARY_DIR}/config/${TARGET}
@@ -14,7 +14,7 @@ macro(
     )
 
     add_custom_target(
-        ${TARGET} ALL 
+        ${TARGET} ALL
         DEPENDS ${TARGET}_prepare
     )
 
@@ -31,7 +31,7 @@ macro(
         DESTINATION share/${PROJECT_NAME}/config/${TARGET}/
         PATTERN "bus.yml" EXCLUDE
     )
-  
+
     install(DIRECTORY
         ${CMAKE_BINARY_DIR}/config/${TARGET}/
         DESTINATION share/${PROJECT_NAME}/config/${TARGET}/

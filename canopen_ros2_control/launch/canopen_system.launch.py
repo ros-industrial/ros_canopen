@@ -75,7 +75,9 @@ def launch_setup(context, *args, **kwargs):
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
-            PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file]),
+            PathJoinSubstitution(
+                [FindPackageShare(description_package), "urdf", description_file]
+            ),
             " ",
             "name:=",
             name,
@@ -102,7 +104,11 @@ def launch_setup(context, *args, **kwargs):
     ros2_control_config_file = LaunchConfiguration("ros2_control_config_file")
     # ros2 control configuration file full path
     ros2_control_config = PathJoinSubstitution(
-        [FindPackageShare(ros2_control_config_package), ros2_control_config_directory, ros2_control_config_file]
+        [
+            FindPackageShare(ros2_control_config_package),
+            ros2_control_config_directory,
+            ros2_control_config_file,
+        ]
     )
 
     # nodes to start are listed below
@@ -144,19 +150,19 @@ def launch_setup(context, *args, **kwargs):
     slave_node_1 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(slave_launch),
         launch_arguments={
-            "node_id": "2", 
+            "node_id": "2",
             "node_name": "slave_node_2",
             "slave_config": slave_config,
-            }.items(),
+        }.items(),
     )
 
     slave_node_2 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(slave_launch),
         launch_arguments={
-            "node_id": "3", 
+            "node_id": "3",
             "node_name": "slave_node_3",
             "slave_config": slave_config,
-            }.items(),
+        }.items(),
     )
 
     nodes_to_start = [
@@ -176,30 +182,24 @@ def generate_launch_description():
     declared_arguments = []
     declared_arguments.append(
         DeclareLaunchArgument(
-            "name",
-            description="robot name",
-            default_value="canopen_test_system"
+            "name", description="robot name", default_value="canopen_test_system"
         )
     )
     declared_arguments.append(
-        DeclareLaunchArgument(
-            "prefix",
-            description="Prefix.",
-            default_value=""
-        )
+        DeclareLaunchArgument("prefix", description="Prefix.", default_value="")
     )
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
             description="Package where urdf file is stored.",
-            default_value="canopen_ros2_control"
+            default_value="canopen_ros2_control",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_file",
             description="Name of the urdf file.",
-            default_value="canopen_system.urdf.xacro"
+            default_value="canopen_system.urdf.xacro",
         )
     )
     declared_arguments.append(
@@ -274,4 +274,4 @@ def generate_launch_description():
         )
     )
 
-    return LaunchDescription(declared_arguments+[OpaqueFunction(function=launch_setup)])
+    return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

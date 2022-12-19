@@ -65,7 +65,7 @@ target_link_libraries(node_canopen_cia402_driver
 ament_target_dependencies(
   node_canopen_cia402_driver
   ${dependencies}
-  
+
 )
 
 add_library(lifecycle_cia402_driver
@@ -95,7 +95,7 @@ set(node_plugins "${node_plugins}ros2_canopen::LifecycleCia402Driver;$<TARGET_FI
 
 
 
-add_library(cia402_driver 
+add_library(cia402_driver
   src/cia402_driver.cpp
   )
 target_compile_features(cia402_driver PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17

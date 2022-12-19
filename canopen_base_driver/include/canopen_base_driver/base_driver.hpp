@@ -19,30 +19,29 @@
 
 namespace ros2_canopen
 {
-  /**
-   * @brief Abstract Class for a CANopen Device Node
-   *
-   * This class provides the base functionality for creating a
-   * CANopen device node. It provides callbacks for nmt and rpdo.
-   */
-  class BaseDriver : public ros2_canopen::CanopenDriver
+/**
+ * @brief Abstract Class for a CANopen Device Node
+ *
+ * This class provides the base functionality for creating a
+ * CANopen device node. It provides callbacks for nmt and rpdo.
+ */
+class BaseDriver : public ros2_canopen::CanopenDriver
+{
+  std::shared_ptr<node_interfaces::NodeCanopenBaseDriver<rclcpp::Node>> node_canopen_base_driver_;
+
+public:
+  BaseDriver(rclcpp::NodeOptions node_options = rclcpp::NodeOptions());
+
+  void register_nmt_state_cb(std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb)
   {
-    std::shared_ptr<node_interfaces::NodeCanopenBaseDriver<rclcpp::Node>> node_canopen_base_driver_;
+    node_canopen_base_driver_->register_nmt_state_cb(nmt_state_cb);
+  }
 
-  public:
-    BaseDriver(rclcpp::NodeOptions node_options = rclcpp::NodeOptions());
+  void register_rpdo_cb(std::function<void(COData, uint8_t)> rpdo_cb)
+  {
+    node_canopen_base_driver_->register_rpdo_cb(rpdo_cb);
+  }
+};
+}  // namespace ros2_canopen
 
-    void register_nmt_state_cb(std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb)
-    {
-      node_canopen_base_driver_->register_nmt_state_cb(nmt_state_cb);
-    }
-
-    void register_rpdo_cb(std::function<void(COData, uint8_t)> rpdo_cb)
-    {
-      node_canopen_base_driver_->register_rpdo_cb(rpdo_cb);
-    }
-
-  };
-} // namespace ros2_canopen
-
-#endif // CANOPEN_BASE_DRIVER__CANOPEN_BASE_DRIVER_HPP_
+#endif  // CANOPEN_BASE_DRIVER__CANOPEN_BASE_DRIVER_HPP_

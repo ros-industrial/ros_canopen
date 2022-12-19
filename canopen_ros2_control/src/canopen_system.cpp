@@ -38,7 +38,8 @@ namespace canopen_ros2_control
 
 CanopenSystem::CanopenSystem() {}
 
-void CanopenSystem::clean() {
+void CanopenSystem::clean()
+{
   executor_->cancel();
   printf("Joining...");
   spin_thread_->join();
@@ -54,35 +55,36 @@ void CanopenSystem::clean() {
   spin_thread_.reset();
 }
 
-CanopenSystem::~CanopenSystem() {
-  clean();
-}
+CanopenSystem::~CanopenSystem() { clean(); }
 
 hardware_interface::CallbackReturn CanopenSystem::on_init(
   const hardware_interface::HardwareInfo & info)
 {
-  if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS) {
+  if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS)
+  {
     return CallbackReturn::ERROR;
   }
 
   RCLCPP_INFO(kLogger, "bus_config: '%s'", info_.hardware_parameters["bus_config"].c_str());
   RCLCPP_INFO(kLogger, "master_config: '%s'", info_.hardware_parameters["master_config"].c_str());
-  RCLCPP_INFO(kLogger, "can_interface_name_name: '%s'", info_.hardware_parameters["can_interface_name_name"].c_str());
+  RCLCPP_INFO(
+    kLogger, "can_interface_name_name: '%s'",
+    info_.hardware_parameters["can_interface_name_name"].c_str());
   RCLCPP_INFO(kLogger, "master_bin: '%s'", info_.hardware_parameters["master_bin"].c_str());
 
   return CallbackReturn::SUCCESS;
 }
 
 hardware_interface::CallbackReturn CanopenSystem::on_configure(
-  const rclcpp_lifecycle::State &previous_state)
+  const rclcpp_lifecycle::State & previous_state)
 {
   executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   device_container_ = std::make_shared<ros2_canopen::DeviceContainer>(executor_);
   executor_->add_node(device_container_);
 
   // threads
-    spin_thread_ = std::make_unique<std::thread>(&CanopenSystem::spin, this);
-    init_thread_ = std::make_unique<std::thread>(&CanopenSystem::initDeviceContainer, this);
+  spin_thread_ = std::make_unique<std::thread>(&CanopenSystem::spin, this);
+  init_thread_ = std::make_unique<std::thread>(&CanopenSystem::initDeviceContainer, this);
 
   // actually wait for init phase to end
   if (init_thread_->joinable())
@@ -98,85 +100,89 @@ hardware_interface::CallbackReturn CanopenSystem::on_configure(
 }
 
 hardware_interface::CallbackReturn CanopenSystem::on_cleanup(
-  const rclcpp_lifecycle::State &previous_state) {
+  const rclcpp_lifecycle::State & previous_state)
+{
   clean();
   return CallbackReturn::SUCCESS;
-
 }
 
 hardware_interface::CallbackReturn CanopenSystem::on_shutdown(
-  const rclcpp_lifecycle::State &previous_state) {
-
+  const rclcpp_lifecycle::State & previous_state)
+{
   clean();
   return CallbackReturn::SUCCESS;
 }
 
-void CanopenSystem::spin() {
-
+void CanopenSystem::spin()
+{
   executor_->spin();
   executor_->remove_node(device_container_);
 
   RCLCPP_INFO(kLogger, "Exiting spin thread...");
 }
 
-void CanopenSystem::initDeviceContainer() {
-    std::string tmp_master_bin  = (info_.hardware_parameters["master_bin"] == "\"\"" ) ? "" : info_.hardware_parameters["master_bin"];
+void CanopenSystem::initDeviceContainer()
+{
+  std::string tmp_master_bin = (info_.hardware_parameters["master_bin"] == "\"\"")
+                                 ? ""
+                                 : info_.hardware_parameters["master_bin"];
 
-  device_container_->init(info_.hardware_parameters["can_interface_name"],
-                            info_.hardware_parameters["master_config"],
-                            info_.hardware_parameters["bus_config"],
-                            tmp_master_bin);
+  device_container_->init(
+    info_.hardware_parameters["can_interface_name"], info_.hardware_parameters["master_config"],
+    info_.hardware_parameters["bus_config"], tmp_master_bin);
   auto drivers = device_container_->get_registered_drivers();
   RCLCPP_INFO(kLogger, "Number of registered drivers: '%zu'", device_container_->count_drivers());
-  for (auto it = drivers.begin(); it != drivers.end(); it++){
+  for (auto it = drivers.begin(); it != drivers.end(); it++)
+  {
     auto proxy_driver = std::static_pointer_cast<ros2_canopen::ProxyDriver>(it->second);
 
-    auto nmt_state_cb = [&](canopen::NmtState nmt_state, uint8_t id){
-      canopen_data_[id].nmt_state.set_state(nmt_state);
-    };
+    auto nmt_state_cb = [&](canopen::NmtState nmt_state, uint8_t id)
+    { canopen_data_[id].nmt_state.set_state(nmt_state); };
     // register callback
     proxy_driver->register_nmt_state_cb(nmt_state_cb);
 
-    auto rpdo_cb = [&](ros2_canopen::COData data, uint8_t id){
-      canopen_data_[id].rpdo_data.set_data(data);
-    };
+    auto rpdo_cb = [&](ros2_canopen::COData data, uint8_t id)
+    { canopen_data_[id].rpdo_data.set_data(data); };
     // register callback
     proxy_driver->register_rpdo_cb(rpdo_cb);
 
-    RCLCPP_INFO(kLogger, "\nRegistered driver:\n    name: '%s'\n    node_id: '%u'", it->second->get_node_base_interface()->get_name(), it->first);
-    }
-
-    RCLCPP_INFO(device_container_->get_logger(), "Initialisation successful.");
+    RCLCPP_INFO(
+      kLogger, "\nRegistered driver:\n    name: '%s'\n    node_id: '%u'",
+      it->second->get_node_base_interface()->get_name(), it->first);
   }
+
+  RCLCPP_INFO(device_container_->get_logger(), "Initialisation successful.");
+}
 
 std::vector<hardware_interface::StateInterface> CanopenSystem::export_state_interfaces()
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
-  for (uint i = 0; i < info_.joints.size(); i++) {
+  for (uint i = 0; i < info_.joints.size(); i++)
+  {
+    if (info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
+    {
+      // skip adding canopen interfaces
+      continue;
+    }
+    const uint8_t node_id = static_cast<uint8_t>(std::stoi(info_.joints[i].parameters["node_id"]));
+    //      RCLCPP_INFO(kLogger, "node id on export state interface for joint: '%s' is '%s'",
+    //      info_.joints[i].name.c_str(), info_.joints[i].parameters["node_id"].c_str());
 
-      if(info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
-      {
-          // skip adding canopen interfaces
-          continue;
-      }
-      const uint8_t node_id = static_cast<uint8_t >(std::stoi(info_.joints[i].parameters["node_id"]));
-//      RCLCPP_INFO(kLogger, "node id on export state interface for joint: '%s' is '%s'", info_.joints[i].name.c_str(), info_.joints[i].parameters["node_id"].c_str());
+    // rpdo index
+    state_interfaces.emplace_back(hardware_interface::StateInterface(
+      info_.joints[i].name, "rpdo/index", &canopen_data_[node_id].rpdo_data.index));
 
-      // rpdo index
-      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "rpdo/index",
-              &canopen_data_[node_id].rpdo_data.index));
+    state_interfaces.emplace_back(hardware_interface::StateInterface(
+      info_.joints[i].name, "rpdo/subindex", &canopen_data_[node_id].rpdo_data.subindex));
 
-      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "rpdo/subindex",
-                                                                       &canopen_data_[node_id].rpdo_data.subindex));
+    state_interfaces.emplace_back(hardware_interface::StateInterface(
+      info_.joints[i].name, "rpdo/type", &canopen_data_[node_id].rpdo_data.type));
 
-      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "rpdo/type",
-                                                                       &canopen_data_[node_id].rpdo_data.type));
+    state_interfaces.emplace_back(hardware_interface::StateInterface(
+      info_.joints[i].name, "rpdo/data", &canopen_data_[node_id].rpdo_data.data));
 
-      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "rpdo/data",
-                                                                       &canopen_data_[node_id].rpdo_data.data));
-
-      state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints[i].name, "nmt/state",
-                                                                       &canopen_data_[node_id].nmt_state.state));
+    state_interfaces.emplace_back(hardware_interface::StateInterface(
+      info_.joints[i].name, "nmt/state", &canopen_data_[node_id].nmt_state.state));
   }
 
   return state_interfaces;
@@ -185,40 +191,40 @@ std::vector<hardware_interface::StateInterface> CanopenSystem::export_state_inte
 std::vector<hardware_interface::CommandInterface> CanopenSystem::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
-  for (uint i = 0; i < info_.joints.size(); i++) {
+  for (uint i = 0; i < info_.joints.size(); i++)
+  {
+    if (info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
+    {
+      // skip adding canopen interfaces
+      continue;
+    }
 
-      if(info_.joints[i].parameters.find("node_id") == info_.joints[i].parameters.end())
-      {
-          // skip adding canopen interfaces
-          continue;
-      }
+    const uint8_t node_id = static_cast<uint8_t>(std::stoi(info_.joints[i].parameters["node_id"]));
 
-      const uint8_t node_id = static_cast<uint8_t >(std::stoi(info_.joints[i].parameters["node_id"]));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "tpdo/index", &canopen_data_[node_id].tpdo_data.index));
 
-      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/index",
-                                                                       &canopen_data_[node_id].tpdo_data.index));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "tpdo/subindex", &canopen_data_[node_id].tpdo_data.subindex));
 
-      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/subindex",
-                                                                       &canopen_data_[node_id].tpdo_data.subindex));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "tpdo/type", &canopen_data_[node_id].tpdo_data.type));
 
-      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/type",
-                                                                       &canopen_data_[node_id].tpdo_data.type));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "tpdo/data", &canopen_data_[node_id].tpdo_data.data));
 
-      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/data",
-                                                                       &canopen_data_[node_id].tpdo_data.data));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "tpdo/owns", &canopen_data_[node_id].tpdo_data.one_shot));
 
-      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "tpdo/ons",
-                                                                           &canopen_data_[node_id].tpdo_data.one_shot));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "nmt/reset", &canopen_data_[node_id].nmt_state.reset_ons));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "nmt/reset_fbk", &canopen_data_[node_id].nmt_state.reset_fbk));
 
-      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/reset",
-                                                                         &canopen_data_[node_id].nmt_state.reset_ons));
-      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/reset_fbk",
-                                                                           &canopen_data_[node_id].nmt_state.reset_fbk));
-
-      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/start",
-                                                                         &canopen_data_[node_id].nmt_state.start_ons));
-      command_interfaces.emplace_back(hardware_interface::CommandInterface(info_.joints[i].name, "nmt/start_fbk",
-                                                                           &canopen_data_[node_id].nmt_state.start_fbk));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "nmt/start", &canopen_data_[node_id].nmt_state.start_ons));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "nmt/start_fbk", &canopen_data_[node_id].nmt_state.start_fbk));
   }
 
   return command_interfaces;
@@ -228,7 +234,6 @@ hardware_interface::CallbackReturn CanopenSystem::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // TODO(anyone): prepare the robot to receive commands
-
 
   return CallbackReturn::SUCCESS;
 }
@@ -250,8 +255,7 @@ hardware_interface::return_type CanopenSystem::read(
 
   // rpdo is set via RORos2ControlCOData::set_data within rpdo_cb
 
-
-    return hardware_interface::return_type::OK;
+  return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type CanopenSystem::write(
@@ -259,24 +263,28 @@ hardware_interface::return_type CanopenSystem::write(
 {
   // TODO(anyone): write robot's commands'
   auto drivers = device_container_->get_registered_drivers();
-  for(auto it = canopen_data_.begin(); it != canopen_data_.end(); ++it){
+  for (auto it = canopen_data_.begin(); it != canopen_data_.end(); ++it)
+  {
     auto proxy_driver = std::static_pointer_cast<ros2_canopen::ProxyDriver>(drivers[it->first]);
 
-      // reset node nmt
-      if(it->second.nmt_state.reset_command()){
-          it->second.nmt_state.reset_fbk = static_cast<double>(proxy_driver->reset_node_nmt_command());
-      }
+    // reset node nmt
+    if (it->second.nmt_state.reset_command())
+    {
+      it->second.nmt_state.reset_fbk = static_cast<double>(proxy_driver->reset_node_nmt_command());
+    }
 
-      // start nmt
-      if(it->second.nmt_state.start_command()){
-          it->second.nmt_state.start_fbk = static_cast<double>(proxy_driver->start_node_nmt_command());
-      }
+    // start nmt
+    if (it->second.nmt_state.start_command())
+    {
+      it->second.nmt_state.start_fbk = static_cast<double>(proxy_driver->start_node_nmt_command());
+    }
 
-      // tpdo data one shot mechanism
-      if(it->second.tpdo_data.write_command()){
-          it->second.tpdo_data.prepare_data();
-          proxy_driver->tpdo_transmit(it->second.tpdo_data.original_data);
-      }
+    // tpdo data one shot mechanism
+    if (it->second.tpdo_data.write_command())
+    {
+      it->second.tpdo_data.prepare_data();
+      proxy_driver->tpdo_transmit(it->second.tpdo_data.original_data);
+    }
   }
 
   return hardware_interface::return_type::OK;
@@ -286,5 +294,4 @@ hardware_interface::return_type CanopenSystem::write(
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(
-  canopen_ros2_control::CanopenSystem, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(canopen_ros2_control::CanopenSystem, hardware_interface::SystemInterface)

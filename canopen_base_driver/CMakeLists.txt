@@ -90,7 +90,7 @@ set(node_plugins "${node_plugins}ros2_canopen::LifecycleBaseDriver;$<TARGET_FILE
 
 
 
-add_library(base_driver 
+add_library(base_driver
   src/base_driver.cpp
   )
 target_compile_features(base_driver PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17

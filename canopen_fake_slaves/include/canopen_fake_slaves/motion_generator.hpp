@@ -39,71 +39,71 @@
 class MotionGenerator
 {
 public:
-	/**
-	 * Constructor
-	 *
-	 * @param int aVelocityMax maximum velocity
-	 * @param int aAccelerationMax maximum acceleration
-	 */
-	MotionGenerator(double aMaxVel, double aMaxAcc, double aInitPos);
+  /**
+   * Constructor
+   *
+   * @param int aVelocityMax maximum velocity
+   * @param int aAccelerationMax maximum acceleration
+   */
+  MotionGenerator(double aMaxVel, double aMaxAcc, double aInitPos);
 
-	void init();
+  void init();
 
-	/**
-	 * Updates the state, generating new setpoints
-	 *
-	 * @param aSetpoint The current setpoint.
-	 */
-	double update(double aPosRef);
-	double getVelocity();
-	double getAcceleration();
+  /**
+   * Updates the state, generating new setpoints
+   *
+   * @param aSetpoint The current setpoint.
+   */
+  double update(double aPosRef);
+  double getVelocity();
+  double getAcceleration();
 
-	bool getFinished();
-	void setMaxVelocity(double aMaxVel);
-	void setMaxAcceleration(double aMaxAcc);
-	void setInitPosition(double aInitPos);
-	void reset();
+  bool getFinished();
+  void setMaxVelocity(double aMaxVel);
+  void setMaxAcceleration(double aMaxAcc);
+  void setInitPosition(double aInitPos);
+  void reset();
 
 private:
-	/**
-	 * Increments the state number.
-	 *
-	 * @see
-	  currentState
-	 */
-	void calculateTrapezoidalProfile(double);
-	short int sign(double aVal);
+  /**
+   * Increments the state number.
+   *
+   * @see
+    currentState
+   */
+  void calculateTrapezoidalProfile(double);
+  short int sign(double aVal);
 
-	double maxVel;
-	double maxAcc;
-	double initPos;
-	double pos;
-	double vel;
-	double acc;
-	double oldPos;
-	double oldPosRef;
-	double oldVel;
+  double maxVel;
+  double maxAcc;
+  double initPos;
+  double pos;
+  double vel;
+  double acc;
+  double oldPos;
+  double oldPosRef;
+  double oldVel;
 
-	double dBrk;
-	double dAcc;
-	double dVel;
-	double dDec;
-	double dTot;
+  double dBrk;
+  double dAcc;
+  double dVel;
+  double dDec;
+  double dTot;
 
-	double tBrk;
-	double tAcc;
-	double tVel;
-	double tDec;
+  double tBrk;
+  double tAcc;
+  double tVel;
+  double tDec;
 
-	double velSt;
+  double velSt;
 
-	std::chrono::time_point<std::chrono::high_resolution_clock> oldTime;
-	std::chrono::time_point<std::chrono::high_resolution_clock> lastTime;
-	std::chrono::duration<double> deltaTime;
+  std::chrono::time_point<std::chrono::high_resolution_clock> oldTime;
+  std::chrono::time_point<std::chrono::high_resolution_clock> lastTime;
+  std::chrono::duration<double> deltaTime;
 
-	short int signM; // 1 = positive change, -1 = negative change
-	bool shape;		 // true = trapezoidal, false = triangular
+  short int signM;  // 1 = positive change, -1 = negative change
+  bool shape;       // true = trapezoidal, false = triangular
 
-	bool isFinished;
+  bool isFinished;
 };
 #endif

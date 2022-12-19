@@ -1,7 +1,7 @@
 Bus Configuration Reference
 ============================
 
-The ros2_canopen stack relies on a YAML configuration file that is used 
+The ros2_canopen stack relies on a YAML configuration file that is used
 for configuring the bus topology and specifying configurations for
 each device. From this configuration file, we generate the device configuration
 file (DCF) for the CANopen master as well as concise DCF files for master and
@@ -16,12 +16,12 @@ The YAML configuration file contains a section for each device on the bus. The s
 for the master has different configuration options than the section for the slave devices.
 The file has the following structure. The master section has to be named master. The
 device sections need be named uniquely.
-.. code-block:: 
+.. code-block::
 
   master:
     [configuration item]: [value]
     [...]
-  
+
   [device_name]:
     [configuration item]: [value]
     [...]

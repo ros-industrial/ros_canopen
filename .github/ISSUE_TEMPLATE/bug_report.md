@@ -19,9 +19,9 @@ A clear and concise description of what you expected to happen.
 **Logs**
 
 **Setup:**
- - Device: 
- - OS: 
- - ROS-Distro: 
+ - Device:
+ - OS:
+ - ROS-Distro:
  - Branch/Commit:
 
 **Additional context**

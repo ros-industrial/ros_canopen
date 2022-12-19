@@ -13,15 +13,15 @@ Services
   * - Services
     - Type
     - Description
-  * - ~/read_sdo  
+  * - ~/read_sdo
     - COReadID
     - Reads an SDO object specified by Index, Subindex and Datatype of the device with the specified nodeid.
-  * - ~/write_sdo 
+  * - ~/write_sdo
     - COWriteID
     - Writes Data to an SDO object specified by Index, Subindex and Datatype on the device with the specified nodeid.
   * - ~/set_heartbeat
     - COHeartbeatID
     - Sets the heartbeat of the device with the specified nodeid to the heartbeat value (ms)
-  * - ~/set_nmt 
+  * - ~/set_nmt
     - CONmtID
     - Sends the NMT command to the device with the specified nodeid

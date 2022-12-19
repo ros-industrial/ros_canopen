@@ -1,20 +1,16 @@
+#include <rclcpp/executors.hpp>
+#include <thread>
 #include "canopen_master_driver/node_interfaces/node_canopen_basic_master.hpp"
 #include "gtest/gtest.h"
-#include <thread>
-#include <rclcpp/executors.hpp>
 
 TEST(NodeCanopenBasicMaster, test_good_sequence_advanced)
 {
   rclcpp::init(0, nullptr);
-  rclcpp::Node *node = new rclcpp::Node("Node");
-  auto interface =
-      new ros2_canopen::node_interfaces::NodeCanopenBasicMaster(node);
+  rclcpp::Node * node = new rclcpp::Node("Node");
+  auto interface = new ros2_canopen::node_interfaces::NodeCanopenBasicMaster(node);
   auto exec = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
   exec->add_node(node->get_node_base_interface());
-  std::thread spinner = std::thread([exec]
-                        { 
-                          exec->spin();
-                        });
+  std::thread spinner = std::thread([exec] { exec->spin(); });
 
   auto iface = static_cast<ros2_canopen::node_interfaces::NodeCanopenMasterInterface *>(interface);
 
@@ -37,25 +33,20 @@ TEST(NodeCanopenBasicMaster, test_good_sequence_advanced)
   EXPECT_NO_THROW(iface->configure());
   rclcpp::shutdown();
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  if(spinner.joinable())
+  if (spinner.joinable())
   {
     spinner.join();
   }
 }
 
-
 TEST(NodeCanopenBasicLifecycleMaster, test_good_sequence_advanced)
 {
   rclcpp::init(0, nullptr);
-  rclcpp_lifecycle::LifecycleNode *node = new rclcpp_lifecycle::LifecycleNode("Node");
-  auto interface =
-      new ros2_canopen::node_interfaces::NodeCanopenBasicMaster(node);
+  rclcpp_lifecycle::LifecycleNode * node = new rclcpp_lifecycle::LifecycleNode("Node");
+  auto interface = new ros2_canopen::node_interfaces::NodeCanopenBasicMaster(node);
   auto exec = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
   exec->add_node(node->get_node_base_interface());
-  std::thread spinner = std::thread([exec]
-                        { 
-                          exec->spin();
-                        });
+  std::thread spinner = std::thread([exec] { exec->spin(); });
 
   auto iface = static_cast<ros2_canopen::node_interfaces::NodeCanopenMasterInterface *>(interface);
 
@@ -78,7 +69,7 @@ TEST(NodeCanopenBasicLifecycleMaster, test_good_sequence_advanced)
   EXPECT_NO_THROW(iface->configure());
   rclcpp::shutdown();
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  if(spinner.joinable())
+  if (spinner.joinable())
   {
     spinner.join();
   }

@@ -41,7 +41,7 @@ Once done add a subfolder ``node_interfaces`` in the ``src/`` and the ``include/
 
 Create the functionality class
 ------------------------------
-The functionality class is stuctured similar to a LifecycleNode. The functionality class
+The functionality class is structured similar to a LifecycleNode. The functionality class
 has the following callback functions that are related to lifecycle which you can override:
 
 * void configure(bool called_from_base)
@@ -60,14 +60,14 @@ override:
 
 To interact with the CANopen device you can use the ros2_canopen::LelyDriverBridge object,
 that is stored in the functionality class (this->driver_). The ros2_canopen::LelyDriverBridge
-provides the follwing functions you should use in your driver:
+provides the following functions you should use in your driver:
 
 * void nmt_command(NmtState nmt_state)
 * void tpdo_transmit(COData data)
 * std::future<bool>async_sdo_write(COData data)
 * std::future<COData>async_sdo_read(COData data)
 
-.. note:: 
+.. note::
 
    The CANopen related functionality can only be used in the activate function or timers/threads that
    were started by the activate function. If you start timers or threads in the activate function, that
@@ -75,11 +75,11 @@ provides the follwing functions you should use in your driver:
 
 ROS2 functionality
 ******************
-ROS2 functionlity is available via the ``node_`` object of the funcitonality class. This
-object has a tempated type and can either be a ``rclcpp::Node`` or ``rclcpp_lifecycle::LifecycleNode``.
+ROS2 functionlity is available via the ``node_`` object of the functionality class. This
+object has a templated type and can either be a ``rclcpp::Node`` or ``rclcpp_lifecycle::LifecycleNode``.
 You can use the standard functions like create_timer, create_publisher etc.
 
-.. note:: 
+.. note::
 
    Currently it seems, that when you use template functions i.e. ``node_->create_publisher<xyz>(...)`` you
    need to create a template specialisation.
@@ -138,13 +138,13 @@ Create the ROS2 wrapper classes
 
 The ROS2 wrapper classes are fairly easy to create once you wrote the functionality
 class. The wrappers simply use the functionality class to provide the functionality.
-The ROS2 wrapper class should always be derived from ``ros2_canopen::CanopenDriver``or
-``ros2_canopen::LifecycleCanopenDriver``.
+The ROS2 wrapper class should always be derived from ``ros2_canopen::CanopenDriver`` or
+``ros2_canopen::LifecycleCanopenDriver`` .
 
 
 The declaration should look like this:
 
-.. code:: 
+.. code::
 
    lifecycle_xxx_driver.hpp:
 
@@ -166,7 +166,7 @@ The declaration should look like this:
 
 The definitions should look like this:
 
-.. code:: 
+.. code::
 
 
    #include "canopen_xxx_driver/lifecycle_proxy_driver.hpp"
@@ -267,7 +267,7 @@ The CMakeLists.txt file should look like this:
 
 
    # Non lifecycle driver
-   add_library(xxx_driver 
+   add_library(xxx_driver
    src/xxx_driver.cpp
    )
    target_compile_features(xxx_driver PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
@@ -320,6 +320,3 @@ The CMakeLists.txt file should look like this:
    )
 
    ament_package()
-
-
-

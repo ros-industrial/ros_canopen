@@ -5,7 +5,7 @@
 
 
 ## Documentation
-The documentation is generated using sphinx and doxygen. 
+The documentation is generated using sphinx and doxygen.
 The current manual can be found [here](https://ros-industrial.github.io/ros2_canopen/manual/).
 The current api reference can be found [here](https://ros-industrial.github.io/ros2_canopen/api/).
 

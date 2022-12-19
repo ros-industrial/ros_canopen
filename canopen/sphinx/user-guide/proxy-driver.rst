@@ -5,7 +5,7 @@ A proxy driver which simply forwards CANopen functionality for a specific device
 Services
 --------
 
-.. list-table:: 
+.. list-table::
   :widths: 30 20 50
   :header-rows: 1
   :align: left
@@ -13,12 +13,12 @@ Services
   * - Services
     - Type
     - Description
-  * - ~/nmt_reset_node  
+  * - ~/nmt_reset_node
     - Trigger
     - Resets CANopen Device the Proxy Device Node manages.
-  * - ~/sdo_read 
+  * - ~/sdo_read
     - CORead
-    - Reads an SDO object from the specified index, subindex and datatype of the remote device. 
+    - Reads an SDO object from the specified index, subindex and datatype of the remote device.
   * - ~/sdo_write
     - COWrite
     - Writes data to an SDO object on the specified index, subindex and datatype of the remote device.
@@ -27,7 +27,7 @@ Services
 Publishers
 ----------
 
-.. list-table:: 
+.. list-table::
   :widths: 30 20 50
   :header-rows: 1
   :align: left
@@ -35,24 +35,23 @@ Publishers
   * - Topic
     - Type
     - Description
-  * - ~/nmt_state  
+  * - ~/nmt_state
     - String
     - Publishes NMT state on change
-  * - ~/rpdo 
+  * - ~/rpdo
     - COData
-    - Publishes received PDO objects on reception 
+    - Publishes received PDO objects on reception
 
 Subscribers
 -----------
 
-.. list-table:: 
+.. list-table::
   :widths: 30 20 50
   :header-rows: 1
 
   * - Topic
     - Type
     - Description
-  * - ~/tpdo  
+  * - ~/tpdo
     - COData
     - Writes received data to remote device if the specified object is RPDO mapped on remote device.
-

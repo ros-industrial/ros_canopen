@@ -10,14 +10,14 @@ on:
 jobs:
   pre-commit:
     name: Format
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v2
       with:
-        python-version: 3.9.7
+        python-version: 3.10.6
     - name: Install system hooks
-      run: sudo apt install -qq clang-format-12 cppcheck
+      run: sudo apt update && sudo apt install -qq clang-format-14 cppcheck
     - uses: pre-commit/action@v2.0.3
       with:
         extra_args: --all-files --hook-stage manual

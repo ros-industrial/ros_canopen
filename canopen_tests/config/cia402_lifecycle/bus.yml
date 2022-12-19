@@ -23,7 +23,7 @@ cia402_device_1:
       transmission: 0x01
       mapping:
         - {index: 0x6041, sub_index: 0} # status word
-        - {index: 0x6061, sub_index: 0} # mode of operaiton display
+        - {index: 0x6061, sub_index: 0} # mode of operation display
     2:
       enabled: true
       cob_id: "auto"
