@@ -106,11 +106,23 @@ class PDOMapper{
                 tpdo.reset();
             return tpdo;
         }
+        bool operator <(const TPDO& other) const{
+            return frame.id < other.frame.id;
+        }
     private:
         TPDO(const can::CommInterfaceSharedPtr interface) : interface_(interface){}
         bool init(const ObjectStorageSharedPtr &storage, const uint16_t &com_index, const uint16_t &map_index);
         const can::CommInterfaceSharedPtr interface_;
         boost::mutex mutex;
+    };
+
+    template <typename T, typename Compare>
+    struct cmp_ptr
+    {
+        bool operator()(const T lhs, const T rhs) const {
+            Compare c;
+            return c(*lhs, *rhs);
+        }
     };
 
     struct RPDO : public PDO{
@@ -134,7 +146,7 @@ class PDOMapper{
     };
 
     std::unordered_set<RPDO::RPDOSharedPtr> rpdos_;
-    std::unordered_set<TPDO::TPDOSharedPtr> tpdos_;
+    std::set<TPDO::TPDOSharedPtr,cmp_ptr<TPDO::TPDOSharedPtr, std::less<TPDO>>> tpdos_;
 
     const can::CommInterfaceSharedPtr interface_;
 
