@@ -1,7 +1,6 @@
 import os
 from time import sleep
 import pytest
-from sympy import true
 from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 import launch

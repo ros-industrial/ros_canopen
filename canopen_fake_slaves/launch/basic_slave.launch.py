@@ -1,8 +1,6 @@
 import os
 import sys
 
-from sympy import true
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))  # noqa
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "launch"))  # noqa
 
@@ -66,7 +64,7 @@ def generate_launch_description():
         launch_ros.event_handlers.OnStateTransition(
             target_lifecycle_node=slave_node,
             goal_state="inactive",
-            handle_once=true,
+            handle_once=True,
             entities=[
                 launch.actions.LogInfo(
                     msg="node 'basic_slave_node' reached the 'inactive' state, 'activating'."
