@@ -1,3 +1,6 @@
+options:
+  dcf_path: "@BUS_CONFIG_PATH@"
+
 master:
   node_id: 1
   driver: "ros2_canopen::LifecycleMasterDriver"
@@ -6,13 +9,11 @@ master:
 proxy_device_1:
   node_id: 2
   dcf: "simple.eds"
-  dcf_path: "install/canopen_tests/share/canopen_tests/config/simple_lifecycle"
   driver: "ros2_canopen::LifecycleProxyDriver"
   package: "canopen_proxy_driver"
 
 proxy_device_2:
   node_id: 3
   dcf: "simple.eds"
-  dcf_path: "install/canopen_tests/share/canopen_tests/config/simple_lifecycle"
   driver: "ros2_canopen::LifecycleProxyDriver"
   package: "canopen_proxy_driver"

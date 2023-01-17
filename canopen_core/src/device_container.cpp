@@ -253,7 +253,7 @@ bool DeviceContainer::load_drivers()
 
   for (auto it = devices.begin(); it != devices.end(); it++)
   {
-    if (it->find("master") == std::string::npos)
+    if (it->find("master") == std::string::npos && it->find("options") == std::string::npos)
     {
       auto node_id = config_->get_entry<uint16_t>(*it, "node_id");
       auto driver_name = config_->get_entry<std::string>(*it, "driver");

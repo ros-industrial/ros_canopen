@@ -9,6 +9,7 @@ void ConfigurationManager::init_config()
   for (YAML::const_iterator it = root_.begin(); it != root_.end(); it++)
   {
     std::string driver_name = it->first.as<std::string>();
+    if (driver_name == "options") continue;
     YAML::Node config_node = it->second;
     devices_.insert({driver_name, config_node});
   }
