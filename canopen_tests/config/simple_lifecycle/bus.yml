@@ -1,3 +1,6 @@
+options:
+  dcf_path: "@BUS_CONFIG_PATH@"
+
 master:
   node_id: 1
   driver: "ros2_canopen::LifecycleMasterDriver"
