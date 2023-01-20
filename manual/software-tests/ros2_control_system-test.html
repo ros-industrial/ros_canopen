@@ -71,6 +71,7 @@
 <li class="toctree-l1"><a class="reference internal" href="proxy-driver-test.html#proxy-driver-test">Proxy Driver Test</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ros2_control SystemInterface test</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#test-details">Test details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#explanation-of-the-test">Explanation of the test</a></li>
 </ul>
 </li>
 </ul>
@@ -122,13 +123,41 @@
 <td><p>launch/canopen_system.launch.py</p></td>
 </tr>
 <tr class="row-even"><td><p>Description</p></td>
-<td><p>Create an exemplary ros2_control SystemInterface with CAN master and communicates to a slave node. After start check <code class="docutils literal notranslate"><span class="pre">/dynamic_joint_states</span></code> to show internal data from CAN nodes in ros2_control system.</p></td>
+<td><p>Create an exemplary ros2_control SystemInterface with CAN master and communicates to a slave node.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Prerequisites</p></td>
 <td><p>vcan0 must be available</p></td>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="explanation-of-the-test">
+<h2>Explanation of the test<a class="headerlink" href="#explanation-of-the-test" title="Permalink to this headline"></a></h2>
+<p>The test is starting generic system interface and generic controller for CanOpen devices.
+Generic system interface enables integration of values from the CAN Bus into ros2_control framework and the controller enables you to send and receive data from the CAN bus through ros2_control to ROS2.</p>
+<p>The next few lines show you some command to have exemplary usage of the ros2_control integration:</p>
+<ol class="arabic">
+<li><p>After the test is started check <code class="docutils literal notranslate"><span class="pre">/dynamic_joint_states</span></code> to show internal data from CAN nodes in ros2_control system.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>topic<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>/dynamic_joint_states
+</pre></div>
+</div>
+</li>
+<li><p>Open a new terminal and echo data from the topic <code class="docutils literal notranslate"><span class="pre">/node_1_controller/rpdo</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>topic<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>/node_1_controller/rpdo
+</pre></div>
+</div>
+</li>
+<li><p>In a new terminal publish some data to the controller to write them to the CAN bus:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>topic<span class="w"> </span>pub<span class="w"> </span>-r<span class="w"> </span><span class="m">100</span><span class="w"> </span>node_1_controller/rpdo<span class="w"> </span>canopen_interfaces/msg/COData<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">  index: 25</span>
+<span class="s2">  subindex: 35</span>
+<span class="s2">  data: 238</span>
+<span class="s2">  type: 8&quot;</span>
+</pre></div>
+</div>
+<p>Now watch how data in the first two opened terminals are changing.</p>
+</li>
+</ol>
 </section>
 </section>
 
