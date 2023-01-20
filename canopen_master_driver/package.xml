@@ -11,6 +11,10 @@
 
   <depend>canopen_core</depend>
   <depend>canopen_interfaces</depend>
+  <depend>lely_core_libraries</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>rclcpp_lifecycle</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

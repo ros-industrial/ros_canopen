@@ -7,16 +7,14 @@ endif()
 
 # find dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
-  canopen_core
-  canopen_base_driver
-  canopen_proxy_driver
   canopen_402_driver
+  canopen_core
+  canopen_proxy_driver
   hardware_interface
   pluginlib
+  rclcpp
   rclcpp_components
   rclcpp_lifecycle
-  std_srvs
-  sensor_msgs
 )
 
 find_package(ros2_control_test_assets)

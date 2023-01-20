@@ -19,27 +19,22 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(canopen_interfaces REQUIRED)
+find_package(lely_core_libraries REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(std_srvs REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
-find_package(rclcpp_components REQUIRED)
-find_package(lifecycle_msgs REQUIRED)
-find_package(lely_core_libraries REQUIRED)
-find_package(canopen_interfaces REQUIRED)
 
 set (dependencies
+  canopen_interfaces
   lely_core_libraries
+  lifecycle_msgs
   rclcpp
   rclcpp_components
-  yaml_cpp_vendor
   rclcpp_lifecycle
-  lifecycle_msgs
-  canopen_interfaces
-  rclcpp_components
+  yaml_cpp_vendor
 )
 
 
@@ -171,13 +166,7 @@ ament_export_targets(
 )
 
 ament_export_dependencies(
-  canopen_interfaces
-  lely_core_libraries
-  yaml_cpp_vendor
-  rclcpp
-  rclcpp_lifecycle
-  rclcpp_components
-  lifecycle_msgs
+  ${dependencies}
 )
 
 ament_package()

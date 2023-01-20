@@ -3,19 +3,14 @@ project(canopen_ros2_controllers)
 
 # find dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
-  canopen_core
-  canopen_interfaces
-  canopen_base_driver
-  canopen_proxy_driver
   canopen_402_driver
-  lely_core_libraries
-  control_msgs
+  canopen_interfaces
+  canopen_proxy_driver
   controller_interface
   controller_manager
   hardware_interface
   pluginlib
   rclcpp
-  rclcpp_components
   rclcpp_lifecycle
   realtime_tools
   ros2_control_test_assets

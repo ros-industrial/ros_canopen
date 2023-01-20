@@ -7,10 +7,17 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(lely_core_libraries REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+
+set(dependencies
+  lely_core_libraries
+  lifecycle_msgs
+  rclcpp
+  rclcpp_lifecycle
+)
 
 add_executable(
   basic_slave_node
@@ -24,10 +31,7 @@ target_include_directories(basic_slave_node  PUBLIC
 
 ament_target_dependencies(
   basic_slave_node
-  "rclcpp"
-  "lely_core_libraries"
-  "rclcpp_lifecycle"
-  "lifecycle_msgs"
+  ${dependencies}
 )
 
 
@@ -43,10 +47,7 @@ target_include_directories(cia402_slave_node  PUBLIC
 
 ament_target_dependencies(
   cia402_slave_node
-  "rclcpp"
-  "lely_core_libraries"
-  "rclcpp_lifecycle"
-  "lifecycle_msgs"
+  ${dependencies}
 )
 
 
@@ -80,5 +81,9 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+ament_export_dependencies(
+  ${dependencies}
+)
 
 ament_package()

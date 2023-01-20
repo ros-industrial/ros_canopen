@@ -7,10 +7,6 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(canopen_core REQUIRED)
-find_package(canopen_interfaces REQUIRED)
-find_package(canopen_base_driver REQUIRED)
-find_package(canopen_proxy_driver REQUIRED)
 find_package(lely_core_libraries REQUIRED)
 
 

@@ -9,13 +9,14 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <depend>canopen_interfaces</depend>
   <depend>lely_core_libraries</depend>
+  <depend>lifecycle_msgs</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
-  <depend>yaml_cpp_vendor</depend>
-  <depend>canopen_interfaces</depend>
   <depend>rclcpp_lifecycle</depend>
-  <depend>lifecycle_msgs</depend>
+  <depend>yaml_cpp_vendor</depend>
+
   <test_depend>ament_lint_auto</test_depend>
 
   <export>

@@ -8,15 +8,12 @@
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+
   <build_depend>lely_core_libraries</build_depend>
-  <depend>canopen_core</depend>
-  <depend>canopen_interfaces</depend>
-  <depend>canopen_base_driver</depend>
-  <depend>canopen_proxy_driver</depend>
-  <depend>canopen_402_driver</depend>
-  <depend>rviz2</depend>
-  <depend>robot_state_publisher</depend>
-  <depend>joint_state_publisher</depend>
+
+  <exec_depend>canopen_402_driver</exec_depend>
+  <exec_depend>canopen_core</exec_depend>
+  <exec_depend>canopen_proxy_driver</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
 
