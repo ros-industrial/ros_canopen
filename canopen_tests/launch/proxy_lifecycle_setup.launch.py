@@ -8,52 +8,50 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     slave_eds_path = os.path.join(
-                    get_package_share_directory("canopen_tests"), "config", "simple_lifecycle", "simple.eds"
-                )
+        get_package_share_directory("canopen_tests"), "config", "simple_lifecycle", "simple.eds"
+    )
     slave_node_1 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
-                os.path.join(
-                    get_package_share_directory("canopen_mock_slave"), "launch"
-                ),
+                os.path.join(get_package_share_directory("canopen_fake_slaves"), "launch"),
                 "/basic_slave.launch.py",
             ]
         ),
         launch_arguments={
-            "node_id": "2", 
+            "node_id": "2",
             "node_name": "slave_node_1",
             "slave_config": slave_eds_path,
-            }.items(),
+        }.items(),
     )
 
     slave_node_2 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
-                os.path.join(
-                    get_package_share_directory("canopen_mock_slave"), "launch"
-                ),
+                os.path.join(get_package_share_directory("canopen_fake_slaves"), "launch"),
                 "/basic_slave.launch.py",
             ]
         ),
         launch_arguments={
-            "node_id": "3", 
+            "node_id": "3",
             "node_name": "slave_node_2",
             "slave_config": slave_eds_path,
-            }.items(),
+        }.items(),
     )
 
-    print(os.path.join(
-                get_package_share_directory("canopen_tests"),
-                "config",
-                "proxy_write_sdo",
-                "master.dcf",
-            ))
-                
+    print(
+        os.path.join(
+            get_package_share_directory("canopen_tests"),
+            "config",
+            "proxy_write_sdo",
+            "master.dcf",
+        )
+    )
+
     device_container = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
                 os.path.join(get_package_share_directory("canopen_core"), "launch"),
-                "/canopen_lifecycle.launch.py",
+                "/canopen.launch.py",
             ]
         ),
         launch_arguments={
@@ -74,6 +72,4 @@ def generate_launch_description():
         }.items(),
     )
 
-    return LaunchDescription(
-            [slave_node_1, slave_node_2, device_container]
-        )
+    return LaunchDescription([slave_node_1, slave_node_2, device_container])

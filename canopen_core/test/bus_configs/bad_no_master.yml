@@ -1,0 +1,14 @@
+---
+proxy_device_1:
+  node_id: 2
+  dcf: "simple.eds"
+  dcf_path: "install/canopen_tests/share/canopen_tests/config/simple"
+  driver: "ros2_canopen::CanopenDriver"
+  package: "canopen_core"
+
+proxy_device_2:
+  node_id: 3
+  dcf: "simple.eds"
+  dcf_path: "install/canopen_tests/share/canopen_tests/config/simple"
+  driver: "ros2_canopen::CanopenDriver"
+  package: "canopen_core"

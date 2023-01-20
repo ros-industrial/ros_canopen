@@ -1,0 +1,14 @@
+<library path="canopen_ros2_controllers">
+  <class name="canopen_ros2_controllers/CanopenProxyController"
+         type="canopen_ros2_controllers::CanopenProxyController" base_class_type="controller_interface::ControllerInterface">
+  <description>
+    Generic controller for Canopen devices providing service interfaces through ros2_control stack to the can devices.
+  </description>
+  </class>
+  <class name="canopen_ros2_controllers/Cia402DeviceController"
+         type="canopen_ros2_controllers::Cia402DeviceController" base_class_type="controller_interface::ControllerInterface">
+    <description>
+      Generic controller for Canopen 402 devices providing service interfaces through ros2_control stack to the can devices.
+    </description>
+  </class>
+</library>

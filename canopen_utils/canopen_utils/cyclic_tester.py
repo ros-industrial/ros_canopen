@@ -9,19 +9,18 @@ class DoubleTalker(Node):
     """Publish messages to a topic using two publishers at different rates."""
 
     def __init__(self):
-        super().__init__('double_talker')
+        super().__init__("double_talker")
 
         self.i = 0
         self.cli = self.create_client(COTargetDouble, "trinamic_pd42/target")
         while not self.cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('service not available, waiting again...')
+            self.get_logger().info("service not available, waiting again...")
         self.increment = 1000.0
         self.period = 0.1
         self.value = 0.0
         self.group = MutuallyExclusiveCallbackGroup()
         self.timer = self.create_timer(self.period, self.timer_callback, callback_group=self.group)
         self.req = COTargetDouble.Request()
-
 
     def timer_callback(self):
         self.value = self.value + self.increment
@@ -55,6 +54,5 @@ def main(args=None):
         rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-

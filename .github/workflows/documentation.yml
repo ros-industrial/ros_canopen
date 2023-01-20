@@ -20,36 +20,45 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
+
       - name: Install dependencies
         run: |
             sudo apt-get update -qq
-            sudo apt-get install -y -qq doxygen graphviz
+            sudo apt-get install -y -qq doxygen graphviz plantuml
             pip install sphinx-rtd-theme
+            pip install sphinxcontrib-plantuml
             pip install sphinx-mdinclude
             pip install breathe
             pip install exhale
-            
+
+      - name: Build doxygen
+        run: |
+            cd ./canopen/doxygen/
+            doxygen
+            cd ../..
+
       - name: Build documentation
         run: |
             cd ./canopen/sphinx/
             make html
             cd ../..
-            
+
       - name: Create commit
         run: |
             git clone https://github.com/ros-industrial/ros2_canopen.git --branch gh-pages --single-branch gh-pages
-            cp -r ./canopen/sphinx/_build/html/* gh-pages/
+            mkdir -p gh-pages/manual/
+            mkdir -p gh-pages/api/
+            cp -r ./canopen/sphinx/_build/html/* gh-pages/manual/
+            cp -r ./canopen/doxygen/_build/html/* gh-pages/api/
             cd gh-pages
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
             git add .
             git commit -m "Update documentation" -a || true
-      
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           branch: gh-pages
           directory: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      

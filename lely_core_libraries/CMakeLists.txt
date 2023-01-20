@@ -7,10 +7,10 @@ ExternalProject_Add(upstr_lely_core_libraries    # Name for custom target
   #--Download step--------------
   GIT_REPOSITORY https://gitlab.com/lely_industries/lely-core.git
   GIT_TAG ac31cd5cdf2ded4b2a5ba4a94520f388450614ff
-  TIMEOUT 60          
+  TIMEOUT 60
   #--Update/Patch step----------
-  UPDATE_COMMAND touch <SOURCE_DIR>/config.h 
-    COMMAND mkdir -p <SOURCE_DIR>/include <SOURCE_DIR>/lib 
+  UPDATE_COMMAND touch <SOURCE_DIR>/config.h
+    COMMAND mkdir -p <SOURCE_DIR>/include <SOURCE_DIR>/lib
     COMMAND touch <SOURCE_DIR>/python/dcf-tools/README.md
   #--Configure step-------------
   CONFIGURE_COMMAND autoreconf -i <SOURCE_DIR> COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --disable-cython --disable-doc --disable-tests --disable-static "CPPFLAGS=-DNDEBUG" "CFLAGS=-DNDEBUG" "CXXFLAGS=-DNDEBUG"

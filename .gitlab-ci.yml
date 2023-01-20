@@ -35,7 +35,7 @@ sphinx:
     paths:
     - canopen/sphinx/_build
   tags:
-    - asprunner 
+    - asprunner
 
 
 .build:

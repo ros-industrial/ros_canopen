@@ -46,5 +46,3 @@ The next few lines show you some command to have exemplary usage of the ros2_con
         type: 8"
 
    Now watch how data in the first two opened terminals are changing.
-
-

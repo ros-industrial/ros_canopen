@@ -8,24 +8,38 @@ endif()
 # find dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   canopen_core
+  canopen_base_driver
   canopen_proxy_driver
+  canopen_402_driver
   hardware_interface
   pluginlib
   rclcpp_components
   rclcpp_lifecycle
   std_srvs
+  sensor_msgs
 )
+
+find_package(ros2_control_test_assets)
+find_package(ament_cmake_gmock REQUIRED)
 
 find_package(ament_cmake REQUIRED)
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
-add_library(canopen_ros2_control SHARED src/canopen_system.cpp)
+add_library(
+  canopen_ros2_control
+  SHARED
+  src/canopen_system.cpp
+  src/cia402_system.cpp
+)
+
 target_compile_features(canopen_ros2_control PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_options(canopen_ros2_control PUBLIC -fPIC -Wl,--no-undefined)
+
 target_include_directories(canopen_ros2_control PUBLIC include)
 ament_target_dependencies(canopen_ros2_control ${THIS_PACKAGE_INCLUDE_DEPENDS})
+
 # prevent pluginlib from using boost
 target_compile_definitions(canopen_ros2_control PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
 

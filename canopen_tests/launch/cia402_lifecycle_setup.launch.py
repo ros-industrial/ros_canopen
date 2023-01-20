@@ -8,30 +8,28 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     slave_eds_path = os.path.join(
-                    get_package_share_directory("canopen_tests"), "config", "cia402", "cia402_slave.eds"
-                )
+        get_package_share_directory("canopen_tests"), "config", "cia402", "cia402_slave.eds"
+    )
 
     slave_node_1 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
-                os.path.join(
-                    get_package_share_directory("canopen_mock_slave"), "launch"
-                ),
+                os.path.join(get_package_share_directory("canopen_fake_slaves"), "launch"),
                 "/cia402_slave.launch.py",
             ]
         ),
         launch_arguments={
-            "node_id": "2", 
+            "node_id": "2",
             "node_name": "cia402_node_1",
             "slave_config": slave_eds_path,
-            }.items(),
+        }.items(),
     )
     master_bin_path = os.path.join(
-                get_package_share_directory("canopen_tests"),
-                "config",
-                "cia402_lifecycle",
-                "master.bin",
-            )     
+        get_package_share_directory("canopen_tests"),
+        "config",
+        "cia402_lifecycle",
+        "master.bin",
+    )
     if not os.path.exists(master_bin_path):
         master_bin_path = ""
 
@@ -39,7 +37,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [
                 os.path.join(get_package_share_directory("canopen_core"), "launch"),
-                "/canopen_lifecycle.launch.py",
+                "/canopen.launch.py",
             ]
         ),
         launch_arguments={
@@ -60,6 +58,4 @@ def generate_launch_description():
         }.items(),
     )
 
-    return LaunchDescription(
-            [slave_node_1, device_container]
-        )
+    return LaunchDescription([slave_node_1, device_container])

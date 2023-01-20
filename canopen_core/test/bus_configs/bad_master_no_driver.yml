@@ -1,0 +1,4 @@
+---
+master:
+  node_id: 1
+  package: "canopen_core"

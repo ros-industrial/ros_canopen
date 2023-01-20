@@ -14,9 +14,9 @@ A clear and concise description of what the bug is.
 Add build or execution log for context.
 
 **Setup:**
- - Device: 
- - OS: 
- - ROS-Distro: 
+ - Device:
+ - OS:
+ - ROS-Distro:
  - Branch/Commit:
 
 **Additional context**

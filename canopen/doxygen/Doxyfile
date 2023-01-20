@@ -8,7 +8,7 @@ PROJECT_BRIEF          = "C++ ROS CANopen Library"
 INPUT                  = ../../canopen_core/include ../../canopen_base_driver/include ../../canopen_402_driver/include ../../canopen_proxy_driver/include
 
 RECURSIVE              = YES
-OUTPUT_DIRECTORY       = doc_output
+OUTPUT_DIRECTORY       = _build
 
 EXTRACT_ALL            = YES
 SORT_MEMBER_DOCS       = NO

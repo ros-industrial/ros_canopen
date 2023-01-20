@@ -19,31 +19,9 @@
             </hardware>
             <joint name="${prefix}node_1">
                 <param name="node_id">2</param>
-                <command_interface name="position">
-                  <param name="min">{-2*pi}</param>
-                  <param name="max">{2*pi}</param>
-                </command_interface>
-                <!--<command_interface name="velocity">-->
-                  <!--<param name="min">-3.15</param>-->
-                  <!--<param name="max">3.15</param>-->
-                <!--</command_interface>-->
-                <state_interface name="position"/>
-                <!--<state_interface name="velocity"/>-->
-                <!--<state_interface name="effort"/>-->
             </joint>
             <joint name="${prefix}node_2">
                 <param name="node_id">3</param>
-                <command_interface name="position">
-                  <param name="min">{-2*pi}</param>
-                  <param name="max">{2*pi}</param>
-                </command_interface>
-                <!--<command_interface name="velocity">-->
-                  <!--<param name="min">-3.15</param>-->
-                  <!--<param name="max">3.15</param>-->
-                <!--</command_interface>-->
-                <state_interface name="position"/>
-                <!--<state_interface name="velocity"/>-->
-                <!--<state_interface name="effort"/>-->
             </joint>
         </ros2_control>
 

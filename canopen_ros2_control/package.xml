@@ -13,16 +13,18 @@
 
   <depend>canopen_core</depend>
   <depend>canopen_proxy_driver</depend>
+  <depend>canopen_402_driver</depend>
   <depend>hardware_interface</depend>
   <depend>pluginlib</depend>
   <depend>rclcpp_components</depend>
   <depend>rclcpp_lifecycle</depend>
   <depend>std_srvs</depend>
 
-  <depend>xacro</depend>
-  <depend>joint_state_broadcaster</depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
 
-  <exec_depend>canopen_mock_slave</exec_depend>
+  <exec_depend>canopen_fake_slaves</exec_depend>
   <exec_depend>canopen_tests</exec_depend>
 
   <test_depend>ament_cmake_gmock</test_depend>
