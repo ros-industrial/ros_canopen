@@ -137,6 +137,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a989e54f956917a7a0a9918d86a4d5557"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a989e54f956917a7a0a9918d86a4d5557">register_rpdo_cb</a> (std::function&lt; void(<a class="el" href="structros2__canopen_1_1COData.html">COData</a>, uint8_t)&gt; rpdo_cb)</td></tr>
 <tr class="memdesc:a989e54f956917a7a0a9918d86a4d5557"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a callback for RPDO.  <a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a989e54f956917a7a0a9918d86a4d5557">More...</a><br /></td></tr>
 <tr class="separator:a989e54f956917a7a0a9918d86a4d5557"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e2a4cf86e13a30504b450e480226d30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a2e2a4cf86e13a30504b450e480226d30">register_emcy_cb</a> (std::function&lt; void(<a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>, uint8_t)&gt; emcy_cb)</td></tr>
+<tr class="memdesc:a2e2a4cf86e13a30504b450e480226d30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a callback for EMCY.  <a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a2e2a4cf86e13a30504b450e480226d30">More...</a><br /></td></tr>
+<tr class="separator:a2e2a4cf86e13a30504b450e480226d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html">ros2_canopen::node_interfaces::NodeCanopenDriver&lt; NODETYPE &gt;</a></td></tr>
 <tr class="memitem:adc93fb5513e92f1d8beebdfac6495548 inherit pub_methods_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#adc93fb5513e92f1d8beebdfac6495548">NodeCanopenDriver</a> (NODETYPE *node)</td></tr>
 <tr class="separator:adc93fb5513e92f1d8beebdfac6495548 inherit pub_methods_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -178,6 +181,10 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a3eaa7598175fb3f27618729aaae93de0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77360b90f34908793ec7cef2e5910482"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a77360b90f34908793ec7cef2e5910482">on_rpdo</a> (<a class="el" href="structros2__canopen_1_1COData.html">COData</a> data)</td></tr>
 <tr class="separator:a77360b90f34908793ec7cef2e5910482"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2bc0c3d4d2daa6c4efbf3183bbca34b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#ac2bc0c3d4d2daa6c4efbf3183bbca34b">emcy_listener</a> ()</td></tr>
+<tr class="separator:ac2bc0c3d4d2daa6c4efbf3183bbca34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affe4649a9853df18298eb9d18d4f81f9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#affe4649a9853df18298eb9d18d4f81f9">on_emcy</a> (<a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a> emcy)</td></tr>
+<tr class="separator:affe4649a9853df18298eb9d18d4f81f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -185,6 +192,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a68f39437a6d0e2ea6c970fc83e650fc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf0ea3bbf4bc04a22553018b32110c19"><td class="memItemLeft" align="right" valign="top">std::thread&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#acf0ea3bbf4bc04a22553018b32110c19">rpdo_publisher_thread_</a></td></tr>
 <tr class="separator:acf0ea3bbf4bc04a22553018b32110c19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa37cd782691260f0d75829b30cb1ad22"><td class="memItemLeft" align="right" valign="top">std::thread&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#aa37cd782691260f0d75829b30cb1ad22">emcy_publisher_thread_</a></td></tr>
+<tr class="separator:aa37cd782691260f0d75829b30cb1ad22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa60effabc87768d68595c2fe4adb7fdf"><td class="memItemLeft" align="right" valign="top">std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#aa60effabc87768d68595c2fe4adb7fdf">driver_mutex_</a></td></tr>
 <tr class="separator:aa60effabc87768d68595c2fe4adb7fdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af578aa77186b31023fa6337855c24a4a"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1LelyDriverBridge.html">ros2_canopen::LelyDriverBridge</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#af578aa77186b31023fa6337855c24a4a">lely_driver_</a></td></tr>
@@ -193,6 +202,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:ae59fdf547f193e6848f8eaaf3cc62357"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa11523d3464040fb97855025e4978fe6"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(<a class="el" href="structros2__canopen_1_1COData.html">COData</a>, uint8_t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#aa11523d3464040fb97855025e4978fe6">rpdo_cb_</a></td></tr>
 <tr class="separator:aa11523d3464040fb97855025e4978fe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef470d5ddd3e8529b3e15b2efaf2d89c"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(<a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>, uint8_t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#aef470d5ddd3e8529b3e15b2efaf2d89c">emcy_cb_</a></td></tr>
+<tr class="separator:aef470d5ddd3e8529b3e15b2efaf2d89c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html">ros2_canopen::node_interfaces::NodeCanopenDriver&lt; NODETYPE &gt;</a></td></tr>
 <tr class="memitem:a5c147ad1a7292ff3c36f7ead00746ec0 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver"><td class="memItemLeft" align="right" valign="top">NODETYPE *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a5c147ad1a7292ff3c36f7ead00746ec0">node_</a></td></tr>
 <tr class="separator:a5c147ad1a7292ff3c36f7ead00746ec0 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -377,6 +388,58 @@ template&lt;class NODETYPE &gt; </div>
 </div><div class="memdoc">
 
 <p>Reimplemented in <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a4bc6b1ddf089cd7f16e85d71303541bd">ros2_canopen::node_interfaces::NodeCanopenProxyDriver&lt; NODETYPE &gt;</a>.</p>
+
+</div>
+</div>
+<a id="ac2bc0c3d4d2daa6c4efbf3183bbca34b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2bc0c3d4d2daa6c4efbf3183bbca34b">&#9670;&nbsp;</a></span>emcy_listener()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class NODETYPE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NodeCanopenBaseDriver::emcy_listener</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="affe4649a9853df18298eb9d18d4f81f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affe4649a9853df18298eb9d18d4f81f9">&#9670;&nbsp;</a></span>on_emcy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class NODETYPE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NodeCanopenBaseDriver::on_emcy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>&#160;</td>
+          <td class="paramname"><em>emcy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -753,6 +816,42 @@ template&lt;class NODETYPE &gt; </div>
 
 </div>
 </div>
+<a id="a2e2a4cf86e13a30504b450e480226d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e2a4cf86e13a30504b450e480226d30">&#9670;&nbsp;</a></span>register_emcy_cb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class NODETYPE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html">ros2_canopen::node_interfaces::NodeCanopenBaseDriver</a>&lt; NODETYPE &gt;::register_emcy_cb </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void(<a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>, uint8_t)&gt;&#160;</td>
+          <td class="paramname"><em>emcy_cb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Register a callback for EMCY. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">emcy_cb</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a68f39437a6d0e2ea6c970fc83e650fc7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a68f39437a6d0e2ea6c970fc83e650fc7">&#9670;&nbsp;</a></span>nmt_state_publisher_thread_</h2>
@@ -791,6 +890,30 @@ template&lt;class NODETYPE &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::thread <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html">ros2_canopen::node_interfaces::NodeCanopenBaseDriver</a>&lt; NODETYPE &gt;::rpdo_publisher_thread_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa37cd782691260f0d75829b30cb1ad22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa37cd782691260f0d75829b30cb1ad22">&#9670;&nbsp;</a></span>emcy_publisher_thread_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class NODETYPE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::thread <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html">ros2_canopen::node_interfaces::NodeCanopenBaseDriver</a>&lt; NODETYPE &gt;::emcy_publisher_thread_</td>
         </tr>
       </table>
   </td>
@@ -887,6 +1010,30 @@ template&lt;class NODETYPE &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::function&lt;void(<a class="el" href="structros2__canopen_1_1COData.html">COData</a>, uint8_t)&gt; <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html">ros2_canopen::node_interfaces::NodeCanopenBaseDriver</a>&lt; NODETYPE &gt;::rpdo_cb_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aef470d5ddd3e8529b3e15b2efaf2d89c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef470d5ddd3e8529b3e15b2efaf2d89c">&#9670;&nbsp;</a></span>emcy_cb_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class NODETYPE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::function&lt;void(<a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>, uint8_t)&gt; <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html">ros2_canopen::node_interfaces::NodeCanopenBaseDriver</a>&lt; NODETYPE &gt;::emcy_cb_</td>
         </tr>
       </table>
   </td>

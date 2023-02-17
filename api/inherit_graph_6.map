@@ -1,4 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,13,151,39"/>
-<area shape="rect" id="node2" href="$structros2__canopen_1_1LelyBridgeErrCategory.html" title=" " alt="" coords="199,5,388,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,71,120,98"/>
+<area shape="rect" id="node2" href="$classros2__canopen_1_1DeviceContainerException.html" title="Device Container Exception." alt="" coords="169,5,397,47"/>
+<area shape="rect" id="node3" href="$classros2__canopen_1_1DriverException.html" title="Driver Exception." alt="" coords="171,71,395,98"/>
+<area shape="rect" id="node4" href="$classros2__canopen_1_1MasterException.html" title="Master Exception." alt="" coords="168,122,397,149"/>
 </map>

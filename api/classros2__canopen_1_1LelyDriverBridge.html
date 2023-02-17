@@ -119,6 +119,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aef15d86e3cea07fbf4c3ec732e9eaf28"><td class="memItemLeft" align="right" valign="top">std::future&lt; <a class="el" href="structros2__canopen_1_1COData.html">COData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#aef15d86e3cea07fbf4c3ec732e9eaf28">async_request_rpdo</a> ()</td></tr>
 <tr class="memdesc:aef15d86e3cea07fbf4c3ec732e9eaf28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronous request for RPDO.  <a href="classros2__canopen_1_1LelyDriverBridge.html#aef15d86e3cea07fbf4c3ec732e9eaf28">More...</a><br /></td></tr>
 <tr class="separator:aef15d86e3cea07fbf4c3ec732e9eaf28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06d03504cbd4539f9a3a8d29f6a7207c"><td class="memItemLeft" align="right" valign="top">std::future&lt; <a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#a06d03504cbd4539f9a3a8d29f6a7207c">async_request_emcy</a> ()</td></tr>
+<tr class="memdesc:a06d03504cbd4539f9a3a8d29f6a7207c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronous request for EMCY.  <a href="classros2__canopen_1_1LelyDriverBridge.html#a06d03504cbd4539f9a3a8d29f6a7207c">More...</a><br /></td></tr>
+<tr class="separator:a06d03504cbd4539f9a3a8d29f6a7207c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae81768ed4a61e0b9e137cbb16c26d1a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#ae81768ed4a61e0b9e137cbb16c26d1a0">tpdo_transmit</a> (<a class="el" href="structros2__canopen_1_1COData.html">COData</a> data)</td></tr>
 <tr class="memdesc:ae81768ed4a61e0b9e137cbb16c26d1a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes a TPDO transmission.  <a href="classros2__canopen_1_1LelyDriverBridge.html#ae81768ed4a61e0b9e137cbb16c26d1a0">More...</a><br /></td></tr>
 <tr class="separator:ae81768ed4a61e0b9e137cbb16c26d1a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,6 +152,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a694f5e335166e7d3ccbf8d75da8440ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#a694f5e335166e7d3ccbf8d75da8440ca">OnRpdoWrite</a> (uint16_t idx, uint8_t subidx) noexcept override</td></tr>
 <tr class="memdesc:a694f5e335166e7d3ccbf8d75da8440ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">OnRpdoWrite Callback.  <a href="classros2__canopen_1_1LelyDriverBridge.html#a694f5e335166e7d3ccbf8d75da8440ca">More...</a><br /></td></tr>
 <tr class="separator:a694f5e335166e7d3ccbf8d75da8440ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac3c9ccd8c5493c8787887caa1511741"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#aac3c9ccd8c5493c8787887caa1511741">OnEmcy</a> (uint16_t eec, uint8_t er, uint8_t msef[5]) noexcept override</td></tr>
+<tr class="separator:aac3c9ccd8c5493c8787887caa1511741"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -174,6 +179,12 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a5d02e3513530f7497a83571d90472b00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0f1478930363b496bf4ab8ddf8a1e27"><td class="memItemLeft" align="right" valign="top">std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#ac0f1478930363b496bf4ab8ddf8a1e27">pdo_mtex</a></td></tr>
 <tr class="separator:ac0f1478930363b496bf4ab8ddf8a1e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae126576b75a8a379a34364fc58c357d1"><td class="memItemLeft" align="right" valign="top">std::promise&lt; <a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#ae126576b75a8a379a34364fc58c357d1">emcy_promise</a></td></tr>
+<tr class="separator:ae126576b75a8a379a34364fc58c357d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a048866d53f35db96fae4801cd4985a56"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#a048866d53f35db96fae4801cd4985a56">emcy_is_set</a></td></tr>
+<tr class="separator:a048866d53f35db96fae4801cd4985a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6726f2fd764dcbed60a73694938214df"><td class="memItemLeft" align="right" valign="top">std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#a6726f2fd764dcbed60a73694938214df">emcy_mtex</a></td></tr>
+<tr class="separator:a6726f2fd764dcbed60a73694938214df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc23957de6e302d6dec4bfabfe426133"><td class="memItemLeft" align="right" valign="top">std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#adc23957de6e302d6dec4bfabfe426133">booted</a></td></tr>
 <tr class="separator:adc23957de6e302d6dec4bfabfe426133"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedf37290d8854316efa0f319378fec0a"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#aedf37290d8854316efa0f319378fec0a">boot_status</a></td></tr>
@@ -389,6 +400,57 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aac3c9ccd8c5493c8787887caa1511741"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac3c9ccd8c5493c8787887caa1511741">&#9670;&nbsp;</a></span>OnEmcy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ros2_canopen::LelyDriverBridge::OnEmcy </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>eec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>er</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>msef</em>[5]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The function invoked when an EMCY message is received from the remote node.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">eec</td><td>the emergency error code. </td></tr>
+    <tr><td class="paramname">er</td><td>the error register. </td></tr>
+    <tr><td class="paramname">msef</td><td>the manufacturer-specific error code. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ab0c6920f6e2b3c64b04553f2857d3daf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab0c6920f6e2b3c64b04553f2857d3daf">&#9670;&nbsp;</a></span>async_sdo_write()</h2>
 
@@ -484,6 +546,26 @@ Protected Attributes</h2></td></tr>
 <p>Asynchronous request for RPDO. </p>
 <p>Waits for an RPDO write request to be received from the slave. The content of the request are stored in the returned future.</p>
 <dl class="section return"><dt>Returns</dt><dd>std::future&lt;COData&gt; The returned future is set when an RPDO event is detected. </dd></dl>
+
+</div>
+</div>
+<a id="a06d03504cbd4539f9a3a8d29f6a7207c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06d03504cbd4539f9a3a8d29f6a7207c">&#9670;&nbsp;</a></span>async_request_emcy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::future&lt;<a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>&gt; ros2_canopen::LelyDriverBridge::async_request_emcy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Asynchronous request for EMCY. </p>
+<dl class="section return"><dt>Returns</dt><dd>std::future&lt;COEmcy&gt; The returned future is set when an EMCY event is detected. </dd></dl>
 
 </div>
 </div>
@@ -880,6 +962,72 @@ false </dd></dl>
       <table class="memname">
         <tr>
           <td class="memname">std::mutex ros2_canopen::LelyDriverBridge::pdo_mtex</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae126576b75a8a379a34364fc58c357d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae126576b75a8a379a34364fc58c357d1">&#9670;&nbsp;</a></span>emcy_promise</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::promise&lt;<a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>&gt; ros2_canopen::LelyDriverBridge::emcy_promise</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a048866d53f35db96fae4801cd4985a56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a048866d53f35db96fae4801cd4985a56">&#9670;&nbsp;</a></span>emcy_is_set</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::atomic&lt;bool&gt; ros2_canopen::LelyDriverBridge::emcy_is_set</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6726f2fd764dcbed60a73694938214df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6726f2fd764dcbed60a73694938214df">&#9670;&nbsp;</a></span>emcy_mtex</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::mutex ros2_canopen::LelyDriverBridge::emcy_mtex</td>
         </tr>
       </table>
   </td>
