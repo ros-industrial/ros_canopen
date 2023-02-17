@@ -29,6 +29,9 @@ void NodeCanopenBaseDriver<NODETYPE>::activate(bool called_from_base)
 
   rpdo_publisher_thread_ =
     std::thread(std::bind(&NodeCanopenBaseDriver<NODETYPE>::rdpo_listener, this));
+
+  emcy_publisher_thread_ =
+    std::thread(std::bind(&NodeCanopenBaseDriver<NODETYPE>::emcy_listener, this));
 }
 
 template <class NODETYPE>
@@ -146,6 +149,11 @@ void NodeCanopenBaseDriver<NODETYPE>::on_rpdo(COData data)
 }
 
 template <class NODETYPE>
+void NodeCanopenBaseDriver<NODETYPE>::on_emcy(COEmcy emcy)
+{
+}
+
+template <class NODETYPE>
 void NodeCanopenBaseDriver<NODETYPE>::rdpo_listener()
 {
   while (rclcpp::ok())
@@ -168,6 +176,37 @@ void NodeCanopenBaseDriver<NODETYPE>::rdpo_listener()
         rpdo_cb_(rpdo, this->lely_driver_->get_id());
       }
       on_rpdo(f.get());
+    }
+    catch (const std::future_error & e)
+    {
+      break;
+    }
+  }
+}
+
+template <class NODETYPE>
+void NodeCanopenBaseDriver<NODETYPE>::emcy_listener()
+{
+  while (rclcpp::ok())
+  {
+    std::future<ros2_canopen::COEmcy> f;
+    {
+      std::scoped_lock<std::mutex> lock(this->driver_mutex_);
+      f = lely_driver_->async_request_emcy();
+    }
+
+    while (f.wait_for(this->non_transmit_timeout_) != std::future_status::ready)
+    {
+      if (!this->activated_.load()) return;
+    }
+    try
+    {
+      auto emcy = f.get();
+      if (emcy_cb_)
+      {
+        emcy_cb_(emcy, this->lely_driver_->get_id());
+      }
+      on_emcy(emcy);
     }
     catch (const std::future_error & e)
     {

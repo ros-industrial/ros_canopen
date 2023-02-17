@@ -25,6 +25,7 @@ class NodeCanopenBaseDriver : public NodeCanopenDriver<NODETYPE>
 protected:
   std::thread nmt_state_publisher_thread_;
   std::thread rpdo_publisher_thread_;
+  std::thread emcy_publisher_thread_;
   std::mutex driver_mutex_;
   std::shared_ptr<ros2_canopen::LelyDriverBridge> lely_driver_;
 
@@ -32,11 +33,15 @@ protected:
   std::function<void(canopen::NmtState, uint8_t)> nmt_state_cb_;
   // rpdo callback
   std::function<void(COData, uint8_t)> rpdo_cb_;
+  // emcy callback
+  std::function<void(COEmcy, uint8_t)> emcy_cb_;
 
   void nmt_listener();
   virtual void on_nmt(canopen::NmtState nmt_state);
   void rdpo_listener();
   virtual void on_rpdo(COData data);
+  void emcy_listener();
+  virtual void on_emcy(COEmcy emcy);
 
 public:
   NodeCanopenBaseDriver(NODETYPE * node);
@@ -87,6 +92,16 @@ public:
   void register_rpdo_cb(std::function<void(COData, uint8_t)> rpdo_cb)
   {
     rpdo_cb_ = std::move(rpdo_cb);
+  }
+
+  /**
+   * @brief Register a callback for EMCY
+   *
+   * @param emcy_cb
+   */
+  void register_emcy_cb(std::function<void(COEmcy, uint8_t)> emcy_cb)
+  {
+    emcy_cb_ = std::move(emcy_cb);
   }
 };
 typedef NodeCanopenBaseDriver<rclcpp::Node> NCBDNode;

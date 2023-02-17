@@ -139,6 +139,11 @@ protected:
   std::atomic<bool> rpdo_is_set;
   std::mutex pdo_mtex;
 
+  // EMCY synchronisation items
+  std::promise<COEmcy> emcy_promise;
+  std::atomic<bool> emcy_is_set;
+  std::mutex emcy_mtex;
+
   // BOOT synchronisation items
   std::atomic<bool> booted;
   char boot_status;
@@ -183,6 +188,15 @@ protected:
    * @param [in] subidx   Object Subindex
    */
   void OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override;
+
+  /**
+   * The function invoked when an EMCY message is received from the remote node.
+   *
+   * @param eec  the emergency error code.
+   * @param er   the error register.
+   * @param msef the manufacturer-specific error code.
+   */
+  void OnEmcy(uint16_t eec, uint8_t er, uint8_t msef[5]) noexcept override;
 
 public:
   using FiberDriver::FiberDriver;
@@ -254,6 +268,14 @@ public:
    * The returned future is set when an RPDO event is detected.
    */
   std::future<COData> async_request_rpdo();
+
+  /**
+   * @brief Asynchronous request for EMCY
+   *
+   * @return std::future<COEmcy>
+   * The returned future is set when an EMCY event is detected.
+   */
+  std::future<COEmcy> async_request_emcy();
 
   /**
    * @brief Executes a TPDO transmission

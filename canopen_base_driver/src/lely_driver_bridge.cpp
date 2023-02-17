@@ -13,6 +13,7 @@
 //   limitations under the License.
 //
 #include "canopen_base_driver/lely_driver_bridge.hpp"
+#include <bitset>
 #include <memory>
 
 const ros2_canopen::LelyBridgeErrCategory LelyBridgeErrCategoryInstance{};
@@ -124,6 +125,24 @@ void LelyDriverBridge::OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept
     {
       rpdo_is_set.store(true);
       rpdo_promise.set_value(codata);
+    }
+  }
+}
+
+void LelyDriverBridge::OnEmcy(uint16_t eec, uint8_t er, uint8_t msef[5]) noexcept
+{
+  FiberDriver::OnEmcy(eec, er, msef);
+
+  COEmcy emcy = {eec, er};
+  for (int i = 0; i < 5; i++) emcy.msef[i] = msef[i];
+
+  std::unique_lock<std::mutex> lk(emcy_mtex, std::defer_lock);
+  if (lk.try_lock())
+  {
+    if (!emcy_is_set.load())
+    {
+      emcy_is_set.store(true);
+      emcy_promise.set_value(emcy);
     }
   }
 }
@@ -321,6 +340,14 @@ std::future<COData> LelyDriverBridge::async_request_rpdo()
   rpdo_is_set.store(false);
   rpdo_promise = std::promise<COData>();
   return rpdo_promise.get_future();
+}
+
+std::future<COEmcy> LelyDriverBridge::async_request_emcy()
+{
+  std::scoped_lock<std::mutex> lk(emcy_mtex);
+  emcy_is_set.store(false);
+  emcy_promise = std::promise<COEmcy>();
+  return emcy_promise.get_future();
 }
 
 void LelyDriverBridge::tpdo_transmit(COData data)

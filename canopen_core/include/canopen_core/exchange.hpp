@@ -33,6 +33,14 @@ public:
   uint32_t data_;
   CODataTypes type_;
 };
+
+struct COEmcy
+{
+public:
+  uint16_t eec;
+  uint8_t er;
+  uint8_t msef[5];
+};
 }  // namespace ros2_canopen
 
 #endif  // EXCHANGE_HPP
