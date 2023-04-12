@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['visibility_5fcontrol_2eh_536',['visibility_control.h',['../canopen__core_2include_2canopen__core_2visibility__control_8h.html',1,'(Global Namespace)'],['../canopen__base__driver_2include_2canopen__base__driver_2visibility__control_8h.html',1,'(Global Namespace)'],['../canopen__402__driver_2include_2canopen__402__driver_2visibility__control_8h.html',1,'(Global Namespace)'],['../canopen__proxy__driver_2include_2canopen__proxy__driver_2visibility__control_8h.html',1,'(Global Namespace)']]]
+  ['profiled_5fposition_5fmode_2ehpp_550',['profiled_position_mode.hpp',['../profiled__position__mode_8hpp.html',1,'']]],
+  ['proxy_5fdriver_2ehpp_551',['proxy_driver.hpp',['../proxy__driver_8hpp.html',1,'']]]
 ];
