@@ -161,6 +161,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a939505650bfdf2e14952e0b481419a6a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a939505650bfdf2e14952e0b481419a6a">handle_set_mode_cyclic_position</a> (const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</td></tr>
 <tr class="memdesc:a939505650bfdf2e14952e0b481419a6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Service Callback to set cyclic position mode.  <a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a939505650bfdf2e14952e0b481419a6a">More...</a><br /></td></tr>
 <tr class="separator:a939505650bfdf2e14952e0b481419a6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d2407cef2b22692c056955e75790406"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a8d2407cef2b22692c056955e75790406">handle_set_mode_interpolated_position</a> (const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</td></tr>
+<tr class="memdesc:a8d2407cef2b22692c056955e75790406"><td class="mdescLeft">&#160;</td><td class="mdescRight">Service Callback to set interpolated position mode.  <a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a8d2407cef2b22692c056955e75790406">More...</a><br /></td></tr>
+<tr class="separator:a8d2407cef2b22692c056955e75790406"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7f22159cf8109774b0215ea9f3e8c40"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af7f22159cf8109774b0215ea9f3e8c40">set_mode_cyclic_position</a> ()</td></tr>
 <tr class="memdesc:af7f22159cf8109774b0215ea9f3e8c40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to set cyclic position mode.  <a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af7f22159cf8109774b0215ea9f3e8c40">More...</a><br /></td></tr>
 <tr class="separator:af7f22159cf8109774b0215ea9f3e8c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -304,6 +307,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:ac97019df7e448fa18149d4d9993f051d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40f2ddff3b3f85cd860b2f00fe6ce803"><td class="memItemLeft" align="right" valign="top">rclcpp::Service&lt; std_srvs::srv::Trigger &gt;::SharedPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a40f2ddff3b3f85cd860b2f00fe6ce803">handle_set_mode_cyclic_position_service</a></td></tr>
 <tr class="separator:a40f2ddff3b3f85cd860b2f00fe6ce803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21474b283c499b0620d11b25ce274030"><td class="memItemLeft" align="right" valign="top">rclcpp::Service&lt; std_srvs::srv::Trigger &gt;::SharedPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a21474b283c499b0620d11b25ce274030">handle_set_mode_interpolated_position_service</a></td></tr>
+<tr class="separator:a21474b283c499b0620d11b25ce274030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6add7a3bf39d01fa7c1ec378d6f6d500"><td class="memItemLeft" align="right" valign="top">rclcpp::Service&lt; canopen_interfaces::srv::COTargetDouble &gt;::SharedPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a6add7a3bf39d01fa7c1ec378d6f6d500">handle_set_target_service</a></td></tr>
 <tr class="separator:a6add7a3bf39d01fa7c1ec378d6f6d500"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aece10efb41fbdf4bcbac1ec4fc997d9f"><td class="memItemLeft" align="right" valign="top">rclcpp::Publisher&lt; sensor_msgs::msg::JointState &gt;::SharedPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aece10efb41fbdf4bcbac1ec4fc997d9f">publish_joint_state</a></td></tr>
@@ -1088,6 +1093,46 @@ template&lt;class NODETYPE &gt; </div>
 
 </div>
 </div>
+<a id="a8d2407cef2b22692c056955e75790406"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d2407cef2b22692c056955e75790406">&#9670;&nbsp;</a></span>handle_set_mode_interpolated_position()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class NODETYPE &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void NodeCanopen402Driver::handle_set_mode_interpolated_position </td>
+          <td>(</td>
+          <td class="paramtype">const std_srvs::srv::Trigger::Request::SharedPtr&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std_srvs::srv::Trigger::Response::SharedPtr&#160;</td>
+          <td class="paramname"><em>response</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Service Callback to set interpolated position mode. </p>
+<p>Calls <a class="el" href="classros2__canopen_1_1Motor402.html#a9977c52060821e2e226644bab5d7bfe6" title="Enter Operation Mode.">Motor402::enterModeAndWait</a> with Interpolated Position <a class="el" href="classros2__canopen_1_1Mode.html">Mode</a> as Target Operation <a class="el" href="classros2__canopen_1_1Mode.html">Mode</a>. If successful, the motor was transitioned to Interpolated Position <a class="el" href="classros2__canopen_1_1Mode.html">Mode</a>. This only supports linear mode.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">request</td><td></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">response</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="af7f22159cf8109774b0215ea9f3e8c40"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af7f22159cf8109774b0215ea9f3e8c40">&#9670;&nbsp;</a></span>set_mode_cyclic_position()</h2>
 
@@ -1570,6 +1615,30 @@ template&lt;class NODETYPE &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">rclcpp::Service&lt;std_srvs::srv::Trigger&gt;::SharedPtr <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html">ros2_canopen::node_interfaces::NodeCanopen402Driver</a>&lt; NODETYPE &gt;::handle_set_mode_cyclic_position_service</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a21474b283c499b0620d11b25ce274030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21474b283c499b0620d11b25ce274030">&#9670;&nbsp;</a></span>handle_set_mode_interpolated_position_service</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class NODETYPE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">rclcpp::Service&lt;std_srvs::srv::Trigger&gt;::SharedPtr <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html">ros2_canopen::node_interfaces::NodeCanopen402Driver</a>&lt; NODETYPE &gt;::handle_set_mode_interpolated_position_service</td>
         </tr>
       </table>
   </td>
