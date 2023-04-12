@@ -73,6 +73,7 @@ struct MotorNodeData
   MotorTriggerCommand cyclic_velocity_mode;
   MotorTriggerCommand cyclic_position_mode;
   MotorTriggerCommand torque_mode;
+  MotorTriggerCommand interpolated_position_mode;
 
   // setpoint
   MotorTarget target;

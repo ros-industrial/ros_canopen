@@ -39,6 +39,8 @@ enum Cia402CommandInterfaces
   CYCLIC_VELOCITY_MODE_FBK,
   CYCLIC_POSITION_MODE_CMD,
   CYCLIC_POSITION_MODE_FBK,
+  INTERPOLATED_POSITION_MODE_CMD,
+  INTERPOLATED_POSITION_MODE_FBK,
 };
 
 enum Cia402StateInterfaces
@@ -122,6 +124,7 @@ protected:
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_velocity_service_;
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_velocity_service_;
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_position_service_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_interpolated_position_service_;
   rclcpp::Service<canopen_interfaces::srv::COTargetDouble>::SharedPtr handle_set_target_service_;
 };
 

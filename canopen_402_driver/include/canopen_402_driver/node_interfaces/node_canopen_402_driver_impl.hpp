@@ -55,6 +55,12 @@ void NodeCanopen402Driver<rclcpp::Node>::init(bool called_from_base)
     std::string(this->node_->get_name()).append("/cyclic_position_mode").c_str(),
     std::bind(&NodeCanopen402Driver<rclcpp::Node>::handle_set_mode_cyclic_position, this, _1, _2));
 
+  handle_set_mode_interpolated_position_service =
+    this->node_->create_service<std_srvs::srv::Trigger>(
+      std::string(this->node_->get_name()).append("/cyclic_position_mode").c_str(),
+      std::bind(
+        &NodeCanopen402Driver<rclcpp::Node>::handle_set_mode_interpolated_position, this, _1, _2));
+
   handle_set_mode_torque_service = this->node_->create_service<std_srvs::srv::Trigger>(
     std::string(this->node_->get_name()).append("/torque_mode").c_str(),
     std::bind(&NodeCanopen402Driver<rclcpp::Node>::handle_set_mode_torque, this, _1, _2));
@@ -106,6 +112,13 @@ void NodeCanopen402Driver<rclcpp_lifecycle::LifecycleNode>::init(bool called_fro
     std::bind(
       &NodeCanopen402Driver<rclcpp_lifecycle::LifecycleNode>::handle_set_mode_cyclic_position, this,
       _1, _2));
+
+  handle_set_mode_interpolated_position_service = this->node_->create_service<
+    std_srvs::srv::Trigger>(
+    std::string(this->node_->get_name()).append("/cyclic_position_mode").c_str(),
+    std::bind(
+      &NodeCanopen402Driver<rclcpp_lifecycle::LifecycleNode>::handle_set_mode_interpolated_position,
+      this, _1, _2));
 
   handle_set_mode_torque_service = this->node_->create_service<std_srvs::srv::Trigger>(
     std::string(this->node_->get_name()).append("/torque_mode").c_str(),
@@ -383,6 +396,23 @@ void NodeCanopen402Driver<NODETYPE>::handle_set_mode_cyclic_position(
     response->success = false;
   }
 }
+
+template <class NODETYPE>
+void NodeCanopen402Driver<NODETYPE>::handle_set_mode_interpolated_position(
+  const std_srvs::srv::Trigger::Request::SharedPtr request,
+  std_srvs::srv::Trigger::Response::SharedPtr response)
+{
+  if (this->activated_.load())
+  {
+    if (motor_->getMode() != MotorBase::Interpolated_Position)
+    {
+      response->success = motor_->enterModeAndWait(MotorBase::Interpolated_Position);
+      return;
+    }
+    response->success = false;
+  }
+}
+
 template <class NODETYPE>
 void NodeCanopen402Driver<NODETYPE>::handle_set_mode_cyclic_velocity(
   const std_srvs::srv::Trigger::Request::SharedPtr request,

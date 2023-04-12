@@ -32,6 +32,7 @@ protected:
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_velocity_service;
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_velocity_service;
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_cyclic_position_service;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_interpolated_position_service;
   rclcpp::Service<canopen_interfaces::srv::COTargetDouble>::SharedPtr handle_set_target_service;
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr publish_joint_state;
   uint32_t period_ms_;
@@ -201,6 +202,20 @@ public:
    * @param [out] response
    */
   void handle_set_mode_cyclic_position(
+    const std_srvs::srv::Trigger::Request::SharedPtr request,
+    std_srvs::srv::Trigger::Response::SharedPtr response);
+
+  /**
+   * @brief Service Callback to set interpolated position mode
+   *
+   * Calls Motor402::enterModeAndWait with Interpolated Position Mode as
+   * Target Operation Mode. If successful, the motor was transitioned
+   * to Interpolated Position Mode. This only supports linear mode.
+   *
+   * @param [in] request
+   * @param [out] response
+   */
+  void handle_set_mode_interpolated_position(
     const std_srvs::srv::Trigger::Request::SharedPtr request,
     std_srvs::srv::Trigger::Response::SharedPtr response);
 

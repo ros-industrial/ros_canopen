@@ -49,6 +49,9 @@ Services
   * - ~/cyclic_velocity_mode
     - Trigger
     - Switches to cyclic velocity mode
+  * - ~/interpolated_position_mode
+    - Trigger
+    - Switches to interpolated position mode, only linear mode with fixed time is supported
   * - ~/target
     - CODouble
     - Sets the target value. Only accepted when an operation mode is set.

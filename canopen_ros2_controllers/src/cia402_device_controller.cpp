@@ -72,6 +72,10 @@ controller_interface::CallbackReturn Cia402DeviceController::on_init()
     "~/cyclic_position_mode", Cia402CommandInterfaces::CYCLIC_POSITION_MODE_CMD,
     Cia402CommandInterfaces::CYCLIC_POSITION_MODE_FBK);
 
+  handle_set_mode_interpolated_position_service_ = createTriggerSrv(
+    "~/interpolated_position_mode", Cia402CommandInterfaces::INTERPOLATED_POSITION_MODE_CMD,
+    Cia402CommandInterfaces::INTERPOLATED_POSITION_MODE_FBK);
+
   /*
   handle_set_mode_torque_service_ = createTriggerSrv("~/torque_mode",
                                                              Cia402CommandInterfaces::,
@@ -102,6 +106,8 @@ Cia402DeviceController::command_interface_configuration() const
   command_interfaces_config.names.push_back(joint_name_ + "/" + "cyclic_velocity_mode_fbk");
   command_interfaces_config.names.push_back(joint_name_ + "/" + "cyclic_position_mode_cmd");
   command_interfaces_config.names.push_back(joint_name_ + "/" + "cyclic_position_mode_fbk");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "interpolated_position_mode_cmd");
+  command_interfaces_config.names.push_back(joint_name_ + "/" + "interpolated_position_mode_fbk");
   return command_interfaces_config;
 }
 

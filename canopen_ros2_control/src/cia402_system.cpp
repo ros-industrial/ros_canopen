@@ -212,6 +212,13 @@ std::vector<hardware_interface::CommandInterface> Cia402System::export_command_i
     command_interfaces.emplace_back(hardware_interface::CommandInterface(
       info_.joints[i].name, "cyclic_position_mode_fbk",
       &motor_data_[node_id].cyclic_position_mode.resp));
+    // set interpolated position mode
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "interpolated_position_mode_cmd",
+      &motor_data_[node_id].interpolated_position_mode.ons_cmd));
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      info_.joints[i].name, "interpolated_position_mode_fbk",
+      &motor_data_[node_id].interpolated_position_mode.resp));
   }
 
   return command_interfaces;
@@ -314,6 +321,8 @@ hardware_interface::return_type Cia402System::write(
       case MotorBase::Profiled_Torque:
         motion_controller_driver->set_target(motor_data_[it->first].target.torque_value);
         break;
+      case MotorBase::Interpolated_Position:
+        motion_controller_driver->set_target(motor_data_[it->first].target.position_value);
       default:
         RCLCPP_INFO(kLogger, "Mode not supported");
     }
@@ -347,6 +356,11 @@ void Cia402System::switchModes(uint id, const std::shared_ptr<ros2_canopen::Cia4
   if (motor_data_[id].torque_mode.is_commanded())
   {
     motor_data_[id].torque_mode.set_response(driver->set_mode_torque());
+  }
+
+  if (motor_data_[id].interpolated_position_mode.is_commanded())
+  {
+    motor_data_[id].interpolated_position_mode.set_response(driver->set_mode_torque());
   }
 }
 
