@@ -42,8 +42,7 @@ For this execute in the repository folder following commands:
 sudo apt install -y pre-commit
 pre-commit install
 ```
-git
-The check are automatically executed before each commit.
+The checks are automatically executed before each commit.
 This helps you to always commit well formatted code.
 To run all the checks manually use `pre-commit run -a` command.
 For the other options check `pre-commit --help`.
