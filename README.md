@@ -19,6 +19,21 @@ Currently under development. Not for production use.
 * Cia402Driver (Service Interface)
 * Generic ros2_control Interface (implementing `hardware_interface::SystemInterface`) - check https://control.ros.org for more details
 
+
+**Post build testing**
+To test stack after it was built from source you should first setup a virtual can network.
+```bash
+sudo modprobe vcan
+sudo ip link add dev vcan0 type vcan
+sudo ip link set vcan0 txqueuelen 1000
+sudo ip link set up vcan0
+```
+Then you can run the integration tests contained in canopen_tests package.
+```bash
+launch_test src/ros2_canopen/canopen_tests/launch_tests/test_proxy_lifecycle_driver.py
+launch_test src/ros2_canopen/canopen_tests/launch_tests/test_proxy_driver.py
+```
+
 ## Contributing
 This repository uses `pre-commit` for code formatting.
 This program has to be setup locally and installed inside the repository.
