@@ -17,6 +17,7 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
+  <depend>boost</depend>
 
   <test_depend>ament_lint_auto</test_depend>
 

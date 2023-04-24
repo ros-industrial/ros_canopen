@@ -30,6 +30,10 @@
 #include <thread>
 #include <vector>
 
+#include <boost/lockfree/queue.hpp>
+#include <boost/optional.hpp>
+#include <boost/thread.hpp>
+
 #include "canopen_core/exchange.hpp"
 
 using namespace std::chrono_literals;
@@ -138,11 +142,13 @@ protected:
   std::promise<COData> rpdo_promise;
   std::atomic<bool> rpdo_is_set;
   std::mutex pdo_mtex;
+  std::shared_ptr<SafeQueue<COData>> rpdo_queue;
 
   // EMCY synchronisation items
   std::promise<COEmcy> emcy_promise;
   std::atomic<bool> emcy_is_set;
   std::mutex emcy_mtex;
+  std::shared_ptr<SafeQueue<COEmcy>> emcy_queue;
 
   // BOOT synchronisation items
   std::atomic<bool> booted;
@@ -183,6 +189,7 @@ protected:
    *
    * This callback function is called when an RPDO
    * write request is received from the connected device.
+   * @todo This function should use a threadsafe queue not the icky implementation we have now.
    *
    * @param [in] idx      Object Index
    * @param [in] subidx   Object Subindex
@@ -191,6 +198,7 @@ protected:
 
   /**
    * The function invoked when an EMCY message is received from the remote node.
+   * @todo This function should use a threadsafe queue not the icky implementation we have now.
    *
    * @param eec  the emergency error code.
    * @param er   the error register.
@@ -209,7 +217,9 @@ public:
    * @param [in] id       NodeId to connect to
    */
   LelyDriverBridge(ev_exec_t * exec, canopen::AsyncMaster & master, uint8_t id, std::string name)
-  : FiberDriver(exec, master, id)
+  : FiberDriver(exec, master, id),
+    rpdo_queue(new SafeQueue<COData>()),
+    emcy_queue(new SafeQueue<COEmcy>())
   {
     nodeid = id;
     running = false;
@@ -263,19 +273,21 @@ public:
    * Waits for an RPDO write request to be received from
    * the slave. The content of the request are stored in
    * the returned future.
+   * @todo This function should use a threadsafe queue not the icky implementation we have now.
    *
    * @return std::future<COData>
    * The returned future is set when an RPDO event is detected.
    */
-  std::future<COData> async_request_rpdo();
+  std::shared_ptr<SafeQueue<COData>> async_request_rpdo();
 
   /**
    * @brief Asynchronous request for EMCY
+   * @todo This function should use a threadsafe queue not the icky implementation we have now.
    *
    * @return std::future<COEmcy>
    * The returned future is set when an EMCY event is detected.
    */
-  std::future<COEmcy> async_request_emcy();
+  std::shared_ptr<SafeQueue<COEmcy>> async_request_emcy();
 
   /**
    * @brief Executes a TPDO transmission

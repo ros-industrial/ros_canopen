@@ -26,6 +26,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
+include(ConfigExtras.cmake)
 
 set (dependencies
   canopen_interfaces
@@ -35,6 +36,7 @@ set (dependencies
   rclcpp_components
   rclcpp_lifecycle
   yaml_cpp_vendor
+  Boost
 )
 
 
@@ -56,6 +58,7 @@ ament_target_dependencies(node_canopen_driver
   lely_core_libraries
   yaml_cpp_vendor
   canopen_interfaces
+  Boost
 )
 
 add_library(node_canopen_master
@@ -76,6 +79,7 @@ ament_target_dependencies(node_canopen_master
   lely_core_libraries
   yaml_cpp_vendor
   canopen_interfaces
+  Boost
 )
 
 
@@ -169,4 +173,5 @@ ament_export_dependencies(
   ${dependencies}
 )
 
-ament_package()
+# https://github.com/ament/ament_cmake/blob/e78ed7e084489c2a48cb91dec9da92c13e9653c9/ament_cmake_core/cmake/core/ament_package.cmake#L24-L32
+ament_package(CONFIG_EXTRAS ConfigExtras.cmake)

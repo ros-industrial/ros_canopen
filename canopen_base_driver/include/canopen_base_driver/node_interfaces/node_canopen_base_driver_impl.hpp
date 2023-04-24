@@ -156,29 +156,26 @@ void NodeCanopenBaseDriver<NODETYPE>::on_emcy(COEmcy emcy)
 template <class NODETYPE>
 void NodeCanopenBaseDriver<NODETYPE>::rdpo_listener()
 {
+  RCLCPP_INFO(this->node_->get_logger(), "Starting RPDO Listener");
+  auto q = lely_driver_->async_request_rpdo();
   while (rclcpp::ok())
   {
-    std::future<ros2_canopen::COData> f;
-    {
-      std::scoped_lock<std::mutex> lock(this->driver_mutex_);
-      f = lely_driver_->async_request_rpdo();
-    }
-
-    while (f.wait_for(this->non_transmit_timeout_) != std::future_status::ready)
+    ros2_canopen::COData rpdo;
+    while (!q->wait_and_pop_for(this->non_transmit_timeout_, rpdo))
     {
       if (!this->activated_.load()) return;
     }
     try
     {
-      auto rpdo = f.get();
       if (rpdo_cb_)
       {
         rpdo_cb_(rpdo, this->lely_driver_->get_id());
       }
-      on_rpdo(f.get());
+      on_rpdo(rpdo);
     }
-    catch (const std::future_error & e)
+    catch (const std::exception & e)
     {
+      RCLCPP_ERROR_STREAM(this->node_->get_logger(), "RPDO Listener error: " << e.what());
       break;
     }
   }
@@ -187,29 +184,26 @@ void NodeCanopenBaseDriver<NODETYPE>::rdpo_listener()
 template <class NODETYPE>
 void NodeCanopenBaseDriver<NODETYPE>::emcy_listener()
 {
+  RCLCPP_INFO(this->node_->get_logger(), "Starting EMCY Listener");
+  auto q = lely_driver_->async_request_emcy();
   while (rclcpp::ok())
   {
-    std::future<ros2_canopen::COEmcy> f;
-    {
-      std::scoped_lock<std::mutex> lock(this->driver_mutex_);
-      f = lely_driver_->async_request_emcy();
-    }
-
-    while (f.wait_for(this->non_transmit_timeout_) != std::future_status::ready)
+    ros2_canopen::COEmcy emcy;
+    while (!q->wait_and_pop_for(this->non_transmit_timeout_, emcy))
     {
       if (!this->activated_.load()) return;
     }
     try
     {
-      auto emcy = f.get();
       if (emcy_cb_)
       {
         emcy_cb_(emcy, this->lely_driver_->get_id());
       }
       on_emcy(emcy);
     }
-    catch (const std::future_error & e)
+    catch (const std::exception & e)
     {
+      RCLCPP_ERROR_STREAM(this->node_->get_logger(), "EMCY Listener error: " << e.what());
       break;
     }
   }

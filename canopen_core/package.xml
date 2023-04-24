@@ -16,6 +16,7 @@
   <depend>rclcpp_components</depend>
   <depend>rclcpp_lifecycle</depend>
   <depend>yaml_cpp_vendor</depend>
+  <depend>boost</depend>
 
   <test_depend>ament_lint_auto</test_depend>
 

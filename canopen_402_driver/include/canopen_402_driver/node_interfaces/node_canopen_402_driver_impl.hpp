@@ -57,7 +57,7 @@ void NodeCanopen402Driver<rclcpp::Node>::init(bool called_from_base)
 
   handle_set_mode_interpolated_position_service =
     this->node_->create_service<std_srvs::srv::Trigger>(
-      std::string(this->node_->get_name()).append("/cyclic_position_mode").c_str(),
+      std::string(this->node_->get_name()).append("/interpolated_position_mode").c_str(),
       std::bind(
         &NodeCanopen402Driver<rclcpp::Node>::handle_set_mode_interpolated_position, this, _1, _2));
 
@@ -115,7 +115,7 @@ void NodeCanopen402Driver<rclcpp_lifecycle::LifecycleNode>::init(bool called_fro
 
   handle_set_mode_interpolated_position_service = this->node_->create_service<
     std_srvs::srv::Trigger>(
-    std::string(this->node_->get_name()).append("/cyclic_position_mode").c_str(),
+    std::string(this->node_->get_name()).append("/interpolated_position_mode").c_str(),
     std::bind(
       &NodeCanopen402Driver<rclcpp_lifecycle::LifecycleNode>::handle_set_mode_interpolated_position,
       this, _1, _2));
