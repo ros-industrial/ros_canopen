@@ -53,9 +53,9 @@ public:
   virtual void deactivate(bool called_from_base) override;
   virtual void add_to_master() override;
 
-  virtual double get_speed() { return this->mc_driver_->get_speed() * scale_pos_from_dev_; }
+  virtual double get_speed() { return this->mc_driver_->get_speed() * scale_vel_from_dev_; }
 
-  virtual double get_position() { return this->mc_driver_->get_position() * scale_vel_from_dev_; }
+  virtual double get_position() { return this->mc_driver_->get_position() * scale_pos_from_dev_; }
 
   virtual uint16_t get_mode() { return motor_->getMode(); }
 
