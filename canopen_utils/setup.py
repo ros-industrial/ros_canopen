@@ -18,6 +18,9 @@ setup(
     license="Apache-2.0",
     tests_require=["pytest"],
     entry_points={
-        "console_scripts": ["cyclic_tester = canopen_utils.cyclic_tester:main"],
+        "console_scripts": [
+            "cyclic_tester = canopen_utils.cyclic_tester:main",
+            "simple_tester = canopen_utils.simple_rpdo_tpdo_tester:main",
+        ],
     },
 )

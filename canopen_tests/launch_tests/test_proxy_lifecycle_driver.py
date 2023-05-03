@@ -102,7 +102,15 @@ class TestLifecycle(unittest.TestCase):
         assert self.node.checkSDOReadID(node_id=2, index=0x4000, subindex=0, type=32, data=999)
         assert self.node.checkSDOReadID(node_id=3, index=0x4000, subindex=0, type=32, data=999)
 
-    def test_07_to_unconfigured(self):
+    def test_07_rpdo_tpdo(self):
+        assert self.node.checkRpdoTpdo(
+            "proxy_device_1", index=0x4000, subindex=0, type=32, data=101
+        )
+        assert self.node.checkRpdoTpdo(
+            "proxy_device_2", index=0x4000, subindex=0, type=32, data=202
+        )
+
+    def test_08_to_unconfigured(self):
         assert self.node.checkTransition(
             "lifecycle_manager", State.PRIMARY_STATE_ACTIVE, Transition.TRANSITION_DEACTIVATE
         ), "Could not configure device manager"

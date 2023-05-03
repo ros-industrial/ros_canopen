@@ -50,30 +50,10 @@ ament_target_dependencies(
   ${dependencies}
 )
 
-add_executable(
-  proxy_slave_node
-  "src/proxy_slave.cpp"
-)
-
-target_compile_features(proxy_slave_node  PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_include_directories(proxy_slave_node  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-
-ament_target_dependencies(
-  proxy_slave_node
-  ${dependencies}
-)
-
-
-
 install(TARGETS basic_slave_node
   DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS cia402_slave_node
-DESTINATION lib/${PROJECT_NAME})
-
-install(TARGETS proxy_slave_node
 DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
@@ -85,8 +65,6 @@ install(DIRECTORY
   config/
   DESTINATION share/${PROJECT_NAME}/config/
 )
-
-
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
