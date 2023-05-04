@@ -338,7 +338,9 @@ public:
     else
     {
       booted.store(true);
+      return true;
     }
+    return false;
   }
 
   /**
