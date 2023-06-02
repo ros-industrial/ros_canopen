@@ -64,7 +64,7 @@ controller_interface::CallbackReturn Cia402DeviceController::on_init()
     "~/velocity_mode", Cia402CommandInterfaces::VELOCITY_MODE_CMD,
     Cia402CommandInterfaces::VELOCITY_MODE_FBK);
 
-  handle_set_mode_velocity_service_ = createTriggerSrv(
+  handle_set_mode_cyclic_velocity_service_ = createTriggerSrv(
     "~/cyclic_velocity_mode", Cia402CommandInterfaces::CYCLIC_VELOCITY_MODE_CMD,
     Cia402CommandInterfaces::CYCLIC_VELOCITY_MODE_FBK);
 

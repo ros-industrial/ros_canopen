@@ -56,7 +56,7 @@ void Cia402System::initDeviceContainer()
     info_.hardware_parameters["can_interface"], info_.hardware_parameters["master_config"],
     info_.hardware_parameters["bus_config"], tmp_master_bin);
   auto drivers = device_container_->get_registered_drivers();
-  RCLCPP_INFO(kLogger, "Number of registered drivers: '%zu'", device_container_->count_drivers());
+  RCLCPP_INFO(kLogger, "Number of registered drivers: '%lu'", device_container_->count_drivers());
   for (auto it = drivers.begin(); it != drivers.end(); it++)
   {
     auto driver = std::static_pointer_cast<ros2_canopen::Cia402Driver>(it->second);
@@ -307,24 +307,19 @@ hardware_interface::return_type Cia402System::write(
       case MotorBase::No_Mode:
         break;
       case MotorBase::Profiled_Position:
-        motion_controller_driver->set_target(motor_data_[it->first].target.position_value);
-        break;
       case MotorBase::Cyclic_Synchronous_Position:
+      case MotorBase::Interpolated_Position:
         motion_controller_driver->set_target(motor_data_[it->first].target.position_value);
         break;
       case MotorBase::Profiled_Velocity:
-        motion_controller_driver->set_target(motor_data_[it->first].target.velocity_value);
-        break;
       case MotorBase::Cyclic_Synchronous_Velocity:
         motion_controller_driver->set_target(motor_data_[it->first].target.velocity_value);
         break;
       case MotorBase::Profiled_Torque:
         motion_controller_driver->set_target(motor_data_[it->first].target.torque_value);
         break;
-      case MotorBase::Interpolated_Position:
-        motion_controller_driver->set_target(motor_data_[it->first].target.position_value);
       default:
-        RCLCPP_INFO(kLogger, "Mode not supported");
+        RCLCPP_INFO(kLogger, "Mode %u not supported", mode);
     }
   }
 

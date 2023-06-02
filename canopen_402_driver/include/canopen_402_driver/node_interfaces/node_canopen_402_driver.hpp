@@ -220,6 +220,18 @@ public:
     std_srvs::srv::Trigger::Response::SharedPtr response);
 
   /**
+   * @brief Method to set interpolated position mode
+   *
+   * Calls Motor402::enterModeAndWait with Interpolated Position Mode as
+   * Target Operation Mode. If successful, the motor was transitioned
+   * to Interpolated Position Mode. This only supports linear mode.
+   *
+   * @param [in] void
+   * @param [out] bool
+   */
+  bool set_mode_interpolated_position();
+
+  /**
    * @brief Method to set cyclic position mode
    *
    * Calls Motor402::enterModeAndWait with Cyclic Position Mode as
