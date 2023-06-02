@@ -11,8 +11,7 @@ namespace ros2_canopen
 class ProfiledPositionMode : public ModeTargetHelper<int32_t>
 {
   const uint16_t index = 0x607A;
-  std::shared_ptr<LelyMotionControllerBridge> driver;
-  std::shared_ptr<RemoteObject> obj;
+  std::shared_ptr<LelyDriverBridge> driver;
 
   double last_target_;
   uint16_t sw_;
@@ -30,11 +29,10 @@ public:
     CW_Immediate = Command402::CW_Operation_mode_specific1,
     CW_Blending = Command402::CW_Operation_mode_specific3,
   };
-  ProfiledPositionMode(std::shared_ptr<LelyMotionControllerBridge> driver)
+  ProfiledPositionMode(std::shared_ptr<LelyDriverBridge> driver)
   : ModeTargetHelper(MotorBase::Profiled_Position)
   {
     this->driver = driver;
-    obj = driver->create_remote_obj(index, 0U, CODataTypes::COData32);
   }
 
   virtual bool start()
@@ -62,7 +60,7 @@ public:
         }
         else
         {
-          driver->set_remote_obj(obj, target);
+          driver->universal_set_value(index, 0x0, target);
           cw.set(CW_NewPoint);
           last_target_ = target;
         }

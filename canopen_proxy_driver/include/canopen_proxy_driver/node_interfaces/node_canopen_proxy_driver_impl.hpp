@@ -154,7 +154,7 @@ bool NodeCanopenProxyDriver<NODETYPE>::tpdo_transmit(ros2_canopen::COData & data
   if (this->activated_.load())
   {
     RCLCPP_INFO(
-      this->node_->get_logger(), "Slave %hhu: Transmit PDO index %x, subindex %hhu, data %d",
+      this->node_->get_logger(), "Node ID %hhu: Transmit PDO index %x, subindex %hhu, data %d",
       this->lely_driver_->get_id(), data.index_, data.subindex_,
       data.data_);  // ToDo: Remove or make debug
     this->lely_driver_->tpdo_transmit(data);
@@ -168,9 +168,9 @@ void NodeCanopenProxyDriver<NODETYPE>::on_rpdo(ros2_canopen::COData d)
 {
   if (this->activated_.load())
   {
-    RCLCPP_INFO(
-      this->node_->get_logger(), "Slave %hhu: Sent PDO index %hu, subindex %hhu, data %x",
-      this->lely_driver_->get_id(), d.index_, d.subindex_, d.data_);
+    // RCLCPP_INFO(
+    //   this->node_->get_logger(), "Node ID %hhu: Received PDO index %#04x, subindex %hhu, data
+    //   %x", this->lely_driver_->get_id(), d.index_, d.subindex_, d.data_);
     auto message = canopen_interfaces::msg::COData();
     message.index = d.index_;
     message.subindex = d.subindex_;
@@ -295,7 +295,7 @@ bool NodeCanopenProxyDriver<NODETYPE>::sdo_write(ros2_canopen::COData & data)
     // Process response
     try
     {
-      f.get();
+      return f.get();
     }
     catch (std::exception & e)
     {

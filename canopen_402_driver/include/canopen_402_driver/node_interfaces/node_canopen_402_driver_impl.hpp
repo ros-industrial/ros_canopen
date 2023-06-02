@@ -238,7 +238,6 @@ template <class NODETYPE>
 void NodeCanopen402Driver<NODETYPE>::activate(bool called_from_base)
 {
   motor_->registerDefaultModes();
-  mc_driver_->validate_objs();
   timer_ = this->node_->create_wall_timer(
     std::chrono::milliseconds(period_ms_), std::bind(&NodeCanopen402Driver<NODETYPE>::run, this),
     this->timer_cbg_);
@@ -265,8 +264,8 @@ void NodeCanopen402Driver<NODETYPE>::publish()
 {
   sensor_msgs::msg::JointState js_msg;
   js_msg.name.push_back(this->node_->get_name());
-  js_msg.position.push_back(mc_driver_->get_position() * scale_pos_from_dev_);
-  js_msg.velocity.push_back(mc_driver_->get_speed() * scale_vel_from_dev_);
+  js_msg.position.push_back(motor_->get_position() * scale_pos_from_dev_);
+  js_msg.velocity.push_back(motor_->get_speed() * scale_vel_from_dev_);
   js_msg.effort.push_back(0.0);
   publish_joint_state->publish(js_msg);
 }
@@ -274,46 +273,8 @@ void NodeCanopen402Driver<NODETYPE>::publish()
 template <class NODETYPE>
 void NodeCanopen402Driver<NODETYPE>::add_to_master()
 {
-  std::shared_ptr<std::promise<std::shared_ptr<ros2_canopen::LelyMotionControllerBridge>>> prom;
-  prom =
-    std::make_shared<std::promise<std::shared_ptr<ros2_canopen::LelyMotionControllerBridge>>>();
-  std::future<std::shared_ptr<ros2_canopen::LelyMotionControllerBridge>> f = prom->get_future();
-  this->exec_->post(
-    [this, prom]()
-    {
-      std::scoped_lock<std::mutex> lock(this->driver_mutex_);
-      mc_driver_ = std::make_shared<LelyMotionControllerBridge>(
-        *(this->exec_), *(this->master_), this->node_id_, this->node_->get_name());
-      mc_driver_->Boot();
-      prom->set_value(mc_driver_);
-    });
-  auto future_status = f.wait_for(this->non_transmit_timeout_);
-  if (future_status != std::future_status::ready)
-  {
-    RCLCPP_ERROR(this->node_->get_logger(), "Adding timed out.");
-    throw DriverException("add_to_master: Adding timed out.");
-  }
-  this->mc_driver_ = f.get();
-  this->motor_ = std::make_shared<Motor402>(mc_driver_);
-  this->lely_driver_ = std::static_pointer_cast<LelyDriverBridge>(mc_driver_);
-  this->driver_ = std::static_pointer_cast<lely::canopen::BasicDriver>(mc_driver_);
-  if (!this->mc_driver_->IsReady())
-  {
-    RCLCPP_WARN(this->node_->get_logger(), "Wait for device to boot.");
-    try
-    {
-      this->mc_driver_->wait_for_boot();
-    }
-    catch (const std::exception & e)
-    {
-      RCLCPP_ERROR(this->node_->get_logger(), e.what());
-      std::string msg;
-      msg.append("add_to_master: ");
-      msg.append(e.what());
-      throw DriverException(msg);
-    }
-  }
-  RCLCPP_INFO(this->node_->get_logger(), "Driver booted and ready.");
+  NodeCanopenProxyDriver<NODETYPE>::add_to_master();
+  motor_ = std::make_shared<Motor402>(this->lely_driver_);
 }
 
 template <class NODETYPE>
@@ -324,7 +285,6 @@ void NodeCanopen402Driver<NODETYPE>::handle_init(
   if (this->activated_.load())
   {
     bool temp = motor_->handleInit();
-    mc_driver_->validate_objs();
     response->success = temp;
   }
 }
@@ -409,7 +369,6 @@ bool NodeCanopen402Driver<NODETYPE>::init_motor()
   if (this->activated_.load())
   {
     bool temp = motor_->handleInit();
-    mc_driver_->validate_objs();
     return temp;
   }
   else

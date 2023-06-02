@@ -310,7 +310,8 @@ public:
    * @param [in] id
    */
   LelyMotionControllerBridge(
-    ev_exec_t * exec, canopen::AsyncMaster & master, uint8_t id, std::string name);
+    ev_exec_t * exec, canopen::AsyncMaster & master, uint8_t id, std::string name, std::string eds,
+    std::string bin);
 };
 }  // namespace ros2_canopen
 #endif

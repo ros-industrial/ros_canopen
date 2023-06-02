@@ -29,11 +29,8 @@ uint16_t Motor402::getMode()
 
 bool Motor402::isModeSupportedByDevice(uint16_t mode)
 {
-  if (!supported_drive_modes_->valid)
-  {
-    // THROW_EXCEPTION(std::runtime_error("Supported drive modes (object 6502) is not valid"));
-  }
-  uint32_t supported_modes = driver->get_remote_obj_cached<uint32_t>(supported_drive_modes_);
+  uint32_t supported_modes =
+    driver->universal_get_value<uint32_t>(supported_drive_modes_index, 0x0);
   bool supported = supported_modes & (1 << (mode - 1));
   bool below_max = mode <= 32;
   bool above_min = mode > 0;
@@ -68,7 +65,7 @@ bool Motor402::switchMode(uint16_t mode)
     selected_mode_.reset();
     try
     {  // try to set mode
-      driver->set_remote_obj<int8_t>(op_mode_, mode);
+      driver->universal_set_value<int8_t>(op_mode_index, 0x0, mode);
     }
     catch (...)
     {
@@ -103,7 +100,7 @@ bool Motor402::switchMode(uint16_t mode)
 
   if (!switchState(switching_state_)) return false;
 
-  driver->set_remote_obj<int8_t>(op_mode_, mode);
+  driver->universal_set_value<int8_t>(op_mode_index, 0x0, mode);
 
   bool okay = false;
 
@@ -122,9 +119,9 @@ bool Motor402::switchMode(uint16_t mode)
     {
       while (mode_id_ != mode && std::chrono::steady_clock::now() < abstime)
       {
-        lock.unlock();                                               // unlock inside loop
-        driver->get_remote_obj<int8_t>(op_mode_display_);            // poll
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));  // wait some time
+        lock.unlock();                                                    // unlock inside loop
+        driver->universal_get_value<int8_t>(op_mode_display_index, 0x0);  // poll
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));       // wait some time
         lock.lock();
       }
     }
@@ -137,7 +134,7 @@ bool Motor402::switchMode(uint16_t mode)
     else
     {
       RCLCPP_INFO(rclcpp::get_logger("canopen_402_driver"), "Mode switch timed out.");
-      driver->set_remote_obj<int8_t>(op_mode_, mode_id_);
+      driver->universal_set_value<int8_t>(op_mode_index, 0x0, mode_id_);
     }
   }
 
@@ -174,15 +171,15 @@ bool Motor402::switchState(const State402::InternalState & target)
 
 bool Motor402::readState()
 {
-  uint16_t old_sw,
-    sw = driver->get_remote_obj<uint16_t>(status_word_entry_);  // TODO: added error handling
+  uint16_t old_sw, sw = driver->universal_get_value<uint16_t>(
+                     status_word_entry_index, 0x0);  // TODO: added error handling
   old_sw = status_word_.exchange(sw);
 
   state_handler_.read(sw);
 
   std::unique_lock lock(mode_mutex_);
   uint16_t new_mode;
-  new_mode = driver->get_remote_obj<int8_t>(op_mode_display_);
+  new_mode = driver->universal_get_value<int8_t>(op_mode_display_index, 0x0);
   // RCLCPP_INFO(rclcpp::get_logger("canopen_402_driver"), "Mode %hhi",new_mode);
 
   if (selected_mode_ && selected_mode_->mode_id_ == new_mode)
@@ -241,14 +238,14 @@ void Motor402::handleWrite()
   if (start_fault_reset_.exchange(false))
   {
     RCLCPP_INFO(rclcpp::get_logger("canopen_402_driver"), "Fault reset");
-    this->driver->set_remote_obj<uint16_t>(
-      control_word_entry_, control_word_ & ~(1 << Command402::CW_Fault_Reset));
+    this->driver->universal_set_value<uint16_t>(
+      control_word_entry_index, 0x0, control_word_ & ~(1 << Command402::CW_Fault_Reset));
   }
   else
   {
     // RCLCPP_INFO(rclcpp::get_logger("canopen_402_driver"), "Control Word %s",
     // std::bitset<16>{control_word_}.to_string());
-    this->driver->set_remote_obj<uint16_t>(control_word_entry_, control_word_);
+    this->driver->universal_set_value<uint16_t>(control_word_entry_index, 0x0, control_word_);
   }
 }
 void Motor402::handleDiag()

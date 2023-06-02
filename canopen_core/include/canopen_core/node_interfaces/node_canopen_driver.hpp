@@ -60,6 +60,8 @@ protected:
   YAML::Node config_;
   uint8_t node_id_;
   std::string container_name_;
+  std::string eds_;
+  std::string bin_;
 
   rclcpp::CallbackGroup::SharedPtr client_cbg_;
   rclcpp::CallbackGroup::SharedPtr timer_cbg_;
@@ -179,6 +181,11 @@ public:
     node_->get_parameter("config", config);
     this->config_ = YAML::Load(config);
     this->non_transmit_timeout_ = std::chrono::milliseconds(non_transmit_timeout);
+    auto path = this->config_["dcf_path"].as<std::string>();
+    auto dcf = this->config_["dcf"].as<std::string>();
+    auto name = this->node_->get_name();
+    eds_ = path + "/" + dcf;
+    bin_ = path + "/" + name + ".bin";
     this->configure(true);
     this->configured_.store(true);
     RCLCPP_DEBUG(node_->get_logger(), "configure_end");

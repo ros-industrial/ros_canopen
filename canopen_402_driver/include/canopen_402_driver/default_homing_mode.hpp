@@ -10,8 +10,7 @@ namespace ros2_canopen
 class DefaultHomingMode : public HomingMode
 {
   const uint16_t index = 0x6098;
-  std::shared_ptr<LelyMotionControllerBridge> driver;
-  std::shared_ptr<RemoteObject> obj;
+  std::shared_ptr<LelyDriverBridge> driver;
 
   std::atomic<bool> execute_;
 
@@ -33,11 +32,7 @@ class DefaultHomingMode : public HomingMode
   }
 
 public:
-  DefaultHomingMode(std::shared_ptr<LelyMotionControllerBridge> driver)
-  {
-    this->driver = driver;
-    obj = driver->create_remote_obj(index, 0U, CODataTypes::COData32);
-  }
+  DefaultHomingMode(std::shared_ptr<LelyDriverBridge> driver) { this->driver = driver; }
   virtual bool start();
   virtual bool read(const uint16_t & sw);
   virtual bool write(OpModeAccesser & cw);

@@ -61,6 +61,7 @@ ament_target_dependencies(
   node_canopen_base_driver
   ${dependencies}
 )
+message(STATUS "node_canopen_base_driver: ${lely_core_libraries_LIBRARIES}")
 
 add_library(lifecycle_base_driver
   src/lifecycle_base_driver.cpp

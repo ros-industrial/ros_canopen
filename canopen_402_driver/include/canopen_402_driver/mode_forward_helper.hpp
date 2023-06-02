@@ -9,16 +9,14 @@
 namespace ros2_canopen
 {
 
-template <uint16_t ID, typename TYPE, CODataTypes TPY, uint16_t OBJ, uint8_t SUB, uint16_t CW_MASK>
+template <uint16_t ID, typename TYPE, uint16_t OBJ, uint8_t SUB, uint16_t CW_MASK>
 class ModeForwardHelper : public ModeTargetHelper<TYPE>
 {
-  std::shared_ptr<LelyMotionControllerBridge> driver;
-  std::shared_ptr<RemoteObject> obj;
+  std::shared_ptr<LelyDriverBridge> driver;
 
 public:
-  ModeForwardHelper(std::shared_ptr<LelyMotionControllerBridge> driver) : ModeTargetHelper<TYPE>(ID)
+  ModeForwardHelper(std::shared_ptr<LelyDriverBridge> driver) : ModeTargetHelper<TYPE>(ID)
   {
-    this->obj = driver->create_remote_obj(OBJ, SUB, TPY);
     this->driver = driver;
   }
   virtual bool read(const uint16_t & sw) { return true; }
@@ -28,7 +26,7 @@ public:
     {
       cw = cw.get() | CW_MASK;
 
-      driver->set_remote_obj(obj, this->getTarget());
+      driver->universal_set_value<TYPE>(OBJ, SUB, this->getTarget());
       return true;
     }
     else

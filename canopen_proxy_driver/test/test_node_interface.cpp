@@ -19,7 +19,10 @@ TEST(NodeCanopenProxyDriver, test_good_sequence_advanced)
   rclcpp::Parameter container_name("container_name", "none");
   rclcpp::Parameter node_id("node_id", 1);
   rclcpp::Parameter timeout("non_transmit_timeout", 100);
-  rclcpp::Parameter config("config", "");
+  rclcpp::Parameter config(
+    "config",
+    "node_id: 1\ndriver: \"ros2_canopen::CanopenDriver\"\npackage: \"canopen_core\"\ndcf: "
+    "\"simple.eds\"\ndcf_path: \"\"\n");
   node->set_parameter(container_name);
   node->set_parameter(node_id);
   node->set_parameter(timeout);
@@ -51,7 +54,10 @@ TEST(NodeCanopenBasicLifecycleMaster, test_good_sequence_advanced)
   rclcpp::Parameter container_name("container_name", "none");
   rclcpp::Parameter node_id("node_id", 1);
   rclcpp::Parameter timeout("non_transmit_timeout", 100);
-  rclcpp::Parameter config("config", "");
+  rclcpp::Parameter config(
+    "config",
+    "node_id: 1\ndriver: \"ros2_canopen::CanopenDriver\"\npackage: \"canopen_core\"\ndcf: "
+    "\"simple.eds\"\ndcf_path: \"\"\n");
   node->set_parameter(container_name);
   node->set_parameter(node_id);
   node->set_parameter(timeout);

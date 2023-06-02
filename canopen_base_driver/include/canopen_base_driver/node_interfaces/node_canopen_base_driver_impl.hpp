@@ -54,6 +54,8 @@ void NodeCanopenBaseDriver<NODETYPE>::shutdown(bool called_from_base)
 template <class NODETYPE>
 void NodeCanopenBaseDriver<NODETYPE>::add_to_master()
 {
+  RCLCPP_INFO(this->node_->get_logger(), "eds file %s", this->eds_.c_str());
+  RCLCPP_INFO(this->node_->get_logger(), "bin file %s", this->bin_.c_str());
   std::shared_ptr<std::promise<std::shared_ptr<ros2_canopen::LelyDriverBridge>>> prom;
   prom = std::make_shared<std::promise<std::shared_ptr<ros2_canopen::LelyDriverBridge>>>();
   std::future<std::shared_ptr<ros2_canopen::LelyDriverBridge>> f = prom->get_future();
@@ -62,7 +64,8 @@ void NodeCanopenBaseDriver<NODETYPE>::add_to_master()
     {
       std::scoped_lock<std::mutex> lock(this->driver_mutex_);
       this->lely_driver_ = std::make_shared<ros2_canopen::LelyDriverBridge>(
-        *(this->exec_), *(this->master_), this->node_id_, this->node_->get_name());
+        *(this->exec_), *(this->master_), this->node_id_, this->node_->get_name(), this->eds_,
+        this->bin_);
       this->driver_ = std::static_pointer_cast<lely::canopen::BasicDriver>(this->lely_driver_);
       prom->set_value(lely_driver_);
     });
@@ -157,7 +160,7 @@ template <class NODETYPE>
 void NodeCanopenBaseDriver<NODETYPE>::rdpo_listener()
 {
   RCLCPP_INFO(this->node_->get_logger(), "Starting RPDO Listener");
-  auto q = lely_driver_->async_request_rpdo();
+  auto q = lely_driver_->get_rpdo_queue();
   while (rclcpp::ok())
   {
     ros2_canopen::COData rpdo;
@@ -185,7 +188,7 @@ template <class NODETYPE>
 void NodeCanopenBaseDriver<NODETYPE>::emcy_listener()
 {
   RCLCPP_INFO(this->node_->get_logger(), "Starting EMCY Listener");
-  auto q = lely_driver_->async_request_emcy();
+  auto q = lely_driver_->get_emcy_queue();
   while (rclcpp::ok())
   {
     ros2_canopen::COEmcy emcy;

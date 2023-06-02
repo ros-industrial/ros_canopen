@@ -32,9 +32,9 @@ protected:
    */
   void OnWrite(uint16_t idx, uint8_t subidx) noexcept override
   {
-    uint32_t val = (*this)[idx][subidx];
-    (*this)[0x4001][0] = val;
-    this->TpdoEvent(0);
+    // uint32_t val = (*this)[idx][subidx];
+    //(*this)[0x4001][0] = val;
+    // this->TpdoEvent(0);
   }
 };
 

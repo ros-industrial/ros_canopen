@@ -129,7 +129,10 @@ TEST_F(NodeCanopenDriverTest, test_configure)
   node_canopen_driver->activated_.store(false);
   node_canopen_driver->init();
   node->set_parameter(rclcpp::Parameter(
-    "config", "node_id: 1\ndriver: \"ros2_canopen::CanopenDriver\"\npackage:\"canopen_core\"\n"));
+    "config",
+    "node_id: 1\ndriver: \"ros2_canopen::CanopenDriver\"\npackage: \"canopen_core\"\ndcf: "
+    "\"simple.eds\"\ndcf_path: \"\"\n"));
+  std::cout << node->get_parameter("config").as_string() << std::endl;
   node_canopen_driver->configure();
   EXPECT_TRUE(node_canopen_driver->configured_.load());
 }

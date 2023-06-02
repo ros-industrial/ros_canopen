@@ -21,7 +21,6 @@ class NodeCanopen402Driver : public NodeCanopenProxyDriver<NODETYPE>
     "NODETYPE must derive from rclcpp::Node or rclcpp_lifecycle::LifecycleNode");
 
 protected:
-  std::shared_ptr<LelyMotionControllerBridge> mc_driver_;
   std::shared_ptr<Motor402> motor_;
   rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_init_service;
@@ -53,9 +52,9 @@ public:
   virtual void deactivate(bool called_from_base) override;
   virtual void add_to_master() override;
 
-  virtual double get_speed() { return this->mc_driver_->get_speed() * scale_vel_from_dev_; }
+  virtual double get_speed() { return motor_->get_speed() * scale_vel_from_dev_; }
 
-  virtual double get_position() { return this->mc_driver_->get_position() * scale_pos_from_dev_; }
+  virtual double get_position() { return motor_->get_position() * scale_pos_from_dev_; }
 
   virtual uint16_t get_mode() { return motor_->getMode(); }
 

@@ -20,48 +20,34 @@
 namespace ros2_canopen
 {
 
-typedef ModeForwardHelper<
-  MotorBase::Profiled_Velocity, int32_t, CODataTypes::COData32, 0x60FF, 0, 0>
-  ProfiledVelocityMode;
-typedef ModeForwardHelper<MotorBase::Profiled_Torque, int16_t, CODataTypes::COData16, 0x6071, 0, 0>
-  ProfiledTorqueMode;
-typedef ModeForwardHelper<
-  MotorBase::Cyclic_Synchronous_Position, int32_t, CODataTypes::COData32, 0x607A, 0, 0>
+typedef ModeForwardHelper<MotorBase::Profiled_Velocity, int32_t, 0x60FF, 0, 0> ProfiledVelocityMode;
+typedef ModeForwardHelper<MotorBase::Profiled_Torque, int16_t, 0x6071, 0, 0> ProfiledTorqueMode;
+typedef ModeForwardHelper<MotorBase::Cyclic_Synchronous_Position, int32_t, 0x607A, 0, 0>
   CyclicSynchronousPositionMode;
-typedef ModeForwardHelper<
-  MotorBase::Cyclic_Synchronous_Velocity, int32_t, CODataTypes::COData32, 0x60FF, 0, 0>
+typedef ModeForwardHelper<MotorBase::Cyclic_Synchronous_Velocity, int32_t, 0x60FF, 0, 0>
   CyclicSynchronousVelocityMode;
-typedef ModeForwardHelper<
-  MotorBase::Cyclic_Synchronous_Torque, int16_t, CODataTypes::COData16, 0x6071, 0, 0>
+typedef ModeForwardHelper<MotorBase::Cyclic_Synchronous_Torque, int16_t, 0x6071, 0, 0>
   CyclicSynchronousTorqueMode;
 typedef ModeForwardHelper<
-  MotorBase::Velocity, int16_t, CODataTypes::COData16, 0x6042, 0,
+  MotorBase::Velocity, int16_t, 0x6042, 0,
   (1 << Command402::CW_Operation_mode_specific0) | (1 << Command402::CW_Operation_mode_specific1) |
     (1 << Command402::CW_Operation_mode_specific2)>
   VelocityMode;
 typedef ModeForwardHelper<
-  MotorBase::Interpolated_Position, int32_t, CODataTypes::COData32, 0x60C1, 0x01,
+  MotorBase::Interpolated_Position, int32_t, 0x60C1, 0x01,
   (1 << Command402::CW_Operation_mode_specific0)>
   InterpolatedPositionMode;
 
 class Motor402 : public MotorBase
 {
 public:
-  Motor402(std::shared_ptr<LelyMotionControllerBridge> driver)
+  Motor402(std::shared_ptr<LelyDriverBridge> driver)
   : MotorBase(),
     switching_state_(State402::Operation_Enable),
     monitor_mode_(true),
     state_switch_timeout_(5)
   {
     this->driver = driver;
-    status_word_entry_ =
-      driver->create_remote_obj(status_word_entry_index, 0U, CODataTypes::COData16);
-    control_word_entry_ =
-      driver->create_remote_obj(control_word_entry_index, 0U, CODataTypes::COData16);
-    op_mode_display_ = driver->create_remote_obj(op_mode_display_index, 0U, CODataTypes::COData8);
-    op_mode_ = driver->create_remote_obj(op_mode_index, 0U, CODataTypes::COData8);
-    supported_drive_modes_ =
-      driver->create_remote_obj(supported_drive_modes_index, 0U, CODataTypes::COData32);
   }
 
   virtual bool setTarget(double val);
@@ -164,6 +150,12 @@ public:
     registerMode<CyclicSynchronousTorqueMode>(MotorBase::Cyclic_Synchronous_Torque, driver);
   }
 
+  double get_speed() const { return (double)this->driver->universal_get_value<int32_t>(0x606C, 0); }
+  double get_position() const
+  {
+    return (double)this->driver->universal_get_value<int32_t>(0x6064, 0);
+  }
+
 private:
   virtual bool isModeSupportedByDevice(uint16_t mode);
   void registerMode(uint16_t id, const ModeSharedPtr & m);
@@ -194,12 +186,7 @@ private:
   const bool monitor_mode_;
   const std::chrono::seconds state_switch_timeout_;
 
-  std::shared_ptr<LelyMotionControllerBridge> driver;
-  std::shared_ptr<RemoteObject> status_word_entry_;
-  std::shared_ptr<RemoteObject> control_word_entry_;
-  std::shared_ptr<RemoteObject> op_mode_display_;
-  std::shared_ptr<RemoteObject> op_mode_;
-  std::shared_ptr<RemoteObject> supported_drive_modes_;
+  std::shared_ptr<LelyDriverBridge> driver;
   const uint16_t status_word_entry_index = 0x6041;
   const uint16_t control_word_entry_index = 0x6040;
   const uint16_t op_mode_display_index = 0x6061;

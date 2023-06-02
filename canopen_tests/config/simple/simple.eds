@@ -63,9 +63,11 @@ SupportedObjects=11
 11=0x1A00
 
 [ManufacturerObjects]
-SupportedObjects=2
+SupportedObjects=4
 1=0x4000
 2=0x4001
+3=0x4002
+4=0x4003
 
 [1000]
 ParameterName=Device type
@@ -268,3 +270,13 @@ ParameterName=UNSIGNED32 sent from slave
 DataType=0x0007
 AccessType=rwr
 PDOMapping=1
+
+[4002]
+ParameterName=INTEGER32 test
+DataType=0x0004
+AccessType=rw
+
+[4003]
+ParameterName=INTEGER16 test
+DataType=0x0003
+AccessType=rw
