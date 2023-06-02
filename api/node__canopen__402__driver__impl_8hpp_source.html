@@ -311,365 +311,323 @@ $(function() {
 <div class="line"><a name="l00238"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a6daf55fedee6afdd5ee2c5e0d3ccb93a">  238</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a33854ce01735d78aa869d2ec4fe48189">NodeCanopen402Driver&lt;NODETYPE&gt;::activate</a>(<span class="keywordtype">bool</span> called_from_base)</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;{</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  motor_-&gt;registerDefaultModes();</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  mc_driver_-&gt;validate_objs();</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  timer_ = this-&gt;node_-&gt;create_wall_timer(</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    std::chrono::milliseconds(period_ms_), std::bind(&amp;<a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html">NodeCanopen402Driver&lt;NODETYPE&gt;::run</a>, <span class="keyword">this</span>),</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    this-&gt;timer_cbg_);</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a33854ce01735d78aa869d2ec4fe48189">NodeCanopenProxyDriver&lt;NODETYPE&gt;::activate</a>(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;}</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160; </div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00249"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa3321f0a24665c8ffbb73ef1322028ba">  249</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a1ea2198ae81e17a0f5609dee262be3ce">NodeCanopen402Driver&lt;NODETYPE&gt;::deactivate</a>(<span class="keywordtype">bool</span> called_from_base)</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;{</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a1ea2198ae81e17a0f5609dee262be3ce">NodeCanopenProxyDriver&lt;NODETYPE&gt;::deactivate</a>(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  timer_-&gt;cancel();</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;}</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160; </div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00256"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ad27577ffa1d1d20b5d9c504a1d6ee81d">  256</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ad27577ffa1d1d20b5d9c504a1d6ee81d">NodeCanopen402Driver&lt;NODETYPE&gt;::run</a>()</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;{</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  motor_-&gt;handleRead();</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  motor_-&gt;handleWrite();</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  publish();</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160; </div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00264"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ae197d8cbeff0c42a84e574d0b7f41f13">  264</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ae197d8cbeff0c42a84e574d0b7f41f13">NodeCanopen402Driver&lt;NODETYPE&gt;::publish</a>()</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;{</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  sensor_msgs::msg::JointState js_msg;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  js_msg.name.push_back(this-&gt;node_-&gt;get_name());</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  js_msg.position.push_back(mc_driver_-&gt;get_position() * scale_pos_from_dev_);</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  js_msg.velocity.push_back(mc_driver_-&gt;get_speed() * scale_vel_from_dev_);</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  js_msg.effort.push_back(0.0);</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  publish_joint_state-&gt;publish(js_msg);</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;}</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160; </div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00275"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#affdef318cb7b3512d595d12edc327370">  275</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#affdef318cb7b3512d595d12edc327370">NodeCanopen402Driver&lt;NODETYPE&gt;::add_to_master</a>()</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;{</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  std::shared_ptr&lt;std::promise&lt;std::shared_ptr&lt;ros2_canopen::LelyMotionControllerBridge&gt;&gt;&gt; prom;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  prom =</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    std::make_shared&lt;std::promise&lt;std::shared_ptr&lt;ros2_canopen::LelyMotionControllerBridge&gt;&gt;&gt;();</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  std::future&lt;std::shared_ptr&lt;ros2_canopen::LelyMotionControllerBridge&gt;&gt; f = prom-&gt;get_future();</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  this-&gt;exec_-&gt;post(</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    [<span class="keyword">this</span>, prom]()</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    {</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;      std::scoped_lock&lt;std::mutex&gt; lock(this-&gt;driver_mutex_);</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;      mc_driver_ = std::make_shared&lt;LelyMotionControllerBridge&gt;(</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        *(this-&gt;exec_), *(this-&gt;master_), this-&gt;node_id_, this-&gt;node_-&gt;get_name());</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;      mc_driver_-&gt;Boot();</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;      prom-&gt;set_value(mc_driver_);</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    });</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="keyword">auto</span> future_status = f.wait_for(this-&gt;non_transmit_timeout_);</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="keywordflow">if</span> (future_status != std::future_status::ready)</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  {</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Adding timed out.&quot;</span>);</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keywordflow">throw</span> <a class="code" href="classros2__canopen_1_1DriverException.html">DriverException</a>(<span class="stringliteral">&quot;add_to_master: Adding timed out.&quot;</span>);</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  }</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  this-&gt;mc_driver_ = f.get();</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  this-&gt;motor_ = std::make_shared&lt;Motor402&gt;(mc_driver_);</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  this-&gt;lely_driver_ = std::static_pointer_cast&lt;LelyDriverBridge&gt;(mc_driver_);</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  this-&gt;driver_ = std::static_pointer_cast&lt;lely::canopen::BasicDriver&gt;(mc_driver_);</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  <span class="keywordflow">if</span> (!this-&gt;mc_driver_-&gt;IsReady())</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  {</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    RCLCPP_WARN(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Wait for device to boot.&quot;</span>);</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    <span class="keywordflow">try</span></div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    {</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;      this-&gt;mc_driver_-&gt;wait_for_boot();</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    }</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp; e)</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    {</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;      RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), e.what());</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;      std::string msg;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;      msg.append(<span class="stringliteral">&quot;add_to_master: &quot;</span>);</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;      msg.append(e.what());</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;      <span class="keywordflow">throw</span> <a class="code" href="classros2__canopen_1_1DriverException.html">DriverException</a>(msg);</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    }</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  }</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  RCLCPP_INFO(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Driver booted and ready.&quot;</span>);</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  timer_ = this-&gt;node_-&gt;create_wall_timer(</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    std::chrono::milliseconds(period_ms_), std::bind(&amp;<a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html">NodeCanopen402Driver&lt;NODETYPE&gt;::run</a>, <span class="keyword">this</span>),</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    this-&gt;timer_cbg_);</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a33854ce01735d78aa869d2ec4fe48189">NodeCanopenProxyDriver&lt;NODETYPE&gt;::activate</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;}</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160; </div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00248"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa3321f0a24665c8ffbb73ef1322028ba">  248</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a1ea2198ae81e17a0f5609dee262be3ce">NodeCanopen402Driver&lt;NODETYPE&gt;::deactivate</a>(<span class="keywordtype">bool</span> called_from_base)</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;{</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a1ea2198ae81e17a0f5609dee262be3ce">NodeCanopenProxyDriver&lt;NODETYPE&gt;::deactivate</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  timer_-&gt;cancel();</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;}</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160; </div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00255"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ad27577ffa1d1d20b5d9c504a1d6ee81d">  255</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ad27577ffa1d1d20b5d9c504a1d6ee81d">NodeCanopen402Driver&lt;NODETYPE&gt;::run</a>()</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;{</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  motor_-&gt;handleRead();</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  motor_-&gt;handleWrite();</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  publish();</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;}</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160; </div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00263"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ae197d8cbeff0c42a84e574d0b7f41f13">  263</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ae197d8cbeff0c42a84e574d0b7f41f13">NodeCanopen402Driver&lt;NODETYPE&gt;::publish</a>()</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;{</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  sensor_msgs::msg::JointState js_msg;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  js_msg.name.push_back(this-&gt;node_-&gt;get_name());</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  js_msg.position.push_back(motor_-&gt;get_position() * scale_pos_from_dev_);</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  js_msg.velocity.push_back(motor_-&gt;get_speed() * scale_vel_from_dev_);</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  js_msg.effort.push_back(0.0);</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  publish_joint_state-&gt;publish(js_msg);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;}</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160; </div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00274"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#affdef318cb7b3512d595d12edc327370">  274</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#affdef318cb7b3512d595d12edc327370">NodeCanopen402Driver&lt;NODETYPE&gt;::add_to_master</a>()</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;{</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a41ef542ac94a74c8716fad3180335301">NodeCanopenProxyDriver&lt;NODETYPE&gt;::add_to_master</a>();</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  motor_ = std::make_shared&lt;Motor402&gt;(this-&gt;lely_driver_);</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;}</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160; </div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00281"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a2cfdede08058dec7fde21576255700ef">  281</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a2cfdede08058dec7fde21576255700ef">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_init</a>(</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;{</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  {</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    <span class="keywordtype">bool</span> temp = motor_-&gt;handleInit();</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    response-&gt;success = temp;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;}</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00292"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa01a6afc8bf4a59271fa7ebd279a205d">  292</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa01a6afc8bf4a59271fa7ebd279a205d">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_recover</a>(</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;{</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  {</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    response-&gt;success = motor_-&gt;handleRecover();</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  }</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;}</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00302"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1d4839fd155a15cf8e231a4a1ec34ee9">  302</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1d4839fd155a15cf8e231a4a1ec34ee9">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_halt</a>(</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;{</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  {</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    response-&gt;success = motor_-&gt;handleHalt();</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  }</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;}</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00312"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9f1f927949e3fc637adda5ceb3a77b42">  312</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9f1f927949e3fc637adda5ceb3a77b42">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_position</a>(</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;{</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  response-&gt;success = set_mode_position();</div>
 <div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;}</div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160; </div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00320"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a2cfdede08058dec7fde21576255700ef">  320</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a2cfdede08058dec7fde21576255700ef">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_init</a>(</div>
+<div class="line"><a name="l00320"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a7da6e03ffdcb43624170f8527b397ba9">  320</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a7da6e03ffdcb43624170f8527b397ba9">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_velocity</a>(</div>
 <div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
 <div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;{</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  {</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordtype">bool</span> temp = motor_-&gt;handleInit();</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    mc_driver_-&gt;validate_objs();</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    response-&gt;success = temp;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  }</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;}</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00332"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa01a6afc8bf4a59271fa7ebd279a205d">  332</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa01a6afc8bf4a59271fa7ebd279a205d">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_recover</a>(</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;{</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  {</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    response-&gt;success = motor_-&gt;handleRecover();</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  }</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;}</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00342"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1d4839fd155a15cf8e231a4a1ec34ee9">  342</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1d4839fd155a15cf8e231a4a1ec34ee9">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_halt</a>(</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;{</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  {</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    response-&gt;success = motor_-&gt;handleHalt();</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  }</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;}</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00352"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9f1f927949e3fc637adda5ceb3a77b42">  352</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9f1f927949e3fc637adda5ceb3a77b42">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_position</a>(</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;{</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;  response-&gt;success = set_mode_position();</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;}</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160; </div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00360"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a7da6e03ffdcb43624170f8527b397ba9">  360</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a7da6e03ffdcb43624170f8527b397ba9">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_velocity</a>(</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;{</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;  response-&gt;success = set_mode_velocity();</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;}</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160; </div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00368"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a939505650bfdf2e14952e0b481419a6a">  368</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a939505650bfdf2e14952e0b481419a6a">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_cyclic_position</a>(</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;{</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  response-&gt;success = set_mode_cyclic_position();</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;}</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160; </div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00376"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a8d2407cef2b22692c056955e75790406">  376</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a8d2407cef2b22692c056955e75790406">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_interpolated_position</a>(</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;{</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  response-&gt;success = set_mode_interpolated_position();</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;}</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160; </div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00384"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1b199968b9e8dd6c6fbc9528f4166060">  384</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1b199968b9e8dd6c6fbc9528f4166060">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_cyclic_velocity</a>(</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;{</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  response-&gt;success = set_mode_cyclic_velocity();</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;}</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00391"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a90a1a192978ca962e12271f44cc621d8">  391</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a90a1a192978ca962e12271f44cc621d8">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_torque</a>(</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;{</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  response-&gt;success = set_mode_torque();</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;}</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160; </div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00399"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a716b8a95bc51b6b545af6c34043e931b">  399</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a716b8a95bc51b6b545af6c34043e931b">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_target</a>(</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;  <span class="keyword">const</span> canopen_interfaces::srv::COTargetDouble::Request::SharedPtr request,</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;  canopen_interfaces::srv::COTargetDouble::Response::SharedPtr response)</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;{</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  response-&gt;success = set_target(request-&gt;target);</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;}</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160; </div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00407"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abc9fff547d232ad2553d1f027c72a024">  407</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abc9fff547d232ad2553d1f027c72a024">NodeCanopen402Driver&lt;NODETYPE&gt;::init_motor</a>()</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;{</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  {</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    <span class="keywordtype">bool</span> temp = motor_-&gt;handleInit();</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    mc_driver_-&gt;validate_objs();</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="keywordflow">return</span> temp;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;  }</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;  {</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    RCLCPP_INFO(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Initialisation failed.&quot;</span>);</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  }</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;}</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160; </div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00423"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abd5280411bceb60ffa7ef03afe5bd42b">  423</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abd5280411bceb60ffa7ef03afe5bd42b">NodeCanopen402Driver&lt;NODETYPE&gt;::recover_motor</a>()</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;{</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  {</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    <span class="keywordflow">return</span> motor_-&gt;handleRecover();</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;  }</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  {</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;  }</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;}</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160; </div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00436"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa2b020939b95e50eb4b060b6c208e82a">  436</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa2b020939b95e50eb4b060b6c208e82a">NodeCanopen402Driver&lt;NODETYPE&gt;::halt_motor</a>()</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;{</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;  {</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    <span class="keywordflow">return</span> motor_-&gt;handleHalt();</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;  }</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;  {</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  }</div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;}</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160; </div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00449"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa4959ad572a10a984f4d2d8e799e4474">  449</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa4959ad572a10a984f4d2d8e799e4474">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_position</a>()</div>
-<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;{</div>
-<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  {</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a88ada2fb59731bd81b931d5d85411cbb">MotorBase::Profiled_Position</a>)</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    {</div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a88ada2fb59731bd81b931d5d85411cbb">MotorBase::Profiled_Position</a>);</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;    }</div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;    {</div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;    }</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;  }</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;  {</div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;  }</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;}</div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160; </div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00469"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9cbb3d3165816f157864068dc1e827fc">  469</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9cbb3d3165816f157864068dc1e827fc">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_interpolated_position</a>()</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;{</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  {</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49">MotorBase::Interpolated_Position</a>)</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;    {</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49">MotorBase::Interpolated_Position</a>);</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;    }</div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;    {</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;    }</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;  }</div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;  {</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;  }</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;}</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160; </div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00489"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a3f8d9f1a30ffd17fcdc2a3700f214835">  489</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a3f8d9f1a30ffd17fcdc2a3700f214835">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_velocity</a>()</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;{</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;  {</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>)</div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;    {</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>);</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;    }</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;    {</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;    }</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;  }</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;  {</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;  }</div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;}</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160; </div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00509"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af7f22159cf8109774b0215ea9f3e8c40">  509</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af7f22159cf8109774b0215ea9f3e8c40">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_cyclic_position</a>()</div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;{</div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;  {</div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>)</div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;    {</div>
-<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>);</div>
-<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;    }</div>
-<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;    {</div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;    }</div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;  }</div>
-<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;  {</div>
-<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;  }</div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;}</div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160; </div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00529"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af735700a4ca8886ccb5a1dfefe707945">  529</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af735700a4ca8886ccb5a1dfefe707945">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_cyclic_velocity</a>()</div>
-<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;{</div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;  {</div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>)</div>
-<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;    {</div>
-<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>);</div>
-<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;    }</div>
-<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;    {</div>
-<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;    }</div>
-<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;  }</div>
-<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;  {</div>
-<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;  }</div>
-<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;}</div>
-<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160; </div>
-<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00549"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a5803fd62a70bfec05fc3632a1de69b7c">  549</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a5803fd62a70bfec05fc3632a1de69b7c">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_torque</a>()</div>
-<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;{</div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  response-&gt;success = set_mode_velocity();</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;}</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160; </div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00328"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a939505650bfdf2e14952e0b481419a6a">  328</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a939505650bfdf2e14952e0b481419a6a">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_cyclic_position</a>(</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;{</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  response-&gt;success = set_mode_cyclic_position();</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;}</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160; </div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00336"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a8d2407cef2b22692c056955e75790406">  336</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a8d2407cef2b22692c056955e75790406">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_interpolated_position</a>(</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;{</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  response-&gt;success = set_mode_interpolated_position();</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;}</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160; </div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00344"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1b199968b9e8dd6c6fbc9528f4166060">  344</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1b199968b9e8dd6c6fbc9528f4166060">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_cyclic_velocity</a>(</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;{</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  response-&gt;success = set_mode_cyclic_velocity();</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;}</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00351"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a90a1a192978ca962e12271f44cc621d8">  351</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a90a1a192978ca962e12271f44cc621d8">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_mode_torque</a>(</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;{</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  response-&gt;success = set_mode_torque();</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;}</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160; </div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00359"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a716b8a95bc51b6b545af6c34043e931b">  359</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a716b8a95bc51b6b545af6c34043e931b">NodeCanopen402Driver&lt;NODETYPE&gt;::handle_set_target</a>(</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  <span class="keyword">const</span> canopen_interfaces::srv::COTargetDouble::Request::SharedPtr request,</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  canopen_interfaces::srv::COTargetDouble::Response::SharedPtr response)</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;{</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  response-&gt;success = set_target(request-&gt;target);</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;}</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160; </div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00367"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abc9fff547d232ad2553d1f027c72a024">  367</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abc9fff547d232ad2553d1f027c72a024">NodeCanopen402Driver&lt;NODETYPE&gt;::init_motor</a>()</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;{</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  {</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keywordtype">bool</span> temp = motor_-&gt;handleInit();</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    <span class="keywordflow">return</span> temp;</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  }</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  {</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    RCLCPP_INFO(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Initialisation failed.&quot;</span>);</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  }</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;}</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160; </div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00382"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abd5280411bceb60ffa7ef03afe5bd42b">  382</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abd5280411bceb60ffa7ef03afe5bd42b">NodeCanopen402Driver&lt;NODETYPE&gt;::recover_motor</a>()</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;{</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  {</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    <span class="keywordflow">return</span> motor_-&gt;handleRecover();</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  }</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  {</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  }</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;}</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160; </div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00395"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa2b020939b95e50eb4b060b6c208e82a">  395</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa2b020939b95e50eb4b060b6c208e82a">NodeCanopen402Driver&lt;NODETYPE&gt;::halt_motor</a>()</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;{</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  {</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    <span class="keywordflow">return</span> motor_-&gt;handleHalt();</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;  }</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;  {</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  }</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;}</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160; </div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00408"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa4959ad572a10a984f4d2d8e799e4474">  408</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa4959ad572a10a984f4d2d8e799e4474">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_position</a>()</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;{</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;  {</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a88ada2fb59731bd81b931d5d85411cbb">MotorBase::Profiled_Position</a>)</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    {</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a88ada2fb59731bd81b931d5d85411cbb">MotorBase::Profiled_Position</a>);</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    }</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    {</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    }</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  }</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  {</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  }</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;}</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160; </div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00428"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9cbb3d3165816f157864068dc1e827fc">  428</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9cbb3d3165816f157864068dc1e827fc">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_interpolated_position</a>()</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;{</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;  {</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49">MotorBase::Interpolated_Position</a>)</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    {</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49">MotorBase::Interpolated_Position</a>);</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    }</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    {</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    }</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;  }</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;  {</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;  }</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;}</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160; </div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00448"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a3f8d9f1a30ffd17fcdc2a3700f214835">  448</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a3f8d9f1a30ffd17fcdc2a3700f214835">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_velocity</a>()</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;{</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;  {</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>)</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;    {</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>);</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;    }</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    {</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    }</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  }</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;  {</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;  }</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;}</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160; </div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00468"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af7f22159cf8109774b0215ea9f3e8c40">  468</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af7f22159cf8109774b0215ea9f3e8c40">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_cyclic_position</a>()</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;{</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  {</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>)</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;    {</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>);</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;    }</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;    {</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;    }</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;  }</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;  {</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  }</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;}</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160; </div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00488"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af735700a4ca8886ccb5a1dfefe707945">  488</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af735700a4ca8886ccb5a1dfefe707945">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_cyclic_velocity</a>()</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;{</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;  {</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>)</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;    {</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>);</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;    }</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    {</div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    }</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;  }</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;  {</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;  }</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;}</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160; </div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00508"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a5803fd62a70bfec05fc3632a1de69b7c">  508</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a5803fd62a70bfec05fc3632a1de69b7c">NodeCanopen402Driver&lt;NODETYPE&gt;::set_mode_torque</a>()</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;{</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;  {</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ad6d351bdc15a1f379bc28418f9f963c8">MotorBase::Profiled_Torque</a>)</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;    {</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ad6d351bdc15a1f379bc28418f9f963c8">MotorBase::Profiled_Torque</a>);</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;    }</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;    {</div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;    }</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;  }</div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;  {</div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;  }</div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;}</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160; </div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00528"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a36019394a681b55668edfee9410af021">  528</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a36019394a681b55668edfee9410af021">NodeCanopen402Driver&lt;NODETYPE&gt;::set_target</a>(<span class="keywordtype">double</span> target)</div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;{</div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;  {</div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;    <span class="keyword">auto</span> mode = motor_-&gt;getMode();</div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;    <span class="keywordtype">double</span> scaled_target;</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;    <span class="keywordflow">if</span> ((mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a88ada2fb59731bd81b931d5d85411cbb">MotorBase::Profiled_Position</a>) or (mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>))</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;    {</div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;      scaled_target = target * scale_pos_to_dev_;</div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;    }</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (</div>
+<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;      (mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae27229d1ee60fa7dc2358e406a5895f6">MotorBase::Velocity</a>) or (mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>) or</div>
+<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;      (mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>))</div>
+<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;    {</div>
+<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;      scaled_target = target * scale_vel_to_dev_;</div>
+<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;    }</div>
+<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;    {</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;      scaled_target = target;</div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;    }</div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;    <span class="comment">// RCLCPP_INFO(this-&gt;node_-&gt;get_logger(), &quot;Scaled target %f&quot;, scaled_target);</span></div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;    <span class="keywordflow">return</span> motor_-&gt;setTarget(scaled_target);</div>
+<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;  }</div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;  <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;  {</div>
-<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;    <span class="keywordflow">if</span> (motor_-&gt;getMode() != <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ad6d351bdc15a1f379bc28418f9f963c8">MotorBase::Profiled_Torque</a>)</div>
-<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;    {</div>
-<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;      <span class="keywordflow">return</span> motor_-&gt;enterModeAndWait(<a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ad6d351bdc15a1f379bc28418f9f963c8">MotorBase::Profiled_Torque</a>);</div>
-<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;    }</div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;    {</div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;    }</div>
-<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;  }</div>
-<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;  {</div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;  }</div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;}</div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160; </div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00569"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a36019394a681b55668edfee9410af021">  569</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a36019394a681b55668edfee9410af021">NodeCanopen402Driver&lt;NODETYPE&gt;::set_target</a>(<span class="keywordtype">double</span> target)</div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;{</div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;  {</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;    <span class="keyword">auto</span> mode = motor_-&gt;getMode();</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;    <span class="keywordtype">double</span> scaled_target;</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;    <span class="keywordflow">if</span> ((mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a88ada2fb59731bd81b931d5d85411cbb">MotorBase::Profiled_Position</a>) or (mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>))</div>
-<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;    {</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;      scaled_target = target * scale_pos_to_dev_;</div>
-<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;    }</div>
-<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (</div>
-<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;      (mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae27229d1ee60fa7dc2358e406a5895f6">MotorBase::Velocity</a>) or (mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>) or</div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;      (mode == <a class="code" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>))</div>
-<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;    {</div>
-<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;      scaled_target = target * scale_vel_to_dev_;</div>
-<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;    }</div>
-<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;    {</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;      scaled_target = target;</div>
-<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;    }</div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;    <span class="comment">// RCLCPP_INFO(this-&gt;node_-&gt;get_logger(), &quot;Scaled target %f&quot;, scaled_target);</span></div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;    <span class="keywordflow">return</span> motor_-&gt;setTarget(scaled_target);</div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;  }</div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;  {</div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;  }</div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;}</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160; </div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassros2__canopen_1_1DriverException_html"><div class="ttname"><a href="classros2__canopen_1_1DriverException.html">ros2_canopen::DriverException</a></div><div class="ttdoc">Driver Exception.</div><div class="ttdef"><b>Definition:</b> driver_error.hpp:17</div></div>
+<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;  }</div>
+<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;}</div>
+<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160; </div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassros2__canopen_1_1MotorBase_html_aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16"><div class="ttname"><a href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">ros2_canopen::MotorBase::Profiled_Velocity</a></div><div class="ttdeci">@ Profiled_Velocity</div><div class="ttdef"><b>Definition:</b> base.hpp:26</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1MotorBase_html_aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38"><div class="ttname"><a href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">ros2_canopen::MotorBase::Cyclic_Synchronous_Velocity</a></div><div class="ttdeci">@ Cyclic_Synchronous_Velocity</div><div class="ttdef"><b>Definition:</b> base.hpp:32</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1MotorBase_html_aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7"><div class="ttname"><a href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">ros2_canopen::MotorBase::Cyclic_Synchronous_Position</a></div><div class="ttdeci">@ Cyclic_Synchronous_Position</div><div class="ttdef"><b>Definition:</b> base.hpp:31</div></div>
@@ -678,34 +636,35 @@ $(function() {
 <div class="ttc" id="aclassros2__canopen_1_1MotorBase_html_aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49"><div class="ttname"><a href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49">ros2_canopen::MotorBase::Interpolated_Position</a></div><div class="ttdeci">@ Interpolated_Position</div><div class="ttdef"><b>Definition:</b> base.hpp:30</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1MotorBase_html_aae40a1be826cff1fb966ce6ad88d5496ae27229d1ee60fa7dc2358e406a5895f6"><div class="ttname"><a href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae27229d1ee60fa7dc2358e406a5895f6">ros2_canopen::MotorBase::Velocity</a></div><div class="ttdeci">@ Velocity</div><div class="ttdef"><b>Definition:</b> base.hpp:25</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html">ros2_canopen::node_interfaces::NodeCanopen402Driver</a></div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver.hpp:17</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a1b199968b9e8dd6c6fbc9528f4166060"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1b199968b9e8dd6c6fbc9528f4166060">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_cyclic_velocity</a></div><div class="ttdeci">void handle_set_mode_cyclic_velocity(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set cyclic velocity mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:384</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a1d4839fd155a15cf8e231a4a1ec34ee9"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1d4839fd155a15cf8e231a4a1ec34ee9">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_halt</a></div><div class="ttdeci">void handle_halt(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to halt device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:342</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a2cfdede08058dec7fde21576255700ef"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a2cfdede08058dec7fde21576255700ef">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_init</a></div><div class="ttdeci">void handle_init(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to initialise device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:320</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a36019394a681b55668edfee9410af021"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a36019394a681b55668edfee9410af021">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_target</a></div><div class="ttdeci">bool set_target(double target)</div><div class="ttdoc">Method to set target.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:569</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a3f8d9f1a30ffd17fcdc2a3700f214835"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a3f8d9f1a30ffd17fcdc2a3700f214835">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_velocity</a></div><div class="ttdeci">bool set_mode_velocity()</div><div class="ttdoc">Method to set profiled velocity mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:489</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a5803fd62a70bfec05fc3632a1de69b7c"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a5803fd62a70bfec05fc3632a1de69b7c">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_torque</a></div><div class="ttdeci">bool set_mode_torque()</div><div class="ttdoc">Method to set profiled torque mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:549</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a716b8a95bc51b6b545af6c34043e931b"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a716b8a95bc51b6b545af6c34043e931b">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_target</a></div><div class="ttdeci">void handle_set_target(const canopen_interfaces::srv::COTargetDouble::Request::SharedPtr request, canopen_interfaces::srv::COTargetDouble::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set target.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:399</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a7da6e03ffdcb43624170f8527b397ba9"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a7da6e03ffdcb43624170f8527b397ba9">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_velocity</a></div><div class="ttdeci">void handle_set_mode_velocity(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set profiled velocity mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:360</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a8d2407cef2b22692c056955e75790406"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a8d2407cef2b22692c056955e75790406">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_interpolated_position</a></div><div class="ttdeci">void handle_set_mode_interpolated_position(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set interpolated position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:376</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a90a1a192978ca962e12271f44cc621d8"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a90a1a192978ca962e12271f44cc621d8">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_torque</a></div><div class="ttdeci">void handle_set_mode_torque(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set profiled torque mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:391</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a939505650bfdf2e14952e0b481419a6a"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a939505650bfdf2e14952e0b481419a6a">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_cyclic_position</a></div><div class="ttdeci">void handle_set_mode_cyclic_position(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set cyclic position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:368</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a9cbb3d3165816f157864068dc1e827fc"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9cbb3d3165816f157864068dc1e827fc">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_interpolated_position</a></div><div class="ttdeci">bool set_mode_interpolated_position()</div><div class="ttdoc">Method to set interpolated position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:469</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a9f1f927949e3fc637adda5ceb3a77b42"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9f1f927949e3fc637adda5ceb3a77b42">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_position</a></div><div class="ttdeci">void handle_set_mode_position(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set profiled position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:352</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_aa01a6afc8bf4a59271fa7ebd279a205d"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa01a6afc8bf4a59271fa7ebd279a205d">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_recover</a></div><div class="ttdeci">void handle_recover(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to recover device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:332</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_aa2b020939b95e50eb4b060b6c208e82a"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa2b020939b95e50eb4b060b6c208e82a">ros2_canopen::node_interfaces::NodeCanopen402Driver::halt_motor</a></div><div class="ttdeci">bool halt_motor()</div><div class="ttdoc">Method to halt device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:436</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_aa4959ad572a10a984f4d2d8e799e4474"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa4959ad572a10a984f4d2d8e799e4474">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_position</a></div><div class="ttdeci">bool set_mode_position()</div><div class="ttdoc">Method to set profiled position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:449</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_abc9fff547d232ad2553d1f027c72a024"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abc9fff547d232ad2553d1f027c72a024">ros2_canopen::node_interfaces::NodeCanopen402Driver::init_motor</a></div><div class="ttdeci">bool init_motor()</div><div class="ttdoc">Method to initialise device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:407</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_abd5280411bceb60ffa7ef03afe5bd42b"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abd5280411bceb60ffa7ef03afe5bd42b">ros2_canopen::node_interfaces::NodeCanopen402Driver::recover_motor</a></div><div class="ttdeci">bool recover_motor()</div><div class="ttdoc">Method to recover device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:423</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a1b199968b9e8dd6c6fbc9528f4166060"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1b199968b9e8dd6c6fbc9528f4166060">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_cyclic_velocity</a></div><div class="ttdeci">void handle_set_mode_cyclic_velocity(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set cyclic velocity mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:344</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a1d4839fd155a15cf8e231a4a1ec34ee9"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a1d4839fd155a15cf8e231a4a1ec34ee9">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_halt</a></div><div class="ttdeci">void handle_halt(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to halt device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:302</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a2cfdede08058dec7fde21576255700ef"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a2cfdede08058dec7fde21576255700ef">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_init</a></div><div class="ttdeci">void handle_init(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to initialise device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:281</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a36019394a681b55668edfee9410af021"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a36019394a681b55668edfee9410af021">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_target</a></div><div class="ttdeci">bool set_target(double target)</div><div class="ttdoc">Method to set target.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:528</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a3f8d9f1a30ffd17fcdc2a3700f214835"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a3f8d9f1a30ffd17fcdc2a3700f214835">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_velocity</a></div><div class="ttdeci">bool set_mode_velocity()</div><div class="ttdoc">Method to set profiled velocity mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:448</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a5803fd62a70bfec05fc3632a1de69b7c"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a5803fd62a70bfec05fc3632a1de69b7c">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_torque</a></div><div class="ttdeci">bool set_mode_torque()</div><div class="ttdoc">Method to set profiled torque mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:508</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a716b8a95bc51b6b545af6c34043e931b"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a716b8a95bc51b6b545af6c34043e931b">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_target</a></div><div class="ttdeci">void handle_set_target(const canopen_interfaces::srv::COTargetDouble::Request::SharedPtr request, canopen_interfaces::srv::COTargetDouble::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set target.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:359</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a7da6e03ffdcb43624170f8527b397ba9"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a7da6e03ffdcb43624170f8527b397ba9">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_velocity</a></div><div class="ttdeci">void handle_set_mode_velocity(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set profiled velocity mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:320</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a8d2407cef2b22692c056955e75790406"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a8d2407cef2b22692c056955e75790406">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_interpolated_position</a></div><div class="ttdeci">void handle_set_mode_interpolated_position(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set interpolated position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:336</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a90a1a192978ca962e12271f44cc621d8"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a90a1a192978ca962e12271f44cc621d8">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_torque</a></div><div class="ttdeci">void handle_set_mode_torque(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set profiled torque mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:351</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a939505650bfdf2e14952e0b481419a6a"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a939505650bfdf2e14952e0b481419a6a">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_cyclic_position</a></div><div class="ttdeci">void handle_set_mode_cyclic_position(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set cyclic position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:328</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a9cbb3d3165816f157864068dc1e827fc"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9cbb3d3165816f157864068dc1e827fc">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_interpolated_position</a></div><div class="ttdeci">bool set_mode_interpolated_position()</div><div class="ttdoc">Method to set interpolated position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:428</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_a9f1f927949e3fc637adda5ceb3a77b42"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9f1f927949e3fc637adda5ceb3a77b42">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_set_mode_position</a></div><div class="ttdeci">void handle_set_mode_position(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to set profiled position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:312</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_aa01a6afc8bf4a59271fa7ebd279a205d"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa01a6afc8bf4a59271fa7ebd279a205d">ros2_canopen::node_interfaces::NodeCanopen402Driver::handle_recover</a></div><div class="ttdeci">void handle_recover(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdoc">Service Callback to recover device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:292</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_aa2b020939b95e50eb4b060b6c208e82a"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa2b020939b95e50eb4b060b6c208e82a">ros2_canopen::node_interfaces::NodeCanopen402Driver::halt_motor</a></div><div class="ttdeci">bool halt_motor()</div><div class="ttdoc">Method to halt device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:395</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_aa4959ad572a10a984f4d2d8e799e4474"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa4959ad572a10a984f4d2d8e799e4474">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_position</a></div><div class="ttdeci">bool set_mode_position()</div><div class="ttdoc">Method to set profiled position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:408</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_abc9fff547d232ad2553d1f027c72a024"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abc9fff547d232ad2553d1f027c72a024">ros2_canopen::node_interfaces::NodeCanopen402Driver::init_motor</a></div><div class="ttdeci">bool init_motor()</div><div class="ttdoc">Method to initialise device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:367</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_abd5280411bceb60ffa7ef03afe5bd42b"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#abd5280411bceb60ffa7ef03afe5bd42b">ros2_canopen::node_interfaces::NodeCanopen402Driver::recover_motor</a></div><div class="ttdeci">bool recover_motor()</div><div class="ttdoc">Method to recover device.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:382</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_acef5eb42f3bd5096cb51391c861012b2"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#acef5eb42f3bd5096cb51391c861012b2">ros2_canopen::node_interfaces::NodeCanopen402Driver::NodeCanopen402Driver</a></div><div class="ttdeci">NodeCanopen402Driver(NODETYPE *node)</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:13</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_ad27577ffa1d1d20b5d9c504a1d6ee81d"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ad27577ffa1d1d20b5d9c504a1d6ee81d">ros2_canopen::node_interfaces::NodeCanopen402Driver::run</a></div><div class="ttdeci">void run()</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:256</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_ae197d8cbeff0c42a84e574d0b7f41f13"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ae197d8cbeff0c42a84e574d0b7f41f13">ros2_canopen::node_interfaces::NodeCanopen402Driver::publish</a></div><div class="ttdeci">void publish()</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:264</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_af735700a4ca8886ccb5a1dfefe707945"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af735700a4ca8886ccb5a1dfefe707945">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_cyclic_velocity</a></div><div class="ttdeci">bool set_mode_cyclic_velocity()</div><div class="ttdoc">Method to set cyclic velocity mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:529</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_af7f22159cf8109774b0215ea9f3e8c40"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af7f22159cf8109774b0215ea9f3e8c40">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_cyclic_position</a></div><div class="ttdeci">bool set_mode_cyclic_position()</div><div class="ttdoc">Method to set cyclic position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:509</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_affdef318cb7b3512d595d12edc327370"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#affdef318cb7b3512d595d12edc327370">ros2_canopen::node_interfaces::NodeCanopen402Driver::add_to_master</a></div><div class="ttdeci">virtual void add_to_master() override</div><div class="ttdoc">Add the driver to master.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:275</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a1ea2198ae81e17a0f5609dee262be3ce"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a1ea2198ae81e17a0f5609dee262be3ce">ros2_canopen::node_interfaces::NodeCanopenDriver::deactivate</a></div><div class="ttdeci">void deactivate()</div><div class="ttdoc">Deactivate the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:244</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a33854ce01735d78aa869d2ec4fe48189"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a33854ce01735d78aa869d2ec4fe48189">ros2_canopen::node_interfaces::NodeCanopenDriver::activate</a></div><div class="ttdeci">void activate()</div><div class="ttdoc">Activate the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:202</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a848d9704cf00c4870d4628f0c700d7e5"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a848d9704cf00c4870d4628f0c700d7e5">ros2_canopen::node_interfaces::NodeCanopenDriver::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">Initialise the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:111</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a8687bb9f8726daf31f0a0f1712231e3c"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a8687bb9f8726daf31f0a0f1712231e3c">ros2_canopen::node_interfaces::NodeCanopenDriver::configure</a></div><div class="ttdeci">void configure()</div><div class="ttdoc">Configure the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:159</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_ad27577ffa1d1d20b5d9c504a1d6ee81d"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ad27577ffa1d1d20b5d9c504a1d6ee81d">ros2_canopen::node_interfaces::NodeCanopen402Driver::run</a></div><div class="ttdeci">void run()</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:255</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_ae197d8cbeff0c42a84e574d0b7f41f13"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ae197d8cbeff0c42a84e574d0b7f41f13">ros2_canopen::node_interfaces::NodeCanopen402Driver::publish</a></div><div class="ttdeci">void publish()</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:263</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_af735700a4ca8886ccb5a1dfefe707945"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af735700a4ca8886ccb5a1dfefe707945">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_cyclic_velocity</a></div><div class="ttdeci">bool set_mode_cyclic_velocity()</div><div class="ttdoc">Method to set cyclic velocity mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:488</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_af7f22159cf8109774b0215ea9f3e8c40"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#af7f22159cf8109774b0215ea9f3e8c40">ros2_canopen::node_interfaces::NodeCanopen402Driver::set_mode_cyclic_position</a></div><div class="ttdeci">bool set_mode_cyclic_position()</div><div class="ttdoc">Method to set cyclic position mode.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:468</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver_html_affdef318cb7b3512d595d12edc327370"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#affdef318cb7b3512d595d12edc327370">ros2_canopen::node_interfaces::NodeCanopen402Driver::add_to_master</a></div><div class="ttdeci">virtual void add_to_master() override</div><div class="ttdoc">Add the driver to master.</div><div class="ttdef"><b>Definition:</b> node_canopen_402_driver_impl.hpp:274</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver_html_a41ef542ac94a74c8716fad3180335301"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a41ef542ac94a74c8716fad3180335301">ros2_canopen::node_interfaces::NodeCanopenBaseDriver::add_to_master</a></div><div class="ttdeci">virtual void add_to_master()</div><div class="ttdoc">Add the driver to master.</div><div class="ttdef"><b>Definition:</b> node_canopen_base_driver_impl.hpp:55</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a1ea2198ae81e17a0f5609dee262be3ce"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a1ea2198ae81e17a0f5609dee262be3ce">ros2_canopen::node_interfaces::NodeCanopenDriver::deactivate</a></div><div class="ttdeci">void deactivate()</div><div class="ttdoc">Deactivate the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:251</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a33854ce01735d78aa869d2ec4fe48189"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a33854ce01735d78aa869d2ec4fe48189">ros2_canopen::node_interfaces::NodeCanopenDriver::activate</a></div><div class="ttdeci">void activate()</div><div class="ttdoc">Activate the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:209</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a848d9704cf00c4870d4628f0c700d7e5"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a848d9704cf00c4870d4628f0c700d7e5">ros2_canopen::node_interfaces::NodeCanopenDriver::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">Initialise the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:113</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a8687bb9f8726daf31f0a0f1712231e3c"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a8687bb9f8726daf31f0a0f1712231e3c">ros2_canopen::node_interfaces::NodeCanopenDriver::configure</a></div><div class="ttdeci">void configure()</div><div class="ttdoc">Configure the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:161</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html">ros2_canopen::node_interfaces::NodeCanopenProxyDriver</a></div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver.hpp:12</div></div>
 <div class="ttc" id="adriver__error_8hpp_html"><div class="ttname"><a href="driver__error_8hpp.html">driver_error.hpp</a></div></div>
 <div class="ttc" id="anamespaceros2__canopen_1_1node__interfaces_html"><div class="ttname"><a href="namespaceros2__canopen_1_1node__interfaces.html">ros2_canopen::node_interfaces</a></div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:32</div></div>

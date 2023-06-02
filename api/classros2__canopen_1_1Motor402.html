@@ -97,8 +97,8 @@ Collaboration diagram for ros2_canopen::Motor402:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad6b591a9c8bfeabdc95315d1e395ebc3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1Motor402.html#ad6b591a9c8bfeabdc95315d1e395ebc3">Motor402</a> (std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1LelyMotionControllerBridge.html">LelyMotionControllerBridge</a> &gt; driver)</td></tr>
-<tr class="separator:ad6b591a9c8bfeabdc95315d1e395ebc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b599f02869b487443c8fe15d6e91ba"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1Motor402.html#aa9b599f02869b487443c8fe15d6e91ba">Motor402</a> (std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1LelyDriverBridge.html">LelyDriverBridge</a> &gt; driver)</td></tr>
+<tr class="separator:aa9b599f02869b487443c8fe15d6e91ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaec9bede81505764d7d62d9c7cb22d08"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1Motor402.html#aaec9bede81505764d7d62d9c7cb22d08">setTarget</a> (double val)</td></tr>
 <tr class="memdesc:aaec9bede81505764d7d62d9c7cb22d08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set target.  <a href="classros2__canopen_1_1Motor402.html#aaec9bede81505764d7d62d9c7cb22d08">More...</a><br /></td></tr>
 <tr class="separator:aaec9bede81505764d7d62d9c7cb22d08"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -140,6 +140,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ace423d81bdcbaf368ca3edba49b6655a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1Motor402.html#ace423d81bdcbaf368ca3edba49b6655a">registerDefaultModes</a> ()</td></tr>
 <tr class="memdesc:ace423d81bdcbaf368ca3edba49b6655a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to register the standard operation modes defined in cia402.  <a href="classros2__canopen_1_1Motor402.html#ace423d81bdcbaf368ca3edba49b6655a">More...</a><br /></td></tr>
 <tr class="separator:ace423d81bdcbaf368ca3edba49b6655a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77b0ea812fb4ebc31c598b727c222d3c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1Motor402.html#a77b0ea812fb4ebc31c598b727c222d3c">get_speed</a> () const</td></tr>
+<tr class="separator:a77b0ea812fb4ebc31c598b727c222d3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fbf927190762db50e883909d64a1fb5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1Motor402.html#a4fbf927190762db50e883909d64a1fb5">get_position</a> () const</td></tr>
+<tr class="separator:a4fbf927190762db50e883909d64a1fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -168,8 +172,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a0ce221c3bc3406beb39d442cc49bd2e9 inherit pro_methods_classros2__canopen_1_1MotorBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ad6b591a9c8bfeabdc95315d1e395ebc3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6b591a9c8bfeabdc95315d1e395ebc3">&#9670;&nbsp;</a></span>Motor402()</h2>
+<a id="aa9b599f02869b487443c8fe15d6e91ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b599f02869b487443c8fe15d6e91ba">&#9670;&nbsp;</a></span>Motor402()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -180,7 +184,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">ros2_canopen::Motor402::Motor402 </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1LelyMotionControllerBridge.html">LelyMotionControllerBridge</a> &gt;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1LelyDriverBridge.html">LelyDriverBridge</a> &gt;&#160;</td>
           <td class="paramname"><em>driver</em></td><td>)</td>
           <td></td>
         </tr>
@@ -580,6 +584,56 @@ false </dd></dl>
 <p>Tries to register the standard operation modes defined in cia402. </p>
 
 <p>Reimplemented from <a class="el" href="classros2__canopen_1_1MotorBase.html#a6a60156b97314be147be0615e1e269d8">ros2_canopen::MotorBase</a>.</p>
+
+</div>
+</div>
+<a id="a77b0ea812fb4ebc31c598b727c222d3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77b0ea812fb4ebc31c598b727c222d3c">&#9670;&nbsp;</a></span>get_speed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double ros2_canopen::Motor402::get_speed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4fbf927190762db50e883909d64a1fb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fbf927190762db50e883909d64a1fb5">&#9670;&nbsp;</a></span>get_position()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double ros2_canopen::Motor402::get_position </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

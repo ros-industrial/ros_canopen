@@ -227,7 +227,7 @@ $(function() {
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  {</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    RCLCPP_INFO(</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Slave %hhu: Transmit PDO index %x, subindex %hhu, data %d&quot;</span>,</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Node ID %hhu: Transmit PDO index %x, subindex %hhu, data %d&quot;</span>,</div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      this-&gt;lely_driver_-&gt;get_id(), data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>,</div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>);  <span class="comment">// ToDo: Remove or make debug</span></div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    this-&gt;lely_driver_-&gt;tpdo_transmit(data);</div>
@@ -241,9 +241,9 @@ $(function() {
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;{</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  {</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    RCLCPP_INFO(</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;      this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Slave %hhu: Sent PDO index %hu, subindex %hhu, data %x&quot;</span>,</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;      this-&gt;lely_driver_-&gt;get_id(), d.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, d.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>, d.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>);</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="comment">// RCLCPP_INFO(</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    <span class="comment">//   this-&gt;node_-&gt;get_logger(), &quot;Node ID %hhu: Received PDO index %#04x, subindex %hhu, data</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="comment">//   %x&quot;, this-&gt;lely_driver_-&gt;get_id(), d.index_, d.subindex_, d.data_);</span></div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keyword">auto</span> message = canopen_interfaces::msg::COData();</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    message.index = d.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>;</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    message.subindex = d.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>;</div>
@@ -368,7 +368,7 @@ $(function() {
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="comment">// Process response</span></div>
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordflow">try</span></div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    {</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      f.get();</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      <span class="keywordflow">return</span> f.get();</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    }</div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordflow">catch</span> (std::exception &amp; e)</div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    {</div>
@@ -383,7 +383,7 @@ $(function() {
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160; </div>
 <div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver_html"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html">ros2_canopen::node_interfaces::NodeCanopenBaseDriver</a></div><div class="ttdef"><b>Definition:</b> node_canopen_base_driver.hpp:19</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a848d9704cf00c4870d4628f0c700d7e5"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a848d9704cf00c4870d4628f0c700d7e5">ros2_canopen::node_interfaces::NodeCanopenDriver::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">Initialise the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:111</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a848d9704cf00c4870d4628f0c700d7e5"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a848d9704cf00c4870d4628f0c700d7e5">ros2_canopen::node_interfaces::NodeCanopenDriver::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">Initialise the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:113</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html">ros2_canopen::node_interfaces::NodeCanopenProxyDriver</a></div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver.hpp:12</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a005869d1fead79ea3a438ec3adfd2fe2"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a005869d1fead79ea3a438ec3adfd2fe2">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_sdo_read</a></div><div class="ttdeci">void on_sdo_read(const canopen_interfaces::srv::CORead::Request::SharedPtr request, canopen_interfaces::srv::CORead::Response::SharedPtr response)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:226</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a0a10fa152966a8f2e8d83367e45a1e45"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a0a10fa152966a8f2e8d83367e45a1e45">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::sdo_write</a></div><div class="ttdeci">virtual bool sdo_write(COData &amp;data)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:278</div></div>

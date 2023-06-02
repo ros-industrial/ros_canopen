@@ -83,47 +83,42 @@ $(function() {
 <div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html">   10</a></span>&#160;<span class="keyword">class </span><a class="code" href="classros2__canopen_1_1DefaultHomingMode.html">DefaultHomingMode</a> : <span class="keyword">public</span> <a class="code" href="classros2__canopen_1_1HomingMode.html">HomingMode</a></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;{</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keyword">const</span> uint16_t index = 0x6098;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  std::shared_ptr&lt;LelyMotionControllerBridge&gt; driver;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  std::shared_ptr&lt;RemoteObject&gt; obj;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  std::atomic&lt;bool&gt; execute_;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  std::mutex mutex_;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  std::condition_variable cond_;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  uint16_t status_;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keyword">enum</span> SW_masks</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    MASK_Reached = (1 &lt;&lt; <a class="code" href="classros2__canopen_1_1State402.html#a66bcfda57eaa59c3803b8f7ffd42ddaba2811bed97c0ba579c45b8c1efec8efcf">State402::SW_Target_reached</a>),</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    MASK_Attained = (1 &lt;&lt; <a class="code" href="classros2__canopen_1_1HomingMode.html#a312e0ed13b0dc4e9de9f73da3f547ddcaac624e759021f0cf6674d0f5bd16870e">SW_Attained</a>),</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    MASK_Error = (1 &lt;&lt; <a class="code" href="classros2__canopen_1_1HomingMode.html#a312e0ed13b0dc4e9de9f73da3f547ddca0cefdfd4a216fb46612666ece2cbcbe9">SW_Error</a>),</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  };</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordtype">bool</span> error(<span class="keyword">const</span> std::string &amp; msg)</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    execute_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    std::cout &lt;&lt; msg &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  }</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#ada5c75e0eb8098f8ec5f520fac21777a">   36</a></span>&#160;  <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#ada5c75e0eb8098f8ec5f520fac21777a">DefaultHomingMode</a>(std::shared_ptr&lt;LelyMotionControllerBridge&gt; driver)</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    this-&gt;driver = driver;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    obj = driver-&gt;create_remote_obj(index, 0U, <a class="code" href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4ea3e70ae013fe47ec30eaf23cbdd306de1">CODataTypes::COData32</a>);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#acf87753a147bfcaca2054654f0495bd0">   41</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#acf87753a147bfcaca2054654f0495bd0">start</a>();</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#acd9a2ed290cb20156a44800087c36ccc">   42</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#acd9a2ed290cb20156a44800087c36ccc">read</a>(<span class="keyword">const</span> uint16_t &amp; sw);</div>
-<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#ae4173f7116d9c6eb9d117b025c5b0357">   43</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#ae4173f7116d9c6eb9d117b025c5b0357">write</a>(<a class="code" href="classros2__canopen_1_1WordAccessor.html">OpModeAccesser</a> &amp; cw);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#aab6851793b0f6e7928c09c32bbda863a">   45</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#aab6851793b0f6e7928c09c32bbda863a">executeHoming</a>();</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;};</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}  <span class="comment">// namespace ros2_canopen</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// DEFAULT_HOMING_MODE_HPP</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  std::shared_ptr&lt;LelyDriverBridge&gt; driver;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  std::atomic&lt;bool&gt; execute_;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  std::mutex mutex_;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  std::condition_variable cond_;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  uint16_t status_;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">enum</span> SW_masks</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    MASK_Reached = (1 &lt;&lt; <a class="code" href="classros2__canopen_1_1State402.html#a66bcfda57eaa59c3803b8f7ffd42ddaba2811bed97c0ba579c45b8c1efec8efcf">State402::SW_Target_reached</a>),</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    MASK_Attained = (1 &lt;&lt; <a class="code" href="classros2__canopen_1_1HomingMode.html#a312e0ed13b0dc4e9de9f73da3f547ddcaac624e759021f0cf6674d0f5bd16870e">SW_Attained</a>),</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    MASK_Error = (1 &lt;&lt; <a class="code" href="classros2__canopen_1_1HomingMode.html#a312e0ed13b0dc4e9de9f73da3f547ddca0cefdfd4a216fb46612666ece2cbcbe9">SW_Error</a>),</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  };</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">bool</span> error(<span class="keyword">const</span> std::string &amp; msg)</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    execute_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    std::cout &lt;&lt; msg &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  }</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#acfc209ce92fc7a3e425798a7a48f252d">   35</a></span>&#160;  <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#acfc209ce92fc7a3e425798a7a48f252d">DefaultHomingMode</a>(std::shared_ptr&lt;LelyDriverBridge&gt; driver) { this-&gt;driver = driver; }</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#acf87753a147bfcaca2054654f0495bd0">   36</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#acf87753a147bfcaca2054654f0495bd0">start</a>();</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#acd9a2ed290cb20156a44800087c36ccc">   37</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#acd9a2ed290cb20156a44800087c36ccc">read</a>(<span class="keyword">const</span> uint16_t &amp; sw);</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#ae4173f7116d9c6eb9d117b025c5b0357">   38</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#ae4173f7116d9c6eb9d117b025c5b0357">write</a>(<a class="code" href="classros2__canopen_1_1WordAccessor.html">OpModeAccesser</a> &amp; cw);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DefaultHomingMode.html#aab6851793b0f6e7928c09c32bbda863a">   40</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DefaultHomingMode.html#aab6851793b0f6e7928c09c32bbda863a">executeHoming</a>();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;};</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}  <span class="comment">// namespace ros2_canopen</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// DEFAULT_HOMING_MODE_HPP</span></div>
 <div class="ttc" id="aclassros2__canopen_1_1DefaultHomingMode_html"><div class="ttname"><a href="classros2__canopen_1_1DefaultHomingMode.html">ros2_canopen::DefaultHomingMode</a></div><div class="ttdef"><b>Definition:</b> default_homing_mode.hpp:11</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1DefaultHomingMode_html_aab6851793b0f6e7928c09c32bbda863a"><div class="ttname"><a href="classros2__canopen_1_1DefaultHomingMode.html#aab6851793b0f6e7928c09c32bbda863a">ros2_canopen::DefaultHomingMode::executeHoming</a></div><div class="ttdeci">virtual bool executeHoming()</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1DefaultHomingMode_html_acd9a2ed290cb20156a44800087c36ccc"><div class="ttname"><a href="classros2__canopen_1_1DefaultHomingMode.html#acd9a2ed290cb20156a44800087c36ccc">ros2_canopen::DefaultHomingMode::read</a></div><div class="ttdeci">virtual bool read(const uint16_t &amp;sw)</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1DefaultHomingMode_html_acf87753a147bfcaca2054654f0495bd0"><div class="ttname"><a href="classros2__canopen_1_1DefaultHomingMode.html#acf87753a147bfcaca2054654f0495bd0">ros2_canopen::DefaultHomingMode::start</a></div><div class="ttdeci">virtual bool start()</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1DefaultHomingMode_html_ada5c75e0eb8098f8ec5f520fac21777a"><div class="ttname"><a href="classros2__canopen_1_1DefaultHomingMode.html#ada5c75e0eb8098f8ec5f520fac21777a">ros2_canopen::DefaultHomingMode::DefaultHomingMode</a></div><div class="ttdeci">DefaultHomingMode(std::shared_ptr&lt; LelyMotionControllerBridge &gt; driver)</div><div class="ttdef"><b>Definition:</b> default_homing_mode.hpp:36</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1DefaultHomingMode_html_acfc209ce92fc7a3e425798a7a48f252d"><div class="ttname"><a href="classros2__canopen_1_1DefaultHomingMode.html#acfc209ce92fc7a3e425798a7a48f252d">ros2_canopen::DefaultHomingMode::DefaultHomingMode</a></div><div class="ttdeci">DefaultHomingMode(std::shared_ptr&lt; LelyDriverBridge &gt; driver)</div><div class="ttdef"><b>Definition:</b> default_homing_mode.hpp:35</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1DefaultHomingMode_html_ae4173f7116d9c6eb9d117b025c5b0357"><div class="ttname"><a href="classros2__canopen_1_1DefaultHomingMode.html#ae4173f7116d9c6eb9d117b025c5b0357">ros2_canopen::DefaultHomingMode::write</a></div><div class="ttdeci">virtual bool write(OpModeAccesser &amp;cw)</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1HomingMode_html"><div class="ttname"><a href="classros2__canopen_1_1HomingMode.html">ros2_canopen::HomingMode</a></div><div class="ttdef"><b>Definition:</b> homing_mode.hpp:9</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1HomingMode_html_a312e0ed13b0dc4e9de9f73da3f547ddca0cefdfd4a216fb46612666ece2cbcbe9"><div class="ttname"><a href="classros2__canopen_1_1HomingMode.html#a312e0ed13b0dc4e9de9f73da3f547ddca0cefdfd4a216fb46612666ece2cbcbe9">ros2_canopen::HomingMode::SW_Error</a></div><div class="ttdeci">@ SW_Error</div><div class="ttdef"><b>Definition:</b> homing_mode.hpp:14</div></div>
@@ -133,7 +128,6 @@ $(function() {
 <div class="ttc" id="ahoming__mode_8hpp_html"><div class="ttname"><a href="homing__mode_8hpp.html">homing_mode.hpp</a></div></div>
 <div class="ttc" id="alely__motion__controller__bridge_8hpp_html"><div class="ttname"><a href="lely__motion__controller__bridge_8hpp.html">lely_motion_controller_bridge.hpp</a></div></div>
 <div class="ttc" id="anamespaceros2__canopen_html"><div class="ttname"><a href="namespaceros2__canopen.html">ros2_canopen</a></div><div class="ttdef"><b>Definition:</b> configuration_manager.hpp:28</div></div>
-<div class="ttc" id="anamespaceros2__canopen_html_a0208fe4bb85ca027a977ca0f55a86b4ea3e70ae013fe47ec30eaf23cbdd306de1"><div class="ttname"><a href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4ea3e70ae013fe47ec30eaf23cbdd306de1">ros2_canopen::COData32</a></div><div class="ttdeci">@ COData32</div><div class="ttdef"><b>Definition:</b> exchange.hpp:29</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

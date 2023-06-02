@@ -88,261 +88,724 @@ $(function() {
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#ifndef CANOPEN_BASE_DRIVER__LELY_BRIDGE_HPP_</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#define CANOPEN_BASE_DRIVER__LELY_BRIDGE_HPP_</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;lely/coapp/fiber_driver.hpp&gt;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;lely/coapp/master.hpp&gt;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;lely/ev/co_task.hpp&gt;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;lely/ev/future.hpp&gt;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;atomic&gt;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;condition_variable&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;future&gt;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;mutex&gt;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;rclcpp/rclcpp.hpp&gt;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;system_error&gt;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;boost/lockfree/queue.hpp&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;boost/optional.hpp&gt;</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;boost/thread.hpp&gt;</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="exchange_8hpp.html">canopen_core/exchange.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">using namespace </span>std::chrono_literals;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">using namespace </span>lely;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceros2__canopen.html">ros2_canopen</a></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;{</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">   45</a></span>&#160;<span class="keyword">enum class</span> <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">LelyBridgeErrc</a></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a9c2b54a378c51fcc1170d96afe72cceb">NotListedDevice</a> = <span class="charliteral">&#39;A&#39;</span>,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a5ad9f67ca8a718a183e75963ce52b7c2">NoResponseOnDeviceType</a> = <span class="charliteral">&#39;B&#39;</span>,</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a71862821f6eff557b9668b41704f2c48">DeviceTypeDifference</a> = <span class="charliteral">&#39;C&#39;</span>,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a4bc2752f0ec365c9f0b4f722e611b111">VendorIdDifference</a> = <span class="charliteral">&#39;D&#39;</span>,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a44b95edec97c27117756393ad1a463dc">HeartbeatIssue</a> = <span class="charliteral">&#39;E&#39;</span>,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a92b051bef638a514878fc1b20288077c">NodeGuardingIssue</a> = <span class="charliteral">&#39;F&#39;</span>,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a0864abeaa27dc3a5ff8ca97394a41ec8">InconsistentProgramDownload</a> = <span class="charliteral">&#39;G&#39;</span>,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a1edeb17aad08f676079cb3a85c79100b">SoftwareUpdateRequired</a> = <span class="charliteral">&#39;H&#39;</span>,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a71c1db687edd6a5080f9b82fea75f4ac">SoftwareDownloadFailed</a> = <span class="charliteral">&#39;I&#39;</span>,</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a695b58c7acd7550a8813ec72fe1b53fe">ConfigurationDownloadFailed</a> = <span class="charliteral">&#39;J&#39;</span>,</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a80e5d28733d4b021b9d09c4cdcd99497">StartErrorControlFailed</a> = <span class="charliteral">&#39;K&#39;</span>,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a9a8145f39c59c499994550af42acb3d1">NmtSlaveInitiallyOperational</a> = <span class="charliteral">&#39;L&#39;</span>,</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a40773e7d459e30762d26b9f9df6cf500">ProductCodeDifference</a> = <span class="charliteral">&#39;M&#39;</span>,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9aec808d704b382bcda4df997c5e1ac372">RevisionCodeDifference</a> = <span class="charliteral">&#39;N&#39;</span>,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a841a2be9d9dc91096f6783847ac4ee9f">SerialNumberDifference</a> = <span class="charliteral">&#39;O&#39;</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;};</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="structros2__canopen_1_1LelyBridgeErrCategory.html">   64</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structros2__canopen_1_1LelyBridgeErrCategory.html">LelyBridgeErrCategory</a> : std::error_category</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;{</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="structros2__canopen_1_1LelyBridgeErrCategory.html#ab15217967b80e013bb7a7fdfe6e34206">   66</a></span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> * <a class="code" href="structros2__canopen_1_1LelyBridgeErrCategory.html#ab15217967b80e013bb7a7fdfe6e34206">name</a>() const noexcept override;</div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="structros2__canopen_1_1LelyBridgeErrCategory.html#a406836a7e1408a21a8bee0ce9f23480a">   67</a></span>&#160;  <a class="code" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> message(<span class="keywordtype">int</span> ev) const override;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;};</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}  <span class="comment">// namespace ros2_canopen</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="namespacestd.html">   71</a></span>&#160;namespace <a class="code" href="namespacestd.html">std</a></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;{</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">template</span> &lt;&gt;</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="structstd_1_1is__error__code__enum_3_01ros2__canopen_1_1LelyBridgeErrc_01_4.html">   74</a></span>&#160;<span class="keyword">struct </span>is_error_code_enum&lt;<a class="code" href="namespaceros2__canopen.html">ros2_canopen</a>::<a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">LelyBridgeErrc</a>&gt; : true_type</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;{</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
-<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="namespacestd.html#a23c633b1cb9f4fff3650f3502c4498f7">   77</a></span>&#160;std::error_code <a class="code" href="namespacestd.html#a23c633b1cb9f4fff3650f3502c4498f7">make_error_code</a>(<a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">ros2_canopen::LelyBridgeErrc</a>);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}  <span class="comment">// namespace std</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceros2__canopen.html">ros2_canopen</a></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;{</div>
-<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html">   92</a></span>&#160;<span class="keyword">class </span><a class="code" href="classros2__canopen_1_1LelyDriverBridge.html">LelyDriverBridge</a> : <span class="keyword">public</span> canopen::FiberDriver</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;{</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keyword">class </span>TPDOWriteTask : <span class="keyword">public</span> ev::CoTask</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  {</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="structros2__canopen_1_1COData.html">COData</a> data;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html">LelyDriverBridge</a> * driver;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    std::mutex mtx;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keyword">explicit</span> TPDOWriteTask(ev_exec_t * exec) : ev::CoTask(exec)</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    {</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="comment">// Lock and load</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      mtx.lock();</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    }</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordtype">void</span> operator()() noexcept</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    {</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      std::scoped_lock&lt;util::BasicLockable&gt; lk(driver-&gt;tpdo_event_mutex);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      <span class="keywordflow">switch</span> (data.<a class="code" href="structros2__canopen_1_1COData.html#af93eb7e4b7146fe4fbaa2463fc0c77ef">type_</a>)</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      {</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4ea94fd42b6716df6a629ed4ca39a096cc4">CODataTypes::COData8</a>:</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;          driver-&gt;tpdo_mapped[data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>][data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>] = <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>);</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4ea1a1a310e601fa33f77a3582b12b6e836">CODataTypes::COData16</a>:</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;          driver-&gt;tpdo_mapped[data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>][data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>] = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>);</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4ea3e70ae013fe47ec30eaf23cbdd306de1">CODataTypes::COData32</a>:</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;          driver-&gt;tpdo_mapped[data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>][data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>] = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>);</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      }</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      driver-&gt;master.TpdoWriteEvent(driver-&gt;id(), data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>);</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      <span class="comment">// Unlock when done</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      mtx.unlock();</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    }</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  };</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="comment">// SDO Read synchronisation items</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#adec567161d251cd39a4dfd9440408b51">  130</a></span>&#160;  std::shared_ptr&lt;std::promise&lt;COData&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#adec567161d251cd39a4dfd9440408b51">sdo_read_data_promise</a>;</div>
-<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a3164e09064f5c099b040e3db185cf8d0">  131</a></span>&#160;  std::shared_ptr&lt;std::promise&lt;bool&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a3164e09064f5c099b040e3db185cf8d0">sdo_write_data_promise</a>;</div>
-<div class="line"><a name="l00132"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a0564f8199205fad4ad68256992cf797b">  132</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a0564f8199205fad4ad68256992cf797b">sdo_mutex</a>;</div>
-<div class="line"><a name="l00133"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a2c7562f6c1e17e36949f78a58c607676">  133</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a2c7562f6c1e17e36949f78a58c607676">running</a>;</div>
-<div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a5dd9d016fb217739c670a21d4a2c6861">  134</a></span>&#160;  std::condition_variable <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a5dd9d016fb217739c670a21d4a2c6861">sdo_cond</a>;</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="comment">// NMT synchronisation items</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a903fc498ef6de0fc97a0e990cf6010cd">  137</a></span>&#160;  std::promise&lt;canopen::NmtState&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a903fc498ef6de0fc97a0e990cf6010cd">nmt_state_promise</a>;</div>
-<div class="line"><a name="l00138"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aa1d768ca00fde47d2c8e881e875a71e5">  138</a></span>&#160;  std::atomic&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aa1d768ca00fde47d2c8e881e875a71e5">nmt_state_is_set</a>;</div>
-<div class="line"><a name="l00139"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a8a5a155908367175234b6d7ed460168a">  139</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a8a5a155908367175234b6d7ed460168a">nmt_mtex</a>;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160; </div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <span class="comment">// RPDO synchronisation items</span></div>
-<div class="line"><a name="l00142"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a2b8224a676fc806ce2d0b884d6a4cf52">  142</a></span>&#160;  std::promise&lt;COData&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a2b8224a676fc806ce2d0b884d6a4cf52">rpdo_promise</a>;</div>
-<div class="line"><a name="l00143"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a5d02e3513530f7497a83571d90472b00">  143</a></span>&#160;  std::atomic&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a5d02e3513530f7497a83571d90472b00">rpdo_is_set</a>;</div>
-<div class="line"><a name="l00144"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ac0f1478930363b496bf4ab8ddf8a1e27">  144</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ac0f1478930363b496bf4ab8ddf8a1e27">pdo_mtex</a>;</div>
-<div class="line"><a name="l00145"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ab6e73e2c43c8b47f396f2248a3bdc6d1">  145</a></span>&#160;  std::shared_ptr&lt;SafeQueue&lt;COData&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ab6e73e2c43c8b47f396f2248a3bdc6d1">rpdo_queue</a>;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; </div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="comment">// EMCY synchronisation items</span></div>
-<div class="line"><a name="l00148"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ae126576b75a8a379a34364fc58c357d1">  148</a></span>&#160;  std::promise&lt;COEmcy&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ae126576b75a8a379a34364fc58c357d1">emcy_promise</a>;</div>
-<div class="line"><a name="l00149"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a048866d53f35db96fae4801cd4985a56">  149</a></span>&#160;  std::atomic&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a048866d53f35db96fae4801cd4985a56">emcy_is_set</a>;</div>
-<div class="line"><a name="l00150"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a6726f2fd764dcbed60a73694938214df">  150</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a6726f2fd764dcbed60a73694938214df">emcy_mtex</a>;</div>
-<div class="line"><a name="l00151"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aefdcd9071ce01690e6fe44d098245e1d">  151</a></span>&#160;  std::shared_ptr&lt;SafeQueue&lt;COEmcy&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aefdcd9071ce01690e6fe44d098245e1d">emcy_queue</a>;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <span class="comment">// BOOT synchronisation items</span></div>
-<div class="line"><a name="l00154"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#adc23957de6e302d6dec4bfabfe426133">  154</a></span>&#160;  std::atomic&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#adc23957de6e302d6dec4bfabfe426133">booted</a>;</div>
-<div class="line"><a name="l00155"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aedf37290d8854316efa0f319378fec0a">  155</a></span>&#160;  <span class="keywordtype">char</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aedf37290d8854316efa0f319378fec0a">boot_status</a>;</div>
-<div class="line"><a name="l00156"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a7da385a93a34528bbe6b1e57a76ee684">  156</a></span>&#160;  std::string <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a7da385a93a34528bbe6b1e57a76ee684">boot_what</a>;</div>
-<div class="line"><a name="l00157"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#af691b9c8ac5cf331f692770267533754">  157</a></span>&#160;  canopen::NmtState <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#af691b9c8ac5cf331f692770267533754">boot_state</a>;</div>
-<div class="line"><a name="l00158"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ae1a124ca99ee3d1571ee0bd594acd684">  158</a></span>&#160;  std::condition_variable <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ae1a124ca99ee3d1571ee0bd594acd684">boot_cond</a>;</div>
-<div class="line"><a name="l00159"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a15ab371cf46052d5028bc2a8804440ee">  159</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a15ab371cf46052d5028bc2a8804440ee">boot_mtex</a>;</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
-<div class="line"><a name="l00161"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a7eccede1a4a223b08493cd429b34a0ff">  161</a></span>&#160;  std::vector&lt;std::shared_ptr&lt;TPDOWriteTask&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a7eccede1a4a223b08493cd429b34a0ff">tpdo_tasks</a>;</div>
-<div class="line"><a name="l00162"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#afb2119c15d6781425ea66714e3fd1c38">  162</a></span>&#160;  uint8_t <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#afb2119c15d6781425ea66714e3fd1c38">nodeid</a>;</div>
-<div class="line"><a name="l00163"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#afbd744c730f8e4721a85d3f59250be5e">  163</a></span>&#160;  std::string <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#afbd744c730f8e4721a85d3f59250be5e">name_</a>;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160; </div>
-<div class="line"><a name="l00173"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#affa3700f0a4a4640eabeec41e59621a9">  173</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#affa3700f0a4a4640eabeec41e59621a9">OnState</a>(canopen::NmtState state) noexcept <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160; </div>
-<div class="line"><a name="l00185"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a74185fae4f72f2cdcabfef533ca72254">  185</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a74185fae4f72f2cdcabfef533ca72254">OnBoot</a>(canopen::NmtState st, <span class="keywordtype">char</span> es, const ::std::string &amp; what) noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;sys/stat.h&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;lely/co/dcf.hpp&gt;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;lely/co/dev.hpp&gt;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;lely/co/obj.hpp&gt;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;lely/coapp/fiber_driver.hpp&gt;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;lely/coapp/master.hpp&gt;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;lely/coapp/sdo_error.hpp&gt;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;lely/ev/co_task.hpp&gt;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;lely/ev/future.hpp&gt;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;condition_variable&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;future&gt;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;rclcpp/rclcpp.hpp&gt;</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;system_error&gt;</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#include &lt;boost/lockfree/queue.hpp&gt;</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#include &lt;boost/optional.hpp&gt;</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#include &lt;boost/thread.hpp&gt;</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="exchange_8hpp.html">canopen_core/exchange.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">using namespace </span>std::chrono_literals;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">using namespace </span>lely;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceros2__canopen.html">ros2_canopen</a></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="structros2__canopen_1_1pdo__mapping.html">   51</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structros2__canopen_1_1pdo__mapping.html">pdo_mapping</a></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;{</div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="structros2__canopen_1_1pdo__mapping.html#aec125751b5b783db0e94fc9f04fec4a0">   53</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="structros2__canopen_1_1pdo__mapping.html#aec125751b5b783db0e94fc9f04fec4a0">is_tpdo</a>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="structros2__canopen_1_1pdo__mapping.html#a6c8e8693ebb82d9dd6046c2ba69e3537">   54</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="structros2__canopen_1_1pdo__mapping.html#a6c8e8693ebb82d9dd6046c2ba69e3537">is_rpdo</a>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="namespaceros2__canopen.html#a66ddb67438d2939745c2ca876e3d0837">   57</a></span>&#160;<span class="keyword">typedef</span> std::map&lt;uint16_t, std::map&lt;uint8_t, pdo_mapping&gt;&gt; <a class="code" href="namespaceros2__canopen.html#a66ddb67438d2939745c2ca876e3d0837">PDOMap</a>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DriverDictionary.html">   58</a></span>&#160;<span class="keyword">class </span><a class="code" href="classros2__canopen_1_1DriverDictionary.html">DriverDictionary</a> : <span class="keyword">public</span> lely::CODev</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;{</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DriverDictionary.html#a2a03e2336e963b435e22ebaca379d863">   61</a></span>&#160;  <a class="code" href="classros2__canopen_1_1DriverDictionary.html#a2a03e2336e963b435e22ebaca379d863">DriverDictionary</a>(std::string eds_file) : lely::CODev(eds_file.c_str()) {}</div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DriverDictionary.html#a25fc6311f2e0319886fdeee36a2005a4">   62</a></span>&#160;  <a class="code" href="classros2__canopen_1_1DriverDictionary.html#a25fc6311f2e0319886fdeee36a2005a4">~DriverDictionary</a>()</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="comment">// lely::CODev::~CODev();</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  }</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DriverDictionary.html#a560d02faeac75c1bdc80370f8c92ff47">   67</a></span>&#160;  std::shared_ptr&lt;PDOMap&gt; <a class="code" href="classros2__canopen_1_1DriverDictionary.html#a560d02faeac75c1bdc80370f8c92ff47">createPDOMapping</a>()</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    std::shared_ptr&lt;PDOMap&gt; pdo_map = std::make_shared&lt;PDOMap&gt;();</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    fetchRPDO(pdo_map);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    fetchTPDO(pdo_map);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">return</span> pdo_map;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="comment">// COObj * first = co_dev_first_obj((lely::CODev *)this);</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="comment">// COObj * last = co_dev_last_obj((lely::CODev *)this);</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="comment">// if (first == nullptr || last == nullptr)</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="comment">// {</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="comment">//   std::cout &lt;&lt; &quot;No objects found in dictionary&quot; &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="comment">//   return pdo_map;</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="comment">// }</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">// COObj * current = first;</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="comment">// while (current != last)</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="comment">// {</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="comment">//   uint16_t index = co_obj_get_idx(current);</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="comment">//   auto subids = current-&gt;getSubidx();</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="comment">//   bool created = false;</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">//   for (auto subid : subids)</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="comment">//   {</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="comment">//     bool is_rpdo = checkObjRPDO(index, subid);</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="comment">//     bool is_tpdo = checkObjTPDO(index, subid);</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="comment">//     std::cout &lt;&lt; &quot;Found subobject: index=&quot; &lt;&lt; std::hex &lt;&lt; (int)index</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="comment">//               &lt;&lt; &quot; subindex=&quot; &lt;&lt; (int)subid &lt;&lt; (is_rpdo ? &quot; rpdo&quot; : &quot;&quot;)</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="comment">//               &lt;&lt; (is_tpdo ? &quot; tpdo&quot; : &quot;&quot;) &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="comment">//     if (is_rpdo || is_tpdo)</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="comment">//     {</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="comment">//       pdo_mapping mapping;</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">//       mapping.is_rpdo = is_rpdo;</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="comment">//       mapping.is_tpdo = is_tpdo;</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="comment">//       if (!created)</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="comment">//       {</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="comment">//         pdo_map-&gt;emplace(index, std::map&lt;uint8_t, pdo_mapping&gt;());</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="comment">//         created = true;</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="comment">//       }</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="comment">//       (*pdo_map)[index].emplace(subid, mapping);</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="comment">//     }</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="comment">//   }</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="comment">//   current = co_obj_next(current);</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="comment">// }</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="comment">// return pdo_map;</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  }</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
+<div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DriverDictionary.html#aca9168ebe377b6e8568d94b136e6301b">  111</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1DriverDictionary.html#aca9168ebe377b6e8568d94b136e6301b">fetchRPDO</a>(std::shared_ptr&lt;PDOMap&gt; map)</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  {</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> index = 0; index &lt; 256; index++)</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> subindex = 1; subindex &lt; 9; subindex++)</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        <span class="keyword">auto</span> obj = find(0x1600 + index, subindex);</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keywordflow">if</span> (obj == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        {</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;          <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        }</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        uint32_t data;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;          data = obj-&gt;getVal&lt;CO_DEFTYPE_UNSIGNED32&gt;();</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        }</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        uint8_t tmps = (data &gt;&gt; 8) &amp; 0xFF;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        uint16_t tmpi = (data &gt;&gt; 16) &amp; 0xFFFF;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">if</span> (tmpi == 0U)</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        {</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;          <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        }</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <a class="code" href="structros2__canopen_1_1pdo__mapping.html">pdo_mapping</a> mapping;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        mapping.<a class="code" href="structros2__canopen_1_1pdo__mapping.html#a6c8e8693ebb82d9dd6046c2ba69e3537">is_rpdo</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        mapping.<a class="code" href="structros2__canopen_1_1pdo__mapping.html#aec125751b5b783db0e94fc9f04fec4a0">is_tpdo</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        (*map)[tmpi][tmps] = mapping;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        std::cout &lt;&lt; <span class="stringliteral">&quot;Found rpdo mapped object: index=&quot;</span> &lt;&lt; std::hex &lt;&lt; (int)tmpi</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                  &lt;&lt; <span class="stringliteral">&quot; subindex=&quot;</span> &lt;&lt; (<span class="keywordtype">int</span>)tmps &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;      }</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    }</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  }</div>
+<div class="line"><a name="l00141"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DriverDictionary.html#a9d3ed44c9778165aa0bace9dda340834">  141</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1DriverDictionary.html#a9d3ed44c9778165aa0bace9dda340834">fetchTPDO</a>(std::shared_ptr&lt;PDOMap&gt; map)</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  {</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> index = 0; index &lt; 256; index++)</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    {</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> subindex = 1; subindex &lt; 9; subindex++)</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;      {</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        <span class="keyword">auto</span> obj = find(0x1A00 + index, subindex);</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        <span class="keywordflow">if</span> (obj == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        {</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;          <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        }</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        uint32_t data;</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        {</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;          data = obj-&gt;getVal&lt;CO_DEFTYPE_UNSIGNED32&gt;();</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        }</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        uint8_t tmps = (data &gt;&gt; 8) &amp; 0xFF;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        uint16_t tmpi = (data &gt;&gt; 16) &amp; 0xFFFF;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        <span class="keywordflow">if</span> (tmpi == 0U)</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        {</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;          <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        }</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160; </div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        <a class="code" href="structros2__canopen_1_1pdo__mapping.html">pdo_mapping</a> mapping;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        mapping.<a class="code" href="structros2__canopen_1_1pdo__mapping.html#a6c8e8693ebb82d9dd6046c2ba69e3537">is_rpdo</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        mapping.<a class="code" href="structros2__canopen_1_1pdo__mapping.html#aec125751b5b783db0e94fc9f04fec4a0">is_tpdo</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        (*map)[tmpi][tmps] = mapping;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        std::cout &lt;&lt; <span class="stringliteral">&quot;Found tpdo mapped object: index=&quot;</span> &lt;&lt; std::hex &lt;&lt; (int)tmpi</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;                  &lt;&lt; <span class="stringliteral">&quot; subindex=&quot;</span> &lt;&lt; (<span class="keywordtype">int</span>)tmps &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      }</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    }</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  }</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160; </div>
+<div class="line"><a name="l00173"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DriverDictionary.html#af1bfcfdd92075336c7efcac76f13690b">  173</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DriverDictionary.html#af1bfcfdd92075336c7efcac76f13690b">checkObjRPDO</a>(uint16_t idx, uint8_t subidx)</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  {</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="comment">// std::cout &lt;&lt; &quot;Checking for rpo mapping of object: index=&quot; &lt;&lt; std::hex &lt;&lt; (int)idx</span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    <span class="comment">//           &lt;&lt; &quot; subindex=&quot; &lt;&lt; (int)subidx &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 256; i++)</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    {</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      <span class="keywordflow">if</span> (this-&gt;checkObjInPDO(i, 0x1600, idx, subidx))</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;      {</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      }</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    }</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  }</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160; </div>
-<div class="line"><a name="l00197"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a694f5e335166e7d3ccbf8d75da8440ca">  197</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a694f5e335166e7d3ccbf8d75da8440ca">OnRpdoWrite</a>(uint16_t idx, uint8_t subidx) noexcept <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160; </div>
-<div class="line"><a name="l00207"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aac3c9ccd8c5493c8787887caa1511741">  207</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aac3c9ccd8c5493c8787887caa1511741">OnEmcy</a>(uint16_t eec, uint8_t er, uint8_t msef[5]) noexcept <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160; </div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  <span class="keyword">using</span> FiberDriver::FiberDriver;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; </div>
-<div class="line"><a name="l00219"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a415d9e90846591ab99f9b3e164d5b6c6">  219</a></span>&#160;  <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a415d9e90846591ab99f9b3e164d5b6c6">LelyDriverBridge</a>(ev_exec_t * exec, canopen::AsyncMaster &amp; master, uint8_t <span class="keywordtype">id</span>, std::string name)</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  : FiberDriver(exec, master, id),</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    rpdo_queue(new <a class="code" href="classros2__canopen_1_1SafeQueue.html">SafeQueue</a>&lt;<a class="code" href="structros2__canopen_1_1COData.html">COData</a>&gt;()),</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    emcy_queue(new <a class="code" href="classros2__canopen_1_1SafeQueue.html">SafeQueue</a>&lt;<a class="code" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>&gt;())</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  {</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    nodeid = id;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    running = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    name_ = name;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  }</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160; </div>
-<div class="line"><a name="l00242"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ab0c6920f6e2b3c64b04553f2857d3daf">  242</a></span>&#160;  std::future&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ab0c6920f6e2b3c64b04553f2857d3daf">async_sdo_write</a>(<a class="code" href="structros2__canopen_1_1COData.html">COData</a> data);</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
-<div class="line"><a name="l00257"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ac41fcb002b23ff3b8e495c0296609076">  257</a></span>&#160;  std::future&lt;COData&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ac41fcb002b23ff3b8e495c0296609076">async_sdo_read</a>(<a class="code" href="structros2__canopen_1_1COData.html">COData</a> data);</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160; </div>
-<div class="line"><a name="l00268"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a34f0b14f8c5170ec47e38157050288ef">  268</a></span>&#160;  std::future&lt;canopen::NmtState&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a34f0b14f8c5170ec47e38157050288ef">async_request_nmt</a>();</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160; </div>
-<div class="line"><a name="l00281"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#af211f37b0cfbcb300ab487119f6d4b90">  281</a></span>&#160;  std::shared_ptr&lt;SafeQueue&lt;COData&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#af211f37b0cfbcb300ab487119f6d4b90">async_request_rpdo</a>();</div>
+<div class="line"><a name="l00187"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DriverDictionary.html#a32dfa3634c7af52a734b7408425f59ec">  187</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DriverDictionary.html#a32dfa3634c7af52a734b7408425f59ec">checkObjTPDO</a>(uint16_t idx, uint8_t subidx)</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  {</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="comment">// std::cout &lt;&lt; &quot;Checking for rpo mapping of object: index=&quot; &lt;&lt; std::hex &lt;&lt; (int)idx</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="comment">//          &lt;&lt; &quot; subindex=&quot; &lt;&lt; (int)subidx &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 256; i++)</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    {</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      <span class="keywordflow">if</span> (this-&gt;checkObjInPDO(i, 0x1A00, idx, subidx))</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      {</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      }</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    }</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  }</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160; </div>
+<div class="line"><a name="l00201"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1DriverDictionary.html#a4d647d0a2d31ae766cae6b7d5ec074c0">  201</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1DriverDictionary.html#a4d647d0a2d31ae766cae6b7d5ec074c0">checkObjInPDO</a>(uint8_t pdo, uint16_t mapping_idx, uint16_t idx, uint8_t subindex)</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  {</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt; 9; i++)</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    {</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      <span class="keyword">auto</span> obj = find(mapping_idx + pdo, i);</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      <span class="keywordflow">if</span> (obj == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;      {</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;      }</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;      uint32_t data;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;      {</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;        data = obj-&gt;getVal&lt;CO_DEFTYPE_UNSIGNED32&gt;();</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;      }</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      uint8_t tmps = (data &gt;&gt; 8) &amp; 0xFF;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;      uint16_t tmpi = (data &gt;&gt; 16) &amp; 0xFFFF;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160; </div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;      <span class="keywordflow">if</span> (tmps == subindex &amp;&amp; tmpi == idx)</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;      {</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        std::cout &lt;&lt; <span class="stringliteral">&quot;Found object in pdo: &quot;</span> &lt;&lt; (int)pdo &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;      }</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    }</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160; </div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  }</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;};</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
+<div class="line"><a name="l00228"></a><span class="lineno"><a class="line" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">  228</a></span>&#160;<span class="keyword">enum class</span> <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">LelyBridgeErrc</a></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;{</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a9c2b54a378c51fcc1170d96afe72cceb">NotListedDevice</a> = <span class="charliteral">&#39;A&#39;</span>,</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a5ad9f67ca8a718a183e75963ce52b7c2">NoResponseOnDeviceType</a> = <span class="charliteral">&#39;B&#39;</span>,</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a71862821f6eff557b9668b41704f2c48">DeviceTypeDifference</a> = <span class="charliteral">&#39;C&#39;</span>,</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a4bc2752f0ec365c9f0b4f722e611b111">VendorIdDifference</a> = <span class="charliteral">&#39;D&#39;</span>,</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a44b95edec97c27117756393ad1a463dc">HeartbeatIssue</a> = <span class="charliteral">&#39;E&#39;</span>,</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a92b051bef638a514878fc1b20288077c">NodeGuardingIssue</a> = <span class="charliteral">&#39;F&#39;</span>,</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a0864abeaa27dc3a5ff8ca97394a41ec8">InconsistentProgramDownload</a> = <span class="charliteral">&#39;G&#39;</span>,</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a1edeb17aad08f676079cb3a85c79100b">SoftwareUpdateRequired</a> = <span class="charliteral">&#39;H&#39;</span>,</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a71c1db687edd6a5080f9b82fea75f4ac">SoftwareDownloadFailed</a> = <span class="charliteral">&#39;I&#39;</span>,</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a695b58c7acd7550a8813ec72fe1b53fe">ConfigurationDownloadFailed</a> = <span class="charliteral">&#39;J&#39;</span>,</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a80e5d28733d4b021b9d09c4cdcd99497">StartErrorControlFailed</a> = <span class="charliteral">&#39;K&#39;</span>,</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a9a8145f39c59c499994550af42acb3d1">NmtSlaveInitiallyOperational</a> = <span class="charliteral">&#39;L&#39;</span>,</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a40773e7d459e30762d26b9f9df6cf500">ProductCodeDifference</a> = <span class="charliteral">&#39;M&#39;</span>,</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9aec808d704b382bcda4df997c5e1ac372">RevisionCodeDifference</a> = <span class="charliteral">&#39;N&#39;</span>,</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  <a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a841a2be9d9dc91096f6783847ac4ee9f">SerialNumberDifference</a> = <span class="charliteral">&#39;O&#39;</span></div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;};</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160; </div>
+<div class="line"><a name="l00247"></a><span class="lineno"><a class="line" href="structros2__canopen_1_1LelyBridgeErrCategory.html">  247</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structros2__canopen_1_1LelyBridgeErrCategory.html">LelyBridgeErrCategory</a> : std::error_category</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;{</div>
+<div class="line"><a name="l00249"></a><span class="lineno"><a class="line" href="structros2__canopen_1_1LelyBridgeErrCategory.html#ab15217967b80e013bb7a7fdfe6e34206">  249</a></span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> * <a class="code" href="structros2__canopen_1_1LelyBridgeErrCategory.html#ab15217967b80e013bb7a7fdfe6e34206">name</a>() const noexcept override;</div>
+<div class="line"><a name="l00250"></a><span class="lineno"><a class="line" href="structros2__canopen_1_1LelyBridgeErrCategory.html#a406836a7e1408a21a8bee0ce9f23480a">  250</a></span>&#160;  <a class="code" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> message(<span class="keywordtype">int</span> ev) const override;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;};</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;}  <span class="comment">// namespace ros2_canopen</span></div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160; </div>
+<div class="line"><a name="l00254"></a><span class="lineno"><a class="line" href="namespacestd.html">  254</a></span>&#160;namespace <a class="code" href="namespacestd.html">std</a></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;{</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="keyword">template</span> &lt;&gt;</div>
+<div class="line"><a name="l00257"></a><span class="lineno"><a class="line" href="structstd_1_1is__error__code__enum_3_01ros2__canopen_1_1LelyBridgeErrc_01_4.html">  257</a></span>&#160;<span class="keyword">struct </span>is_error_code_enum&lt;<a class="code" href="namespaceros2__canopen.html">ros2_canopen</a>::<a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">LelyBridgeErrc</a>&gt; : true_type</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;{</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;};</div>
+<div class="line"><a name="l00260"></a><span class="lineno"><a class="line" href="namespacestd.html#a23c633b1cb9f4fff3650f3502c4498f7">  260</a></span>&#160;std::error_code <a class="code" href="namespacestd.html#a23c633b1cb9f4fff3650f3502c4498f7">make_error_code</a>(<a class="code" href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">ros2_canopen::LelyBridgeErrc</a>);</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}  <span class="comment">// namespace std</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160; </div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceros2__canopen.html">ros2_canopen</a></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;{</div>
+<div class="line"><a name="l00275"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html">  275</a></span>&#160;<span class="keyword">class </span><a class="code" href="classros2__canopen_1_1LelyDriverBridge.html">LelyDriverBridge</a> : <span class="keyword">public</span> canopen::FiberDriver</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;{</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <span class="comment">// Dictionary for driver based on DCF and BIN files.</span></div>
+<div class="line"><a name="l00279"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a5baf69af189354aa4bfaa3d4ab700ad4">  279</a></span>&#160;  std::unique_ptr&lt;DriverDictionary&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a5baf69af189354aa4bfaa3d4ab700ad4">dictionary_</a>;</div>
+<div class="line"><a name="l00280"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#af433422393f87e919b37eb0ef230a7d0">  280</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#af433422393f87e919b37eb0ef230a7d0">dictionary_mutex_</a>;</div>
+<div class="line"><a name="l00281"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a4a6f66ac52f8dabf8725c9a93f79e6c4">  281</a></span>&#160;  std::shared_ptr&lt;PDOMap&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a4a6f66ac52f8dabf8725c9a93f79e6c4">pdo_map_</a>;</div>
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160; </div>
-<div class="line"><a name="l00290"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ab3a7c415db690fdd4bc468541c5d9c1c">  290</a></span>&#160;  std::shared_ptr&lt;SafeQueue&lt;COEmcy&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ab3a7c415db690fdd4bc468541c5d9c1c">async_request_emcy</a>();</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160; </div>
-<div class="line"><a name="l00301"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ae81768ed4a61e0b9e137cbb16c26d1a0">  301</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ae81768ed4a61e0b9e137cbb16c26d1a0">tpdo_transmit</a>(<a class="code" href="structros2__canopen_1_1COData.html">COData</a> data);</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160; </div>
-<div class="line"><a name="l00311"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a74f1911891d2c59bfcf912e30d40fdab">  311</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a74f1911891d2c59bfcf912e30d40fdab">nmt_command</a>(canopen::NmtCommand command);</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160; </div>
-<div class="line"><a name="l00318"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aa82419345fa45a3e42a8c7e21f713f74">  318</a></span>&#160;  uint8_t <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aa82419345fa45a3e42a8c7e21f713f74">get_id</a>();</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160; </div>
-<div class="line"><a name="l00326"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#acbca8f80755f46e1f4dd89af125263aa">  326</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#acbca8f80755f46e1f4dd89af125263aa">wait_for_boot</a>()</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  {</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="keywordflow">if</span> (booted.load())</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    {</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    }</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    std::unique_lock&lt;std::mutex&gt; lck(boot_mtex);</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    boot_cond.wait(lck);</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordflow">if</span> ((boot_status != 0) &amp;&amp; (boot_status != <span class="charliteral">&#39;L&#39;</span>))</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    {</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;      <span class="keywordflow">throw</span> std::system_error(boot_status, <a class="code" href="structros2__canopen_1_1LelyBridgeErrCategory.html">LelyBridgeErrCategory</a>(), <span class="stringliteral">&quot;Boot Issue&quot;</span>);</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    }</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    {</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      booted.store(<span class="keyword">true</span>);</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    }</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  }</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160; </div>
-<div class="line"><a name="l00350"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ac3ef3c3688a3eb0c321b8b554f16ba51">  350</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ac3ef3c3688a3eb0c321b8b554f16ba51">Boot</a>()</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  {</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    booted.store(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    FiberDriver::Boot();</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  }</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160; </div>
-<div class="line"><a name="l00362"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a10b43f728a74c8cea7cbba5be4d4b0c7">  362</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a10b43f728a74c8cea7cbba5be4d4b0c7">is_booted</a>() { <span class="keywordflow">return</span> booted.load(); }</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;};</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <span class="comment">// SDO Read synchronisation items</span></div>
+<div class="line"><a name="l00284"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#adec567161d251cd39a4dfd9440408b51">  284</a></span>&#160;  std::shared_ptr&lt;std::promise&lt;COData&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#adec567161d251cd39a4dfd9440408b51">sdo_read_data_promise</a>;</div>
+<div class="line"><a name="l00285"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a3164e09064f5c099b040e3db185cf8d0">  285</a></span>&#160;  std::shared_ptr&lt;std::promise&lt;bool&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a3164e09064f5c099b040e3db185cf8d0">sdo_write_data_promise</a>;</div>
+<div class="line"><a name="l00286"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a0564f8199205fad4ad68256992cf797b">  286</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a0564f8199205fad4ad68256992cf797b">sdo_mutex</a>;</div>
+<div class="line"><a name="l00287"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a2c7562f6c1e17e36949f78a58c607676">  287</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a2c7562f6c1e17e36949f78a58c607676">running</a>;</div>
+<div class="line"><a name="l00288"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a5dd9d016fb217739c670a21d4a2c6861">  288</a></span>&#160;  std::condition_variable <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a5dd9d016fb217739c670a21d4a2c6861">sdo_cond</a>;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160; </div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="comment">// NMT synchronisation items</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a903fc498ef6de0fc97a0e990cf6010cd">  291</a></span>&#160;  std::promise&lt;canopen::NmtState&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a903fc498ef6de0fc97a0e990cf6010cd">nmt_state_promise</a>;</div>
+<div class="line"><a name="l00292"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aa1d768ca00fde47d2c8e881e875a71e5">  292</a></span>&#160;  std::atomic&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aa1d768ca00fde47d2c8e881e875a71e5">nmt_state_is_set</a>;</div>
+<div class="line"><a name="l00293"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a8a5a155908367175234b6d7ed460168a">  293</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a8a5a155908367175234b6d7ed460168a">nmt_mtex</a>;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160; </div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="comment">// RPDO synchronisation items</span></div>
+<div class="line"><a name="l00296"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a2b8224a676fc806ce2d0b884d6a4cf52">  296</a></span>&#160;  std::promise&lt;COData&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a2b8224a676fc806ce2d0b884d6a4cf52">rpdo_promise</a>;</div>
+<div class="line"><a name="l00297"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a5d02e3513530f7497a83571d90472b00">  297</a></span>&#160;  std::atomic&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a5d02e3513530f7497a83571d90472b00">rpdo_is_set</a>;</div>
+<div class="line"><a name="l00298"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ac0f1478930363b496bf4ab8ddf8a1e27">  298</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ac0f1478930363b496bf4ab8ddf8a1e27">pdo_mtex</a>;</div>
+<div class="line"><a name="l00299"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ab6e73e2c43c8b47f396f2248a3bdc6d1">  299</a></span>&#160;  std::shared_ptr&lt;SafeQueue&lt;COData&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ab6e73e2c43c8b47f396f2248a3bdc6d1">rpdo_queue</a>;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160; </div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="comment">// EMCY synchronisation items</span></div>
+<div class="line"><a name="l00302"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ae126576b75a8a379a34364fc58c357d1">  302</a></span>&#160;  std::promise&lt;COEmcy&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ae126576b75a8a379a34364fc58c357d1">emcy_promise</a>;</div>
+<div class="line"><a name="l00303"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a048866d53f35db96fae4801cd4985a56">  303</a></span>&#160;  std::atomic&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a048866d53f35db96fae4801cd4985a56">emcy_is_set</a>;</div>
+<div class="line"><a name="l00304"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a6726f2fd764dcbed60a73694938214df">  304</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a6726f2fd764dcbed60a73694938214df">emcy_mtex</a>;</div>
+<div class="line"><a name="l00305"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aefdcd9071ce01690e6fe44d098245e1d">  305</a></span>&#160;  std::shared_ptr&lt;SafeQueue&lt;COEmcy&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aefdcd9071ce01690e6fe44d098245e1d">emcy_queue</a>;</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160; </div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  <span class="comment">// BOOT synchronisation items</span></div>
+<div class="line"><a name="l00308"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#adc23957de6e302d6dec4bfabfe426133">  308</a></span>&#160;  std::atomic&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#adc23957de6e302d6dec4bfabfe426133">booted</a>;</div>
+<div class="line"><a name="l00309"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aedf37290d8854316efa0f319378fec0a">  309</a></span>&#160;  <span class="keywordtype">char</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aedf37290d8854316efa0f319378fec0a">boot_status</a>;</div>
+<div class="line"><a name="l00310"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a7da385a93a34528bbe6b1e57a76ee684">  310</a></span>&#160;  std::string <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a7da385a93a34528bbe6b1e57a76ee684">boot_what</a>;</div>
+<div class="line"><a name="l00311"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#af691b9c8ac5cf331f692770267533754">  311</a></span>&#160;  canopen::NmtState <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#af691b9c8ac5cf331f692770267533754">boot_state</a>;</div>
+<div class="line"><a name="l00312"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ae1a124ca99ee3d1571ee0bd594acd684">  312</a></span>&#160;  std::condition_variable <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ae1a124ca99ee3d1571ee0bd594acd684">boot_cond</a>;</div>
+<div class="line"><a name="l00313"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a15ab371cf46052d5028bc2a8804440ee">  313</a></span>&#160;  std::mutex <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a15ab371cf46052d5028bc2a8804440ee">boot_mtex</a>;</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160; </div>
+<div class="line"><a name="l00315"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#afb2119c15d6781425ea66714e3fd1c38">  315</a></span>&#160;  uint8_t <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#afb2119c15d6781425ea66714e3fd1c38">nodeid</a>;</div>
+<div class="line"><a name="l00316"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#afbd744c730f8e4721a85d3f59250be5e">  316</a></span>&#160;  std::string <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#afbd744c730f8e4721a85d3f59250be5e">name_</a>;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160; </div>
+<div class="line"><a name="l00326"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#affa3700f0a4a4640eabeec41e59621a9">  326</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#affa3700f0a4a4640eabeec41e59621a9">OnState</a>(canopen::NmtState state) noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160; </div>
+<div class="line"><a name="l00338"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a74185fae4f72f2cdcabfef533ca72254">  338</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a74185fae4f72f2cdcabfef533ca72254">OnBoot</a>(canopen::NmtState st, <span class="keywordtype">char</span> es, const ::std::string &amp; what) noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160; </div>
+<div class="line"><a name="l00350"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a694f5e335166e7d3ccbf8d75da8440ca">  350</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a694f5e335166e7d3ccbf8d75da8440ca">OnRpdoWrite</a>(uint16_t idx, uint8_t subidx) noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160; </div>
+<div class="line"><a name="l00360"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aac3c9ccd8c5493c8787887caa1511741">  360</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aac3c9ccd8c5493c8787887caa1511741">OnEmcy</a>(uint16_t eec, uint8_t er, uint8_t msef[5]) noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160; </div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  <span class="keyword">using</span> FiberDriver::FiberDriver;</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160; </div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;}  <span class="comment">// namespace ros2_canopen</span></div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160; </div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// CANOPEN_BASE_DRIVER__LELY_BRIDGE_HPP_</span></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html">ros2_canopen::LelyDriverBridge</a></div><div class="ttdoc">Lely Driver Bridge.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:93</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a048866d53f35db96fae4801cd4985a56"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a048866d53f35db96fae4801cd4985a56">ros2_canopen::LelyDriverBridge::emcy_is_set</a></div><div class="ttdeci">std::atomic&lt; bool &gt; emcy_is_set</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:149</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a0564f8199205fad4ad68256992cf797b"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a0564f8199205fad4ad68256992cf797b">ros2_canopen::LelyDriverBridge::sdo_mutex</a></div><div class="ttdeci">std::mutex sdo_mutex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:132</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a10b43f728a74c8cea7cbba5be4d4b0c7"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a10b43f728a74c8cea7cbba5be4d4b0c7">ros2_canopen::LelyDriverBridge::is_booted</a></div><div class="ttdeci">bool is_booted()</div><div class="ttdoc">Indicates if Device is booted.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:362</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a15ab371cf46052d5028bc2a8804440ee"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a15ab371cf46052d5028bc2a8804440ee">ros2_canopen::LelyDriverBridge::boot_mtex</a></div><div class="ttdeci">std::mutex boot_mtex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:159</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a2b8224a676fc806ce2d0b884d6a4cf52"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a2b8224a676fc806ce2d0b884d6a4cf52">ros2_canopen::LelyDriverBridge::rpdo_promise</a></div><div class="ttdeci">std::promise&lt; COData &gt; rpdo_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:142</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a2c7562f6c1e17e36949f78a58c607676"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a2c7562f6c1e17e36949f78a58c607676">ros2_canopen::LelyDriverBridge::running</a></div><div class="ttdeci">bool running</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:133</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a3164e09064f5c099b040e3db185cf8d0"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a3164e09064f5c099b040e3db185cf8d0">ros2_canopen::LelyDriverBridge::sdo_write_data_promise</a></div><div class="ttdeci">std::shared_ptr&lt; std::promise&lt; bool &gt; &gt; sdo_write_data_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:131</div></div>
+<div class="line"><a name="l00375"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ade9cec2da4e1b7d4bdcc47a10e54747f">  375</a></span>&#160;  <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ade9cec2da4e1b7d4bdcc47a10e54747f">LelyDriverBridge</a>(</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    ev_exec_t * exec, canopen::AsyncMaster &amp; master, uint8_t <span class="keywordtype">id</span>, std::string name, std::string eds,</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    std::string bin)</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  : FiberDriver(exec, master, id),</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    rpdo_queue(new <a class="code" href="classros2__canopen_1_1SafeQueue.html">SafeQueue</a>&lt;<a class="code" href="structros2__canopen_1_1COData.html">COData</a>&gt;()),</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    emcy_queue(new <a class="code" href="classros2__canopen_1_1SafeQueue.html">SafeQueue</a>&lt;<a class="code" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>&gt;())</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  {</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    nodeid = id;</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    running = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;    name_ = name;</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;    dictionary_ = std::make_unique&lt;DriverDictionary&gt;(eds.c_str());</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    <span class="keyword">struct </span>stat buffer;</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    <span class="keywordflow">if</span> (stat(bin.c_str(), &amp;buffer) == 0)</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    {</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;      co_unsigned16_t * a = NULL;</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;      co_unsigned16_t * b = NULL;</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;      dictionary_-&gt;readDCF(a, b, bin.c_str());</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;    }</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;    pdo_map_ = dictionary_-&gt;createPDOMapping();</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  }</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160; </div>
+<div class="line"><a name="l00409"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ab0c6920f6e2b3c64b04553f2857d3daf">  409</a></span>&#160;  std::future&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ab0c6920f6e2b3c64b04553f2857d3daf">async_sdo_write</a>(<a class="code" href="structros2__canopen_1_1COData.html">COData</a> data);</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160; </div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00412"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ab8d21125b42d46aed1378344e74bcc04">  412</a></span>&#160;  std::future&lt;bool&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ab8d21125b42d46aed1378344e74bcc04">async_sdo_write_typed</a>(uint16_t idx, uint8_t subidx, T value)</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  {</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    std::unique_lock&lt;std::mutex&gt; lck(sdo_mutex);</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    <span class="keywordflow">if</span> (running)</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    {</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;      sdo_cond.wait(lck);</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    }</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    running = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160; </div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    <span class="keyword">auto</span> prom = std::make_shared&lt;std::promise&lt;bool&gt;&gt;();</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    lely::COSub * sub = this-&gt;dictionary_-&gt;find(idx, subidx);</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="keywordflow">if</span> (sub == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    {</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;async_sdo_write_typed: id=&quot;</span> &lt;&lt; (<span class="keywordtype">unsigned</span> int)this-&gt;get_id() &lt;&lt; <span class="stringliteral">&quot; index=0x&quot;</span></div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;                &lt;&lt; std::hex &lt;&lt; (<span class="keywordtype">unsigned</span> int)idx &lt;&lt; <span class="stringliteral">&quot; subindex=&quot;</span> &lt;&lt; (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)subidx</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; object does not exist&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;      prom-&gt;set_value(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;      this-&gt;running = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;      this-&gt;sdo_cond.notify_one();</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;      <span class="keywordflow">return</span> prom-&gt;get_future();</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    }</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160; </div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;    this-&gt;SubmitWrite(</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;      idx, subidx, value,</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;      [<span class="keyword">this</span>, value, prom](uint8_t <span class="keywordtype">id</span>, uint16_t idx, uint8_t subidx, ::std::error_code ec) <span class="keyword">mutable</span></div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;      {</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        <span class="keywordflow">if</span> (ec)</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        {</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;          prom-&gt;set_exception(</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;            lely::canopen::make_sdo_exception_ptr(<span class="keywordtype">id</span>, idx, subidx, ec, <span class="stringliteral">&quot;AsyncDownload&quot;</span>));</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;        }</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;        {</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;          std::scoped_lock&lt;std::mutex&gt; lck(this-&gt;dictionary_mutex_);</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;          this-&gt;dictionary_-&gt;setVal&lt;T&gt;(idx, subidx, value);</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;          prom-&gt;set_value(<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;        }</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;        std::unique_lock&lt;std::mutex&gt; lck(this-&gt;sdo_mutex);</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;        this-&gt;running = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;        this-&gt;sdo_cond.notify_one();</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;      },</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;      20ms);</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    <span class="keywordflow">return</span> prom-&gt;get_future();</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;  }</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160; </div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00458"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a291fbf80ed8337f9cc8ea27c77b7ea5f">  458</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a291fbf80ed8337f9cc8ea27c77b7ea5f">sync_sdo_write_typed</a>(</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    uint16_t idx, uint8_t subidx, T value, std::chrono::milliseconds timeout)</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  {</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;    <span class="keyword">auto</span> fut = async_sdo_write_typed(idx, subidx, value);</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;    <span class="keyword">auto</span> wait_res = fut.wait_for(timeout);</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;    <span class="keywordflow">if</span> (wait_res == std::future_status::timeout)</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;    {</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;sync_sdo_write_typed: id=&quot;</span> &lt;&lt; (<span class="keywordtype">unsigned</span> int)this-&gt;get_id() &lt;&lt; <span class="stringliteral">&quot; index=0x&quot;</span></div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;                &lt;&lt; std::hex &lt;&lt; (<span class="keywordtype">unsigned</span> int)idx &lt;&lt; <span class="stringliteral">&quot; subindex=&quot;</span> &lt;&lt; (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)subidx</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; timed out.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;    }</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;    <span class="keywordtype">bool</span> res = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;    <span class="keywordflow">try</span></div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;    {</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;      res = fut.get();</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;    }</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;    <span class="keywordflow">catch</span> (std::exception &amp; e)</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;    {</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;      RCLCPP_ERROR(rclcpp::get_logger(name_), e.what());</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;    }</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;    <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;  }</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160; </div>
+<div class="line"><a name="l00495"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ac41fcb002b23ff3b8e495c0296609076">  495</a></span>&#160;  std::future&lt;COData&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ac41fcb002b23ff3b8e495c0296609076">async_sdo_read</a>(<a class="code" href="structros2__canopen_1_1COData.html">COData</a> data);</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160; </div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00498"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#af648dda712839374eded449e7f641bbb">  498</a></span>&#160;  std::future&lt;T&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#af648dda712839374eded449e7f641bbb">async_sdo_read_typed</a>(uint16_t idx, uint8_t subidx)</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;  {</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;    std::unique_lock&lt;std::mutex&gt; lck(sdo_mutex);</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;    <span class="keywordflow">if</span> (running)</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;    {</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;      sdo_cond.wait(lck);</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;    }</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;    running = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160; </div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;    <span class="keyword">auto</span> prom = std::make_shared&lt;std::promise&lt;T&gt;&gt;();</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;    lely::COSub * sub = this-&gt;dictionary_-&gt;find(idx, subidx);</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;    <span class="keywordflow">if</span> (sub == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;    {</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;async_sdo_read: id=&quot;</span> &lt;&lt; (<span class="keywordtype">unsigned</span> int)this-&gt;get_id() &lt;&lt; <span class="stringliteral">&quot; index=0x&quot;</span> &lt;&lt; std::hex</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;                &lt;&lt; (<span class="keywordtype">unsigned</span> int)idx &lt;&lt; <span class="stringliteral">&quot; subindex=&quot;</span> &lt;&lt; (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)subidx</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; object does not exist&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;      <span class="keywordflow">try</span></div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;      {</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;        <span class="keywordflow">throw</span> lely::canopen::SdoError(this-&gt;get_id(), idx, subidx, lely::canopen::SdoErrc::NO_OBJ);</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;      }</div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;      <span class="keywordflow">catch</span> (...)</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;      {</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;        prom-&gt;set_exception(std::current_exception());</div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;      }</div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;      this-&gt;running = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;      this-&gt;sdo_cond.notify_one();</div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;      <span class="keywordflow">return</span> prom-&gt;get_future();</div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;    }</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;    this-&gt;SubmitRead&lt;T&gt;(</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;      idx, subidx,</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;      [<span class="keyword">this</span>, prom](uint8_t <span class="keywordtype">id</span>, uint16_t idx, uint8_t subidx, ::std::error_code ec, T value) <span class="keyword">mutable</span></div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;      {</div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;        <span class="keywordflow">if</span> (ec)</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;        {</div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;          prom-&gt;set_exception(</div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;            lely::canopen::make_sdo_exception_ptr(<span class="keywordtype">id</span>, idx, subidx, ec, <span class="stringliteral">&quot;AsyncUpload&quot;</span>));</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;        }</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;        {</div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;          std::scoped_lock&lt;std::mutex&gt; lck(this-&gt;dictionary_mutex_);</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;          this-&gt;dictionary_-&gt;setVal&lt;T&gt;(idx, subidx, value);</div>
+<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;          prom-&gt;set_value(value);</div>
+<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;        }</div>
+<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;        std::unique_lock&lt;std::mutex&gt; lck(this-&gt;sdo_mutex);</div>
+<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;        this-&gt;running = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;        this-&gt;sdo_cond.notify_one();</div>
+<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;      },</div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;      20ms);</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;    <span class="keywordflow">return</span> prom-&gt;get_future();</div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;  }</div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160; </div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00550"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a2e0dade97304c59f8e64815694a382ae">  550</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a2e0dade97304c59f8e64815694a382ae">sync_sdo_read_typed</a>(</div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;    uint16_t idx, uint8_t subidx, T &amp; value, std::chrono::milliseconds timeout)</div>
+<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;  {</div>
+<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;    <span class="keyword">auto</span> fut = async_sdo_read_typed&lt;T&gt;(idx, subidx);</div>
+<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;    <span class="keyword">auto</span> wait_res = fut.wait_for(timeout);</div>
+<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;    <span class="keywordflow">if</span> (wait_res == std::future_status::timeout)</div>
+<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;    {</div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;sync_sdo_read_typed: id=&quot;</span> &lt;&lt; (<span class="keywordtype">unsigned</span> int)this-&gt;get_id() &lt;&lt; <span class="stringliteral">&quot; index=0x&quot;</span></div>
+<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;                &lt;&lt; std::hex &lt;&lt; (<span class="keywordtype">unsigned</span> int)idx &lt;&lt; <span class="stringliteral">&quot; subindex=&quot;</span> &lt;&lt; (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)subidx</div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; timed out.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;    }</div>
+<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;    <span class="keywordtype">bool</span> res = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;    <span class="keywordflow">try</span></div>
+<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;    {</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;      value = fut.get();</div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;      res = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;    }</div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;    <span class="keywordflow">catch</span> (std::exception &amp; e)</div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;    {</div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;      RCLCPP_ERROR(rclcpp::get_logger(name_), e.what());</div>
+<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;      res = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;    }</div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;    <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;  }</div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160; </div>
+<div class="line"><a name="l00585"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a34f0b14f8c5170ec47e38157050288ef">  585</a></span>&#160;  std::future&lt;canopen::NmtState&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a34f0b14f8c5170ec47e38157050288ef">async_request_nmt</a>();</div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160; </div>
+<div class="line"><a name="l00598"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ab28f2c99cfb503a030fd8ce8c1bf1d2c">  598</a></span>&#160;  std::shared_ptr&lt;SafeQueue&lt;COData&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ab28f2c99cfb503a030fd8ce8c1bf1d2c">get_rpdo_queue</a>();</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160; </div>
+<div class="line"><a name="l00607"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a185075b04c38fda483a09cd5b1f60d52">  607</a></span>&#160;  std::shared_ptr&lt;SafeQueue&lt;COEmcy&gt;&gt; <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a185075b04c38fda483a09cd5b1f60d52">get_emcy_queue</a>();</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160; </div>
+<div class="line"><a name="l00618"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ae81768ed4a61e0b9e137cbb16c26d1a0">  618</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ae81768ed4a61e0b9e137cbb16c26d1a0">tpdo_transmit</a>(<a class="code" href="structros2__canopen_1_1COData.html">COData</a> data);</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160; </div>
+<div class="line"><a name="l00628"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a74f1911891d2c59bfcf912e30d40fdab">  628</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a74f1911891d2c59bfcf912e30d40fdab">nmt_command</a>(canopen::NmtCommand command);</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160; </div>
+<div class="line"><a name="l00635"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aa82419345fa45a3e42a8c7e21f713f74">  635</a></span>&#160;  uint8_t <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aa82419345fa45a3e42a8c7e21f713f74">get_id</a>();</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160; </div>
+<div class="line"><a name="l00643"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#acbca8f80755f46e1f4dd89af125263aa">  643</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#acbca8f80755f46e1f4dd89af125263aa">wait_for_boot</a>()</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;  {</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;    <span class="keywordflow">if</span> (booted.load())</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;    {</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    }</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;    std::unique_lock&lt;std::mutex&gt; lck(boot_mtex);</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;    boot_cond.wait(lck);</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;    <span class="keywordflow">if</span> ((boot_status != 0) &amp;&amp; (boot_status != <span class="charliteral">&#39;L&#39;</span>))</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;    {</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;      <span class="keywordflow">throw</span> std::system_error(boot_status, <a class="code" href="structros2__canopen_1_1LelyBridgeErrCategory.html">LelyBridgeErrCategory</a>(), <span class="stringliteral">&quot;Boot Issue&quot;</span>);</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;    }</div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;    {</div>
+<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;      booted.store(<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;    }</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;  }</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160; </div>
+<div class="line"><a name="l00667"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ac3ef3c3688a3eb0c321b8b554f16ba51">  667</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ac3ef3c3688a3eb0c321b8b554f16ba51">Boot</a>()</div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;  {</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    booted.store(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    FiberDriver::Boot();</div>
+<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;  }</div>
+<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160; </div>
+<div class="line"><a name="l00679"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a10b43f728a74c8cea7cbba5be4d4b0c7">  679</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a10b43f728a74c8cea7cbba5be4d4b0c7">is_booted</a>() { <span class="keywordflow">return</span> booted.load(); }</div>
+<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160; </div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00682"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aae5f2ccfc16c4f670b496a432c65b2ef">  682</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aae5f2ccfc16c4f670b496a432c65b2ef">submit_write</a>(<a class="code" href="structros2__canopen_1_1COData.html">COData</a> data)</div>
+<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;  {</div>
+<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;    T value = 0;</div>
+<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;    std::memcpy(&amp;value, &amp;data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>, <span class="keyword">sizeof</span>(value));</div>
+<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160; </div>
+<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;    this-&gt;SubmitWrite(</div>
+<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;      data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>, value,</div>
+<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;      [<span class="keyword">this</span>, value](uint8_t <span class="keywordtype">id</span>, uint16_t idx, uint8_t subidx, ::std::error_code ec) <span class="keyword">mutable</span></div>
+<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;      {</div>
+<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;        if (ec)</div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;        {</div>
+<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;          this-&gt;sdo_write_data_promise-&gt;set_exception(</div>
+<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;            lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, <span class="stringliteral">&quot;AsyncDownload&quot;</span>));</div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;        }</div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;        {</div>
+<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;          std::scoped_lock&lt;std::mutex&gt; lck(this-&gt;dictionary_mutex_);</div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;          this-&gt;dictionary_-&gt;setVal&lt;T&gt;(idx, subidx, value);</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;          this-&gt;sdo_write_data_promise-&gt;set_value(true);</div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;        }</div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;        std::unique_lock&lt;std::mutex&gt; lck(this-&gt;sdo_mutex);</div>
+<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;        this-&gt;running = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;        this-&gt;sdo_cond.notify_one();</div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;      },</div>
+<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;      20ms);</div>
+<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;  }</div>
+<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160; </div>
+<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00710"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#aa13ee12c253587eb5853ef4c525cc5a4">  710</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#aa13ee12c253587eb5853ef4c525cc5a4">submit_read</a>(<a class="code" href="structros2__canopen_1_1COData.html">COData</a> data)</div>
+<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;  {</div>
+<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;    this-&gt;SubmitRead&lt;T&gt;(</div>
+<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;      data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>,</div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;      [<span class="keyword">this</span>](uint8_t <span class="keywordtype">id</span>, uint16_t idx, uint8_t subidx, ::std::error_code ec, T value) <span class="keyword">mutable</span></div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;      {</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;        if (ec)</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;        {</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;          this-&gt;sdo_read_data_promise-&gt;set_exception(</div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;            lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, <span class="stringliteral">&quot;AsyncUpload&quot;</span>));</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;        }</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;        {</div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;          std::scoped_lock&lt;std::mutex&gt; lck(this-&gt;dictionary_mutex_);</div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;          this-&gt;dictionary_-&gt;setVal&lt;T&gt;(idx, subidx, value);</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;          COData d = {idx, subidx, 0, CODataTypes::COData32};</div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;          std::memcpy(&amp;d.data_, &amp;value, <span class="keyword">sizeof</span>(T));</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;          this-&gt;sdo_read_data_promise-&gt;set_value(d);</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;        }</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;        std::unique_lock&lt;std::mutex&gt; lck(this-&gt;sdo_mutex);</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;        this-&gt;running = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;        this-&gt;sdo_cond.notify_one();</div>
+<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;      },</div>
+<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;      20ms);</div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;  }</div>
+<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160; </div>
+<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00737"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#ab5586d9ceba859d1f2ea5cf3d666716e">  737</a></span>&#160;  <span class="keyword">const</span> T <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#ab5586d9ceba859d1f2ea5cf3d666716e">universal_get_value</a>(uint16_t index, uint8_t subindex)</div>
+<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;  {</div>
+<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;    T value = 0;</div>
+<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;    <span class="keywordtype">bool</span> is_tpdo = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;    <span class="keywordflow">if</span> (this-&gt;pdo_map_-&gt;find(index) != this-&gt;pdo_map_-&gt;end())</div>
+<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;    {</div>
+<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;      <span class="keyword">auto</span> <span class="keywordtype">object</span> = this-&gt;pdo_map_-&gt;at(index);</div>
+<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;      <span class="keywordflow">if</span> (<span class="keywordtype">object</span>.find(subindex) != <span class="keywordtype">object</span>.end())</div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;      {</div>
+<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;        <span class="keyword">auto</span> entry = <span class="keywordtype">object</span>.at(subindex);</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;        is_tpdo = entry.is_tpdo;</div>
+<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;      }</div>
+<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;    }</div>
+<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;    <span class="keywordflow">if</span> (!is_tpdo)</div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;    {</div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;      <span class="keywordflow">if</span> (sync_sdo_read_typed&lt;T&gt;(index, subindex, value, std::chrono::milliseconds(20)))</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;      {</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;        <span class="keywordflow">return</span> value;</div>
+<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;      }</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;    }</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160; </div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;    std::scoped_lock&lt;std::mutex&gt; lck(this-&gt;dictionary_mutex_);</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">typeid</span>(T) == <span class="keyword">typeid</span>(uint8_t))</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    {</div>
+<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;      value = this-&gt;dictionary_-&gt;getVal&lt;CO_DEFTYPE_UNSIGNED8&gt;(index, subindex);</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    }</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">typeid</span>(T) == <span class="keyword">typeid</span>(uint16_t))</div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    {</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;      value = this-&gt;dictionary_-&gt;getVal&lt;CO_DEFTYPE_UNSIGNED16&gt;(index, subindex);</div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;    }</div>
+<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">typeid</span>(T) == <span class="keyword">typeid</span>(uint32_t))</div>
+<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;    {</div>
+<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;      value = this-&gt;dictionary_-&gt;getVal&lt;CO_DEFTYPE_UNSIGNED32&gt;(index, subindex);</div>
+<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;    }</div>
+<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">typeid</span>(T) == <span class="keyword">typeid</span>(int8_t))</div>
+<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;    {</div>
+<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;      value = this-&gt;dictionary_-&gt;getVal&lt;CO_DEFTYPE_INTEGER8&gt;(index, subindex);</div>
+<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;    }</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">typeid</span>(T) == <span class="keyword">typeid</span>(int16_t))</div>
+<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;    {</div>
+<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;      value = this-&gt;dictionary_-&gt;getVal&lt;CO_DEFTYPE_INTEGER16&gt;(index, subindex);</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;    }</div>
+<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">typeid</span>(T) == <span class="keyword">typeid</span>(int32_t))</div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;    {</div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;      value = this-&gt;dictionary_-&gt;getVal&lt;CO_DEFTYPE_INTEGER32&gt;(index, subindex);</div>
+<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;    }</div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160; </div>
+<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;    <span class="keywordflow">return</span> value;</div>
+<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;  }</div>
+<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160; </div>
+<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00788"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1LelyDriverBridge.html#a0a6cc276cc31efe48e562ada5997d57e">  788</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1LelyDriverBridge.html#a0a6cc276cc31efe48e562ada5997d57e">universal_set_value</a>(uint16_t index, uint8_t subindex, T value)</div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;  {</div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;    <span class="keywordtype">bool</span> is_rpdo = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;    <span class="keywordflow">if</span> (this-&gt;pdo_map_-&gt;find(index) != this-&gt;pdo_map_-&gt;end())</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;    {</div>
+<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;      <span class="keyword">auto</span> <span class="keywordtype">object</span> = this-&gt;pdo_map_-&gt;at(index);</div>
+<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;      <span class="keywordflow">if</span> (<span class="keywordtype">object</span>.find(subindex) != <span class="keywordtype">object</span>.end())</div>
+<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;      {</div>
+<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;        <span class="keyword">auto</span> entry = <span class="keywordtype">object</span>.at(subindex);</div>
+<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;        is_rpdo = entry.is_rpdo;</div>
+<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;      }</div>
+<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;    }</div>
+<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;    <span class="keywordflow">if</span> (is_rpdo)</div>
+<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;    {</div>
+<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;      std::scoped_lock&lt;std::mutex&gt; lck(this-&gt;dictionary_mutex_);</div>
+<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;      this-&gt;dictionary_-&gt;setVal&lt;T&gt;(index, subindex, value);</div>
+<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;      this-&gt;tpdo_mapped[index][subindex] = value;</div>
+<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;      this-&gt;tpdo_mapped[index][subindex].WriteEvent();</div>
+<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;    }</div>
+<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;    {</div>
+<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;      sync_sdo_write_typed(index, subindex, value, std::chrono::milliseconds(20));</div>
+<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;    }</div>
+<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;  }</div>
+<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;};</div>
+<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160; </div>
+<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;}  <span class="comment">// namespace ros2_canopen</span></div>
+<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160; </div>
+<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// CANOPEN_BASE_DRIVER__LELY_BRIDGE_HPP_</span></div>
+<div class="ttc" id="aclassros2__canopen_1_1DriverDictionary_html"><div class="ttname"><a href="classros2__canopen_1_1DriverDictionary.html">ros2_canopen::DriverDictionary</a></div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:59</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1DriverDictionary_html_a25fc6311f2e0319886fdeee36a2005a4"><div class="ttname"><a href="classros2__canopen_1_1DriverDictionary.html#a25fc6311f2e0319886fdeee36a2005a4">ros2_canopen::DriverDictionary::~DriverDictionary</a></div><div class="ttdeci">~DriverDictionary()</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:62</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1DriverDictionary_html_a2a03e2336e963b435e22ebaca379d863"><div class="ttname"><a href="classros2__canopen_1_1DriverDictionary.html#a2a03e2336e963b435e22ebaca379d863">ros2_canopen::DriverDictionary::DriverDictionary</a></div><div class="ttdeci">DriverDictionary(std::string eds_file)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:61</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1DriverDictionary_html_a32dfa3634c7af52a734b7408425f59ec"><div class="ttname"><a href="classros2__canopen_1_1DriverDictionary.html#a32dfa3634c7af52a734b7408425f59ec">ros2_canopen::DriverDictionary::checkObjTPDO</a></div><div class="ttdeci">bool checkObjTPDO(uint16_t idx, uint8_t subidx)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:187</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1DriverDictionary_html_a4d647d0a2d31ae766cae6b7d5ec074c0"><div class="ttname"><a href="classros2__canopen_1_1DriverDictionary.html#a4d647d0a2d31ae766cae6b7d5ec074c0">ros2_canopen::DriverDictionary::checkObjInPDO</a></div><div class="ttdeci">bool checkObjInPDO(uint8_t pdo, uint16_t mapping_idx, uint16_t idx, uint8_t subindex)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:201</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1DriverDictionary_html_a560d02faeac75c1bdc80370f8c92ff47"><div class="ttname"><a href="classros2__canopen_1_1DriverDictionary.html#a560d02faeac75c1bdc80370f8c92ff47">ros2_canopen::DriverDictionary::createPDOMapping</a></div><div class="ttdeci">std::shared_ptr&lt; PDOMap &gt; createPDOMapping()</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:67</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1DriverDictionary_html_a9d3ed44c9778165aa0bace9dda340834"><div class="ttname"><a href="classros2__canopen_1_1DriverDictionary.html#a9d3ed44c9778165aa0bace9dda340834">ros2_canopen::DriverDictionary::fetchTPDO</a></div><div class="ttdeci">void fetchTPDO(std::shared_ptr&lt; PDOMap &gt; map)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:141</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1DriverDictionary_html_aca9168ebe377b6e8568d94b136e6301b"><div class="ttname"><a href="classros2__canopen_1_1DriverDictionary.html#aca9168ebe377b6e8568d94b136e6301b">ros2_canopen::DriverDictionary::fetchRPDO</a></div><div class="ttdeci">void fetchRPDO(std::shared_ptr&lt; PDOMap &gt; map)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:111</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1DriverDictionary_html_af1bfcfdd92075336c7efcac76f13690b"><div class="ttname"><a href="classros2__canopen_1_1DriverDictionary.html#af1bfcfdd92075336c7efcac76f13690b">ros2_canopen::DriverDictionary::checkObjRPDO</a></div><div class="ttdeci">bool checkObjRPDO(uint16_t idx, uint8_t subidx)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:173</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html">ros2_canopen::LelyDriverBridge</a></div><div class="ttdoc">Lely Driver Bridge.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:276</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a048866d53f35db96fae4801cd4985a56"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a048866d53f35db96fae4801cd4985a56">ros2_canopen::LelyDriverBridge::emcy_is_set</a></div><div class="ttdeci">std::atomic&lt; bool &gt; emcy_is_set</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:303</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a0564f8199205fad4ad68256992cf797b"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a0564f8199205fad4ad68256992cf797b">ros2_canopen::LelyDriverBridge::sdo_mutex</a></div><div class="ttdeci">std::mutex sdo_mutex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:286</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a0a6cc276cc31efe48e562ada5997d57e"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a0a6cc276cc31efe48e562ada5997d57e">ros2_canopen::LelyDriverBridge::universal_set_value</a></div><div class="ttdeci">void universal_set_value(uint16_t index, uint8_t subindex, T value)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:788</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a10b43f728a74c8cea7cbba5be4d4b0c7"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a10b43f728a74c8cea7cbba5be4d4b0c7">ros2_canopen::LelyDriverBridge::is_booted</a></div><div class="ttdeci">bool is_booted()</div><div class="ttdoc">Indicates if Device is booted.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:679</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a15ab371cf46052d5028bc2a8804440ee"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a15ab371cf46052d5028bc2a8804440ee">ros2_canopen::LelyDriverBridge::boot_mtex</a></div><div class="ttdeci">std::mutex boot_mtex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:313</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a185075b04c38fda483a09cd5b1f60d52"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a185075b04c38fda483a09cd5b1f60d52">ros2_canopen::LelyDriverBridge::get_emcy_queue</a></div><div class="ttdeci">std::shared_ptr&lt; SafeQueue&lt; COEmcy &gt; &gt; get_emcy_queue()</div><div class="ttdoc">Asynchronous request for EMCY.</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a291fbf80ed8337f9cc8ea27c77b7ea5f"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a291fbf80ed8337f9cc8ea27c77b7ea5f">ros2_canopen::LelyDriverBridge::sync_sdo_write_typed</a></div><div class="ttdeci">bool sync_sdo_write_typed(uint16_t idx, uint8_t subidx, T value, std::chrono::milliseconds timeout)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:458</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a2b8224a676fc806ce2d0b884d6a4cf52"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a2b8224a676fc806ce2d0b884d6a4cf52">ros2_canopen::LelyDriverBridge::rpdo_promise</a></div><div class="ttdeci">std::promise&lt; COData &gt; rpdo_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:296</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a2c7562f6c1e17e36949f78a58c607676"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a2c7562f6c1e17e36949f78a58c607676">ros2_canopen::LelyDriverBridge::running</a></div><div class="ttdeci">bool running</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:287</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a2e0dade97304c59f8e64815694a382ae"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a2e0dade97304c59f8e64815694a382ae">ros2_canopen::LelyDriverBridge::sync_sdo_read_typed</a></div><div class="ttdeci">bool sync_sdo_read_typed(uint16_t idx, uint8_t subidx, T &amp;value, std::chrono::milliseconds timeout)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:550</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a3164e09064f5c099b040e3db185cf8d0"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a3164e09064f5c099b040e3db185cf8d0">ros2_canopen::LelyDriverBridge::sdo_write_data_promise</a></div><div class="ttdeci">std::shared_ptr&lt; std::promise&lt; bool &gt; &gt; sdo_write_data_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:285</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a34f0b14f8c5170ec47e38157050288ef"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a34f0b14f8c5170ec47e38157050288ef">ros2_canopen::LelyDriverBridge::async_request_nmt</a></div><div class="ttdeci">std::future&lt; canopen::NmtState &gt; async_request_nmt()</div><div class="ttdoc">Asynchronous request for NMT.</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a415d9e90846591ab99f9b3e164d5b6c6"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a415d9e90846591ab99f9b3e164d5b6c6">ros2_canopen::LelyDriverBridge::LelyDriverBridge</a></div><div class="ttdeci">LelyDriverBridge(ev_exec_t *exec, canopen::AsyncMaster &amp;master, uint8_t id, std::string name)</div><div class="ttdoc">Construct a new Lely Bridge object.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:219</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a5d02e3513530f7497a83571d90472b00"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a5d02e3513530f7497a83571d90472b00">ros2_canopen::LelyDriverBridge::rpdo_is_set</a></div><div class="ttdeci">std::atomic&lt; bool &gt; rpdo_is_set</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:143</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a5dd9d016fb217739c670a21d4a2c6861"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a5dd9d016fb217739c670a21d4a2c6861">ros2_canopen::LelyDriverBridge::sdo_cond</a></div><div class="ttdeci">std::condition_variable sdo_cond</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:134</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a6726f2fd764dcbed60a73694938214df"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a6726f2fd764dcbed60a73694938214df">ros2_canopen::LelyDriverBridge::emcy_mtex</a></div><div class="ttdeci">std::mutex emcy_mtex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:150</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a4a6f66ac52f8dabf8725c9a93f79e6c4"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a4a6f66ac52f8dabf8725c9a93f79e6c4">ros2_canopen::LelyDriverBridge::pdo_map_</a></div><div class="ttdeci">std::shared_ptr&lt; PDOMap &gt; pdo_map_</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:281</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a5baf69af189354aa4bfaa3d4ab700ad4"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a5baf69af189354aa4bfaa3d4ab700ad4">ros2_canopen::LelyDriverBridge::dictionary_</a></div><div class="ttdeci">std::unique_ptr&lt; DriverDictionary &gt; dictionary_</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:279</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a5d02e3513530f7497a83571d90472b00"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a5d02e3513530f7497a83571d90472b00">ros2_canopen::LelyDriverBridge::rpdo_is_set</a></div><div class="ttdeci">std::atomic&lt; bool &gt; rpdo_is_set</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:297</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a5dd9d016fb217739c670a21d4a2c6861"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a5dd9d016fb217739c670a21d4a2c6861">ros2_canopen::LelyDriverBridge::sdo_cond</a></div><div class="ttdeci">std::condition_variable sdo_cond</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:288</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a6726f2fd764dcbed60a73694938214df"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a6726f2fd764dcbed60a73694938214df">ros2_canopen::LelyDriverBridge::emcy_mtex</a></div><div class="ttdeci">std::mutex emcy_mtex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:304</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a694f5e335166e7d3ccbf8d75da8440ca"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a694f5e335166e7d3ccbf8d75da8440ca">ros2_canopen::LelyDriverBridge::OnRpdoWrite</a></div><div class="ttdeci">void OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept override</div><div class="ttdoc">OnRpdoWrite Callback.</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a74185fae4f72f2cdcabfef533ca72254"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a74185fae4f72f2cdcabfef533ca72254">ros2_canopen::LelyDriverBridge::OnBoot</a></div><div class="ttdeci">virtual void OnBoot(canopen::NmtState st, char es, const ::std::string &amp;what) noexcept override</div><div class="ttdoc">OnBoot Callback This callback is called when the Boot process of the slave that was initiated by the ...</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a74f1911891d2c59bfcf912e30d40fdab"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a74f1911891d2c59bfcf912e30d40fdab">ros2_canopen::LelyDriverBridge::nmt_command</a></div><div class="ttdeci">void nmt_command(canopen::NmtCommand command)</div><div class="ttdoc">Executes a NMT Command.</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a7da385a93a34528bbe6b1e57a76ee684"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a7da385a93a34528bbe6b1e57a76ee684">ros2_canopen::LelyDriverBridge::boot_what</a></div><div class="ttdeci">std::string boot_what</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:156</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a7eccede1a4a223b08493cd429b34a0ff"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a7eccede1a4a223b08493cd429b34a0ff">ros2_canopen::LelyDriverBridge::tpdo_tasks</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; TPDOWriteTask &gt; &gt; tpdo_tasks</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:161</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a8a5a155908367175234b6d7ed460168a"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a8a5a155908367175234b6d7ed460168a">ros2_canopen::LelyDriverBridge::nmt_mtex</a></div><div class="ttdeci">std::mutex nmt_mtex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:139</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a903fc498ef6de0fc97a0e990cf6010cd"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a903fc498ef6de0fc97a0e990cf6010cd">ros2_canopen::LelyDriverBridge::nmt_state_promise</a></div><div class="ttdeci">std::promise&lt; canopen::NmtState &gt; nmt_state_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:137</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aa1d768ca00fde47d2c8e881e875a71e5"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aa1d768ca00fde47d2c8e881e875a71e5">ros2_canopen::LelyDriverBridge::nmt_state_is_set</a></div><div class="ttdeci">std::atomic&lt; bool &gt; nmt_state_is_set</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:138</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a7da385a93a34528bbe6b1e57a76ee684"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a7da385a93a34528bbe6b1e57a76ee684">ros2_canopen::LelyDriverBridge::boot_what</a></div><div class="ttdeci">std::string boot_what</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:310</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a8a5a155908367175234b6d7ed460168a"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a8a5a155908367175234b6d7ed460168a">ros2_canopen::LelyDriverBridge::nmt_mtex</a></div><div class="ttdeci">std::mutex nmt_mtex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:293</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_a903fc498ef6de0fc97a0e990cf6010cd"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#a903fc498ef6de0fc97a0e990cf6010cd">ros2_canopen::LelyDriverBridge::nmt_state_promise</a></div><div class="ttdeci">std::promise&lt; canopen::NmtState &gt; nmt_state_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:291</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aa13ee12c253587eb5853ef4c525cc5a4"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aa13ee12c253587eb5853ef4c525cc5a4">ros2_canopen::LelyDriverBridge::submit_read</a></div><div class="ttdeci">void submit_read(COData data)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:710</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aa1d768ca00fde47d2c8e881e875a71e5"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aa1d768ca00fde47d2c8e881e875a71e5">ros2_canopen::LelyDriverBridge::nmt_state_is_set</a></div><div class="ttdeci">std::atomic&lt; bool &gt; nmt_state_is_set</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:292</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aa82419345fa45a3e42a8c7e21f713f74"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aa82419345fa45a3e42a8c7e21f713f74">ros2_canopen::LelyDriverBridge::get_id</a></div><div class="ttdeci">uint8_t get_id()</div><div class="ttdoc">Get the nodeid.</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aac3c9ccd8c5493c8787887caa1511741"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aac3c9ccd8c5493c8787887caa1511741">ros2_canopen::LelyDriverBridge::OnEmcy</a></div><div class="ttdeci">void OnEmcy(uint16_t eec, uint8_t er, uint8_t msef[5]) noexcept override</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aae5f2ccfc16c4f670b496a432c65b2ef"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aae5f2ccfc16c4f670b496a432c65b2ef">ros2_canopen::LelyDriverBridge::submit_write</a></div><div class="ttdeci">void submit_write(COData data)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:682</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ab0c6920f6e2b3c64b04553f2857d3daf"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ab0c6920f6e2b3c64b04553f2857d3daf">ros2_canopen::LelyDriverBridge::async_sdo_write</a></div><div class="ttdeci">std::future&lt; bool &gt; async_sdo_write(COData data)</div><div class="ttdoc">Asynchronous SDO Write.</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ab3a7c415db690fdd4bc468541c5d9c1c"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ab3a7c415db690fdd4bc468541c5d9c1c">ros2_canopen::LelyDriverBridge::async_request_emcy</a></div><div class="ttdeci">std::shared_ptr&lt; SafeQueue&lt; COEmcy &gt; &gt; async_request_emcy()</div><div class="ttdoc">Asynchronous request for EMCY.</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ab6e73e2c43c8b47f396f2248a3bdc6d1"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ab6e73e2c43c8b47f396f2248a3bdc6d1">ros2_canopen::LelyDriverBridge::rpdo_queue</a></div><div class="ttdeci">std::shared_ptr&lt; SafeQueue&lt; COData &gt; &gt; rpdo_queue</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:145</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ac0f1478930363b496bf4ab8ddf8a1e27"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ac0f1478930363b496bf4ab8ddf8a1e27">ros2_canopen::LelyDriverBridge::pdo_mtex</a></div><div class="ttdeci">std::mutex pdo_mtex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:144</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ac3ef3c3688a3eb0c321b8b554f16ba51"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ac3ef3c3688a3eb0c321b8b554f16ba51">ros2_canopen::LelyDriverBridge::Boot</a></div><div class="ttdeci">void Boot()</div><div class="ttdoc">Request master to boot device.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:350</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ab28f2c99cfb503a030fd8ce8c1bf1d2c"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ab28f2c99cfb503a030fd8ce8c1bf1d2c">ros2_canopen::LelyDriverBridge::get_rpdo_queue</a></div><div class="ttdeci">std::shared_ptr&lt; SafeQueue&lt; COData &gt; &gt; get_rpdo_queue()</div><div class="ttdoc">Asynchronous request for RPDO.</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ab5586d9ceba859d1f2ea5cf3d666716e"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ab5586d9ceba859d1f2ea5cf3d666716e">ros2_canopen::LelyDriverBridge::universal_get_value</a></div><div class="ttdeci">const T universal_get_value(uint16_t index, uint8_t subindex)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:737</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ab6e73e2c43c8b47f396f2248a3bdc6d1"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ab6e73e2c43c8b47f396f2248a3bdc6d1">ros2_canopen::LelyDriverBridge::rpdo_queue</a></div><div class="ttdeci">std::shared_ptr&lt; SafeQueue&lt; COData &gt; &gt; rpdo_queue</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:299</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ab8d21125b42d46aed1378344e74bcc04"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ab8d21125b42d46aed1378344e74bcc04">ros2_canopen::LelyDriverBridge::async_sdo_write_typed</a></div><div class="ttdeci">std::future&lt; bool &gt; async_sdo_write_typed(uint16_t idx, uint8_t subidx, T value)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:412</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ac0f1478930363b496bf4ab8ddf8a1e27"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ac0f1478930363b496bf4ab8ddf8a1e27">ros2_canopen::LelyDriverBridge::pdo_mtex</a></div><div class="ttdeci">std::mutex pdo_mtex</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:298</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ac3ef3c3688a3eb0c321b8b554f16ba51"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ac3ef3c3688a3eb0c321b8b554f16ba51">ros2_canopen::LelyDriverBridge::Boot</a></div><div class="ttdeci">void Boot()</div><div class="ttdoc">Request master to boot device.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:667</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ac41fcb002b23ff3b8e495c0296609076"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ac41fcb002b23ff3b8e495c0296609076">ros2_canopen::LelyDriverBridge::async_sdo_read</a></div><div class="ttdeci">std::future&lt; COData &gt; async_sdo_read(COData data)</div><div class="ttdoc">Aynchronous SDO Read.</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_acbca8f80755f46e1f4dd89af125263aa"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#acbca8f80755f46e1f4dd89af125263aa">ros2_canopen::LelyDriverBridge::wait_for_boot</a></div><div class="ttdeci">bool wait_for_boot()</div><div class="ttdoc">Wait for device to be booted.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:326</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_adc23957de6e302d6dec4bfabfe426133"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#adc23957de6e302d6dec4bfabfe426133">ros2_canopen::LelyDriverBridge::booted</a></div><div class="ttdeci">std::atomic&lt; bool &gt; booted</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:154</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_adec567161d251cd39a4dfd9440408b51"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#adec567161d251cd39a4dfd9440408b51">ros2_canopen::LelyDriverBridge::sdo_read_data_promise</a></div><div class="ttdeci">std::shared_ptr&lt; std::promise&lt; COData &gt; &gt; sdo_read_data_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:130</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ae126576b75a8a379a34364fc58c357d1"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ae126576b75a8a379a34364fc58c357d1">ros2_canopen::LelyDriverBridge::emcy_promise</a></div><div class="ttdeci">std::promise&lt; COEmcy &gt; emcy_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:148</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ae1a124ca99ee3d1571ee0bd594acd684"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ae1a124ca99ee3d1571ee0bd594acd684">ros2_canopen::LelyDriverBridge::boot_cond</a></div><div class="ttdeci">std::condition_variable boot_cond</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:158</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_acbca8f80755f46e1f4dd89af125263aa"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#acbca8f80755f46e1f4dd89af125263aa">ros2_canopen::LelyDriverBridge::wait_for_boot</a></div><div class="ttdeci">bool wait_for_boot()</div><div class="ttdoc">Wait for device to be booted.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:643</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_adc23957de6e302d6dec4bfabfe426133"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#adc23957de6e302d6dec4bfabfe426133">ros2_canopen::LelyDriverBridge::booted</a></div><div class="ttdeci">std::atomic&lt; bool &gt; booted</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:308</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ade9cec2da4e1b7d4bdcc47a10e54747f"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ade9cec2da4e1b7d4bdcc47a10e54747f">ros2_canopen::LelyDriverBridge::LelyDriverBridge</a></div><div class="ttdeci">LelyDriverBridge(ev_exec_t *exec, canopen::AsyncMaster &amp;master, uint8_t id, std::string name, std::string eds, std::string bin)</div><div class="ttdoc">Construct a new Lely Bridge object.</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:375</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_adec567161d251cd39a4dfd9440408b51"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#adec567161d251cd39a4dfd9440408b51">ros2_canopen::LelyDriverBridge::sdo_read_data_promise</a></div><div class="ttdeci">std::shared_ptr&lt; std::promise&lt; COData &gt; &gt; sdo_read_data_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:284</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ae126576b75a8a379a34364fc58c357d1"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ae126576b75a8a379a34364fc58c357d1">ros2_canopen::LelyDriverBridge::emcy_promise</a></div><div class="ttdeci">std::promise&lt; COEmcy &gt; emcy_promise</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:302</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ae1a124ca99ee3d1571ee0bd594acd684"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ae1a124ca99ee3d1571ee0bd594acd684">ros2_canopen::LelyDriverBridge::boot_cond</a></div><div class="ttdeci">std::condition_variable boot_cond</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:312</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_ae81768ed4a61e0b9e137cbb16c26d1a0"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#ae81768ed4a61e0b9e137cbb16c26d1a0">ros2_canopen::LelyDriverBridge::tpdo_transmit</a></div><div class="ttdeci">void tpdo_transmit(COData data)</div><div class="ttdoc">Executes a TPDO transmission.</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aedf37290d8854316efa0f319378fec0a"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aedf37290d8854316efa0f319378fec0a">ros2_canopen::LelyDriverBridge::boot_status</a></div><div class="ttdeci">char boot_status</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:155</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aefdcd9071ce01690e6fe44d098245e1d"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aefdcd9071ce01690e6fe44d098245e1d">ros2_canopen::LelyDriverBridge::emcy_queue</a></div><div class="ttdeci">std::shared_ptr&lt; SafeQueue&lt; COEmcy &gt; &gt; emcy_queue</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:151</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_af211f37b0cfbcb300ab487119f6d4b90"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#af211f37b0cfbcb300ab487119f6d4b90">ros2_canopen::LelyDriverBridge::async_request_rpdo</a></div><div class="ttdeci">std::shared_ptr&lt; SafeQueue&lt; COData &gt; &gt; async_request_rpdo()</div><div class="ttdoc">Asynchronous request for RPDO.</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_af691b9c8ac5cf331f692770267533754"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#af691b9c8ac5cf331f692770267533754">ros2_canopen::LelyDriverBridge::boot_state</a></div><div class="ttdeci">canopen::NmtState boot_state</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:157</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_afb2119c15d6781425ea66714e3fd1c38"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#afb2119c15d6781425ea66714e3fd1c38">ros2_canopen::LelyDriverBridge::nodeid</a></div><div class="ttdeci">uint8_t nodeid</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:162</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_afbd744c730f8e4721a85d3f59250be5e"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#afbd744c730f8e4721a85d3f59250be5e">ros2_canopen::LelyDriverBridge::name_</a></div><div class="ttdeci">std::string name_</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:163</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aedf37290d8854316efa0f319378fec0a"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aedf37290d8854316efa0f319378fec0a">ros2_canopen::LelyDriverBridge::boot_status</a></div><div class="ttdeci">char boot_status</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:309</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_aefdcd9071ce01690e6fe44d098245e1d"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#aefdcd9071ce01690e6fe44d098245e1d">ros2_canopen::LelyDriverBridge::emcy_queue</a></div><div class="ttdeci">std::shared_ptr&lt; SafeQueue&lt; COEmcy &gt; &gt; emcy_queue</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:305</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_af433422393f87e919b37eb0ef230a7d0"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#af433422393f87e919b37eb0ef230a7d0">ros2_canopen::LelyDriverBridge::dictionary_mutex_</a></div><div class="ttdeci">std::mutex dictionary_mutex_</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:280</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_af648dda712839374eded449e7f641bbb"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#af648dda712839374eded449e7f641bbb">ros2_canopen::LelyDriverBridge::async_sdo_read_typed</a></div><div class="ttdeci">std::future&lt; T &gt; async_sdo_read_typed(uint16_t idx, uint8_t subidx)</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:498</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_af691b9c8ac5cf331f692770267533754"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#af691b9c8ac5cf331f692770267533754">ros2_canopen::LelyDriverBridge::boot_state</a></div><div class="ttdeci">canopen::NmtState boot_state</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:311</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_afb2119c15d6781425ea66714e3fd1c38"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#afb2119c15d6781425ea66714e3fd1c38">ros2_canopen::LelyDriverBridge::nodeid</a></div><div class="ttdeci">uint8_t nodeid</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:315</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_afbd744c730f8e4721a85d3f59250be5e"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#afbd744c730f8e4721a85d3f59250be5e">ros2_canopen::LelyDriverBridge::name_</a></div><div class="ttdeci">std::string name_</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:316</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1LelyDriverBridge_html_affa3700f0a4a4640eabeec41e59621a9"><div class="ttname"><a href="classros2__canopen_1_1LelyDriverBridge.html#affa3700f0a4a4640eabeec41e59621a9">ros2_canopen::LelyDriverBridge::OnState</a></div><div class="ttdeci">void OnState(canopen::NmtState state) noexcept override</div><div class="ttdoc">OnState Callback.</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1SafeQueue_html"><div class="ttname"><a href="classros2__canopen_1_1SafeQueue.html">ros2_canopen::SafeQueue</a></div><div class="ttdoc">Thread Safe Queue for CANOpen Data Exchange.</div><div class="ttdef"><b>Definition:</b> exchange.hpp:57</div></div>
 <div class="ttc" id="aexchange_8hpp_html"><div class="ttname"><a href="exchange_8hpp.html">exchange.hpp</a></div></div>
 <div class="ttc" id="anamespaceros2__canopen_html"><div class="ttname"><a href="namespaceros2__canopen.html">ros2_canopen</a></div><div class="ttdef"><b>Definition:</b> configuration_manager.hpp:28</div></div>
-<div class="ttc" id="anamespaceros2__canopen_html_a0208fe4bb85ca027a977ca0f55a86b4ea1a1a310e601fa33f77a3582b12b6e836"><div class="ttname"><a href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4ea1a1a310e601fa33f77a3582b12b6e836">ros2_canopen::COData16</a></div><div class="ttdeci">@ COData16</div><div class="ttdef"><b>Definition:</b> exchange.hpp:28</div></div>
-<div class="ttc" id="anamespaceros2__canopen_html_a0208fe4bb85ca027a977ca0f55a86b4ea3e70ae013fe47ec30eaf23cbdd306de1"><div class="ttname"><a href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4ea3e70ae013fe47ec30eaf23cbdd306de1">ros2_canopen::COData32</a></div><div class="ttdeci">@ COData32</div><div class="ttdef"><b>Definition:</b> exchange.hpp:29</div></div>
-<div class="ttc" id="anamespaceros2__canopen_html_a0208fe4bb85ca027a977ca0f55a86b4ea94fd42b6716df6a629ed4ca39a096cc4"><div class="ttname"><a href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4ea94fd42b6716df6a629ed4ca39a096cc4">ros2_canopen::COData8</a></div><div class="ttdeci">@ COData8</div><div class="ttdef"><b>Definition:</b> exchange.hpp:27</div></div>
-<div class="ttc" id="anamespaceros2__canopen_html_a8d79337d5c37bb1ceccafdd8a291f4d9"><div class="ttname"><a href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">ros2_canopen::LelyBridgeErrc</a></div><div class="ttdeci">LelyBridgeErrc</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:46</div></div>
+<div class="ttc" id="anamespaceros2__canopen_html_a66ddb67438d2939745c2ca876e3d0837"><div class="ttname"><a href="namespaceros2__canopen.html#a66ddb67438d2939745c2ca876e3d0837">ros2_canopen::PDOMap</a></div><div class="ttdeci">std::map&lt; uint16_t, std::map&lt; uint8_t, pdo_mapping &gt; &gt; PDOMap</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:57</div></div>
+<div class="ttc" id="anamespaceros2__canopen_html_a8d79337d5c37bb1ceccafdd8a291f4d9"><div class="ttname"><a href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9">ros2_canopen::LelyBridgeErrc</a></div><div class="ttdeci">LelyBridgeErrc</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:229</div></div>
 <div class="ttc" id="anamespaceros2__canopen_html_a8d79337d5c37bb1ceccafdd8a291f4d9a0864abeaa27dc3a5ff8ca97394a41ec8"><div class="ttname"><a href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a0864abeaa27dc3a5ff8ca97394a41ec8">ros2_canopen::LelyBridgeErrc::InconsistentProgramDownload</a></div><div class="ttdeci">@ InconsistentProgramDownload</div></div>
 <div class="ttc" id="anamespaceros2__canopen_html_a8d79337d5c37bb1ceccafdd8a291f4d9a1edeb17aad08f676079cb3a85c79100b"><div class="ttname"><a href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a1edeb17aad08f676079cb3a85c79100b">ros2_canopen::LelyBridgeErrc::SoftwareUpdateRequired</a></div><div class="ttdeci">@ SoftwareUpdateRequired</div></div>
 <div class="ttc" id="anamespaceros2__canopen_html_a8d79337d5c37bb1ceccafdd8a291f4d9a40773e7d459e30762d26b9f9df6cf500"><div class="ttname"><a href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a40773e7d459e30762d26b9f9df6cf500">ros2_canopen::LelyBridgeErrc::ProductCodeDifference</a></div><div class="ttdeci">@ ProductCodeDifference</div></div>
@@ -358,16 +821,18 @@ $(function() {
 <div class="ttc" id="anamespaceros2__canopen_html_a8d79337d5c37bb1ceccafdd8a291f4d9a9a8145f39c59c499994550af42acb3d1"><div class="ttname"><a href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a9a8145f39c59c499994550af42acb3d1">ros2_canopen::LelyBridgeErrc::NmtSlaveInitiallyOperational</a></div><div class="ttdeci">@ NmtSlaveInitiallyOperational</div></div>
 <div class="ttc" id="anamespaceros2__canopen_html_a8d79337d5c37bb1ceccafdd8a291f4d9a9c2b54a378c51fcc1170d96afe72cceb"><div class="ttname"><a href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9a9c2b54a378c51fcc1170d96afe72cceb">ros2_canopen::LelyBridgeErrc::NotListedDevice</a></div><div class="ttdeci">@ NotListedDevice</div></div>
 <div class="ttc" id="anamespaceros2__canopen_html_a8d79337d5c37bb1ceccafdd8a291f4d9aec808d704b382bcda4df997c5e1ac372"><div class="ttname"><a href="namespaceros2__canopen.html#a8d79337d5c37bb1ceccafdd8a291f4d9aec808d704b382bcda4df997c5e1ac372">ros2_canopen::LelyBridgeErrc::RevisionCodeDifference</a></div><div class="ttdeci">@ RevisionCodeDifference</div></div>
-<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:72</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:255</div></div>
 <div class="ttc" id="anamespacestd_html_a23c633b1cb9f4fff3650f3502c4498f7"><div class="ttname"><a href="namespacestd.html#a23c633b1cb9f4fff3650f3502c4498f7">std::make_error_code</a></div><div class="ttdeci">std::error_code make_error_code(ros2_canopen::LelyBridgeErrc)</div></div>
 <div class="ttc" id="astructros2__canopen_1_1COData_html"><div class="ttname"><a href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a></div><div class="ttdef"><b>Definition:</b> exchange.hpp:33</div></div>
 <div class="ttc" id="astructros2__canopen_1_1COData_html_a170bc01e0c38817f2f5f940a211abf0b"><div class="ttname"><a href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">ros2_canopen::COData::data_</a></div><div class="ttdeci">uint32_t data_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:37</div></div>
 <div class="ttc" id="astructros2__canopen_1_1COData_html_a4c0f0155b543c8458581033300cdf0d9"><div class="ttname"><a href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">ros2_canopen::COData::subindex_</a></div><div class="ttdeci">uint8_t subindex_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:36</div></div>
 <div class="ttc" id="astructros2__canopen_1_1COData_html_a55faeba2e4693f404d50bbfbf037ae2b"><div class="ttname"><a href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">ros2_canopen::COData::index_</a></div><div class="ttdeci">uint16_t index_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:35</div></div>
-<div class="ttc" id="astructros2__canopen_1_1COData_html_af93eb7e4b7146fe4fbaa2463fc0c77ef"><div class="ttname"><a href="structros2__canopen_1_1COData.html#af93eb7e4b7146fe4fbaa2463fc0c77ef">ros2_canopen::COData::type_</a></div><div class="ttdeci">CODataTypes type_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:38</div></div>
 <div class="ttc" id="astructros2__canopen_1_1COEmcy_html"><div class="ttname"><a href="structros2__canopen_1_1COEmcy.html">ros2_canopen::COEmcy</a></div><div class="ttdef"><b>Definition:</b> exchange.hpp:42</div></div>
-<div class="ttc" id="astructros2__canopen_1_1LelyBridgeErrCategory_html"><div class="ttname"><a href="structros2__canopen_1_1LelyBridgeErrCategory.html">ros2_canopen::LelyBridgeErrCategory</a></div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:65</div></div>
+<div class="ttc" id="astructros2__canopen_1_1LelyBridgeErrCategory_html"><div class="ttname"><a href="structros2__canopen_1_1LelyBridgeErrCategory.html">ros2_canopen::LelyBridgeErrCategory</a></div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:248</div></div>
 <div class="ttc" id="astructros2__canopen_1_1LelyBridgeErrCategory_html_ab15217967b80e013bb7a7fdfe6e34206"><div class="ttname"><a href="structros2__canopen_1_1LelyBridgeErrCategory.html#ab15217967b80e013bb7a7fdfe6e34206">ros2_canopen::LelyBridgeErrCategory::name</a></div><div class="ttdeci">const char * name() const noexcept override</div></div>
+<div class="ttc" id="astructros2__canopen_1_1pdo__mapping_html"><div class="ttname"><a href="structros2__canopen_1_1pdo__mapping.html">ros2_canopen::pdo_mapping</a></div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:52</div></div>
+<div class="ttc" id="astructros2__canopen_1_1pdo__mapping_html_a6c8e8693ebb82d9dd6046c2ba69e3537"><div class="ttname"><a href="structros2__canopen_1_1pdo__mapping.html#a6c8e8693ebb82d9dd6046c2ba69e3537">ros2_canopen::pdo_mapping::is_rpdo</a></div><div class="ttdeci">bool is_rpdo</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:54</div></div>
+<div class="ttc" id="astructros2__canopen_1_1pdo__mapping_html_aec125751b5b783db0e94fc9f04fec4a0"><div class="ttname"><a href="structros2__canopen_1_1pdo__mapping.html#aec125751b5b783db0e94fc9f04fec4a0">ros2_canopen::pdo_mapping::is_tpdo</a></div><div class="ttdeci">bool is_tpdo</div><div class="ttdef"><b>Definition:</b> lely_driver_bridge.hpp:53</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

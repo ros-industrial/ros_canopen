@@ -125,6 +125,10 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1BaseDriver.html">BaseDriver</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract Class for a CANopen Device Node.  <a href="classros2__canopen_1_1BaseDriver.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structros2__canopen_1_1pdo__mapping.html">pdo_mapping</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1DriverDictionary.html">DriverDictionary</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structros2__canopen_1_1LelyBridgeErrCategory.html">LelyBridgeErrCategory</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html">LelyDriverBridge</a></td></tr>
@@ -176,24 +180,26 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:a66ddb67438d2939745c2ca876e3d0837"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; uint16_t, std::map&lt; uint8_t, <a class="el" href="structros2__canopen_1_1pdo__mapping.html">pdo_mapping</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a66ddb67438d2939745c2ca876e3d0837">PDOMap</a></td></tr>
+<tr class="separator:a66ddb67438d2939745c2ca876e3d0837"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f6d9ef3d7c5fbbe9d275a015b76f716"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1MotorBase.html#aadde1a6252fb3f5e1e16ba17297a64a6">MotorBase::MotorBaseSharedPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a5f6d9ef3d7c5fbbe9d275a015b76f716">MotorBaseSharedPtr</a></td></tr>
 <tr class="separator:a5f6d9ef3d7c5fbbe9d275a015b76f716"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59399b4ec8c768f84d55e8a52b23d36d"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1Mode.html">Mode</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a59399b4ec8c768f84d55e8a52b23d36d">ModeSharedPtr</a></td></tr>
 <tr class="separator:a59399b4ec8c768f84d55e8a52b23d36d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca8eaa6989120ab91ef070c83b81b482"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>, int32_t, CODataTypes::COData32, 0x60FF, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#aca8eaa6989120ab91ef070c83b81b482">ProfiledVelocityMode</a></td></tr>
-<tr class="separator:aca8eaa6989120ab91ef070c83b81b482"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a621a4c4abd0830786c785a49ec1398eb"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ad6d351bdc15a1f379bc28418f9f963c8">MotorBase::Profiled_Torque</a>, int16_t, CODataTypes::COData16, 0x6071, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a621a4c4abd0830786c785a49ec1398eb">ProfiledTorqueMode</a></td></tr>
-<tr class="separator:a621a4c4abd0830786c785a49ec1398eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed1c0924858f47c440c36ecadf93bc39"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>, int32_t, CODataTypes::COData32, 0x607A, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#aed1c0924858f47c440c36ecadf93bc39">CyclicSynchronousPositionMode</a></td></tr>
-<tr class="separator:aed1c0924858f47c440c36ecadf93bc39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad266fa8a511483fc3b227cff2169bf9b"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>, int32_t, CODataTypes::COData32, 0x60FF, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#ad266fa8a511483fc3b227cff2169bf9b">CyclicSynchronousVelocityMode</a></td></tr>
-<tr class="separator:ad266fa8a511483fc3b227cff2169bf9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22ad6ccf9f317267020172a957002404"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a331dc384e56d2b7a50dbfa47d9f49f34">MotorBase::Cyclic_Synchronous_Torque</a>, int16_t, CODataTypes::COData16, 0x6071, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a22ad6ccf9f317267020172a957002404">CyclicSynchronousTorqueMode</a></td></tr>
-<tr class="separator:a22ad6ccf9f317267020172a957002404"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ef9d709fd2c91ce951df97c0d8e0627"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae27229d1ee60fa7dc2358e406a5895f6">MotorBase::Velocity</a>, int16_t, CODataTypes::COData16, 0x6042, 0,(1&lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a7ce895ecac9c6dc6244adc1c6dbc171d">Command402::CW_Operation_mode_specific0</a>)|(1&lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a646da4948d5ebf8881889a775019f4ea">Command402::CW_Operation_mode_specific1</a>)|(1&lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a8b0b3fca77a978acb7fa38a960dcbb7f">Command402::CW_Operation_mode_specific2</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a9ef9d709fd2c91ce951df97c0d8e0627">VelocityMode</a></td></tr>
-<tr class="separator:a9ef9d709fd2c91ce951df97c0d8e0627"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a655eeceb9b6fca03daf48889e340ce9d"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49">MotorBase::Interpolated_Position</a>, int32_t, CODataTypes::COData32, 0x60C1, 0x01,(1&lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a7ce895ecac9c6dc6244adc1c6dbc171d">Command402::CW_Operation_mode_specific0</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a655eeceb9b6fca03daf48889e340ce9d">InterpolatedPositionMode</a></td></tr>
-<tr class="separator:a655eeceb9b6fca03daf48889e340ce9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf57d00a1c7702c528ee1bda2dabde18"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>, int32_t, 0x60FF, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#aaf57d00a1c7702c528ee1bda2dabde18">ProfiledVelocityMode</a></td></tr>
+<tr class="separator:aaf57d00a1c7702c528ee1bda2dabde18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addc85a3d099c69e9278807c4ff762b5b"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ad6d351bdc15a1f379bc28418f9f963c8">MotorBase::Profiled_Torque</a>, int16_t, 0x6071, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#addc85a3d099c69e9278807c4ff762b5b">ProfiledTorqueMode</a></td></tr>
+<tr class="separator:addc85a3d099c69e9278807c4ff762b5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bdefaca226003a57cbd08a7e19601f3"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>, int32_t, 0x607A, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a1bdefaca226003a57cbd08a7e19601f3">CyclicSynchronousPositionMode</a></td></tr>
+<tr class="separator:a1bdefaca226003a57cbd08a7e19601f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a941060eeb762580cac84a2e1dcccce1c"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>, int32_t, 0x60FF, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a941060eeb762580cac84a2e1dcccce1c">CyclicSynchronousVelocityMode</a></td></tr>
+<tr class="separator:a941060eeb762580cac84a2e1dcccce1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaaf76542e00f41a89051737a4ecd7bd"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a331dc384e56d2b7a50dbfa47d9f49f34">MotorBase::Cyclic_Synchronous_Torque</a>, int16_t, 0x6071, 0, 0 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#aeaaf76542e00f41a89051737a4ecd7bd">CyclicSynchronousTorqueMode</a></td></tr>
+<tr class="separator:aeaaf76542e00f41a89051737a4ecd7bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6accc21d0fdc0b20095290fdf11a8955"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae27229d1ee60fa7dc2358e406a5895f6">MotorBase::Velocity</a>, int16_t, 0x6042, 0,(1&lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a7ce895ecac9c6dc6244adc1c6dbc171d">Command402::CW_Operation_mode_specific0</a>)|(1&lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a646da4948d5ebf8881889a775019f4ea">Command402::CW_Operation_mode_specific1</a>)|(1&lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a8b0b3fca77a978acb7fa38a960dcbb7f">Command402::CW_Operation_mode_specific2</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a6accc21d0fdc0b20095290fdf11a8955">VelocityMode</a></td></tr>
+<tr class="separator:a6accc21d0fdc0b20095290fdf11a8955"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a081fce7c46afbe9de447c057a76b83a1"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49">MotorBase::Interpolated_Position</a>, int32_t, 0x60C1, 0x01,(1&lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a7ce895ecac9c6dc6244adc1c6dbc171d">Command402::CW_Operation_mode_specific0</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceros2__canopen.html#a081fce7c46afbe9de447c057a76b83a1">InterpolatedPositionMode</a></td></tr>
+<tr class="separator:a081fce7c46afbe9de447c057a76b83a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -227,6 +233,20 @@ Enumerations</h2></td></tr>
 <tr class="separator:a8d79337d5c37bb1ceccafdd8a291f4d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
+<a id="a66ddb67438d2939745c2ca876e3d0837"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66ddb67438d2939745c2ca876e3d0837">&#9670;&nbsp;</a></span>PDOMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::map&lt;uint16_t, std::map&lt;uint8_t, <a class="el" href="structros2__canopen_1_1pdo__mapping.html">pdo_mapping</a>&gt; &gt; <a class="el" href="namespaceros2__canopen.html#a66ddb67438d2939745c2ca876e3d0837">ros2_canopen::PDOMap</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a5f6d9ef3d7c5fbbe9d275a015b76f716"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5f6d9ef3d7c5fbbe9d275a015b76f716">&#9670;&nbsp;</a></span>MotorBaseSharedPtr</h2>
 
@@ -255,98 +275,98 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a id="aca8eaa6989120ab91ef070c83b81b482"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aca8eaa6989120ab91ef070c83b81b482">&#9670;&nbsp;</a></span>ProfiledVelocityMode</h2>
+<a id="aaf57d00a1c7702c528ee1bda2dabde18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf57d00a1c7702c528ee1bda2dabde18">&#9670;&nbsp;</a></span>ProfiledVelocityMode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>, int32_t, CODataTypes::COData32, 0x60FF, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#aca8eaa6989120ab91ef070c83b81b482">ros2_canopen::ProfiledVelocityMode</a></td>
+          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt;<a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a12d0acdcb204e3345618c52aae452a16">MotorBase::Profiled_Velocity</a>, int32_t, 0x60FF, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#aaf57d00a1c7702c528ee1bda2dabde18">ros2_canopen::ProfiledVelocityMode</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a621a4c4abd0830786c785a49ec1398eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a621a4c4abd0830786c785a49ec1398eb">&#9670;&nbsp;</a></span>ProfiledTorqueMode</h2>
+<a id="addc85a3d099c69e9278807c4ff762b5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addc85a3d099c69e9278807c4ff762b5b">&#9670;&nbsp;</a></span>ProfiledTorqueMode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt;<a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ad6d351bdc15a1f379bc28418f9f963c8">MotorBase::Profiled_Torque</a>, int16_t, CODataTypes::COData16, 0x6071, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#a621a4c4abd0830786c785a49ec1398eb">ros2_canopen::ProfiledTorqueMode</a></td>
+          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt;<a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ad6d351bdc15a1f379bc28418f9f963c8">MotorBase::Profiled_Torque</a>, int16_t, 0x6071, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#addc85a3d099c69e9278807c4ff762b5b">ros2_canopen::ProfiledTorqueMode</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="aed1c0924858f47c440c36ecadf93bc39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed1c0924858f47c440c36ecadf93bc39">&#9670;&nbsp;</a></span>CyclicSynchronousPositionMode</h2>
+<a id="a1bdefaca226003a57cbd08a7e19601f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bdefaca226003a57cbd08a7e19601f3">&#9670;&nbsp;</a></span>CyclicSynchronousPositionMode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>, int32_t, CODataTypes::COData32, 0x607A, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#aed1c0924858f47c440c36ecadf93bc39">ros2_canopen::CyclicSynchronousPositionMode</a></td>
+          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt;<a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a6d14b610568ac3d3038f70c9c5c3d6e7">MotorBase::Cyclic_Synchronous_Position</a>, int32_t, 0x607A, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#a1bdefaca226003a57cbd08a7e19601f3">ros2_canopen::CyclicSynchronousPositionMode</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="ad266fa8a511483fc3b227cff2169bf9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad266fa8a511483fc3b227cff2169bf9b">&#9670;&nbsp;</a></span>CyclicSynchronousVelocityMode</h2>
+<a id="a941060eeb762580cac84a2e1dcccce1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a941060eeb762580cac84a2e1dcccce1c">&#9670;&nbsp;</a></span>CyclicSynchronousVelocityMode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>, int32_t, CODataTypes::COData32, 0x60FF, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#ad266fa8a511483fc3b227cff2169bf9b">ros2_canopen::CyclicSynchronousVelocityMode</a></td>
+          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt;<a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a154def5b29c09a58f5a22bbef0693f38">MotorBase::Cyclic_Synchronous_Velocity</a>, int32_t, 0x60FF, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#a941060eeb762580cac84a2e1dcccce1c">ros2_canopen::CyclicSynchronousVelocityMode</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a22ad6ccf9f317267020172a957002404"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a22ad6ccf9f317267020172a957002404">&#9670;&nbsp;</a></span>CyclicSynchronousTorqueMode</h2>
+<a id="aeaaf76542e00f41a89051737a4ecd7bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaaf76542e00f41a89051737a4ecd7bd">&#9670;&nbsp;</a></span>CyclicSynchronousTorqueMode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a331dc384e56d2b7a50dbfa47d9f49f34">MotorBase::Cyclic_Synchronous_Torque</a>, int16_t, CODataTypes::COData16, 0x6071, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#a22ad6ccf9f317267020172a957002404">ros2_canopen::CyclicSynchronousTorqueMode</a></td>
+          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt;<a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496a331dc384e56d2b7a50dbfa47d9f49f34">MotorBase::Cyclic_Synchronous_Torque</a>, int16_t, 0x6071, 0, 0&gt; <a class="el" href="namespaceros2__canopen.html#aeaaf76542e00f41a89051737a4ecd7bd">ros2_canopen::CyclicSynchronousTorqueMode</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a9ef9d709fd2c91ce951df97c0d8e0627"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9ef9d709fd2c91ce951df97c0d8e0627">&#9670;&nbsp;</a></span>VelocityMode</h2>
+<a id="a6accc21d0fdc0b20095290fdf11a8955"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6accc21d0fdc0b20095290fdf11a8955">&#9670;&nbsp;</a></span>VelocityMode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae27229d1ee60fa7dc2358e406a5895f6">MotorBase::Velocity</a>, int16_t, CODataTypes::COData16, 0x6042, 0, (1 &lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a7ce895ecac9c6dc6244adc1c6dbc171d">Command402::CW_Operation_mode_specific0</a>) | (1 &lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a646da4948d5ebf8881889a775019f4ea">Command402::CW_Operation_mode_specific1</a>) | (1 &lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a8b0b3fca77a978acb7fa38a960dcbb7f">Command402::CW_Operation_mode_specific2</a>)&gt; <a class="el" href="namespaceros2__canopen.html#a9ef9d709fd2c91ce951df97c0d8e0627">ros2_canopen::VelocityMode</a></td>
+          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae27229d1ee60fa7dc2358e406a5895f6">MotorBase::Velocity</a>, int16_t, 0x6042, 0, (1 &lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a7ce895ecac9c6dc6244adc1c6dbc171d">Command402::CW_Operation_mode_specific0</a>) | (1 &lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a646da4948d5ebf8881889a775019f4ea">Command402::CW_Operation_mode_specific1</a>) | (1 &lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a8b0b3fca77a978acb7fa38a960dcbb7f">Command402::CW_Operation_mode_specific2</a>)&gt; <a class="el" href="namespaceros2__canopen.html#a6accc21d0fdc0b20095290fdf11a8955">ros2_canopen::VelocityMode</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a655eeceb9b6fca03daf48889e340ce9d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a655eeceb9b6fca03daf48889e340ce9d">&#9670;&nbsp;</a></span>InterpolatedPositionMode</h2>
+<a id="a081fce7c46afbe9de447c057a76b83a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a081fce7c46afbe9de447c057a76b83a1">&#9670;&nbsp;</a></span>InterpolatedPositionMode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49">MotorBase::Interpolated_Position</a>, int32_t, CODataTypes::COData32, 0x60C1, 0x01, (1 &lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a7ce895ecac9c6dc6244adc1c6dbc171d">Command402::CW_Operation_mode_specific0</a>)&gt; <a class="el" href="namespaceros2__canopen.html#a655eeceb9b6fca03daf48889e340ce9d">ros2_canopen::InterpolatedPositionMode</a></td>
+          <td class="memname">typedef <a class="el" href="classros2__canopen_1_1ModeForwardHelper.html">ModeForwardHelper</a>&lt; <a class="el" href="classros2__canopen_1_1MotorBase.html#aae40a1be826cff1fb966ce6ad88d5496ae180342ec23bec8ce6009d3f4ec8ce49">MotorBase::Interpolated_Position</a>, int32_t, 0x60C1, 0x01, (1 &lt;&lt; <a class="el" href="classros2__canopen_1_1Command402.html#a27d05b87648bdde45bb26ccffc1cd943a7ce895ecac9c6dc6244adc1c6dbc171d">Command402::CW_Operation_mode_specific0</a>)&gt; <a class="el" href="namespaceros2__canopen.html#a081fce7c46afbe9de447c057a76b83a1">ros2_canopen::InterpolatedPositionMode</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
