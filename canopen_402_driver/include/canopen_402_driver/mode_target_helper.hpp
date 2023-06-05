@@ -29,7 +29,8 @@ public:
   {
     if (std::isnan(val))
     {
-      std::cout << "canopen_402 target command is not a number" << std::endl;
+      // std::cout << "canopen_402 target command is not a number" << std::endl;
+      RCLCPP_DEBUG(rclcpp::get_logger("canopen_402_target"), "Target command is not a number");
       return false;
     }
 

@@ -1,0 +1,54 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    robot_controller:
+      type: canopen_ros2_controllers/Cia402RobotController
+
+    forward_position_controller:
+      type: forward_command_controller/ForwardCommandController
+
+robot_controller:
+  ros__parameters:
+    joints:
+      - joint1
+      - joint2
+    operation_mode: 1
+    command_poll_freq: 5
+
+forward_position_controller:
+  ros__parameters:
+    joints:
+      - joint1
+      - joint2
+    interface_name: position
+
+# joint_trajectory_controller:
+#   ros__parameters:
+#     joints:
+#       - prbt_joint_1
+#       - prbt_joint_2
+#       - prbt_joint_3
+#       - prbt_joint_4
+#       - prbt_joint_5
+#       - prbt_joint_6
+#     command_interfaces:
+#       - position
+#     state_interfaces:
+#       - position
+#       - velocity
+#     state_publish_rate: 100.0
+#     action_monitor_rate: 20.0
+#     allow_partial_joints_goal: false
+#     constraints:
+#       stopped_velocity_tolerance: 0.2
+#       goal_time: 0.6
+#       stopped_velocity_tolerance: 0.05
+#       prbt_joint_1: {trajectory: 0.157, goal: 0.01}
+#       prbt_joint_2: {trajectory: 0.157, goal: 0.01}
+#       prbt_joint_3: {trajectory: 0.157, goal: 0.01}
+#       prbt_joint_4: {trajectory: 0.157, goal: 0.01}
+#       prbt_joint_5: {trajectory: 0.157, goal: 0.01}
+#       prbt_joint_6: {trajectory: 0.157, goal: 0.01}

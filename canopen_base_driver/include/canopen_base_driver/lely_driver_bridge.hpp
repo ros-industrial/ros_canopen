@@ -315,6 +315,32 @@ protected:
   uint8_t nodeid;
   std::string name_;
 
+  std::function<void()> on_sync_function_;
+
+  // void set_sync_function(std::function<void()> on_sync_function)
+  // {
+  //   on_sync_function_ = on_sync_function;
+  // }
+
+  // void unset_sync_function()
+  // {
+  //   on_sync_function_ = std::function<void()>();
+  // }
+
+  void OnSync(uint8_t cnt, const time_point & t) noexcept override
+  {
+    if (on_sync_function_ != nullptr)
+    {
+      try
+      {
+        on_sync_function_();
+      }
+      catch (...)
+      {
+      }
+    }
+  }
+
   /**
    * @brief OnState Callback
    *
@@ -659,6 +685,13 @@ public:
     }
     return false;
   }
+
+  void set_sync_function(std::function<void()> on_sync_function)
+  {
+    on_sync_function_ = on_sync_function;
+  }
+
+  void unset_sync_function() { on_sync_function_ = std::function<void()>(); }
 
   /**
    * @brief Request master to boot device

@@ -71,11 +71,11 @@ public:
    * @brief Try to pop a value from the queue
    * @return Value if available, boost::none otherwise
    */
-  boost::optional<T> try_pop()
+  std::optional<T> try_pop()
   {
     T value;
     if (queue_->pop(value)) return std::optional<T>(std::move(value));
-    return boost::none;
+    return std::optional<T>();
   }
 
   /**

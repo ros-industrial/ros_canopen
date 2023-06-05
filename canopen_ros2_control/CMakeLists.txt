@@ -30,7 +30,10 @@ add_library(
   SHARED
   src/canopen_system.cpp
   src/cia402_system.cpp
+  src/robot_system.cpp
 )
+
+
 
 target_compile_features(canopen_ros2_control PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_options(canopen_ros2_control PUBLIC -fPIC -Wl,--no-undefined)

@@ -87,6 +87,8 @@ Subscribers
 
 Bus Configuration Parameters
 ----------------------------
+Additional parameters that can be used in bus.yml for this driver.
+
 
 .. list-table::
   :widths: 30 20 50
@@ -98,3 +100,18 @@ Bus Configuration Parameters
   * - period
     - Milliseconds
     - Refresh period for 402 state machine. Should be similar to sync period of master.
+  * - switching_state
+    - see below
+    - The state to switch the operation mode in.
+  * - scale_pos_to_dev
+    - double
+    - Scaling factor to convert from SI units to device units for position.
+  * - scale_vel_to_dev
+    - double
+    - Scaling factor to convert from SI units to device units for velocity.
+  * - scale_pos_from_dev
+    - double
+    - Scaling factor to convert from device units to SI units for position.
+  * - scale_vel_from_dev
+    - double
+    - Scaling factor to convert from device units to SI units for velocity.

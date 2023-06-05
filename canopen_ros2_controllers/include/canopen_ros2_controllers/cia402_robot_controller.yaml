@@ -1,0 +1,14 @@
+cia402_robot_controller:
+  joints: {
+    type: string_array,
+    default_value: [],
+    description: 'List of joints controlled by this controller',
+  }
+  operation_mode: {
+    type: int,
+    description: 'ID of operation mode to use',
+  }
+  command_poll_freq: {
+    type: int,
+    description: 'Frequency of polling command results',
+  }

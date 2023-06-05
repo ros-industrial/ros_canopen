@@ -41,11 +41,9 @@ typedef ModeForwardHelper<
 class Motor402 : public MotorBase
 {
 public:
-  Motor402(std::shared_ptr<LelyDriverBridge> driver)
-  : MotorBase(),
-    switching_state_(State402::Operation_Enable),
-    monitor_mode_(true),
-    state_switch_timeout_(5)
+  Motor402(
+    std::shared_ptr<LelyDriverBridge> driver, ros2_canopen::State402::InternalState switching_state)
+  : MotorBase(), switching_state_(switching_state), monitor_mode_(true), state_switch_timeout_(5)
   {
     this->driver = driver;
   }

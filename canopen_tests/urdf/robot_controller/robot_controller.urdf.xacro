@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="test_robot">
+    <xacro:include filename="$(find canopen_tests)/urdf/robot_controller/robot_controller.macro.xacro"/>
+    <xacro:include filename="$(find canopen_tests)/urdf/robot_controller/robot_controller.ros2_control.xacro"/>
+
+    <link name="world" />
+
+    <xacro:robot_control_robot
+        name="test_robot"
+        prefix=""
+        parent="world"
+        >
+            <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:robot_control_robot>
+
+    <xacro:robot_control_control
+        name="test_robot"
+        prefix=""
+        bus_config="$(find canopen_tests)/config/robot_control/bus.yml"
+        master_config="$(find canopen_tests)/config/robot_control/master.dcf"
+        can_interface_name="vcan0"
+        master_bin="" />
+</robot>

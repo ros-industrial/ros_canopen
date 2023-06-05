@@ -34,14 +34,14 @@ protected:
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr handle_set_mode_interpolated_position_service;
   rclcpp::Service<canopen_interfaces::srv::COTargetDouble>::SharedPtr handle_set_target_service;
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr publish_joint_state;
-  uint32_t period_ms_;
   double scale_pos_to_dev_;
   double scale_pos_from_dev_;
   double scale_vel_to_dev_;
   double scale_vel_from_dev_;
+  ros2_canopen::State402::InternalState switching_state_;
 
   void publish();
-  void run();
+  virtual void poll_timer_callback() override;
 
 public:
   NodeCanopen402Driver(NODETYPE * node);
@@ -149,6 +149,8 @@ public:
   void handle_set_mode_position(
     const std_srvs::srv::Trigger::Request::SharedPtr request,
     std_srvs::srv::Trigger::Response::SharedPtr response);
+
+  bool set_operation_mode(uint16_t mode);
 
   /**
    * @brief Method to set profiled position mode

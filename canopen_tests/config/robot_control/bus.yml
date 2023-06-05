@@ -1,0 +1,95 @@
+options:
+  dcf_path: "@BUS_CONFIG_PATH@"
+
+master:
+  node_id: 1
+  driver: "ros2_canopen::MasterDriver"
+  package: "canopen_master_driver"
+  sync_period: 10000
+
+joint_1:
+  node_id: 2
+  dcf: "cia402_slave.eds"
+  driver: "ros2_canopen::Cia402Driver"
+  package: "canopen_402_driver"
+  period: 10
+  position_mode: 1
+  revision_number: 0
+  sdo:
+    - {index: 0x60C2, sub_index: 1, value: 50} # Set interpolation time for cyclic modes to 50 ms
+    - {index: 0x60C2, sub_index: 2, value: -3} # Set base 10-3s
+    - {index: 0x6081, sub_index: 0, value: 1000}
+    - {index: 0x6083, sub_index: 0, value: 2000}
+    - {index: 0x6060, sub_index: 0, value: 7}
+  tpdo: # TPDO needed statusword, actual velocity, actual position, mode of operation
+    1:
+      enabled: true
+      cob_id: "auto"
+      transmission: 0x01
+      mapping:
+        - {index: 0x6041, sub_index: 0} # status word
+        - {index: 0x6061, sub_index: 0} # mode of operation display
+    2:
+      enabled: true
+      cob_id: "auto"
+      transmission: 0x01
+      mapping:
+        - {index: 0x6064, sub_index: 0} # position actual value
+        - {index: 0x606c, sub_index: 0} # velocity actual position
+  rpdo: # RPDO needed controlword, target position, target velocity, mode of operation
+    1:
+      enabled: true
+      cob_id: "auto"
+      mapping:
+      - {index: 0x6040, sub_index: 0} # controlword
+      - {index: 0x6060, sub_index: 0} # mode of operation
+    2:
+      enabled: true
+      cob_id: "auto"
+      mapping:
+      - {index: 0x607A, sub_index: 0} # target position
+      #- {index: 0x60FF, sub_index: 0} # target velocity
+
+joint_2:
+  node_id: 3
+  dcf: "cia402_slave.eds"
+  driver: "ros2_canopen::Cia402Driver"
+  package: "canopen_402_driver"
+  period: 10
+  position_mode: 1
+  revision_number: 0
+  switching_state: 2
+  sdo:
+    - {index: 0x60C2, sub_index: 1, value: 50} # Set interpolation time for cyclic modes to 50 ms
+    - {index: 0x60C2, sub_index: 2, value: -3} # Set base 10-3s
+    - {index: 0x6081, sub_index: 0, value: 1000}
+    - {index: 0x6083, sub_index: 0, value: 2000}
+    - {index: 0x6060, sub_index: 0, value: 7}
+  tpdo: # TPDO needed statusword, actual velocity, actual position, mode of operation
+    1:
+      enabled: true
+      cob_id: "auto"
+      transmission: 0x01
+      mapping:
+        - {index: 0x6041, sub_index: 0} # status word
+        - {index: 0x6061, sub_index: 0} # mode of operation display
+    2:
+      enabled: true
+      cob_id: "auto"
+      transmission: 0x01
+      mapping:
+        - {index: 0x6064, sub_index: 0} # position actual value
+        - {index: 0x606c, sub_index: 0} # velocity actual position
+  rpdo: # RPDO needed controlword, target position, target velocity, mode of operation
+    1:
+      enabled: true
+      cob_id: "auto"
+      mapping:
+      - {index: 0x6040, sub_index: 0} # controlword
+      - {index: 0x6060, sub_index: 0} # mode of operation
+    2:
+      enabled: true
+      cob_id: "auto"
+      mapping:
+      - {index: 0x607A, sub_index: 0} # target position
+      #- {index: 0x60FF, sub_index: 0} # target velocity

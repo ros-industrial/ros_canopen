@@ -11,6 +11,7 @@ This is the documentation of the ROS2 CANopen stack.
   quickstart/installation
   quickstart/configuration
   quickstart/operation
+  quickstart/examples
 
 .. toctree::
   :maxdepth: 1

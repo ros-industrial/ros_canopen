@@ -76,6 +76,11 @@ public:
   bool set_mode_torque() { return node_canopen_402_driver_->set_mode_torque(); }
 
   uint16_t get_mode() { return node_canopen_402_driver_->get_mode(); }
+
+  bool set_operation_mode(uint16_t mode)
+  {
+    return node_canopen_402_driver_->set_operation_mode(mode);
+  }
 };
 }  // namespace ros2_canopen
 
