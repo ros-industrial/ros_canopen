@@ -31,8 +31,7 @@ var menudata={children:[
 {text:"All",url:"namespacemembers.html"},
 {text:"Functions",url:"namespacemembers_func.html"},
 {text:"Typedefs",url:"namespacemembers_type.html"},
-{text:"Enumerations",url:"namespacemembers_enum.html"},
-{text:"Enumerator",url:"namespacemembers_eval.html"}]}]},
+{text:"Enumerations",url:"namespacemembers_enum.html"}]}]},
 {text:"Classes",url:"annotated.html",children:[
 {text:"Class List",url:"annotated.html"},
 {text:"Class Index",url:"classes.html"},
@@ -80,7 +79,6 @@ var menudata={children:[
 {text:"s",url:"functions_func_s.html#index_s"},
 {text:"t",url:"functions_func_t.html#index_t"},
 {text:"u",url:"functions_func_u.html#index_u"},
-{text:"v",url:"functions_func_v.html#index_v"},
 {text:"w",url:"functions_func_w.html#index_w"},
 {text:"~",url:"functions_func_~.html#index__7E"}]},
 {text:"Variables",url:"functions_vars.html",children:[
@@ -97,8 +95,7 @@ var menudata={children:[
 {text:"p",url:"functions_vars.html#index_p"},
 {text:"r",url:"functions_vars.html#index_r"},
 {text:"s",url:"functions_vars.html#index_s"},
-{text:"t",url:"functions_vars.html#index_t"},
-{text:"v",url:"functions_vars.html#index_v"}]},
+{text:"t",url:"functions_vars.html#index_t"}]},
 {text:"Typedefs",url:"functions_type.html"},
 {text:"Enumerations",url:"functions_enum.html"},
 {text:"Enumerator",url:"functions_eval.html",children:[

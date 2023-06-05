@@ -213,201 +213,194 @@ $(function() {
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
 <div class="line"><a name="l00141"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9a7a0731150148e2e2c582957700cb91">  141</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9a7a0731150148e2e2c582957700cb91">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_tpdo</a>(<span class="keyword">const</span> canopen_interfaces::msg::COData::SharedPtr msg)</div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;{</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> data = {</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    msg-&gt;index, msg-&gt;subindex, msg-&gt;data, <span class="keyword">static_cast&lt;</span><a class="code" href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4e">CODataTypes</a><span class="keyword">&gt;</span>(msg-&gt;type)};</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="keywordflow">if</span> (!tpdo_transmit(data))</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  {</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could transmit PDO because driver not activated.&quot;</span>);</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  }</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;}</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160; </div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00152"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9c71c32fb06d2d7a7f4865d3e3103b70">  152</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9c71c32fb06d2d7a7f4865d3e3103b70">NodeCanopenProxyDriver&lt;NODETYPE&gt;::tpdo_transmit</a>(<a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> &amp; data)</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;{</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  {</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    RCLCPP_INFO(</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Node ID %hhu: Transmit PDO index %x, subindex %hhu, data %d&quot;</span>,</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      this-&gt;lely_driver_-&gt;get_id(), data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>,</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>);  <span class="comment">// ToDo: Remove or make debug</span></div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    this-&gt;lely_driver_-&gt;tpdo_transmit(data);</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  }</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;}</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160; </div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00167"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a4bc6b1ddf089cd7f16e85d71303541bd">  167</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a4bc6b1ddf089cd7f16e85d71303541bd">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_rpdo</a>(<a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> d)</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;{</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  {</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="comment">// RCLCPP_INFO(</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    <span class="comment">//   this-&gt;node_-&gt;get_logger(), &quot;Node ID %hhu: Received PDO index %#04x, subindex %hhu, data</span></div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="comment">//   %x&quot;, this-&gt;lely_driver_-&gt;get_id(), d.index_, d.subindex_, d.data_);</span></div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keyword">auto</span> message = canopen_interfaces::msg::COData();</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    message.index = d.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>;</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    message.subindex = d.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    message.data = d.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    message.type = <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(d.<a class="code" href="structros2__canopen_1_1COData.html#af93eb7e4b7146fe4fbaa2463fc0c77ef">type_</a>);</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    rpdo_publisher-&gt;publish(message);</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  }</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;}</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160; </div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a105c6ab9db65eca997cd6d04266f1591">  184</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a105c6ab9db65eca997cd6d04266f1591">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_nmt_state_reset</a>(</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;{</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  response-&gt;success = reset_node_nmt_command();</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;}</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160; </div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00192"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a7172d89fc1607fb7cbb6d1017be30730">  192</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a7172d89fc1607fb7cbb6d1017be30730">NodeCanopenProxyDriver&lt;NODETYPE&gt;::reset_node_nmt_command</a>()</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;{</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  {</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    this-&gt;lely_driver_-&gt;nmt_command(canopen::NmtCommand::RESET_NODE);</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  }</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  RCLCPP_ERROR(</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could not reset device via NMT because driver not activated.&quot;</span>);</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;}</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00205"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a49f01406c0a88eb2b7d4c4340b1d6a65">  205</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a49f01406c0a88eb2b7d4c4340b1d6a65">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_nmt_state_start</a>(</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;{</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  response-&gt;success = start_node_nmt_command();</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;}</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; </div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00213"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9ea769f30437b359828735ce59c8f5c6">  213</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9ea769f30437b359828735ce59c8f5c6">NodeCanopenProxyDriver&lt;NODETYPE&gt;::start_node_nmt_command</a>()</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;{</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  {</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    this-&gt;lely_driver_-&gt;nmt_command(canopen::NmtCommand::START);</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  }</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  RCLCPP_ERROR(</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could not start device via NMT because driver not activated.&quot;</span>);</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;}</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160; </div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00226"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a005869d1fead79ea3a438ec3adfd2fe2">  226</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a005869d1fead79ea3a438ec3adfd2fe2">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_sdo_read</a>(</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="keyword">const</span> canopen_interfaces::srv::CORead::Request::SharedPtr request,</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  canopen_interfaces::srv::CORead::Response::SharedPtr response)</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;{</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> data = {</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    request-&gt;index, request-&gt;subindex, 0U, <span class="keyword">static_cast&lt;</span><a class="code" href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4e">CODataTypes</a><span class="keyword">&gt;</span>(request-&gt;type)};</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  response-&gt;success = sdo_read(data);</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  response-&gt;data = data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;}</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160; </div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00237"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#ad1ae6e9d86c2d376b7670fd14405c9ba">  237</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#ad1ae6e9d86c2d376b7670fd14405c9ba">NodeCanopenProxyDriver&lt;NODETYPE&gt;::sdo_read</a>(<a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> &amp; data)</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;{</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  {</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    RCLCPP_INFO(</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;      this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Slave %hhu: SDO Read Call index=0x%x subindex=%hhu bits=%hhu&quot;</span>,</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;      this-&gt;lely_driver_-&gt;get_id(), data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#af93eb7e4b7146fe4fbaa2463fc0c77ef">type_</a>);</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160; </div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="comment">// Only allow one SDO request concurrently</span></div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    std::scoped_lock&lt;std::mutex&gt; lk(sdo_mtex);</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    <span class="comment">// Send read request</span></div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="keyword">auto</span> f = this-&gt;lely_driver_-&gt;async_sdo_read(data);</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <span class="comment">// Wait for response</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    f.wait();</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <span class="comment">// Process response</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <span class="keywordflow">try</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    {</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;      data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a> = f.get().data_;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    }</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordflow">catch</span> (std::exception &amp; e)</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    {</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;      RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), e.what());</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    }</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  }</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could not read from SDO because driver not activated.&quot;</span>);</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;}</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160; </div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00268"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a2d8506937b95458a7b67d6624e83a045">  268</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a2d8506937b95458a7b67d6624e83a045">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_sdo_write</a>(</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <span class="keyword">const</span> canopen_interfaces::srv::COWrite::Request::SharedPtr request,</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  canopen_interfaces::srv::COWrite::Response::SharedPtr response)</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;{</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> data = {</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    request-&gt;index, request-&gt;subindex, request-&gt;data, <span class="keyword">static_cast&lt;</span><a class="code" href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4e">CODataTypes</a><span class="keyword">&gt;</span>(request-&gt;type)};</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  response-&gt;success = sdo_write(data);</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;}</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
-<div class="line"><a name="l00278"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a0a10fa152966a8f2e8d83367e45a1e45">  278</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a0a10fa152966a8f2e8d83367e45a1e45">NodeCanopenProxyDriver&lt;NODETYPE&gt;::sdo_write</a>(<a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> &amp; data)</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;{</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  {</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    RCLCPP_INFO(</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;      this-&gt;node_-&gt;get_logger(),</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;      <span class="stringliteral">&quot;Slave %hhu: SDO Write Call index=0x%x subindex=%hhu bits=%hhu data=%u&quot;</span>,</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;      this-&gt;lely_driver_-&gt;get_id(), data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#af93eb7e4b7146fe4fbaa2463fc0c77ef">type_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>);</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160; </div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    <span class="comment">// Only allow one SDO request concurrently</span></div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    std::scoped_lock&lt;std::mutex&gt; lk(sdo_mtex);</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> data = {msg-&gt;index, msg-&gt;subindex, msg-&gt;data};</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keywordflow">if</span> (!tpdo_transmit(data))</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  {</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could transmit PDO because driver not activated.&quot;</span>);</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  }</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;}</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00151"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9c71c32fb06d2d7a7f4865d3e3103b70">  151</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9c71c32fb06d2d7a7f4865d3e3103b70">NodeCanopenProxyDriver&lt;NODETYPE&gt;::tpdo_transmit</a>(<a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> &amp; data)</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;{</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  {</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    RCLCPP_INFO(</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Node ID %hhu: Transmit PDO index %x, subindex %hhu, data %d&quot;</span>,</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      this-&gt;lely_driver_-&gt;get_id(), data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>,</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>);  <span class="comment">// ToDo: Remove or make debug</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    this-&gt;lely_driver_-&gt;tpdo_transmit(data);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  }</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;}</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160; </div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00166"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a4bc6b1ddf089cd7f16e85d71303541bd">  166</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a4bc6b1ddf089cd7f16e85d71303541bd">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_rpdo</a>(<a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> d)</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;{</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  {</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    <span class="comment">// RCLCPP_INFO(</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="comment">//   this-&gt;node_-&gt;get_logger(), &quot;Node ID %hhu: Received PDO index %#04x, subindex %hhu, data</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    <span class="comment">//   %x&quot;, this-&gt;lely_driver_-&gt;get_id(), d.index_, d.subindex_, d.data_);</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="keyword">auto</span> message = canopen_interfaces::msg::COData();</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    message.index = d.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>;</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    message.subindex = d.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    message.data = d.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    rpdo_publisher-&gt;publish(message);</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  }</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;}</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160; </div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00182"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a105c6ab9db65eca997cd6d04266f1591">  182</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a105c6ab9db65eca997cd6d04266f1591">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_nmt_state_reset</a>(</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;{</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  response-&gt;success = reset_node_nmt_command();</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;}</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160; </div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00190"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a7172d89fc1607fb7cbb6d1017be30730">  190</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a7172d89fc1607fb7cbb6d1017be30730">NodeCanopenProxyDriver&lt;NODETYPE&gt;::reset_node_nmt_command</a>()</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;{</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  {</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    this-&gt;lely_driver_-&gt;nmt_command(canopen::NmtCommand::RESET_NODE);</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  }</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  RCLCPP_ERROR(</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could not reset device via NMT because driver not activated.&quot;</span>);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;}</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00203"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a49f01406c0a88eb2b7d4c4340b1d6a65">  203</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a49f01406c0a88eb2b7d4c4340b1d6a65">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_nmt_state_start</a>(</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <span class="keyword">const</span> std_srvs::srv::Trigger::Request::SharedPtr request,</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  std_srvs::srv::Trigger::Response::SharedPtr response)</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;{</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  response-&gt;success = start_node_nmt_command();</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;}</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160; </div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00211"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9ea769f30437b359828735ce59c8f5c6">  211</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9ea769f30437b359828735ce59c8f5c6">NodeCanopenProxyDriver&lt;NODETYPE&gt;::start_node_nmt_command</a>()</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;{</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  {</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    this-&gt;lely_driver_-&gt;nmt_command(canopen::NmtCommand::START);</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  }</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  RCLCPP_ERROR(</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could not start device via NMT because driver not activated.&quot;</span>);</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;}</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160; </div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00224"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a005869d1fead79ea3a438ec3adfd2fe2">  224</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a005869d1fead79ea3a438ec3adfd2fe2">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_sdo_read</a>(</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keyword">const</span> canopen_interfaces::srv::CORead::Request::SharedPtr request,</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  canopen_interfaces::srv::CORead::Response::SharedPtr response)</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;{</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> data = {request-&gt;index, request-&gt;subindex, 0U};</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  response-&gt;success = sdo_read(data);</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  response-&gt;data = data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;}</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160; </div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00234"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#ad1ae6e9d86c2d376b7670fd14405c9ba">  234</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#ad1ae6e9d86c2d376b7670fd14405c9ba">NodeCanopenProxyDriver&lt;NODETYPE&gt;::sdo_read</a>(<a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> &amp; data)</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;{</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  {</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    RCLCPP_INFO(</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Slave %hhu: SDO Read Call index=0x%x subindex=%hhu&quot;</span>,</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;      this-&gt;lely_driver_-&gt;get_id(), data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>);</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160; </div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="comment">// Only allow one SDO request concurrently</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    std::scoped_lock&lt;std::mutex&gt; lk(sdo_mtex);</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <span class="comment">// Send read request</span></div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keyword">auto</span> f = this-&gt;lely_driver_-&gt;async_sdo_read(data);</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="comment">// Wait for response</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    f.wait();</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="comment">// Process response</span></div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <span class="keywordflow">try</span></div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    {</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;      data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a> = f.get().data_;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    }</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keywordflow">catch</span> (std::exception &amp; e)</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    {</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;      RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), e.what());</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    }</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  }</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could not read from SDO because driver not activated.&quot;</span>);</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;}</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160; </div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00265"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a2d8506937b95458a7b67d6624e83a045">  265</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a2d8506937b95458a7b67d6624e83a045">NodeCanopenProxyDriver&lt;NODETYPE&gt;::on_sdo_write</a>(</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="keyword">const</span> canopen_interfaces::srv::COWrite::Request::SharedPtr request,</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  canopen_interfaces::srv::COWrite::Response::SharedPtr response)</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;{</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> data = {request-&gt;index, request-&gt;subindex, request-&gt;data};</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  response-&gt;success = sdo_write(data);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;}</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160; </div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> NODETYPE&gt;</div>
+<div class="line"><a name="l00274"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a0a10fa152966a8f2e8d83367e45a1e45">  274</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a0a10fa152966a8f2e8d83367e45a1e45">NodeCanopenProxyDriver&lt;NODETYPE&gt;::sdo_write</a>(<a class="code" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> &amp; data)</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;{</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="keywordflow">if</span> (this-&gt;activated_.load())</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  {</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    RCLCPP_INFO(</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;      this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Slave %hhu: SDO Write Call index=0x%x subindex=%hhu data=%u&quot;</span>,</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;      this-&gt;lely_driver_-&gt;get_id(), data.<a class="code" href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">index_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">subindex_</a>, data.<a class="code" href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">data_</a>);</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160; </div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <span class="comment">// Only allow one SDO request concurrently</span></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    std::scoped_lock&lt;std::mutex&gt; lk(sdo_mtex);</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160; </div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="comment">// Send write request</span></div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    <span class="keyword">auto</span> f = this-&gt;lely_driver_-&gt;async_sdo_write(data);</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    <span class="comment">// Wait for request to complete</span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    f.wait();</div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160; </div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    <span class="comment">// Send write request</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keyword">auto</span> f = this-&gt;lely_driver_-&gt;async_sdo_write(data);</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="comment">// Wait for request to complete</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    f.wait();</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160; </div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="comment">// Process response</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordflow">try</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    {</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      <span class="keywordflow">return</span> f.get();</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    <span class="comment">// Process response</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keywordflow">try</span></div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    {</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      <span class="keywordflow">return</span> f.get();</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    }</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="keywordflow">catch</span> (std::exception &amp; e)</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    {</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;      RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), e.what());</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    }</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordflow">catch</span> (std::exception &amp; e)</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    {</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;      RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), e.what());</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    }</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  }</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could not write to SDO because driver not activated.&quot;</span>);</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;}</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160; </div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  }</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  RCLCPP_ERROR(this-&gt;node_-&gt;get_logger(), <span class="stringliteral">&quot;Could not write to SDO because driver not activated.&quot;</span>);</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;}</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160; </div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver_html"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html">ros2_canopen::node_interfaces::NodeCanopenBaseDriver</a></div><div class="ttdef"><b>Definition:</b> node_canopen_base_driver.hpp:19</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver_html_a848d9704cf00c4870d4628f0c700d7e5"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a848d9704cf00c4870d4628f0c700d7e5">ros2_canopen::node_interfaces::NodeCanopenDriver::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">Initialise the driver.</div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:113</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html">ros2_canopen::node_interfaces::NodeCanopenProxyDriver</a></div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver.hpp:12</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a005869d1fead79ea3a438ec3adfd2fe2"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a005869d1fead79ea3a438ec3adfd2fe2">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_sdo_read</a></div><div class="ttdeci">void on_sdo_read(const canopen_interfaces::srv::CORead::Request::SharedPtr request, canopen_interfaces::srv::CORead::Response::SharedPtr response)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:226</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a0a10fa152966a8f2e8d83367e45a1e45"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a0a10fa152966a8f2e8d83367e45a1e45">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::sdo_write</a></div><div class="ttdeci">virtual bool sdo_write(COData &amp;data)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:278</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a105c6ab9db65eca997cd6d04266f1591"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a105c6ab9db65eca997cd6d04266f1591">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_nmt_state_reset</a></div><div class="ttdeci">void on_nmt_state_reset(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:184</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a2d8506937b95458a7b67d6624e83a045"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a2d8506937b95458a7b67d6624e83a045">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_sdo_write</a></div><div class="ttdeci">void on_sdo_write(const canopen_interfaces::srv::COWrite::Request::SharedPtr request, canopen_interfaces::srv::COWrite::Response::SharedPtr response)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:268</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a49f01406c0a88eb2b7d4c4340b1d6a65"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a49f01406c0a88eb2b7d4c4340b1d6a65">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_nmt_state_start</a></div><div class="ttdeci">void on_nmt_state_start(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:205</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a4bc6b1ddf089cd7f16e85d71303541bd"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a4bc6b1ddf089cd7f16e85d71303541bd">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_rpdo</a></div><div class="ttdeci">virtual void on_rpdo(COData data) override</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:167</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a005869d1fead79ea3a438ec3adfd2fe2"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a005869d1fead79ea3a438ec3adfd2fe2">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_sdo_read</a></div><div class="ttdeci">void on_sdo_read(const canopen_interfaces::srv::CORead::Request::SharedPtr request, canopen_interfaces::srv::CORead::Response::SharedPtr response)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:224</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a0a10fa152966a8f2e8d83367e45a1e45"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a0a10fa152966a8f2e8d83367e45a1e45">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::sdo_write</a></div><div class="ttdeci">virtual bool sdo_write(COData &amp;data)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:274</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a105c6ab9db65eca997cd6d04266f1591"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a105c6ab9db65eca997cd6d04266f1591">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_nmt_state_reset</a></div><div class="ttdeci">void on_nmt_state_reset(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:182</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a2d8506937b95458a7b67d6624e83a045"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a2d8506937b95458a7b67d6624e83a045">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_sdo_write</a></div><div class="ttdeci">void on_sdo_write(const canopen_interfaces::srv::COWrite::Request::SharedPtr request, canopen_interfaces::srv::COWrite::Response::SharedPtr response)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:265</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a49f01406c0a88eb2b7d4c4340b1d6a65"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a49f01406c0a88eb2b7d4c4340b1d6a65">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_nmt_state_start</a></div><div class="ttdeci">void on_nmt_state_start(const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:203</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a4bc6b1ddf089cd7f16e85d71303541bd"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a4bc6b1ddf089cd7f16e85d71303541bd">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_rpdo</a></div><div class="ttdeci">virtual void on_rpdo(COData data) override</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:166</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a62544ec120af1573f356e0cbb0e45924"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a62544ec120af1573f356e0cbb0e45924">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::NodeCanopenProxyDriver</a></div><div class="ttdeci">NodeCanopenProxyDriver(NODETYPE *node)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:10</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a7172d89fc1607fb7cbb6d1017be30730"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a7172d89fc1607fb7cbb6d1017be30730">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::reset_node_nmt_command</a></div><div class="ttdeci">virtual bool reset_node_nmt_command()</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:192</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a7172d89fc1607fb7cbb6d1017be30730"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a7172d89fc1607fb7cbb6d1017be30730">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::reset_node_nmt_command</a></div><div class="ttdeci">virtual bool reset_node_nmt_command()</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:190</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a9a7a0731150148e2e2c582957700cb91"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9a7a0731150148e2e2c582957700cb91">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_tpdo</a></div><div class="ttdeci">virtual void on_tpdo(const canopen_interfaces::msg::COData::SharedPtr msg)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:141</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a9c71c32fb06d2d7a7f4865d3e3103b70"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9c71c32fb06d2d7a7f4865d3e3103b70">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::tpdo_transmit</a></div><div class="ttdeci">virtual bool tpdo_transmit(COData &amp;data)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:152</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a9ea769f30437b359828735ce59c8f5c6"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9ea769f30437b359828735ce59c8f5c6">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::start_node_nmt_command</a></div><div class="ttdeci">virtual bool start_node_nmt_command()</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:213</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a9c71c32fb06d2d7a7f4865d3e3103b70"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9c71c32fb06d2d7a7f4865d3e3103b70">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::tpdo_transmit</a></div><div class="ttdeci">virtual bool tpdo_transmit(COData &amp;data)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:151</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_a9ea769f30437b359828735ce59c8f5c6"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a9ea769f30437b359828735ce59c8f5c6">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::start_node_nmt_command</a></div><div class="ttdeci">virtual bool start_node_nmt_command()</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:211</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_ab39daec194f4b795810adb81aa4375c3"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#ab39daec194f4b795810adb81aa4375c3">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::on_nmt</a></div><div class="ttdeci">virtual void on_nmt(canopen::NmtState nmt_state) override</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:98</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_ad1ae6e9d86c2d376b7670fd14405c9ba"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#ad1ae6e9d86c2d376b7670fd14405c9ba">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::sdo_read</a></div><div class="ttdeci">virtual bool sdo_read(COData &amp;data)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:237</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver_html_ad1ae6e9d86c2d376b7670fd14405c9ba"><div class="ttname"><a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#ad1ae6e9d86c2d376b7670fd14405c9ba">ros2_canopen::node_interfaces::NodeCanopenProxyDriver::sdo_read</a></div><div class="ttdeci">virtual bool sdo_read(COData &amp;data)</div><div class="ttdef"><b>Definition:</b> node_canopen_proxy_driver_impl.hpp:234</div></div>
 <div class="ttc" id="adriver__error_8hpp_html"><div class="ttname"><a href="driver__error_8hpp.html">driver_error.hpp</a></div></div>
 <div class="ttc" id="anamespaceros2__canopen_1_1node__interfaces_html"><div class="ttname"><a href="namespaceros2__canopen_1_1node__interfaces.html">ros2_canopen::node_interfaces</a></div><div class="ttdef"><b>Definition:</b> node_canopen_driver.hpp:32</div></div>
 <div class="ttc" id="anamespaceros2__canopen_html"><div class="ttname"><a href="namespaceros2__canopen.html">ros2_canopen</a></div><div class="ttdef"><b>Definition:</b> configuration_manager.hpp:28</div></div>
-<div class="ttc" id="anamespaceros2__canopen_html_a0208fe4bb85ca027a977ca0f55a86b4e"><div class="ttname"><a href="namespaceros2__canopen.html#a0208fe4bb85ca027a977ca0f55a86b4e">ros2_canopen::CODataTypes</a></div><div class="ttdeci">CODataTypes</div><div class="ttdef"><b>Definition:</b> exchange.hpp:25</div></div>
 <div class="ttc" id="anode__canopen__proxy__driver_8hpp_html"><div class="ttname"><a href="node__canopen__proxy__driver_8hpp.html">node_canopen_proxy_driver.hpp</a></div></div>
-<div class="ttc" id="astructros2__canopen_1_1COData_html"><div class="ttname"><a href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a></div><div class="ttdef"><b>Definition:</b> exchange.hpp:33</div></div>
-<div class="ttc" id="astructros2__canopen_1_1COData_html_a170bc01e0c38817f2f5f940a211abf0b"><div class="ttname"><a href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">ros2_canopen::COData::data_</a></div><div class="ttdeci">uint32_t data_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:37</div></div>
-<div class="ttc" id="astructros2__canopen_1_1COData_html_a4c0f0155b543c8458581033300cdf0d9"><div class="ttname"><a href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">ros2_canopen::COData::subindex_</a></div><div class="ttdeci">uint8_t subindex_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:36</div></div>
-<div class="ttc" id="astructros2__canopen_1_1COData_html_a55faeba2e4693f404d50bbfbf037ae2b"><div class="ttname"><a href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">ros2_canopen::COData::index_</a></div><div class="ttdeci">uint16_t index_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:35</div></div>
-<div class="ttc" id="astructros2__canopen_1_1COData_html_af93eb7e4b7146fe4fbaa2463fc0c77ef"><div class="ttname"><a href="structros2__canopen_1_1COData.html#af93eb7e4b7146fe4fbaa2463fc0c77ef">ros2_canopen::COData::type_</a></div><div class="ttdeci">CODataTypes type_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:38</div></div>
+<div class="ttc" id="astructros2__canopen_1_1COData_html"><div class="ttname"><a href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a></div><div class="ttdef"><b>Definition:</b> exchange.hpp:26</div></div>
+<div class="ttc" id="astructros2__canopen_1_1COData_html_a170bc01e0c38817f2f5f940a211abf0b"><div class="ttname"><a href="structros2__canopen_1_1COData.html#a170bc01e0c38817f2f5f940a211abf0b">ros2_canopen::COData::data_</a></div><div class="ttdeci">uint32_t data_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:30</div></div>
+<div class="ttc" id="astructros2__canopen_1_1COData_html_a4c0f0155b543c8458581033300cdf0d9"><div class="ttname"><a href="structros2__canopen_1_1COData.html#a4c0f0155b543c8458581033300cdf0d9">ros2_canopen::COData::subindex_</a></div><div class="ttdeci">uint8_t subindex_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:29</div></div>
+<div class="ttc" id="astructros2__canopen_1_1COData_html_a55faeba2e4693f404d50bbfbf037ae2b"><div class="ttname"><a href="structros2__canopen_1_1COData.html#a55faeba2e4693f404d50bbfbf037ae2b">ros2_canopen::COData::index_</a></div><div class="ttdeci">uint16_t index_</div><div class="ttdef"><b>Definition:</b> exchange.hpp:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
