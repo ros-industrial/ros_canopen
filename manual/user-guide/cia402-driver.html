@@ -49,6 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart/configuration.html">Creating a Configuration Package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart/operation.html">Starting a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/examples.html">Examples</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
@@ -56,7 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="operation/operation.html">Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="operation/service-interface.html">Service Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="operation/managed-service-interface.html">Managed Service Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="operation/ros2-control-interface.html">ROS2 Control System Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operation/ros2-control-interface.html">ROS2 Control</a></li>
 <li class="toctree-l1"><a class="reference internal" href="master.html">Master Driver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="proxy-driver.html">Proxy Driver</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Cia402 Driver</a><ul>
@@ -227,6 +228,7 @@ the drive status, operation mode and sending target values to the motion control
 </section>
 <section id="bus-configuration-parameters">
 <h2>Bus Configuration Parameters<a class="headerlink" href="#bus-configuration-parameters" title="Permalink to this headline"></a></h2>
+<p>Additional parameters that can be used in bus.yml for this driver.</p>
 <table class="colwidths-given docutils align-default">
 <colgroup>
 <col style="width: 30%" />
@@ -243,6 +245,26 @@ the drive status, operation mode and sending target values to the motion control
 <tr class="row-even"><td><p>period</p></td>
 <td><p>Milliseconds</p></td>
 <td><p>Refresh period for 402 state machine. Should be similar to sync period of master.</p></td>
+</tr>
+<tr class="row-odd"><td><p>switching_state</p></td>
+<td><p>see below</p></td>
+<td><p>The state to switch the operation mode in.</p></td>
+</tr>
+<tr class="row-even"><td><p>scale_pos_to_dev</p></td>
+<td><p>double</p></td>
+<td><p>Scaling factor to convert from SI units to device units for position.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scale_vel_to_dev</p></td>
+<td><p>double</p></td>
+<td><p>Scaling factor to convert from SI units to device units for velocity.</p></td>
+</tr>
+<tr class="row-even"><td><p>scale_pos_from_dev</p></td>
+<td><p>double</p></td>
+<td><p>Scaling factor to convert from device units to SI units for position.</p></td>
+</tr>
+<tr class="row-odd"><td><p>scale_vel_from_dev</p></td>
+<td><p>double</p></td>
+<td><p>Scaling factor to convert from device units to SI units for velocity.</p></td>
 </tr>
 </tbody>
 </table>

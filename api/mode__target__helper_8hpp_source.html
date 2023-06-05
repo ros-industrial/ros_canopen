@@ -102,51 +102,52 @@ $(function() {
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  {</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordflow">if</span> (std::isnan(val))</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;canopen_402 target command is not a number&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    }</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">using</span> boost::numeric_cast;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">using</span> boost::numeric::negative_overflow;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">using</span> boost::numeric::positive_overflow;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">try</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      target_ = numeric_cast&lt;T&gt;(val);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">catch</span> (negative_overflow &amp;)</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;canopen_402 Command &quot;</span> &lt;&lt; val</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; does not fit into target, clamping to min limit&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      target_ = std::numeric_limits&lt;T&gt;::min();</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">catch</span> (positive_overflow &amp;)</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;canopen_402 Command &quot;</span> &lt;&lt; val</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; does not fit into target, clamping to max limit&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      target_ = std::numeric_limits&lt;T&gt;::max();</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">catch</span> (...)</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;canopen_402 Was not able to cast command &quot;</span> &lt;&lt; val &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    has_target_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  }</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1ModeTargetHelper.html#a93b1aafda37ee1339a534d9df06610cd">   65</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1ModeTargetHelper.html#a93b1aafda37ee1339a534d9df06610cd">start</a>()</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  {</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    has_target_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  }</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;};</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}  <span class="comment">// namespace ros2_canopen</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// MODE_TARGET_HELPER_HPP</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      <span class="comment">// std::cout &lt;&lt; &quot;canopen_402 target command is not a number&quot; &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      RCLCPP_DEBUG(rclcpp::get_logger(<span class="stringliteral">&quot;canopen_402_target&quot;</span>), <span class="stringliteral">&quot;Target command is not a number&quot;</span>);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    }</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">using</span> boost::numeric_cast;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">using</span> boost::numeric::negative_overflow;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keyword">using</span> boost::numeric::positive_overflow;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">try</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      target_ = numeric_cast&lt;T&gt;(val);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">catch</span> (negative_overflow &amp;)</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;canopen_402 Command &quot;</span> &lt;&lt; val</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; does not fit into target, clamping to min limit&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      target_ = std::numeric_limits&lt;T&gt;::min();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">catch</span> (positive_overflow &amp;)</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;canopen_402 Command &quot;</span> &lt;&lt; val</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; does not fit into target, clamping to max limit&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      target_ = std::numeric_limits&lt;T&gt;::max();</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">catch</span> (...)</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;canopen_402 Was not able to cast command &quot;</span> &lt;&lt; val &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    has_target_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  }</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="classros2__canopen_1_1ModeTargetHelper.html#a93b1aafda37ee1339a534d9df06610cd">   66</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classros2__canopen_1_1ModeTargetHelper.html#a93b1aafda37ee1339a534d9df06610cd">start</a>()</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    has_target_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}  <span class="comment">// namespace ros2_canopen</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// MODE_TARGET_HELPER_HPP</span></div>
 <div class="ttc" id="aclassros2__canopen_1_1ModeTargetHelper_html"><div class="ttname"><a href="classros2__canopen_1_1ModeTargetHelper.html">ros2_canopen::ModeTargetHelper</a></div><div class="ttdef"><b>Definition:</b> mode_target_helper.hpp:20</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1ModeTargetHelper_html_a27fc87deb70ab4bc2f3e535c4cc53a00"><div class="ttname"><a href="classros2__canopen_1_1ModeTargetHelper.html#a27fc87deb70ab4bc2f3e535c4cc53a00">ros2_canopen::ModeTargetHelper::setTarget</a></div><div class="ttdeci">virtual bool setTarget(const double &amp;val)</div><div class="ttdef"><b>Definition:</b> mode_target_helper.hpp:28</div></div>
-<div class="ttc" id="aclassros2__canopen_1_1ModeTargetHelper_html_a93b1aafda37ee1339a534d9df06610cd"><div class="ttname"><a href="classros2__canopen_1_1ModeTargetHelper.html#a93b1aafda37ee1339a534d9df06610cd">ros2_canopen::ModeTargetHelper::start</a></div><div class="ttdeci">virtual bool start()</div><div class="ttdef"><b>Definition:</b> mode_target_helper.hpp:65</div></div>
+<div class="ttc" id="aclassros2__canopen_1_1ModeTargetHelper_html_a93b1aafda37ee1339a534d9df06610cd"><div class="ttname"><a href="classros2__canopen_1_1ModeTargetHelper.html#a93b1aafda37ee1339a534d9df06610cd">ros2_canopen::ModeTargetHelper::start</a></div><div class="ttdeci">virtual bool start()</div><div class="ttdef"><b>Definition:</b> mode_target_helper.hpp:66</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1ModeTargetHelper_html_ab0c1f0e2a7829998e920de88acd367df"><div class="ttname"><a href="classros2__canopen_1_1ModeTargetHelper.html#ab0c1f0e2a7829998e920de88acd367df">ros2_canopen::ModeTargetHelper::hasTarget</a></div><div class="ttdeci">bool hasTarget()</div><div class="ttdef"><b>Definition:</b> mode_target_helper.hpp:26</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1ModeTargetHelper_html_ab0e00f4df6d458f99928627f082967e7"><div class="ttname"><a href="classros2__canopen_1_1ModeTargetHelper.html#ab0e00f4df6d458f99928627f082967e7">ros2_canopen::ModeTargetHelper::getTarget</a></div><div class="ttdeci">T getTarget()</div><div class="ttdef"><b>Definition:</b> mode_target_helper.hpp:27</div></div>
 <div class="ttc" id="aclassros2__canopen_1_1ModeTargetHelper_html_ab1cdc2ac0e3de7af97729fadc8d4e88b"><div class="ttname"><a href="classros2__canopen_1_1ModeTargetHelper.html#ab1cdc2ac0e3de7af97729fadc8d4e88b">ros2_canopen::ModeTargetHelper::ModeTargetHelper</a></div><div class="ttdeci">ModeTargetHelper(uint16_t mode)</div><div class="ttdef"><b>Definition:</b> mode_target_helper.hpp:25</div></div>

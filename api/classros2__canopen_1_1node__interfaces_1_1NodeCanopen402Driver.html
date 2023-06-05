@@ -149,6 +149,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9f1f927949e3fc637adda5ceb3a77b42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9f1f927949e3fc637adda5ceb3a77b42">handle_set_mode_position</a> (const std_srvs::srv::Trigger::Request::SharedPtr request, std_srvs::srv::Trigger::Response::SharedPtr response)</td></tr>
 <tr class="memdesc:a9f1f927949e3fc637adda5ceb3a77b42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Service Callback to set profiled position mode.  <a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a9f1f927949e3fc637adda5ceb3a77b42">More...</a><br /></td></tr>
 <tr class="separator:a9f1f927949e3fc637adda5ceb3a77b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea309f45a9475f917575f456c3353393"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aea309f45a9475f917575f456c3353393">set_operation_mode</a> (uint16_t mode)</td></tr>
+<tr class="separator:aea309f45a9475f917575f456c3353393"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4959ad572a10a984f4d2d8e799e4474"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa4959ad572a10a984f4d2d8e799e4474">set_mode_position</a> ()</td></tr>
 <tr class="memdesc:aa4959ad572a10a984f4d2d8e799e4474"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to set profiled position mode.  <a href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aa4959ad572a10a984f4d2d8e799e4474">More...</a><br /></td></tr>
 <tr class="separator:aa4959ad572a10a984f4d2d8e799e4474"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -259,8 +261,8 @@ Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:ae197d8cbeff0c42a84e574d0b7f41f13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ae197d8cbeff0c42a84e574d0b7f41f13">publish</a> ()</td></tr>
 <tr class="separator:ae197d8cbeff0c42a84e574d0b7f41f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad27577ffa1d1d20b5d9c504a1d6ee81d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ad27577ffa1d1d20b5d9c504a1d6ee81d">run</a> ()</td></tr>
-<tr class="separator:ad27577ffa1d1d20b5d9c504a1d6ee81d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96eb67d5ccca6acee8de6524641d0e71"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a96eb67d5ccca6acee8de6524641d0e71">poll_timer_callback</a> () override</td></tr>
+<tr class="separator:a96eb67d5ccca6acee8de6524641d0e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html">ros2_canopen::node_interfaces::NodeCanopenProxyDriver&lt; NODETYPE &gt;</a></td></tr>
 <tr class="memitem:ab39daec194f4b795810adb81aa4375c3 inherit pro_methods_classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#ab39daec194f4b795810adb81aa4375c3">on_nmt</a> (canopen::NmtState nmt_state) override</td></tr>
 <tr class="separator:ab39daec194f4b795810adb81aa4375c3 inherit pro_methods_classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -314,8 +316,6 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a6add7a3bf39d01fa7c1ec378d6f6d500"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aece10efb41fbdf4bcbac1ec4fc997d9f"><td class="memItemLeft" align="right" valign="top">rclcpp::Publisher&lt; sensor_msgs::msg::JointState &gt;::SharedPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aece10efb41fbdf4bcbac1ec4fc997d9f">publish_joint_state</a></td></tr>
 <tr class="separator:aece10efb41fbdf4bcbac1ec4fc997d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aded80a9ec924ca36ed13f478d6ee26ae"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#aded80a9ec924ca36ed13f478d6ee26ae">period_ms_</a></td></tr>
-<tr class="separator:aded80a9ec924ca36ed13f478d6ee26ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a518d867ecb7ca2db94ea37ca9429eda9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a518d867ecb7ca2db94ea37ca9429eda9">scale_pos_to_dev_</a></td></tr>
 <tr class="separator:a518d867ecb7ca2db94ea37ca9429eda9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad39f35df542f44c055c49a5533bc5d59"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ad39f35df542f44c055c49a5533bc5d59">scale_pos_from_dev_</a></td></tr>
@@ -324,6 +324,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a10afca647c2266842ed62af9965843ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0babf8bf70c501f951c6b5f56106ac4f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#a0babf8bf70c501f951c6b5f56106ac4f">scale_vel_from_dev_</a></td></tr>
 <tr class="separator:a0babf8bf70c501f951c6b5f56106ac4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac508a7fa8b6cb0bb6e42d56230a52c1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classros2__canopen_1_1State402.html#ae346df75e3fb386719dc610f13fc0f47">ros2_canopen::State402::InternalState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html#ac508a7fa8b6cb0bb6e42d56230a52c1f">switching_state_</a></td></tr>
+<tr class="separator:ac508a7fa8b6cb0bb6e42d56230a52c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html">ros2_canopen::node_interfaces::NodeCanopenProxyDriver&lt; NODETYPE &gt;</a></td></tr>
 <tr class="memitem:a89f1145a633c2fd56823658aa9bde57d inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver"><td class="memItemLeft" align="right" valign="top">rclcpp::Publisher&lt; std_msgs::msg::String &gt;::SharedPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver.html#a89f1145a633c2fd56823658aa9bde57d">nmt_state_publisher</a></td></tr>
 <tr class="separator:a89f1145a633c2fd56823658aa9bde57d inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenProxyDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -352,12 +354,22 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:aa60effabc87768d68595c2fe4adb7fdf inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af578aa77186b31023fa6337855c24a4a inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1LelyDriverBridge.html">ros2_canopen::LelyDriverBridge</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#af578aa77186b31023fa6337855c24a4a">lely_driver_</a></td></tr>
 <tr class="separator:af578aa77186b31023fa6337855c24a4a inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a161715314ba394368ebd973ec5c3604f inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a161715314ba394368ebd973ec5c3604f">period_ms_</a></td></tr>
+<tr class="separator:a161715314ba394368ebd973ec5c3604f inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae943d2eae7c05eda2fd10d42fefcacfb inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#ae943d2eae7c05eda2fd10d42fefcacfb">polling_</a></td></tr>
+<tr class="separator:ae943d2eae7c05eda2fd10d42fefcacfb inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae59fdf547f193e6848f8eaaf3cc62357 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(canopen::NmtState, uint8_t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#ae59fdf547f193e6848f8eaaf3cc62357">nmt_state_cb_</a></td></tr>
 <tr class="separator:ae59fdf547f193e6848f8eaaf3cc62357 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa11523d3464040fb97855025e4978fe6 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(<a class="el" href="structros2__canopen_1_1COData.html">COData</a>, uint8_t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#aa11523d3464040fb97855025e4978fe6">rpdo_cb_</a></td></tr>
 <tr class="separator:aa11523d3464040fb97855025e4978fe6 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef470d5ddd3e8529b3e15b2efaf2d89c inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(<a class="el" href="structros2__canopen_1_1COEmcy.html">COEmcy</a>, uint8_t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#aef470d5ddd3e8529b3e15b2efaf2d89c">emcy_cb_</a></td></tr>
 <tr class="separator:aef470d5ddd3e8529b3e15b2efaf2d89c inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e7e0ab98eecd559373d971898120a91 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1SafeQueue.html">ros2_canopen::SafeQueue</a>&lt; <a class="el" href="structros2__canopen_1_1COEmcy.html">ros2_canopen::COEmcy</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a8e7e0ab98eecd559373d971898120a91">emcy_queue_</a></td></tr>
+<tr class="separator:a8e7e0ab98eecd559373d971898120a91 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad458c5d2e004231f9737c8cdf7487e82 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classros2__canopen_1_1SafeQueue.html">ros2_canopen::SafeQueue</a>&lt; <a class="el" href="structros2__canopen_1_1COData.html">ros2_canopen::COData</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#ad458c5d2e004231f9737c8cdf7487e82">rpdo_queue_</a></td></tr>
+<tr class="separator:ad458c5d2e004231f9737c8cdf7487e82 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a5b98a66a02b656e6ef4dbef3b84464 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memItemLeft" align="right" valign="top">rclcpp::TimerBase::SharedPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a2a5b98a66a02b656e6ef4dbef3b84464">poll_timer_</a></td></tr>
+<tr class="separator:a2a5b98a66a02b656e6ef4dbef3b84464 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html">ros2_canopen::node_interfaces::NodeCanopenDriver&lt; NODETYPE &gt;</a></td></tr>
 <tr class="memitem:a5c147ad1a7292ff3c36f7ead00746ec0 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver"><td class="memItemLeft" align="right" valign="top">NODETYPE *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver.html#a5c147ad1a7292ff3c36f7ead00746ec0">node_</a></td></tr>
 <tr class="separator:a5c147ad1a7292ff3c36f7ead00746ec0 inherit pro_attribs_classros2__canopen_1_1node__interfaces_1_1NodeCanopenDriver"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -438,8 +450,8 @@ template&lt;class NODETYPE &gt; </div>
 
 </div>
 </div>
-<a id="ad27577ffa1d1d20b5d9c504a1d6ee81d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad27577ffa1d1d20b5d9c504a1d6ee81d">&#9670;&nbsp;</a></span>run()</h2>
+<a id="a96eb67d5ccca6acee8de6524641d0e71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96eb67d5ccca6acee8de6524641d0e71">&#9670;&nbsp;</a></span>poll_timer_callback()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -450,15 +462,17 @@ template&lt;class NODETYPE &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void NodeCanopen402Driver::run</td>
+          <td class="memname">void NodeCanopen402Driver::poll_timer_callback</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a7bfab7737e59154d4b0e4171e8a461da">ros2_canopen::node_interfaces::NodeCanopenBaseDriver&lt; NODETYPE &gt;</a>.</p>
 
 </div>
 </div>
@@ -537,7 +551,7 @@ template&lt;class NODETYPE &gt; </div>
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#acf9951d86a66aacdc4ad0fd28f3a40b2">ros2_canopen::node_interfaces::NodeCanopenBaseDriver&lt; NODETYPE &gt;</a>.</p>
+<p>Reimplemented from <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopenBaseDriver.html#a622d03773a0881af28f70b3ca50faabb">ros2_canopen::node_interfaces::NodeCanopenBaseDriver&lt; NODETYPE &gt;</a>.</p>
 
 </div>
 </div>
@@ -963,6 +977,26 @@ template&lt;class NODETYPE &gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="aea309f45a9475f917575f456c3353393"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea309f45a9475f917575f456c3353393">&#9670;&nbsp;</a></span>set_operation_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class NODETYPE &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NodeCanopen402Driver::set_operation_mode </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -1705,30 +1739,6 @@ template&lt;class NODETYPE &gt; </div>
 
 </div>
 </div>
-<a id="aded80a9ec924ca36ed13f478d6ee26ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aded80a9ec924ca36ed13f478d6ee26ae">&#9670;&nbsp;</a></span>period_ms_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class NODETYPE &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html">ros2_canopen::node_interfaces::NodeCanopen402Driver</a>&lt; NODETYPE &gt;::period_ms_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a518d867ecb7ca2db94ea37ca9429eda9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a518d867ecb7ca2db94ea37ca9429eda9">&#9670;&nbsp;</a></span>scale_pos_to_dev_</h2>
 
@@ -1814,6 +1824,30 @@ template&lt;class NODETYPE &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">double <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html">ros2_canopen::node_interfaces::NodeCanopen402Driver</a>&lt; NODETYPE &gt;::scale_vel_from_dev_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac508a7fa8b6cb0bb6e42d56230a52c1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac508a7fa8b6cb0bb6e42d56230a52c1f">&#9670;&nbsp;</a></span>switching_state_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class NODETYPE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classros2__canopen_1_1State402.html#ae346df75e3fb386719dc610f13fc0f47">ros2_canopen::State402::InternalState</a> <a class="el" href="classros2__canopen_1_1node__interfaces_1_1NodeCanopen402Driver.html">ros2_canopen::node_interfaces::NodeCanopen402Driver</a>&lt; NODETYPE &gt;::switching_state_</td>
         </tr>
       </table>
   </td>

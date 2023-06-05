@@ -144,6 +144,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acbca8f80755f46e1f4dd89af125263aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#acbca8f80755f46e1f4dd89af125263aa">wait_for_boot</a> ()</td></tr>
 <tr class="memdesc:acbca8f80755f46e1f4dd89af125263aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait for device to be booted.  <a href="classros2__canopen_1_1LelyDriverBridge.html#acbca8f80755f46e1f4dd89af125263aa">More...</a><br /></td></tr>
 <tr class="separator:acbca8f80755f46e1f4dd89af125263aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77b14c3661e1b57c25836041684b6199"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#a77b14c3661e1b57c25836041684b6199">set_sync_function</a> (std::function&lt; void()&gt; on_sync_function)</td></tr>
+<tr class="separator:a77b14c3661e1b57c25836041684b6199"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63c51f4f4393541292268caad4ca5897"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#a63c51f4f4393541292268caad4ca5897">unset_sync_function</a> ()</td></tr>
+<tr class="separator:a63c51f4f4393541292268caad4ca5897"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3ef3c3688a3eb0c321b8b554f16ba51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#ac3ef3c3688a3eb0c321b8b554f16ba51">Boot</a> ()</td></tr>
 <tr class="memdesc:ac3ef3c3688a3eb0c321b8b554f16ba51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request master to boot device.  <a href="classros2__canopen_1_1LelyDriverBridge.html#ac3ef3c3688a3eb0c321b8b554f16ba51">More...</a><br /></td></tr>
 <tr class="separator:ac3ef3c3688a3eb0c321b8b554f16ba51"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,6 +169,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:af237b9748020907691fe2a8e992cd7b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#af237b9748020907691fe2a8e992cd7b6">OnSync</a> (uint8_t cnt, const time_point &amp;t) noexcept override</td></tr>
+<tr class="separator:af237b9748020907691fe2a8e992cd7b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affa3700f0a4a4640eabeec41e59621a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#affa3700f0a4a4640eabeec41e59621a9">OnState</a> (canopen::NmtState state) noexcept override</td></tr>
 <tr class="memdesc:affa3700f0a4a4640eabeec41e59621a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">OnState Callback.  <a href="classros2__canopen_1_1LelyDriverBridge.html#affa3700f0a4a4640eabeec41e59621a9">More...</a><br /></td></tr>
 <tr class="separator:affa3700f0a4a4640eabeec41e59621a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -233,6 +239,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:afb2119c15d6781425ea66714e3fd1c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbd744c730f8e4721a85d3f59250be5e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#afbd744c730f8e4721a85d3f59250be5e">name_</a></td></tr>
 <tr class="separator:afbd744c730f8e4721a85d3f59250be5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa744c447b7a6b2558bbe0fb8d8dfc93d"><td class="memItemLeft" align="right" valign="top">std::function&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classros2__canopen_1_1LelyDriverBridge.html#aa744c447b7a6b2558bbe0fb8d8dfc93d">on_sync_function_</a></td></tr>
+<tr class="separator:aa744c447b7a6b2558bbe0fb8d8dfc93d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Lely Driver Bridge. </p>
@@ -311,6 +319,42 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="af237b9748020907691fe2a8e992cd7b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af237b9748020907691fe2a8e992cd7b6">&#9670;&nbsp;</a></span>OnSync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ros2_canopen::LelyDriverBridge::OnSync </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>cnt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const time_point &amp;&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="affa3700f0a4a4640eabeec41e59621a9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#affa3700f0a4a4640eabeec41e59621a9">&#9670;&nbsp;</a></span>OnState()</h2>
 
@@ -897,6 +941,57 @@ template&lt;typename T &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>true </dd>
 <dd>
 false </dd></dl>
+
+</div>
+</div>
+<a id="a77b14c3661e1b57c25836041684b6199"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77b14c3661e1b57c25836041684b6199">&#9670;&nbsp;</a></span>set_sync_function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ros2_canopen::LelyDriverBridge::set_sync_function </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void()&gt;&#160;</td>
+          <td class="paramname"><em>on_sync_function</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a63c51f4f4393541292268caad4ca5897"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63c51f4f4393541292268caad4ca5897">&#9670;&nbsp;</a></span>unset_sync_function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ros2_canopen::LelyDriverBridge::unset_sync_function </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -1679,6 +1774,28 @@ template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::string ros2_canopen::LelyDriverBridge::name_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa744c447b7a6b2558bbe0fb8d8dfc93d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa744c447b7a6b2558bbe0fb8d8dfc93d">&#9670;&nbsp;</a></span>on_sync_function_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::function&lt;void()&gt; ros2_canopen::LelyDriverBridge::on_sync_function_</td>
         </tr>
       </table>
   </td>
