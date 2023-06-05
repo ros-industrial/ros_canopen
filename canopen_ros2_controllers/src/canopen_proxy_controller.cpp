@@ -37,7 +37,6 @@ void reset_controller_command_msg(
 {
   msg->index = 0u;
   msg->subindex = 0u;
-  msg->type = 0u;
   msg->data = 0u;
 }
 bool propagate_controller_command_msg(std::shared_ptr<ControllerCommandMsg> & msg)
@@ -45,7 +44,7 @@ bool propagate_controller_command_msg(std::shared_ptr<ControllerCommandMsg> & ms
   // TODO (livanov93): add better logic to decide if a message
   //  should be propagated to the bus
   // check if it is 8 = uint8_t or 16 = uint16_t or 32 = uint32_t
-  return msg->type == 8 || msg->type == 16 || msg->type == 32;
+  return true;
 }
 }  // namespace
 
@@ -139,7 +138,6 @@ controller_interface::CallbackReturn CanopenProxyController::on_configure(
   rpdo_rt_publisher_->lock();
   rpdo_rt_publisher_->msg_.index = 0u;
   rpdo_rt_publisher_->msg_.subindex = 0u;
-  rpdo_rt_publisher_->msg_.type = 0u;
   rpdo_rt_publisher_->msg_.data = 0u;
   rpdo_rt_publisher_->unlock();
 
@@ -325,8 +323,6 @@ controller_interface::return_type CanopenProxyController::update(
       static_cast<uint16_t>(state_interfaces_[StateInterfaces::RPDO_INDEX].get_value());
     rpdo_rt_publisher_->msg_.subindex =
       static_cast<uint8_t>(state_interfaces_[StateInterfaces::RPDO_SUBINDEX].get_value());
-    rpdo_rt_publisher_->msg_.type =
-      static_cast<uint8_t>(state_interfaces_[StateInterfaces::RPDO_TYPE].get_value());
     rpdo_rt_publisher_->msg_.data =
       static_cast<uint32_t>(state_interfaces_[StateInterfaces::RPDO_DATA].get_value());
 
@@ -343,7 +339,6 @@ controller_interface::return_type CanopenProxyController::update(
   {
     command_interfaces_[CommandInterfaces::TPDO_INDEX].set_value((*current_cmd)->index);
     command_interfaces_[CommandInterfaces::TPDO_SUBINDEX].set_value((*current_cmd)->subindex);
-    command_interfaces_[CommandInterfaces::TPDO_TYPE].set_value((*current_cmd)->type);
     command_interfaces_[CommandInterfaces::TPDO_DATA].set_value((*current_cmd)->data);
     // tpdo data one shot mechanism
     command_interfaces_[CommandInterfaces::TPDO_ONS].set_value(kCommandValue);

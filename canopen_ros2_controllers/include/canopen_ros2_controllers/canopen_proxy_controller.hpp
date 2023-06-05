@@ -38,7 +38,6 @@ enum CommandInterfaces
 {
   TPDO_INDEX,
   TPDO_SUBINDEX,
-  TPDO_TYPE,
   TPDO_DATA,
   TPDO_ONS,
   NMT_RESET,
@@ -52,7 +51,6 @@ enum StateInterfaces
 {
   RPDO_INDEX,
   RPDO_SUBINDEX,
-  RPDO_TYPE,
   RPDO_DATA,
   NMT_STATE,
   LAST_STATE_AUX,

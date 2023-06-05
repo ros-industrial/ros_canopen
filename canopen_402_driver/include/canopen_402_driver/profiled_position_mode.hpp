@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <memory>
-#include "lely_motion_controller_bridge.hpp"
+#include "canopen_base_driver/lely_driver_bridge.hpp"
 #include "mode_target_helper.hpp"
 
 namespace ros2_canopen

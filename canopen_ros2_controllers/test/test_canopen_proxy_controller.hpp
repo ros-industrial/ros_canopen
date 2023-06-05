@@ -223,7 +223,6 @@ protected:
     ControllerCommandMsg msg;
     msg.index = 0u;
     msg.subindex = 0u;
-    msg.type = 0u;
     msg.data = 0u;
 
     command_publisher_->publish(msg);

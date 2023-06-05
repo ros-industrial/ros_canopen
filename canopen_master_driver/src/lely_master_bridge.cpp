@@ -13,14 +13,14 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 #include "canopen_master_driver/lely_master_bridge.hpp"
-
 #include <chrono>
+#include <lely/co/dcf.hpp>
 
 using namespace std::literals::chrono_literals;
 
-namespace ros2_canopen
+namespace ros2_canopen /* constant-expression */
 {
-std::future<bool> LelyMasterBridge::async_write_sdo(uint8_t id, COData data)
+std::future<bool> LelyMasterBridge::async_write_sdo(uint8_t id, COData data, uint8_t datatype)
 {
   std::unique_lock<std::mutex> lck(sdo_mutex);
   if (running)
@@ -30,74 +30,44 @@ std::future<bool> LelyMasterBridge::async_write_sdo(uint8_t id, COData data)
   running = true;
 
   sdo_write_data_promise = std::make_shared<std::promise<bool>>();
-  if (data.type_ == CODataTypes::COData8)
+  try
   {
-    this->SubmitWrite(
-      this->GetExecutor(), id, data.index_, data.subindex_, (uint8_t)data.data_,
-      [this](uint8_t id, uint16_t idx, uint8_t subidx, ::std::error_code ec) mutable
-      {
-        if (ec)
-        {
-          this->sdo_write_data_promise->set_exception(
-            lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, "AsyncDownload"));
-        }
-        else
-        {
-          this->sdo_write_data_promise->set_value(true);
-        }
-        std::unique_lock<std::mutex> lck(this->sdo_mutex);
-        this->running = false;
-        this->sdo_cond.notify_one();
-      },
-      20ms);
+    switch (datatype)
+    {
+      case CO_DEFTYPE_INTEGER8:
+        submit_write_sdo<int8_t>(id, data.index_, data.subindex_, data.data_);
+        break;
+      case CO_DEFTYPE_INTEGER16:
+        submit_write_sdo<int16_t>(id, data.index_, data.subindex_, data.data_);
+        break;
+      case CO_DEFTYPE_INTEGER32:
+        submit_write_sdo<int32_t>(id, data.index_, data.subindex_, data.data_);
+        break;
+      case CO_DEFTYPE_UNSIGNED8:
+        submit_write_sdo<uint8_t>(id, data.index_, data.subindex_, data.data_);
+        break;
+      case CO_DEFTYPE_UNSIGNED16:
+        submit_write_sdo<uint16_t>(id, data.index_, data.subindex_, data.data_);
+        break;
+      case CO_DEFTYPE_UNSIGNED32:
+        submit_write_sdo<uint32_t>(id, data.index_, data.subindex_, data.data_);
+        break;
+      default:
+        throw lely::canopen::SdoError(
+          id, data.index_, data.subindex_, lely::canopen::SdoErrc::ERROR, "Unknown datatype");
+        break;
+    }
   }
-  else if (data.type_ == CODataTypes::COData16)
+  catch (...)
   {
-    this->SubmitWrite(
-      this->GetExecutor(), id, data.index_, data.subindex_, (uint16_t)data.data_,
-      [this](uint8_t id, uint16_t idx, uint8_t subidx, ::std::error_code ec) mutable
-      {
-        if (ec)
-        {
-          this->sdo_write_data_promise->set_exception(
-            lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, "AsyncDownload"));
-        }
-        else
-        {
-          this->sdo_write_data_promise->set_value(true);
-        }
-        std::unique_lock<std::mutex> lck(this->sdo_mutex);
-        this->running = false;
-        this->sdo_cond.notify_one();
-      },
-      20ms);
-  }
-  else if (data.type_ == CODataTypes::COData32)
-  {
-    this->SubmitWrite(
-      this->GetExecutor(), id, data.index_, data.subindex_, (uint32_t)data.data_,
-      [this](uint8_t id, uint16_t idx, uint8_t subidx, ::std::error_code ec) mutable
-      {
-        if (ec)
-        {
-          this->sdo_write_data_promise->set_exception(
-            lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, "AsyncDownload"));
-        }
-        else
-        {
-          this->sdo_write_data_promise->set_value(true);
-        }
-        std::unique_lock<std::mutex> lck(this->sdo_mutex);
-        this->running = false;
-        this->sdo_cond.notify_one();
-      },
-      20ms);
+    this->sdo_write_data_promise->set_exception(std::current_exception());
+    this->running = false;
   }
 
   return sdo_write_data_promise->get_future();
 }
 
-std::future<COData> LelyMasterBridge::async_read_sdo(uint8_t id, COData data)
+std::future<COData> LelyMasterBridge::async_read_sdo(uint8_t id, COData data, uint8_t datatype)
 {
   std::unique_lock<std::mutex> lck(sdo_mutex);
   if (running)
@@ -107,71 +77,38 @@ std::future<COData> LelyMasterBridge::async_read_sdo(uint8_t id, COData data)
   running = true;
 
   sdo_read_data_promise = std::make_shared<std::promise<COData>>();
-  if (data.type_ == CODataTypes::COData8)
+  try
   {
-    this->SubmitRead<uint8_t>(
-      this->GetExecutor(), id, data.index_, data.subindex_,
-      [this](uint8_t id, uint16_t idx, uint8_t subidx, ::std::error_code ec, uint8_t value) mutable
-      {
-        if (ec)
-        {
-          this->sdo_read_data_promise->set_exception(
-            lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, "AsyncUpload"));
-        }
-        else
-        {
-          COData d = {idx, subidx, value, CODataTypes::COData16};
-          this->sdo_read_data_promise->set_value(d);
-        }
-        std::unique_lock<std::mutex> lck(this->sdo_mutex);
-        this->running = false;
-        this->sdo_cond.notify_one();
-      },
-      20ms);
+    switch (datatype)
+    {
+      case CO_DEFTYPE_INTEGER8:
+        submit_read_sdo<int8_t>(id, data.index_, data.subindex_);
+        break;
+      case CO_DEFTYPE_INTEGER16:
+        submit_read_sdo<int16_t>(id, data.index_, data.subindex_);
+        break;
+      case CO_DEFTYPE_INTEGER32:
+        submit_read_sdo<int32_t>(id, data.index_, data.subindex_);
+        break;
+      case CO_DEFTYPE_UNSIGNED8:
+        submit_read_sdo<uint8_t>(id, data.index_, data.subindex_);
+        break;
+      case CO_DEFTYPE_UNSIGNED16:
+        submit_read_sdo<uint16_t>(id, data.index_, data.subindex_);
+        break;
+      case CO_DEFTYPE_UNSIGNED32:
+        submit_read_sdo<uint32_t>(id, data.index_, data.subindex_);
+        break;
+      default:
+        throw lely::canopen::SdoError(
+          id, data.index_, data.subindex_, lely::canopen::SdoErrc::ERROR, "Unknown datatype");
+        break;
+    }
   }
-  else if (data.type_ == CODataTypes::COData16)
+  catch (...)
   {
-    this->SubmitRead<uint16_t>(
-      this->GetExecutor(), id, data.index_, data.subindex_,
-      [this](uint8_t id, uint16_t idx, uint8_t subidx, ::std::error_code ec, uint16_t value) mutable
-      {
-        if (ec)
-        {
-          this->sdo_read_data_promise->set_exception(
-            lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, "AsyncUpload"));
-        }
-        else
-        {
-          COData d = {idx, subidx, value, CODataTypes::COData16};
-          this->sdo_read_data_promise->set_value(d);
-        }
-        std::unique_lock<std::mutex> lck(this->sdo_mutex);
-        this->running = false;
-        this->sdo_cond.notify_one();
-      },
-      20ms);
-  }
-  else if (data.type_ == CODataTypes::COData32)
-  {
-    this->SubmitRead<uint16_t>(
-      this->GetExecutor(), id, data.index_, data.subindex_,
-      [this](uint8_t id, uint16_t idx, uint8_t subidx, ::std::error_code ec, uint32_t value) mutable
-      {
-        if (ec)
-        {
-          this->sdo_read_data_promise->set_exception(
-            lely::canopen::make_sdo_exception_ptr(id, idx, subidx, ec, "AsyncUpload"));
-        }
-        else
-        {
-          COData d = {idx, subidx, value, CODataTypes::COData16};
-          this->sdo_read_data_promise->set_value(d);
-        }
-        std::unique_lock<std::mutex> lck(this->sdo_mutex);
-        this->running = false;
-        this->sdo_cond.notify_one();
-      },
-      20ms);
+    this->sdo_read_data_promise->set_exception(std::current_exception());
+    this->running = false;
   }
   return sdo_read_data_promise->get_future();
 }

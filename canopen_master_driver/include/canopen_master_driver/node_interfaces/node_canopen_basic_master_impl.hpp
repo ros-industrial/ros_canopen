@@ -29,10 +29,9 @@ void NodeCanopenBasicMaster<NODETYPE>::on_sdo_read(
 {
   if (this->activated_.load())
   {
-    ros2_canopen::CODataTypes datatype = static_cast<ros2_canopen::CODataTypes>(request->type);
-    ros2_canopen::COData data = {request->index, request->subindex, 0U, datatype};
+    ros2_canopen::COData data = {request->index, request->subindex, 0U};
     std::future<ros2_canopen::COData> f =
-      this->master_bridge_->async_read_sdo(request->nodeid, data);
+      this->master_bridge_->async_read_sdo(request->nodeid, data, request->canopen_datatype);
     f.wait();
     try
     {
@@ -61,9 +60,9 @@ void NodeCanopenBasicMaster<NODETYPE>::on_sdo_write(
 {
   if (this->activated_.load())
   {
-    ros2_canopen::CODataTypes datatype = static_cast<ros2_canopen::CODataTypes>(request->type);
-    ros2_canopen::COData data = {request->index, request->subindex, request->data, datatype};
-    std::future<bool> f = this->master_bridge_->async_write_sdo(request->nodeid, data);
+    ros2_canopen::COData data = {request->index, request->subindex, request->data};
+    std::future<bool> f =
+      this->master_bridge_->async_write_sdo(request->nodeid, data, request->canopen_datatype);
     f.wait();
     try
     {

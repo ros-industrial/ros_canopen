@@ -176,9 +176,6 @@ std::vector<hardware_interface::StateInterface> CanopenSystem::export_state_inte
       info_.joints[i].name, "rpdo/subindex", &canopen_data_[node_id].rpdo_data.subindex));
 
     state_interfaces.emplace_back(hardware_interface::StateInterface(
-      info_.joints[i].name, "rpdo/type", &canopen_data_[node_id].rpdo_data.type));
-
-    state_interfaces.emplace_back(hardware_interface::StateInterface(
       info_.joints[i].name, "rpdo/data", &canopen_data_[node_id].rpdo_data.data));
 
     state_interfaces.emplace_back(hardware_interface::StateInterface(
@@ -206,9 +203,6 @@ std::vector<hardware_interface::CommandInterface> CanopenSystem::export_command_
 
     command_interfaces.emplace_back(hardware_interface::CommandInterface(
       info_.joints[i].name, "tpdo/subindex", &canopen_data_[node_id].tpdo_data.subindex));
-
-    command_interfaces.emplace_back(hardware_interface::CommandInterface(
-      info_.joints[i].name, "tpdo/type", &canopen_data_[node_id].tpdo_data.type));
 
     command_interfaces.emplace_back(hardware_interface::CommandInterface(
       info_.joints[i].name, "tpdo/data", &canopen_data_[node_id].tpdo_data.data));

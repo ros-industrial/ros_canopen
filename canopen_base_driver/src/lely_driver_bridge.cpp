@@ -160,7 +160,7 @@ void LelyDriverBridge::OnRpdoWrite(uint16_t idx, uint8_t subidx) noexcept
     sub->setVal<CO_DEFTYPE_INTEGER32>((int32_t)rpdo_mapped[idx][subidx]);
     std::memcpy(&data, &sub->getVal<CO_DEFTYPE_INTEGER32>(), 4);
   }
-  COData codata = {idx, subidx, data, CODataTypes::CODataUnkown};
+  COData codata = {idx, subidx, data};
 
   //  We do not care so much about missing a message, rather push them through.
   rpdo_queue->push(codata);
@@ -170,7 +170,9 @@ void LelyDriverBridge::OnEmcy(uint16_t eec, uint8_t er, uint8_t msef[5]) noexcep
 {
   FiberDriver::OnEmcy(eec, er, msef);
 
-  COEmcy emcy = {eec, er};
+  COEmcy emcy;
+  emcy.eec = eec;
+  emcy.er = er;
   for (int i = 0; i < 5; i++) emcy.msef[i] = msef[i];
 
   emcy_queue->push(emcy);

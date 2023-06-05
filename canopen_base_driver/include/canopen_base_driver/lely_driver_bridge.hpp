@@ -722,7 +722,7 @@ public:
         {
           std::scoped_lock<std::mutex> lck(this->dictionary_mutex_);
           this->dictionary_->setVal<T>(idx, subidx, value);
-          COData d = {idx, subidx, 0, CODataTypes::COData32};
+          COData d = {idx, subidx, 0};
           std::memcpy(&d.data_, &value, sizeof(T));
           this->sdo_read_data_promise->set_value(d);
         }

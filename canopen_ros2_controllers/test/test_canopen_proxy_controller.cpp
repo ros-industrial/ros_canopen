@@ -94,7 +94,6 @@ TEST_F(CanopenProxyControllerTest, activate_success)
   auto msg = controller_->input_cmd_.readFromNonRT();
   EXPECT_EQ((*msg)->index, 0u);
   EXPECT_EQ((*msg)->subindex, 0u);
-  EXPECT_EQ((*msg)->type, 0u);
   EXPECT_EQ((*msg)->data, 0u);
 }
 
@@ -161,11 +160,9 @@ TEST_F(CanopenProxyControllerTest, test_update_logic_fast)
   ASSERT_EQ(controller_->on_activate(rclcpp_lifecycle::State()), NODE_SUCCESS);
 
   // set command statically as value for good type
-  static constexpr uint32_t TEST_GOOD_TYPE = 8;
   std::shared_ptr<ControllerCommandMsg> msg = std::make_shared<ControllerCommandMsg>();
   msg->index = 0u;
   msg->subindex = 0u;
-  msg->type = TEST_GOOD_TYPE;
   msg->data = 0u;
 
   controller_->input_cmd_.writeFromNonRT(msg);
@@ -173,9 +170,4 @@ TEST_F(CanopenProxyControllerTest, test_update_logic_fast)
   ASSERT_EQ(
     controller_->update(rclcpp::Time(0), rclcpp::Duration::from_seconds(0.01)),
     controller_interface::return_type::OK);
-
-  EXPECT_EQ(
-    static_cast<uint32_t>(
-      controller_->command_interfaces_[CommandInterfaces::TPDO_TYPE].get_value()),
-    TEST_GOOD_TYPE);
 }

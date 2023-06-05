@@ -1,8 +1,8 @@
 #ifndef DEFAULT_HOMING_MODE_HPP
 #define DEFAULT_HOMING_MODE_HPP
 #include <mutex>
+#include "canopen_base_driver/lely_driver_bridge.hpp"
 #include "homing_mode.hpp"
-#include "lely_motion_controller_bridge.hpp"
 
 namespace ros2_canopen
 {

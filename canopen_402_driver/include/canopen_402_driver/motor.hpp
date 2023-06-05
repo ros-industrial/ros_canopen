@@ -13,9 +13,9 @@
 #include "rclcpp/rclcpp.hpp"
 
 #include "canopen_402_driver/default_homing_mode.hpp"
-#include "canopen_402_driver/lely_motion_controller_bridge.hpp"
 #include "canopen_402_driver/mode_forward_helper.hpp"
 #include "canopen_402_driver/profiled_position_mode.hpp"
+#include "canopen_base_driver/lely_driver_bridge.hpp"
 
 namespace ros2_canopen
 {

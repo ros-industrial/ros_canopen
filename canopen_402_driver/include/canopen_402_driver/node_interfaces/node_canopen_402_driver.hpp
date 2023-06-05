@@ -1,8 +1,8 @@
 #ifndef NODE_CANOPEN_402_DRIVER
 #define NODE_CANOPEN_402_DRIVER
 
-#include "canopen_402_driver/lely_motion_controller_bridge.hpp"
 #include "canopen_402_driver/motor.hpp"
+#include "canopen_base_driver/lely_driver_bridge.hpp"
 #include "canopen_interfaces/srv/co_target_double.hpp"
 #include "canopen_proxy_driver/node_interfaces/node_canopen_proxy_driver.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"

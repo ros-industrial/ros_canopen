@@ -48,7 +48,6 @@ struct Ros2ControlCOData
   double index;     // cast to uint16_t
   double subindex;  // cast to uint8_t
   double data;      // cast to uint32_t
-  double type;      // cast to uint8_t
 };
 
 struct RORos2ControlCOData : public Ros2ControlCOData
@@ -60,7 +59,6 @@ struct RORos2ControlCOData : public Ros2ControlCOData
     index = static_cast<double>(original_data.index_);
     subindex = static_cast<double>(original_data.subindex_);
     data = static_cast<double>(original_data.data_);
-    type = static_cast<double>(original_data.type_);
   }
 };
 
@@ -86,7 +84,6 @@ struct WORos2ControlCoData : public Ros2ControlCOData
     original_data.index_ = static_cast<uint16_t>(index);
     original_data.subindex_ = static_cast<uint8_t>(subindex);
     original_data.data_ = static_cast<uint32_t>(data);
-    original_data.type_ = static_cast<ros2_canopen::CODataTypes>(type);
   }
 };
 struct Ros2ControlNmtState
