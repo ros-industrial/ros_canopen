@@ -1,4 +1,4 @@
-name: Documentation
+name: ROLLING Documentation
 
 # Controls when the workflow will run
 on:
@@ -46,10 +46,10 @@ jobs:
       - name: Create commit
         run: |
             git clone https://github.com/ros-industrial/ros2_canopen.git --branch gh-pages --single-branch gh-pages
-            mkdir -p gh-pages/manual/
-            mkdir -p gh-pages/api/
-            cp -r ./canopen/sphinx/_build/html/* gh-pages/manual/
-            cp -r ./canopen/doxygen/_build/html/* gh-pages/api/
+            mkdir -p gh-pages/manual/rolling/
+            mkdir -p gh-pages/api/rolling/
+            cp -r ./canopen/sphinx/_build/html/* gh-pages/manual/rolling/
+            cp -r ./canopen/doxygen/_build/html/* gh-pages/api/rolling/
             cd gh-pages
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"

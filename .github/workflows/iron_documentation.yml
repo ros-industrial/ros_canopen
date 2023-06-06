@@ -1,0 +1,64 @@
+name: IRON Documentation
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ iron ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build_documentation:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq doxygen graphviz plantuml
+            pip install sphinx-rtd-theme
+            pip install sphinxcontrib-plantuml
+            pip install sphinx-mdinclude
+            pip install breathe
+            pip install exhale
+
+      - name: Build doxygen
+        run: |
+            cd ./canopen/doxygen/
+            doxygen
+            cd ../..
+
+      - name: Build documentation
+        run: |
+            cd ./canopen/sphinx/
+            make html
+            cd ../..
+
+      - name: Create commit
+        run: |
+            git clone https://github.com/ros-industrial/ros2_canopen.git --branch gh-pages --single-branch gh-pages
+            mkdir -p gh-pages/manual/iron/
+            mkdir -p gh-pages/api/iron/
+            cp -r ./canopen/sphinx/_build/html/* gh-pages/manual/iron/
+            cp -r ./canopen/doxygen/_build/html/* gh-pages/api/iron/
+            cd gh-pages
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -m "Update documentation" -a || true
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: gh-pages
+          directory: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
