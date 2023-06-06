@@ -1,5 +1,0 @@
-<map id="ros2_canopen::LelyMotionControllerBridge" name="ros2_canopen::LelyMotionControllerBridge">
-<area shape="rect" id="node1" title="Specialised LelyDriverBridge for MotionControllers." alt="" coords="5,169,197,211"/>
-<area shape="rect" id="node2" href="$classros2__canopen_1_1LelyDriverBridge.html" title="Lely Driver Bridge." alt="" coords="8,80,195,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="23,5,180,32"/>
-</map>

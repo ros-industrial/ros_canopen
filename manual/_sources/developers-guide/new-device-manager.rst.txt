@@ -1,2 +1,0 @@
-Creating your device manager
-============================

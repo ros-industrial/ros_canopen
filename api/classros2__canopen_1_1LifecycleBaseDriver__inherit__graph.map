@@ -1,6 +1,0 @@
-<map id="ros2_canopen::LifecycleBaseDriver" name="ros2_canopen::LifecycleBaseDriver">
-<area shape="rect" id="node1" title="Lifecycle Base Driver." alt="" coords="130,184,341,225"/>
-<area shape="rect" id="node2" href="$classros2__canopen_1_1LifecycleCanopenDriver.html" title="Lifecycle Canopen Driver." alt="" coords="118,95,353,136"/>
-<area shape="rect" id="node3" href="$classros2__canopen_1_1CanopenDriverInterface.html" title="Canopen Driver Interface." alt="" coords="5,5,223,47"/>
-<area shape="rect" id="node4" title=" " alt="" coords="247,13,469,39"/>
-</map>

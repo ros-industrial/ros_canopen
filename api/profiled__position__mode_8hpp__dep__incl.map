@@ -1,8 +1,0 @@
-<map id="/home/runner/work/ros2_canopen/ros2_canopen/canopen_402_driver/include/canopen_402_driver/profiled_position_mode.hpp" name="/home/runner/work/ros2_canopen/ros2_canopen/canopen_402_driver/include/canopen_402_driver/profiled_position_mode.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="240,5,451,91"/>
-<area shape="rect" id="node2" href="$motor_8hpp.html" title=" " alt="" coords="232,139,459,209"/>
-<area shape="rect" id="node3" href="$node__canopen__402__driver_8hpp.html" title=" " alt="" coords="213,257,478,343"/>
-<area shape="rect" id="node4" href="$cia402__driver_8hpp.html" title=" " alt="" coords="5,391,213,476"/>
-<area shape="rect" id="node5" href="$lifecycle__cia402__driver_8hpp.html" title=" " alt="" coords="237,391,453,476"/>
-<area shape="rect" id="node6" href="$node__canopen__402__driver__impl_8hpp.html" title=" " alt="" coords="478,391,743,476"/>
-</map>
