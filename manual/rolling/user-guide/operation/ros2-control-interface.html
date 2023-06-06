@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ROS2 Control &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Master Driver" href="../master.html" />
+    <link rel="prev" title="Managed Service Interface" href="managed-service-interface.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ros2_canopen
+              <img src="../../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/configuration.html">Creating a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/operation.html">Starting a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../configuration/configuration.html">Bus Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operation.html">Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="service-interface.html">Service Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="managed-service-interface.html">Managed Service Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ROS2 Control</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hardware-interface">Hardware Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#robot-system-interface">Robot System Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ros2-controllers">ROS2 Controllers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#robot-controller">Robot Controller</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-driver.html">Proxy Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cia402-driver.html">Cia402 Driver</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/design-objectives.html">Design Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/new-master.html">Creating a new master</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ros-industrial.github.io/ros2_canopen/api/">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/proxy-driver-test.html#proxy-driver-test">Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ROS2 Control</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/user-guide/operation/ros2-control-interface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ros2-control">
+<h1>ROS2 Control<a class="headerlink" href="#ros2-control" title="Permalink to this headline"></a></h1>
+<section id="hardware-interface">
+<h2>Hardware Interface<a class="headerlink" href="#hardware-interface" title="Permalink to this headline"></a></h2>
+<p>This package provides multiple hardware interfaces for testing. Mainly the following:</p>
+<ul class="simple">
+<li><p>canopen_ros2_control/CanopenSystem: A system interface for ProxyDrivers</p></li>
+<li><p>canopen_ros2_control/Cia402System: A system interface for Cia402Drivers</p></li>
+<li><p>canopen_ros2_control/Cia402RobotSystem: A system interface for Cia402Drivers in a robot configuration (under development)</p></li>
+</ul>
+<section id="robot-system-interface">
+<h3>Robot System Interface<a class="headerlink" href="#robot-system-interface" title="Permalink to this headline"></a></h3>
+<p>The robot system interface takes a number of inputs from the robot description (urdf).
+It will make the Cia402Drivers available via the ros2_control hardware interface.
+The bus has to still be defined in the bus.yml file. In the urdf you can the choose the
+CANopen nodes that have a Cia402Driver attached to them.</p>
+<p>The ros2_control interface only works with non-lifecycle drivers right now.
+For each joint in your urdf you can choose the attached CANopen device by using the
+<code class="docutils literal notranslate"><span class="pre">node_id</span></code> parameter. The <code class="docutils literal notranslate"><span class="pre">node_id</span></code> parameter is the CANopen node id of the device.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ros2_control</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;${name}&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;system&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;hardware&gt;</span>
+<span class="w">        </span><span class="nt">&lt;plugin&gt;</span>canopen_ros2_control/Cia402RobotSystem<span class="nt">&lt;/plugin&gt;</span>
+<span class="w">        </span><span class="nt">&lt;param</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;bus_config&quot;</span><span class="nt">&gt;</span>[path<span class="w"> </span>to<span class="w"> </span>bus.yml]<span class="nt">&lt;/param&gt;</span>
+<span class="w">        </span><span class="nt">&lt;param</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;master_config&quot;</span><span class="nt">&gt;</span>[path<span class="w"> </span>to<span class="w"> </span>master.dcf]<span class="nt">&lt;/param&gt;</span>
+<span class="w">        </span><span class="nt">&lt;param</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;can_interface_name&quot;</span><span class="nt">&gt;</span>[can<span class="w"> </span>interface<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>used]<span class="nt">&lt;/param&gt;</span>
+<span class="w">        </span><span class="nt">&lt;param</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;master_bin&quot;</span><span class="nt">&gt;</span>[master.bin<span class="w"> </span>if<span class="w"> </span>it<span class="w"> </span>exists]<span class="nt">&lt;/param&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/hardware&gt;</span>
+<span class="w">    </span><span class="nt">&lt;joint</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;joint1&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;param</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;node_id&quot;</span><span class="nt">&gt;</span>3<span class="nt">&lt;/param&gt;</span>
+<span class="w">        </span>...
+<span class="w">    </span><span class="nt">&lt;/joint&gt;</span>
+<span class="w">    </span><span class="nt">&lt;joint</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;joint2&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;param</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;node_id&quot;</span><span class="nt">&gt;</span>3<span class="nt">&lt;/param&gt;</span>
+<span class="w">        </span>...
+<span class="w">    </span><span class="nt">&lt;/joint&gt;</span>
+<span class="nt">&lt;/ros2_control&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can find an example for the configuration in the <code class="docutils literal notranslate"><span class="pre">canopen_tests</span></code> package under robot_control.</p>
+</div>
+</section>
+</section>
+<section id="ros2-controllers">
+<h2>ROS2 Controllers<a class="headerlink" href="#ros2-controllers" title="Permalink to this headline"></a></h2>
+<p>This package provides multiple controllers for testing. Mainly the following:</p>
+<ul class="simple">
+<li><p>canopen_ros2_controllers/Cia402RobotController: Works with Robot System Interface</p></li>
+<li><p>canopen_ros2_controllers/Cia402DeviceController: Works with Cia402System</p></li>
+<li><p>canopen_ros2_controllers/CanopenProxyController: Works with CanopenSystem and Cia402System</p></li>
+</ul>
+<section id="robot-controller">
+<h3>Robot Controller<a class="headerlink" href="#robot-controller" title="Permalink to this headline"></a></h3>
+<p>The robot controller enables bringing up the different joints of the robot automatically
+by using the ros2_controller lifecycle. There is no need for further action, once the
+controller is activated, the drives are ready to be used.</p>
+<p>The robot controller can be configured in the ros2_controllers.yaml with the following
+parameters:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">robot_controller</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ros__parameters</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">joints</span><span class="p">:</span><span class="w">  </span><span class="c1"># joints that are controlled by the controller</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint1</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint2</span>
+<span class="w">        </span><span class="nt">operation_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># operation mode of the controller</span>
+<span class="w">        </span><span class="nt">command_poll_freq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"> </span><span class="c1"># frequency with which the controller polls for command feedback</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="managed-service-interface.html" class="btn btn-neutral float-left" title="Managed Service Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../master.html" class="btn btn-neutral float-right" title="Master Driver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
