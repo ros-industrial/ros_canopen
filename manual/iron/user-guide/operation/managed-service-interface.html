@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Managed Service Interface &mdash; ros2_canopen 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ROS2 Control" href="ros2-control-interface.html" />
+    <link rel="prev" title="Service Interface" href="service-interface.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ros2_canopen
+              <img src="../../_static/ros2-canopen-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/configuration.html">Creating a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/operation.html">Starting a Configuration Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../configuration/configuration.html">Bus Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operation.html">Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="service-interface.html">Service Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Managed Service Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#device-container-with-managed-nodes">Device Container with managed nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bus-configuration">Bus Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launching">Launching</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ros2-control-interface.html">ROS2 Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master.html">Master Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proxy-driver.html">Proxy Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cia402-driver.html">Cia402 Driver</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/design-objectives.html">Design Objectives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/new-driver.html">Creating a new device driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers-guide/new-master.html">Creating a new master</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ros-industrial.github.io/ros2_canopen/api/">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Software Tests</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/proxy-driver-test.html">Lifecycle Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/proxy-driver-test.html#proxy-driver-test">Proxy Driver Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../software-tests/ros2_control_system-test.html">ros2_control SystemInterface test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ros2_canopen</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Managed Service Interface</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/user-guide/operation/managed-service-interface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="managed-service-interface">
+<h1>Managed Service Interface<a class="headerlink" href="#managed-service-interface" title="Permalink to this headline"></a></h1>
+<section id="device-container-with-managed-nodes">
+<h2>Device Container with managed nodes<a class="headerlink" href="#device-container-with-managed-nodes" title="Permalink to this headline"></a></h2>
+<p>The device container implements ROS2 component manager. The load and unload services are disabled.
+Devices are loaded based on the Bus Configuration File (bus.yml). The device container provides
+the list service, which can be used with ros2cli to check which components have been loaded.</p>
+<figure class="align-default" id="id1">
+<img alt="Device Manager Concept" src="../../_images/device-manager.png" />
+<figcaption>
+<p><span class="caption-text">device manager concept</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>The device container uses the bus description file to identify the correct drivers for each devices.
+On launch it will load the CANopen master node and driver nodes and pass the appropriate configuration
+data to the nodes. The nodes are now in unconfigured state.</p>
+<p>When using the default launch files in canopen_core the lifecycle manager node will automatically
+be launched. The lifecycle manager takes care of sequencing the lifecycle of the different nodes in the
+device container. By bringing the lifecycle_manager to active lifecycle state, all master and driver nodes
+will be activated in correct sequence.</p>
+<p>If you choose to write your own lifecycle_manager, you’ll need to remember, that the master needs
+to be configured and activated before any driver node can be configured or activated.</p>
+</section>
+<section id="bus-configuration">
+<h2>Bus Configuration<a class="headerlink" href="#bus-configuration" title="Permalink to this headline"></a></h2>
+<p>The bus configuration for the managed service interface needs to use the driver classes that are marked as
+lifecycle drivers. The master driver indicates whether the bus.yml will be treated as managed or un-managed
+service interface.</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Available Driver Components</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Package</p></th>
+<th class="head"><p>Component</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>canopen_master_driver</p></td>
+<td><p>ros2_canopen::LifecycleMasterDriver</p></td>
+</tr>
+<tr class="row-odd"><td><p>canopen_proxy_driver</p></td>
+<td><p>ros2_canopen::LifecycleProxyDriver</p></td>
+</tr>
+<tr class="row-even"><td><p>canopen_402_driver</p></td>
+<td><p>ros2_canopen::LifecycleCia402Driver</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="launching">
+<h2>Launching<a class="headerlink" href="#launching" title="Permalink to this headline"></a></h2>
+<p>The device manager has the following configuration parameters.</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Parameters</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>bus_conf</p></td>
+<td><p>string</p></td>
+<td><p>(Mandatory) Path to the bus configuration YAML-file</p></td>
+</tr>
+<tr class="row-odd"><td><p>master_dcf</p></td>
+<td><p>string</p></td>
+<td><p>(Mandatory) Path to the DCF file to be used by the master node. Usually generated by dcfgen as master.dcf.</p></td>
+</tr>
+<tr class="row-even"><td><p>master_bin</p></td>
+<td><p>string</p></td>
+<td><p>(Optional) Path to the concise DCF (.bin) file to be used to configure the master. Usually generated by dcfgen as master.bin. (default: “”)</p></td>
+</tr>
+<tr class="row-odd"><td><p>can_interface</p></td>
+<td><p>string</p></td>
+<td><p>(Mandatory) Name of the CAN interface to be used. (default: vcan0)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="service-interface.html" class="btn btn-neutral float-left" title="Service Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ros2-control-interface.html" class="btn btn-neutral float-right" title="ROS2 Control" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christoph Hellmann Santos,  Harshavardhan Deshpande.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
