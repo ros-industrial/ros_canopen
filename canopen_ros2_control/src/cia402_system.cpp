@@ -355,7 +355,8 @@ void Cia402System::switchModes(uint id, const std::shared_ptr<ros2_canopen::Cia4
 
   if (motor_data_[id].interpolated_position_mode.is_commanded())
   {
-    motor_data_[id].interpolated_position_mode.set_response(driver->set_mode_torque());
+    motor_data_[id].interpolated_position_mode.set_response(
+      driver->set_mode_interpolated_position());
   }
 }
 

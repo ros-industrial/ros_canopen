@@ -76,6 +76,11 @@ public:
   bool set_mode_cyclic_velocity() { return node_canopen_402_driver_->set_mode_cyclic_velocity(); }
 
   bool set_mode_torque() { return node_canopen_402_driver_->set_mode_torque(); }
+
+  bool set_mode_interpolated_position()
+  {
+    return node_canopen_402_driver_->set_mode_interpolated_position();
+  }
 };
 }  // namespace ros2_canopen
 
