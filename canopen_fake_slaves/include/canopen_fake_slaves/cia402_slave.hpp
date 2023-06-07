@@ -64,6 +64,11 @@ public:
       RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Joined cyclic_position_mode thread.");
       cyclic_position_mode.join();
     }
+    if (interpolated_position_mode.joinable())
+    {
+      RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Joined interpolated_position_mode thread.");
+      interpolated_position_mode.join();
+    }
   }
 
 protected:
@@ -150,6 +155,7 @@ protected:
   std::thread profiled_velocity_mode;
   std::thread cyclic_position_mode;
   std::thread cyclic_velocity_mode;
+  std::thread interpolated_position_mode;
 
   double cycle_time;
 
@@ -259,6 +265,66 @@ protected:
         }
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(ccp_millis));
+    }
+  }
+
+  void run_interpolated_position_mode()
+  {
+    RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "run_interpolated_position_mode");
+    // Retrieve parameters from the object dictionary
+    double interpolation_period = static_cast<double>((uint8_t)(*this)[0x60C2][1]);
+    double target_position = static_cast<double>((int32_t)(*this)[0x60C1][1]);
+
+    // int32_t offset = (*this)[0x60B0][0];
+
+    // Convert parameters to SI units
+    interpolation_period *= std::pow(10.0, static_cast<double>((int8_t)(*this)[0x60C2][2]));
+    target_position /= 1000.0;
+    double actual_position = static_cast<double>((int32_t)(*this)[0x6064][0]) / 1000.0;
+
+    RCLCPP_INFO(
+      rclcpp::get_logger("cia402_slave"), "Interpolation Period: %f", interpolation_period);
+    RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Target position: %f", target_position);
+
+    while ((state.load() == InternalState::Operation_Enable) &&
+           (operation_mode.load() == Interpolated_Position) && (rclcpp::ok()))
+    {
+      std::this_thread::sleep_for(
+        std::chrono::milliseconds(static_cast<int>(interpolation_period * 1000)));
+
+      target_position = static_cast<double>((int32_t)(*this)[0x60C1][1]) / 1000.0;
+
+      if (target_position != actual_position)
+      {
+        double position_delta = target_position - actual_position;
+        double position_increment = position_delta / 20;
+        clear_status_bit(SW_Operation_mode_specific0);
+        clear_status_bit(SW_Target_reached);
+        {
+          std::scoped_lock<std::mutex> lock(w_mutex);
+          (*this)[0x6041][0] = status_word;
+          this->TpdoEvent(1);
+        }
+
+        while ((std::abs(actual_position - target_position) > 0.001) && (rclcpp::ok()))
+        {
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+          actual_position += position_increment;
+          (*this)[0x6064][0] = static_cast<int32_t>(actual_position * 1000);
+          (*this)[0x606C][0] = static_cast<int32_t>(position_increment * 1000);
+        }
+
+        actual_position = target_position;
+
+        RCLCPP_DEBUG(rclcpp::get_logger("cia402_slave"), "Reached target: %f", actual_position);
+        clear_status_bit(SW_Operation_mode_specific0);
+        set_status_bit(SW_Target_reached);
+        {
+          std::lock_guard<std::mutex> lock(w_mutex);
+          (*this)[0x6041][0] = status_word;
+          this->TpdoEvent(1);
+        }
+      }
     }
   }
 
@@ -446,6 +512,12 @@ protected:
         RCLCPP_INFO(rclcpp::get_logger("cia402_slave"), "Joined cyclic_position_mode thread.");
         cyclic_position_mode.join();
       }
+      if (interpolated_position_mode.joinable())
+      {
+        RCLCPP_INFO(
+          rclcpp::get_logger("cia402_slave"), "Joined interpolated_position_mode thread.");
+        interpolated_position_mode.join();
+      }
       old_operation_mode.store(operation_mode.load());
       switch (operation_mode.load())
       {
@@ -454,6 +526,9 @@ protected:
           break;
         case Profiled_Position:
           start_profile_pos_mode();
+          break;
+        case Interpolated_Position:
+          start_interpolated_pos_mode();
           break;
         default:
           break;
@@ -470,6 +545,12 @@ protected:
   {
     profiled_position_mode =
       std::thread(std::bind(&CIA402MockSlave::run_profiled_position_mode, this));
+  }
+
+  void start_interpolated_pos_mode()
+  {
+    interpolated_position_mode =
+      std::thread(std::bind(&CIA402MockSlave::run_interpolated_position_mode, this));
   }
 
   void on_quickstop_active()
