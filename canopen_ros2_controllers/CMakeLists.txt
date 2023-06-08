@@ -9,7 +9,6 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   controller_interface
   controller_manager
   hardware_interface
-  generate_parameter_library
   pluginlib
   rclcpp
   rclcpp_lifecycle
@@ -24,26 +23,17 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
-generate_parameter_library(
-  cia402_robot_controller_parameters
-  include/canopen_ros2_controllers/cia402_robot_controller.yaml
-)
-
 add_library(
   ${PROJECT_NAME}
   SHARED
   src/canopen_proxy_controller.cpp
   src/cia402_device_controller.cpp
-  src/cia402_robot_controller.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
-)
-target_link_libraries(${PROJECT_NAME} PUBLIC
-  cia402_robot_controller_parameters
 )
 ament_target_dependencies(${PROJECT_NAME} PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
@@ -52,7 +42,6 @@ pluginlib_export_plugin_description_file(controller_interface canopen_ros2_contr
 
 install(
   TARGETS
-    cia402_robot_controller_parameters
     ${PROJECT_NAME}
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
