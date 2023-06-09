@@ -1,6 +1,6 @@
-<map id="/home/runner/work/ros2_canopen/ros2_canopen/canopen_core/include/canopen_core/node_interfaces/node_canopen_master_interface.hpp" name="/home/runner/work/ros2_canopen/ros2_canopen/canopen_core/include/canopen_core/node_interfaces/node_canopen_master_interface.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,236,91"/>
-<area shape="rect" id="node2" href="$node__canopen__master_8hpp.html" title=" " alt="" coords="7,139,234,224"/>
-<area shape="rect" id="node3" href="$master__node_8hpp.html" title=" " alt="" coords="7,272,234,343"/>
-<area shape="rect" id="node4" href="$device__container_8hpp.html" title=" " alt="" coords="7,391,234,461"/>
+<map id="/home/runner/work/ros_canopen/ros_canopen/canopen_core/include/canopen_core/node_interfaces/node_canopen_master_interface.hpp" name="/home/runner/work/ros_canopen/ros_canopen/canopen_core/include/canopen_core/node_interfaces/node_canopen_master_interface.hpp">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,272,91"/>
+<area shape="rect" id="node2" href="$node__canopen__master_8hpp.html" title=" " alt="" coords="27,139,251,224"/>
+<area shape="rect" id="node3" href="$master__node_8hpp.html" title=" " alt="" coords="22,272,255,343"/>
+<area shape="rect" id="node4" href="$device__container_8hpp.html" title=" " alt="" coords="9,391,268,461"/>
 </map>
