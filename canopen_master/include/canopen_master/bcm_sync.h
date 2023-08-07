@@ -4,6 +4,7 @@
 #include <socketcan_interface/bcm.h>
 #include <socketcan_interface/socketcan.h>
 #include <canopen_master/canopen.h>
+#include <set>
 
 namespace canopen {
 
