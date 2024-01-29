@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(socketcan_interface)
 
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
-
 find_package(catkin REQUIRED
   COMPONENTS
     class_loader
