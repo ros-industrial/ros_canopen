@@ -22,7 +22,7 @@ jobs:
       CCACHE_DIR: "${{ github.workspace }}/.ccache" # directory for ccache (and how we enable ccache in industrial_ci)
     steps:
       - uses: actions/checkout@v2 # clone target repository
-      - uses: actions/cache@v2 # fetch/store the directory used by ccache before/after the ci run
+      - uses: actions/cache@v4 # fetch/store the directory used by ccache before/after the ci run
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ccache-${{ matrix.ROS_DISTRO }}-${{ matrix.ROS_REPO }}-${{github.run_id}}
