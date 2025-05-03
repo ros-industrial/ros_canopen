@@ -104,7 +104,7 @@ void PDOMapper::PDO::parse_and_set_mapping(const ObjectStorageSharedPtr &storage
     ObjectStorage::Entry<uint32_t> cob_id;
     storage->entry(cob_id, com_index, SUB_COM_COB_ID);
 
-    bool com_changed = check_com_changed(dict, map_index);
+    bool com_changed = check_com_changed(dict, com_index);
     if((map_changed || com_changed) && cob_id.desc().writable){
         cob_id.set(cob_id.get() | PDOid::INVALID_MASK);
     }
