@@ -331,7 +331,7 @@ void PDOMapper::read(LayerStatus &status){
 }
 bool PDOMapper::write(){
     boost::mutex::scoped_lock lock(mutex_);
-    for(std::unordered_set<TPDO::TPDOSharedPtr >::iterator it = tpdos_.begin(); it != tpdos_.end(); ++it){
+    for(auto it = tpdos_.begin(); it != tpdos_.end(); ++it){
         (*it)->sync();
     }
     return true; // TODO: check for errors
