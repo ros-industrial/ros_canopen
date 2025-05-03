@@ -296,7 +296,8 @@ public:
     : MotorBase(name), status_word_(0),control_word_(0),
       switching_state_(State402::InternalState(settings.get_optional<unsigned int>("switching_state", static_cast<unsigned int>(State402::Operation_Enable)))),
       monitor_mode_(settings.get_optional<bool>("monitor_mode", true)),
-      state_switch_timeout_(settings.get_optional<unsigned int>("state_switch_timeout", 5))
+      state_switch_timeout_(settings.get_optional<unsigned int>("state_switch_timeout", 5)),
+      stop_on_internal_limit_(settings.get_optional<bool>("stop_on_internal_limit", true))
     {
         storage->entry(status_word_entry_, 0x6041);
         storage->entry(control_word_entry_, 0x6040);
@@ -377,6 +378,7 @@ private:
     const State402::InternalState switching_state_;
     const bool monitor_mode_;
     const boost::chrono::seconds state_switch_timeout_;
+    const bool stop_on_internal_limit_;
 
     canopen::ObjectStorage::Entry<uint16_t>  status_word_entry_;
     canopen::ObjectStorage::Entry<uint16_t >  control_word_entry_;
