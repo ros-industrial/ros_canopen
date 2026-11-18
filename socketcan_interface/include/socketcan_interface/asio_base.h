@@ -30,6 +30,7 @@ template<typename Socket> class AsioDriver : public DriverInterface{
     }
 
 protected:
+    boost::thread post_thread_;
     boost::asio::io_service io_service_;
 #if BOOST_ASIO_VERSION >= 101200 // Boost 1.66+
     boost::asio::io_context::strand strand_;
@@ -86,7 +87,12 @@ protected:
     {}
 
 public:
-    virtual ~AsioDriver() { shutdown_internal(); }
+    virtual ~AsioDriver() {
+        if (post_thread_.joinable()){
+            post_thread_.join();
+        }
+        shutdown_internal();
+    }
 
     State getState(){
         boost::mutex::scoped_lock lock(state_mutex_);
@@ -100,7 +106,9 @@ public:
             boost::asio::io_service::work work(io_service_);
             setDriverState(State::ready);
 
-            boost::thread post_thread([this]() { io_service_.run(); });
+            if (!post_thread_.joinable()) {
+                post_thread_ = boost::thread([this]() { io_service_.run(); });
+            }
 
             triggerReadSome();
 
